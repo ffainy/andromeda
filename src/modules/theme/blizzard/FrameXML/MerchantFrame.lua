@@ -28,14 +28,15 @@ local function reskinMerchantItem(item)
 end
 
 local function reskinMerchantInteract(button)
+    button:GetRegions():Hide()
+    F.ReskinIcon(button.Icon)
     button:SetPushedTexture(0)
     button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-    F.CreateBDFrame(button)
 end
 
 tinsert(C.BlizzThemes, function()
     F.ReskinPortraitFrame(_G.MerchantFrame)
-    F.ReskinDropdown(_G.MerchantFrameLootFilter)
+    F.ReskinDropdown(_G.MerchantFrame.FilterDropdown)
     F.StripTextures(_G.MerchantPrevPageButton)
     F.ReskinArrow(_G.MerchantPrevPageButton, 'left')
     F.StripTextures(_G.MerchantNextPageButton)
@@ -67,17 +68,10 @@ tinsert(C.BlizzThemes, function()
 
     _G.MerchantBuyBackItem:SetHeight(44)
     reskinMerchantItem(_G.MerchantBuyBackItem)
-
     reskinMerchantInteract(_G.MerchantGuildBankRepairButton)
-    _G.MerchantGuildBankRepairButtonIcon:SetTexCoord(0.595, 0.8075, 0.05, 0.52)
-
     reskinMerchantInteract(_G.MerchantRepairAllButton)
-    _G.MerchantRepairAllIcon:SetTexCoord(0.31375, 0.53, 0.06, 0.52)
-
     reskinMerchantInteract(_G.MerchantRepairItemButton)
-    local ic = _G.MerchantRepairItemButton:GetRegions()
-    ic:SetTexture('Interface\\Icons\\INV_Hammer_20')
-    ic:SetTexCoord(unpack(C.TEX_COORD))
+    reskinMerchantInteract(_G.MerchantSellAllJunkButton)
 
     hooksecurefunc('MerchantFrame_UpdateCurrencies', function()
         for i = 1, _G.MAX_MERCHANT_CURRENCIES do
@@ -95,12 +89,6 @@ tinsert(C.BlizzThemes, function()
 
                 bu.styled = true
             end
-        end
-    end)
-
-    hooksecurefunc('MerchantFrame_UpdateRepairButtons', function()
-        if CanGuildBankRepair() then
-            _G.MerchantRepairText:SetPoint('CENTER', _G.MerchantFrame, 'BOTTOMLEFT', 65, 73)
         end
     end)
 

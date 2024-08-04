@@ -73,7 +73,7 @@ function BLIZZARD:PetTabs_Init()
         return
     end
 
-    if IsAddOnLoaded('Blizzard_Collections') then
+    if C_AddOns.IsAddOnLoaded('Blizzard_Collections') then
         BLIZZARD:PetTabs_Create()
     else
         F:RegisterEvent('ADDON_LOADED', BLIZZARD.PetTabs_Load)

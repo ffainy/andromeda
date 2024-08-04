@@ -39,16 +39,39 @@ function INFOBAR:GuildPanel_CreateButton(parent, index)
     button.HL:SetColorTexture(C.r, C.g, C.b, 0.2)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    button.level = F.CreateFS(button, C.Assets.Fonts.Regular, 13, outline or nil, 'Level', nil, outline and 'NONE' or 'THICK')
+    button.level =
+        F.CreateFS(button, C.Assets.Fonts.Regular, 13, outline or nil, 'Level', nil, outline and 'NONE' or 'THICK')
     button.level:SetPoint('TOP', button, 'TOPLEFT', 16, -4)
     button.class = button:CreateTexture(nil, 'ARTWORK')
     button.class:SetPoint('LEFT', 40, 0)
     button.class:SetSize(16, 16)
     button.class:SetTexture('Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES')
-    button.name = F.CreateFS(button, C.Assets.Fonts.Regular, 13, outline or nil, 'Name', nil, outline and 'NONE' or 'THICK', 'LEFT', 70, 0)
+    button.name = F.CreateFS(
+        button,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        'Name',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'LEFT',
+        70,
+        0
+    )
     button.name:SetPoint('RIGHT', button, 'LEFT', 185, 0)
     button.name:SetJustifyH('LEFT')
-    button.zone = F.CreateFS(button, C.Assets.Fonts.Regular, 13, outline or nil, 'Zone', nil, outline and 'NONE' or 'THICK', 'RIGHT', -2, 0)
+    button.zone = F.CreateFS(
+        button,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        'Zone',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'RIGHT',
+        -2,
+        0
+    )
     button.zone:SetPoint('LEFT', button, 'RIGHT', -120, 0)
     button.zone:SetJustifyH('RIGHT')
     button.zone:SetWordWrap(false)
@@ -61,7 +84,7 @@ end
 
 function INFOBAR:GuildPanel_UpdateButton(button)
     local index = button.index
-    local level, class, name, zone, status = unpack(INFOBAR.GuildTable[index])
+    local level, class, name, zone, status, guid = unpack(INFOBAR.guildTable[index])
 
     local levelcolor = F:RgbToHex(GetQuestDifficultyColor(level))
     button.level:SetText(levelcolor .. level)
@@ -69,7 +92,9 @@ function INFOBAR:GuildPanel_UpdateButton(button)
     F.ClassIconTexCoord(button.class, class)
 
     local namecolor = F:RgbToHex(F:ClassColor(class))
-    button.name:SetText(namecolor .. name .. status)
+    local isTimerunning = guid and C_ChatInfo.IsTimerunningPlayer(guid)
+    local playerName = isTimerunning and TimerunningUtil.AddSmallIcon(name) or name
+    button.name:SetText(namecolor .. playerName .. status)
 
     local zonecolor = C.GREY_COLOR
     if UnitInRaid(name) or UnitInParty(name) then
@@ -158,7 +183,13 @@ function INFOBAR:GuildPanel_Init()
 
     infoFrame = CreateFrame('Frame', C.ADDON_TITLE .. 'GuildInfobar', INFOBAR.Bar)
     infoFrame:SetSize(335, 495)
-    infoFrame:SetPoint(anchorTop and 'TOP' or 'BOTTOM', INFOBAR.GuildBlock, anchorTop and 'BOTTOM' or 'TOP', 0, anchorTop and -6 or 6)
+    infoFrame:SetPoint(
+        anchorTop and 'TOP' or 'BOTTOM',
+        INFOBAR.GuildBlock,
+        anchorTop and 'BOTTOM' or 'TOP',
+        0,
+        anchorTop and -6 or 6
+    )
     infoFrame:SetClampedToScreen(true)
     infoFrame:SetFrameStrata('TOOLTIP')
     F.SetBD(infoFrame)
@@ -168,10 +199,43 @@ function INFOBAR:GuildPanel_Init()
     end)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    gName = F.CreateFS(infoFrame, C.Assets.Fonts.Bold, 16, outline or nil, 'Guild', nil, outline and 'NONE' or 'THICK', 'TOPLEFT', 15, -10)
-    gOnline = F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, 'Online', nil, outline and 'NONE' or 'THICK', 'TOPLEFT', 15, -35)
+    gName = F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Bold,
+        16,
+        outline or nil,
+        'Guild',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOPLEFT',
+        15,
+        -10
+    )
+    gOnline = F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        'Online',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOPLEFT',
+        15,
+        -35
+    )
     -- gApps = F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, 'Applications', nil, outline and 'NONE' or 'THICK', 'TOPRIGHT', -15, -35)
-    gRank = F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, 'Rank', nil, outline and 'NONE' or 'THICK', 'TOPLEFT', 15, -51)
+    gRank = F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        'Rank',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOPLEFT',
+        15,
+        -51
+    )
 
     local bu = {}
     local width = { 30, 35, 126, 126 }
@@ -192,18 +256,85 @@ function INFOBAR:GuildPanel_Init()
     end
     F.CreateFS(bu[1], C.Assets.Fonts.Regular, 13, outline or nil, _G.LEVEL, nil, outline and 'NONE' or 'THICK')
     F.CreateFS(bu[2], C.Assets.Fonts.Regular, 13, outline or nil, _G.CLASS, nil, outline and 'NONE' or 'THICK')
-    F.CreateFS(bu[3], C.Assets.Fonts.Regular, 13, outline or nil, _G.NAME, nil, outline and 'NONE' or 'THICK', 'LEFT', 5, 0)
-    F.CreateFS(bu[4], C.Assets.Fonts.Regular, 13, outline or nil, _G.ZONE, nil, outline and 'NONE' or 'THICK', 'RIGHT', -5, 0)
+    F.CreateFS(
+        bu[3],
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        _G.NAME,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'LEFT',
+        5,
+        0
+    )
+    F.CreateFS(
+        bu[4],
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        _G.ZONE,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'RIGHT',
+        -5,
+        0
+    )
 
-    F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, C.LINE_STRING, nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -12, 58)
+    F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        C.LINE_STRING,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'BOTTOMRIGHT',
+        -12,
+        58
+    )
     local whspInfo = C.INFO_COLOR .. C.MOUSE_RIGHT_BUTTON .. L['Whisper']
-    F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, whspInfo, nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -15, 42)
+    F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        whspInfo,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'BOTTOMRIGHT',
+        -15,
+        42
+    )
     local invtInfo = C.INFO_COLOR .. 'ALT +' .. C.MOUSE_LEFT_BUTTON .. L['Invite']
-    F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, invtInfo, nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -15, 26)
+    F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        invtInfo,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'BOTTOMRIGHT',
+        -15,
+        26
+    )
     local copyInfo = C.INFO_COLOR .. 'SHIFT +' .. C.MOUSE_LEFT_BUTTON .. L['Copy Name']
-    F.CreateFS(infoFrame, C.Assets.Fonts.Regular, 13, outline or nil, copyInfo, nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -15, 10)
+    F.CreateFS(
+        infoFrame,
+        C.Assets.Fonts.Regular,
+        13,
+        outline or nil,
+        copyInfo,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'BOTTOMRIGHT',
+        -15,
+        10
+    )
 
-    local scrollFrame = CreateFrame('ScrollFrame', C.ADDON_TITLE .. 'GuildInfobarScrollFrame', infoFrame, 'HybridScrollFrameTemplate')
+    local scrollFrame =
+        CreateFrame('ScrollFrame', C.ADDON_TITLE .. 'GuildInfobarScrollFrame', infoFrame, 'HybridScrollFrameTemplate')
     scrollFrame:SetSize(305, 320)
     scrollFrame:SetPoint('TOPLEFT', 10, -100)
     infoFrame.scrollFrame = scrollFrame
@@ -256,7 +387,8 @@ function INFOBAR:GuildPanel_Refresh()
     gRank:SetText(C.INFO_COLOR .. _G.RANK .. ': ' .. (guildRank or ''))
 
     for i = 1, total do
-        local name, _, _, level, _, zone, _, _, connected, status, class, _, _, mobile = GetGuildRosterInfo(i)
+        local name, _, _, level, _, zone, _, _, connected, status, class, _, _, mobile, _, _, guid =
+            GetGuildRosterInfo(i)
         if connected or mobile then
             if mobile and not connected then
                 zone = _G.REMOTE_CHAT
@@ -290,6 +422,7 @@ function INFOBAR:GuildPanel_Refresh()
             INFOBAR.GuildTable[count][3] = Ambiguate(name, 'none')
             INFOBAR.GuildTable[count][4] = zone
             INFOBAR.GuildTable[count][5] = status
+            INFOBAR.guildTable[count][6] = guid
         end
     end
 
@@ -311,7 +444,7 @@ local function Block_OnMouseUp(self)
     infoFrame:Hide()
 
     if not _G.CommunitiesFrame then
-        LoadAddOn('Blizzard_Communities')
+        C_AddOns.LoadAddOn('Blizzard_Communities')
     end
 
     if _G.CommunitiesFrame then

@@ -15,7 +15,7 @@ local function ReskinBubble(chatbubble)
     local frame = chatbubble:GetChildren()
     if frame and not frame:IsForbidden() then
         frame.__bg = F.CreateBDFrame(frame, 0.75)
-        frame.__bg:SetScale(_G.UIParent:GetEffectiveScale())
+        frame.__bg:SetScale(UIParent:GetEffectiveScale())
         frame.__bg:SetInside(frame, 10, 10)
         frame.__shadow = F.CreateSD(frame.__bg)
         F.CreateTex(frame.__bg)

@@ -4,9 +4,9 @@
 ![WoW](https://img.shields.io/badge/WoW-Retail-f6e36a)
 ![Discord Channel](https://img.shields.io/discord/242811601260904450?color=7289DA&label=Discord)
 ![QQ群](https://img.shields.io/badge/QQ群-203621176-f66a8d)
-![License](https://img.shields.io/github/license/fafaraway/andromeda)
-![Build Status](https://img.shields.io/github/actions/workflow/status/fafaraway/andromeda/release.yml)
-![Latest Release](https://img.shields.io/github/v/release/fafaraway/andromeda)
+![License](https://img.shields.io/github/license/ffainy/andromeda)
+![Build Status](https://img.shields.io/github/actions/workflow/status/ffainy/andromeda/release.yml)
+![Latest Release](https://img.shields.io/github/v/release/ffainy/andromeda)
 
 </div>
 
@@ -24,15 +24,12 @@ Accompany you through every challenging day in **Azeroth**.
 *  https://www.bilibili.com/video/BV1uR4y1V7VY/
 
 ## Feedback
-*  Report issues on [GitHub](https://github.com/fafaraway/andromeda/issues)
+*  Report issues on [GitHub](https://github.com/ffainy/andromeda/issues)
 *  Join [Discord Channel](https://discord.gg/86wbfZXxn7)
 *  加入QQ群 [203621176](https://jq.qq.com/?_wv=1027&k=LStIpBBc)
 
 ## Download
-New versions of **Andromeda** are automatically and synchronously released to **CurseForge**, **WowInterface** and **Wago**, and can be downloaded directly from these sites or automatically updated using third-party addon managers.
 *  [CurseForge](https://www.curseforge.com/wow/addons/andromeda)
-*  [Wago](https://addons.wago.io/addons/andromeda)
-*  [WoWInterface](https://www.wowinterface.com/downloads/fileinfo.php?id=23258)
 
 ## Usage
 ```
@@ -46,7 +43,7 @@ New versions of **Andromeda** are automatically and synchronously released to **
 
 ## Additional
 *  [WeakAuras Collection](https://wago.io/WloMMMBpx) *WA collection*
-*  [Clean Icons - Mechagnome Edition](https://github.com/AcidWeb/Clean-Icons-Mechagnome-Edition) *Icons replacement with high resolution*
+*  [Simpy's Styled Icons](https://github.com/kodewdle/IconPacks) *Icons replacement with high resolution and awesome styles*
 *  [Chinese Fonts Pack](https://1drv.ms/u/s!AocaDk73Gt7sgrk6bdKqfZGZQMQA2Q?e=QwjHh2) *Fonts replacement for Chinese game client*
 *  [Interface Textures](https://1drv.ms/u/s!AocaDk73Gt7sgrlAYVUKxYvs3pCGFg?e=KpJOfv) *Textures replacement for chat bubble in protected area*
 

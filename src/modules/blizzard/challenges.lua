@@ -11,15 +11,15 @@ function ECF:GuildBest_UpdateTooltip()
         return
     end
 
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+    GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
     local name = C_ChallengeMode.GetMapUIInfo(leaderInfo.mapChallengeModeID)
-    _G.GameTooltip:SetText(name, 1, 1, 1)
-    _G.GameTooltip:AddLine(format(_G.CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
+    GameTooltip:SetText(name, 1, 1, 1)
+    GameTooltip:AddLine(format(_G.CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
     for i = 1, #leaderInfo.members do
         local classColorStr = strsub(F:RgbToHex(F:ClassColor(leaderInfo.members[i].classFileName)), 3, 10)
-        _G.GameTooltip:AddLine(format(_G.CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
+        GameTooltip:AddLine(format(_G.CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
     end
-    _G.GameTooltip:Show()
+    GameTooltip:Show()
 end
 
 function ECF:GuildBest_Create()
@@ -136,12 +136,6 @@ function ECF:GuildBest_Update()
             keystoneText:SetPoint('TOP', self.WeeklyInfo.Child.DungeonScoreInfo.Score, 'BOTTOM', 0, -3)
         end
 
-        local affix = self.WeeklyInfo.Child.Affixes[1]
-        if affix then
-            affix:ClearAllPoints()
-            affix:SetPoint('TOPLEFT', 20, -55)
-        end
-
         resize = true
     end
 end
@@ -171,8 +165,8 @@ function ECF:KeystoneInfo_WeeklyRuns()
     if numRuns > 0 then
         local isShiftKeyDown = IsShiftKeyDown()
 
-        _G.GameTooltip:AddLine(' ')
-        _G.GameTooltip:AddDoubleLine(
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddDoubleLine(
             isShiftKeyDown and _G.CHALLENGE_MODE_THIS_WEEK or format(_G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold),
             '(' .. numRuns .. ')',
             0.6,
@@ -192,19 +186,19 @@ function ECF:KeystoneInfo_WeeklyRuns()
             if not runInfo.completed then
                 r, g, b = 1, 0, 0
             end
-            _G.GameTooltip:AddDoubleLine(name, 'Lv.' .. runInfo.level, 1, 1, 1, r, g, b)
+            GameTooltip:AddDoubleLine(name, 'Lv.' .. runInfo.level, 1, 1, 1, r, g, b)
         end
 
         if not isShiftKeyDown then
-            _G.GameTooltip:AddLine(L['Hold SHIFT for more details'], 0.6, 0.8, 1)
+            GameTooltip:AddLine(L['Hold SHIFT for more details'], 0.6, 0.8, 1)
         end
 
-        _G.GameTooltip:Show()
+        GameTooltip:Show()
     end
 end
 
 function ECF:KeystoneInfo_Create()
-    local texture = select(10, GetItemInfo(158923)) or 525134
+    local texture = select(10, C_Item.GetItemInfo(158923)) or 525134
     local iconColor = C.QualityColors[Enum.ItemQuality.Epic or 4]
     local button = CreateFrame('Frame', nil, _G.ChallengesFrame.WeeklyInfo, 'BackdropTemplate')
     button:SetPoint('BOTTOMLEFT', 10, 67)
@@ -212,21 +206,21 @@ function ECF:KeystoneInfo_Create()
     F.PixelIcon(button, texture, true)
     button.bg:SetBackdropBorderColor(iconColor.r, iconColor.g, iconColor.b)
     button:SetScript('OnEnter', function(self)
-        _G.GameTooltip:ClearLines()
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-        _G.GameTooltip:AddLine(L['Account Keystones'])
+        GameTooltip:ClearLines()
+        GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+        GameTooltip:AddLine(L['Account Keystones'])
         for name, info in pairs(_G.ANDROMEDA_ADB.KeystoneInfo) do
             local newName = Ambiguate(name, 'none')
             local mapID, level, class, faction = strsplit(':', info)
             local color = F:RgbToHex(F:ClassColor(class))
             local factionColor = faction == 'Horde' and '|cffff5040' or '|cff00adf0'
             local dungeon = C_ChallengeMode.GetMapUIInfo(tonumber(mapID))
-            _G.GameTooltip:AddDoubleLine(format(color .. '%s:|r', newName), format('%s%s(%s)|r', factionColor, dungeon, level))
+            GameTooltip:AddDoubleLine(format(color .. '%s:|r', newName), format('%s%s(%s)|r', factionColor, dungeon, level))
         end
-        _G.GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-        _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. _G.GREAT_VAULT_REWARDS .. ' ', 1, 1, 1, 0.6, 0.8, 1)
-        _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_MIDDLE_BUTTON .. L['Delete keystones info'] .. ' ', 1, 1, 1, 0.6, 0.8, 1)
-        _G.GameTooltip:Show()
+        GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
+        GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. _G.GREAT_VAULT_REWARDS .. ' ', 1, 1, 1, 0.6, 0.8, 1)
+        GameTooltip:AddDoubleLine(' ', C.MOUSE_MIDDLE_BUTTON .. L['Delete keystones info'] .. ' ', 1, 1, 1, 0.6, 0.8, 1)
+        GameTooltip:Show()
     end)
     button:SetScript('OnLeave', F.HideTooltip)
     button:SetScript('OnMouseUp', function(_, btn)
@@ -259,7 +253,7 @@ function ECF:KeystoneInfo_Update()
 end
 
 function ECF:OnLogin()
-    hasAngryKeystones = IsAddOnLoaded('AngryKeystones')
+    hasAngryKeystones = C_AddOns.IsAddOnLoaded('AngryKeystones')
     F:RegisterEvent('ADDON_LOADED', ECF.GuildBest_OnLoad)
 
     ECF:KeystoneInfo_Update()

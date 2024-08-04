@@ -6,6 +6,13 @@ local oUF = F.Libs.oUF
 local MIN_ALPHA, MAX_ALPHA = 0.35, 1
 local onRangeObjects, onRangeFrame = {}
 local PowerTypesFull = { MANA = true, FOCUS = true, ENERGY = true }
+local VIGOR_BAR_ID = 631 -- this is the oval & diamond variant
+
+local GetMouseFocus = GetMouseFocus
+    or function()
+        local frames = _G.GetMouseFoci()
+        return frames and frames[1]
+    end
 
 local function ClearTimers(element)
     if element.configTimer then
@@ -29,14 +36,37 @@ local function ToggleAlpha(self, element, endAlpha)
     end
 end
 
-local function Update(self)
+local function updateInstanceDifficulty(element)
+    local _, _, difficultyID = GetInstanceInfo()
+    element.InstancedCached = element.InstanceDifficulty and element.InstanceDifficulty[difficultyID] or nil
+end
+
+local function onInstanceDifficulty(self)
+    local element = self.Fader
+    updateInstanceDifficulty(element)
+    element:ForceUpdate()
+end
+
+local function CanGlide()
+    return UnitPowerBarID('player') == VIGOR_BAR_ID
+end
+
+local function Update(self, event, unit)
     local element = self.Fader
     if self.isForced or (not element or not element.count or element.count <= 0) then
         self:SetAlpha(1)
         return
     end
 
-    local unit = self.unit
+    -- Instance Difficulty is enabled and we haven't checked yet
+    if element.InstanceDifficulty and not element.InstancedCached then
+        updateInstanceDifficulty(element)
+    end
+
+    -- try to get the unit from the parent
+    if event == 'PLAYER_IS_GLIDING_CHANGED' or not unit then
+        unit = self.unit
+    end
 
     -- range fader
     if element.Range then
@@ -56,7 +86,7 @@ local function Update(self)
     end
 
     if
-        (element.Instance and IsInInstance())
+        (element.InstanceDifficulty and element.InstancedCached)
         or (element.Combat and UnitAffectingCombat(unit))
         or (element.Casting and (UnitCastingInfo(unit) or UnitChannelInfo(unit)))
         or (element.PlayerTarget and UnitExists('target'))
@@ -64,6 +94,8 @@ local function Update(self)
         or (element.Focus and UnitExists('focus'))
         or (element.Health and UnitHealth(unit) < UnitHealthMax(unit))
         or (element.Power and (PowerTypesFull[powerType] and UnitPower(unit) < UnitPowerMax(unit)))
+        or (element.Vehicle and UnitHasVehicleUI(unit))
+        or (element.DynamicFlight and not CanGlide())
         or (element.Hover and GetMouseFocus() == (self.__faderobject or self))
     then
         ToggleAlpha(self, element, element.MaxAlpha)
@@ -159,12 +191,14 @@ local options = {
             end
         end,
     },
-    Instance = {
+    InstanceDifficulty = {
         enable = function(self)
-            self:RegisterEvent('PLAYER_ENTERING_WORLD', Update)
-            self:RegisterEvent('ZONE_CHANGED_NEW_AREA', Update, true)
+            self:RegisterEvent('ZONE_CHANGED', onInstanceDifficulty, true)
+            self:RegisterEvent('ZONE_CHANGED_INDOORS', onInstanceDifficulty, true)
+            self:RegisterEvent('ZONE_CHANGED_NEW_AREA', onInstanceDifficulty, true)
+            self:RegisterEvent('PLAYER_DIFFICULTY_CHANGED', onInstanceDifficulty, true)
         end,
-        events = { 'PLAYER_ENTERING_WORLD', 'ZONE_CHANGED_NEW_AREA' },
+        events = { 'ZONE_CHANGED', 'ZONE_CHANGED_INDOORS', 'ZONE_CHANGED_NEW_AREA', 'PLAYER_DIFFICULTY_CHANGED' },
     },
     Combat = {
         enable = function(self)
@@ -220,13 +254,14 @@ local options = {
     },
     Casting = {
         enable = function(self)
-            self:RegisterEvent('UNIT_SPELLCAST_START', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_FAILED', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_STOP', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', Update, true)
-            self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', Update, true)
+            self:RegisterEvent('UNIT_SPELLCAST_START', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_FAILED', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_STOP', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_EMPOWER_START', Update)
+            self:RegisterEvent('UNIT_SPELLCAST_EMPOWER_STOP', Update)
         end,
         events = {
             'UNIT_SPELLCAST_START',
@@ -234,9 +269,23 @@ local options = {
             'UNIT_SPELLCAST_STOP',
             'UNIT_SPELLCAST_INTERRUPTED',
             'UNIT_SPELLCAST_CHANNEL_START',
-            'UNIT_SPELLCAST_CHANNEL_UPDATE',
             'UNIT_SPELLCAST_CHANNEL_STOP',
+            'UNIT_SPELLCAST_EMPOWER_START',
+            'UNIT_SPELLCAST_EMPOWER_STOP',
         },
+    },
+    DynamicFlight = {
+        enable = function(self)
+            self:RegisterEvent('PLAYER_IS_GLIDING_CHANGED', Update, true)
+        end,
+        events = { 'PLAYER_IS_GLIDING_CHANGED' },
+    },
+    Vehicle = {
+        enable = function(self)
+            self:RegisterEvent('UNIT_ENTERED_VEHICLE', Update, true)
+            self:RegisterEvent('UNIT_EXITED_VEHICLE', Update, true)
+        end,
+        events = { 'UNIT_ENTERED_VEHICLE', 'UNIT_EXITED_VEHICLE' },
     },
     MinAlpha = {
         countIgnored = true,
@@ -267,11 +316,15 @@ local function SetOption(element, opt, state)
     local option = ((opt == 'UnitTarget' or opt == 'PlayerTarget') and 'Target') or opt
     local oldState = element[opt]
 
+    if opt == 'InstanceDifficulty' then
+        element.InstancedCached = nil -- clear the cached value
+    end
+
     if option and options[option] and (oldState ~= state) then
         element[opt] = state
 
         if state then
-            if type(state) == 'table' then
+            if type(state) == 'table' and opt ~= 'InstanceDifficulty' then
                 state.__faderelement = element
                 element.__owner.__faderobject = state
             end

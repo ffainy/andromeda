@@ -36,7 +36,8 @@ local function refreshDefaultLootSpec()
         return
     end
     local mult = 3 + numSpecs
-    newMenu[numLocal - mult].text = format(_G.LOOT_SPECIALIZATION_DEFAULT, select(2, GetSpecializationInfo(currentSpecIndex)))
+    newMenu[numLocal - mult].text =
+        format(_G.LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or _G.NONE)
 end
 
 local function selectCurrentConfig(_, configID, specID)
@@ -127,7 +128,7 @@ local function BuildSpecMenu()
     end
 
     tinsert(newMenu, seperatorMenu)
-    tinsert(newMenu, { text = GetSpellInfo(384255), isTitle = true, notCheckable = true })
+    tinsert(newMenu, { text = C_Spell.GetSpellName(384255), isTitle = true, notCheckable = true })
     tinsert(newMenu, {
         text = _G.BLUE_FONT_COLOR:WrapTextInColorCode(_G.TALENT_FRAME_DROP_DOWN_STARTER_BUILD),
         func = selectCurrentConfig,
@@ -154,11 +155,11 @@ local function Block_OnMouseUp(self, btn)
     end
 
     if btn == 'LeftButton' then
-        _G.ToggleTalentFrame(2)
+        PlayerSpellsUtil.ToggleClassTalentOrSpecFrame()
     else
         BuildSpecMenu()
         EasyMenu(newMenu, F.EasyMenu, self, -80, 100, 'MENU', 1)
-        _G.GameTooltip:Hide()
+        GameTooltip:Hide()
     end
 end
 
@@ -177,9 +178,21 @@ local function Block_OnEvent(self)
 
         local _, lootname = GetSpecializationInfoByID(currentLootIndex)
         if not lootname or name == lootname then
-            self.text:SetText(format(L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s', name, name))
+            self.text:SetText(
+                format(
+                    L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s',
+                    name,
+                    name
+                )
+            )
         else
-            self.text:SetText(format(L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s', name, lootname))
+            self.text:SetText(
+                format(
+                    L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s',
+                    name,
+                    lootname
+                )
+            )
         end
     else
         self.text:SetText(format(L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r', _G.NONE))
@@ -192,19 +205,19 @@ local function Block_OnEnter(self)
     end
 
     local anchorTop = C.DB.Infobar.AnchorTop
-    _G.GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:AddLine(_G.TALENTS_BUTTON, 0.9, 0.8, 0.6)
-    _G.GameTooltip:AddLine(' ')
+    GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(_G.TALENTS_BUTTON, 0.9, 0.8, 0.6)
+    GameTooltip:AddLine(' ')
 
     local specID, specName, _, specIcon = GetSpecializationInfo(currentSpecIndex)
-    _G.GameTooltip:AddLine(addIcon(specIcon) .. ' ' .. specName, 0.6, 0.8, 1)
+    GameTooltip:AddLine(addIcon(specIcon) .. ' ' .. specName, 0.6, 0.8, 1)
 
     for t = 1, _G.MAX_TALENT_TIERS do
         for c = 1, 3 do
             local _, name, icon, selected = GetTalentInfo(t, c, 1)
             if selected then
-                _G.GameTooltip:AddLine(addIcon(icon) .. ' ' .. name, 1, 1, 1)
+                GameTooltip:AddLine(addIcon(icon) .. ' ' .. name, 1, 1, 1)
             end
         end
     end
@@ -212,18 +225,18 @@ local function Block_OnEnter(self)
     local configID = C_ClassTalents.GetLastSelectedSavedConfigID(specID)
     local info = configID and C_Traits.GetConfigInfo(configID)
     if info and info.name then
-        _G.GameTooltip:AddLine('   (' .. info.name .. ')', 1, 1, 1)
+        GameTooltip:AddLine('   (' .. info.name .. ')', 1, 1, 1)
     end
 
     if C_SpecializationInfo.CanPlayerUsePVPTalentUI() then
         pvpTalents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
         if #pvpTalents > 0 then
-            _G.GameTooltip:AddLine(' ')
-            _G.GameTooltip:AddLine(addIcon(pvpIconTexture) .. ' ' .. _G.PVP_TALENTS, 0.6, 0.8, 1)
+            GameTooltip:AddLine(' ')
+            GameTooltip:AddLine(addIcon(pvpIconTexture) .. ' ' .. _G.PVP_TALENTS, 0.6, 0.8, 1)
             for _, talentID in next, pvpTalents do
                 local _, name, icon, _, _, _, unlocked = GetPvpTalentInfoByID(talentID)
                 if name and unlocked then
-                    _G.GameTooltip:AddLine(addIcon(icon) .. ' ' .. name, 1, 1, 1)
+                    GameTooltip:AddLine(addIcon(icon) .. ' ' .. name, 1, 1, 1)
                 end
             end
         end
@@ -231,11 +244,20 @@ local function Block_OnEnter(self)
         wipe(pvpTalents)
     end
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Talent Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_RIGHT_BUTTON .. L['Change Specialization & Loot'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    _G.GameTooltip:Show()
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
+    GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Talent Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:AddDoubleLine(
+        ' ',
+        C.MOUSE_RIGHT_BUTTON .. L['Change Specialization & Loot'] .. ' ',
+        1,
+        1,
+        1,
+        0.9,
+        0.8,
+        0.6
+    )
+    GameTooltip:Show()
 end
 
 local function Block_OnLeave(self)

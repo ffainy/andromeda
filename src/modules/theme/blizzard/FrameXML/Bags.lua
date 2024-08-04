@@ -1,6 +1,5 @@
 local F, C = unpack(select(2, ...))
 
-local MAX_CONTAINER_ITEMS = 36
 local backpackTexture = 'Interface\\Buttons\\Button-Backpack-Up'
 
 local function handleMoneyFrame(frame)
@@ -28,7 +27,7 @@ local function replaceSortTexture(texture)
     texture:SetTexCoord(unpack(C.TEX_COORD))
 end
 
-local function ReskinSortButton(button)
+local function reskinSortButton(button)
     replaceSortTexture(button:GetNormalTexture())
     replaceSortTexture(button:GetPushedTexture())
     F.CreateBDFrame(button)
@@ -38,9 +37,12 @@ local function ReskinSortButton(button)
     highlight:SetAllPoints(button)
 end
 
-local function ReskinBagSlot(bu)
+local function reskinBagSlot(bu)
     bu:SetNormalTexture(0)
     bu:SetPushedTexture(0)
+    if bu.Background then
+        bu.Background:SetAlpha(0)
+    end
     bu:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
     bu.searchOverlay:SetOutside()
 
@@ -73,7 +75,8 @@ local function updateContainer(frame)
 
     for i = 1, frame.size do
         local itemButton = _G[name .. 'Item' .. i]
-        if _G[name .. 'Item' .. i .. 'IconQuestTexture']:IsShown() then
+        local questTexture = _G[name .. 'Item' .. i .. 'IconQuestTexture']
+        if itemButton and questTexture:IsShown() then
             itemButton.IconBorder:SetVertexColor(1, 1, 0)
         end
     end
@@ -87,18 +90,50 @@ local function updateContainer(frame)
     end
 end
 
-local function emptySlotBG(button)
-    if button.ItemSlotBackground then
-        button.ItemSlotBackground:Hide()
+local function handleBagSlots(self)
+    for button in self.itemButtonPool:EnumerateActive() do
+        if not button.bg then
+            reskinBagSlot(button)
+        end
+    end
+end
+
+local function handleBankTab(tab)
+    if not tab.styled then
+        tab.Border:SetAlpha(0)
+        tab:SetNormalTexture(0)
+        tab:SetPushedTexture(0)
+        tab:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
+        tab.SelectedTexture:SetTexture(C.Assets.Textures.ButtonPushed)
+        F.CreateBDFrame(tab)
+        tab.Icon:SetTexCoord(unpack(C.TEX_COORD))
+
+        tab.styled = true
     end
 end
 
 tinsert(C.BlizzThemes, function()
-    if C.DB.Inventory.Enable then
+    if not _G.ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    local menu = AccountBankPanel and AccountBankPanel.TabSettingsMenu
+    if menu then
+        F.StripTextures(menu)
+        F.ReskinIconSelector(menu)
+        menu.DepositSettingsMenu:DisableDrawLayer('OVERLAY')
+
+        for _, child in pairs({ menu.DepositSettingsMenu:GetChildren() }) do
+            if child:IsObjectType('CheckButton') then
+                F.ReskinCheckbox(child)
+                child:SetSize(24, 24)
+            elseif child.Arrow then
+                F.ReskinDropdown(child)
+            end
+        end
+    end
+
+    if C.DB.Inventory.Enable then
         return
     end
 
@@ -119,12 +154,7 @@ tinsert(C.BlizzThemes, function()
         end
         createBagIcon(frame, i)
         hooksecurefunc(frame, 'Update', updateContainer)
-
-        for k = 1, MAX_CONTAINER_ITEMS do
-            local button = _G[frameName .. 'Item' .. k]
-            ReskinBagSlot(button)
-            hooksecurefunc(button, 'ChangeOwnership', emptySlotBG)
-        end
+        hooksecurefunc(frame, 'UpdateItemSlots', handleBagSlots)
     end
 
     F.StripTextures(_G.BackpackTokenFrame)
@@ -144,18 +174,19 @@ tinsert(C.BlizzThemes, function()
     end)
 
     F.ReskinEditbox(_G.BagItemSearchBox)
-    ReskinSortButton(_G.BagItemAutoSortButton)
+    reskinSortButton(_G.BagItemAutoSortButton)
 
     -- Combined bags
     F.ReskinPortraitFrame(_G.ContainerFrameCombinedBags)
     createBagIcon(_G.ContainerFrameCombinedBags, 1)
     _G.ContainerFrameCombinedBags.PortraitButton.Highlight:SetTexture('')
+    hooksecurefunc(_G.ContainerFrameCombinedBags, 'UpdateItemSlots', handleBagSlots)
 
     -- [[ Bank ]]
 
     _G.BankSlotsFrame:DisableDrawLayer('BORDER')
-    _G.BankFrameMoneyFrameInset:Hide()
     _G.BankFrameMoneyFrameBorder:Hide()
+    _G.BankSlotsFrame.NineSlice:SetAlpha(0)
 
     -- "item slots" and "bag slots" text
     select(9, _G.BankSlotsFrame:GetRegions()):SetDrawLayer('OVERLAY')
@@ -165,17 +196,18 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(_G.BankFramePurchaseButton)
     F.ReskinTab(_G.BankFrameTab1)
     F.ReskinTab(_G.BankFrameTab2)
+    F.ReskinTab(_G.BankFrameTab3)
     F.ReskinEditbox(_G.BankItemSearchBox)
 
     for i = 1, 28 do
-        ReskinBagSlot(_G['BankFrameItem' .. i])
+        reskinBagSlot(_G['BankFrameItem' .. i])
     end
 
     for i = 1, 7 do
-        ReskinBagSlot(_G.BankSlotsFrame['Bag' .. i])
+        reskinBagSlot(_G.BankSlotsFrame['Bag' .. i])
     end
 
-    ReskinSortButton(_G.BankItemAutoSortButton)
+    reskinSortButton(_G.BankItemAutoSortButton)
 
     hooksecurefunc('BankFrameItemButton_Update', function(button)
         if not button.isBag and button.IconQuestTexture:IsShown() then
@@ -188,6 +220,7 @@ tinsert(C.BlizzThemes, function()
     _G.ReagentBankFrame:DisableDrawLayer('BACKGROUND')
     _G.ReagentBankFrame:DisableDrawLayer('BORDER')
     _G.ReagentBankFrame:DisableDrawLayer('ARTWORK')
+    _G.ReagentBankFrame.NineSlice:SetAlpha(0)
 
     F.ReskinButton(_G.ReagentBankFrame.DespositButton)
     F.ReskinButton(_G.ReagentBankFrameUnlockInfoPurchaseButton)
@@ -201,10 +234,31 @@ tinsert(C.BlizzThemes, function()
         if not reagentButtonsStyled then
             for i = 1, 98 do
                 local button = _G['ReagentBankFrameItem' .. i]
-                ReskinBagSlot(button)
+                reskinBagSlot(button)
                 BankFrameItemButton_Update(button)
             end
             reagentButtonsStyled = true
         end
     end)
+
+    -- [[ Account bank ]]
+    local AccountBankPanel = _G.AccountBankPanel
+    AccountBankPanel.NineSlice:SetAlpha(0)
+    AccountBankPanel.EdgeShadows:Hide()
+    F.ReskinButton(AccountBankPanel.ItemDepositFrame.DepositButton)
+    F.ReskinCheckbox(AccountBankPanel.ItemDepositFrame.IncludeReagentsCheckbox)
+    handleMoneyFrame(AccountBankPanel)
+    F.ReskinButton(AccountBankPanel.MoneyFrame.WithdrawButton)
+    F.ReskinButton(AccountBankPanel.MoneyFrame.DepositButton)
+
+    hooksecurefunc(AccountBankPanel, 'GenerateItemSlotsForSelectedTab', handleBagSlots)
+
+    hooksecurefunc(AccountBankPanel, 'RefreshBankTabs', function(self)
+        for tab in self.bankTabPool:EnumerateActive() do
+            handleBankTab(tab)
+        end
+    end)
+    handleBankTab(AccountBankPanel.PurchaseTab)
+
+    F.ReskinButton(AccountBankPanel.PurchasePrompt.TabCostFrame.PurchaseButton)
 end)

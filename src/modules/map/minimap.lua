@@ -12,18 +12,20 @@ function MAP:RemoveBlizzStuff()
 
     F:DisableEditMode(MinimapCluster)
     MinimapCluster:EnableMouse(false)
-    MinimapCluster.Tracking:Hide()
     MinimapCluster.BorderTop:Hide()
     MinimapCluster.ZoneTextButton:Hide()
     Minimap:SetArchBlobRingScalar(0)
     Minimap:SetQuestBlobRingScalar(0)
+
+    _G.MinimapCluster.Tracking:SetAlpha(0)
+    _G.MinimapCluster.Tracking:SetScale(0.0001)
 
     F.HideObject(Minimap.ZoomIn)
     F.HideObject(Minimap.ZoomOut)
     F.HideObject(MinimapCompassTexture)
 
     -- ClockFrame
-    LoadAddOn('Blizzard_TimeManager')
+    C_AddOns.LoadAddOn('Blizzard_TimeManager')
     local region = TimeManagerClockButton:GetRegions()
     region:Hide()
     TimeManagerClockButton:Hide()
@@ -62,9 +64,9 @@ function MAP:RestyleMinimap()
     local diff = 256 - 190
     local halfDiff = ceil(diff / 2)
 
-    local holder = CreateFrame('Frame', C.ADDON_TITLE .. 'MinimapHolder', _G.UIParent)
+    local holder = CreateFrame('Frame', C.ADDON_TITLE .. 'MinimapHolder', UIParent)
     holder:SetSize(256, 190)
-    holder:SetPoint('CENTER', _G.UIParent)
+    holder:SetPoint('CENTER', UIParent)
     holder:SetFrameStrata('BACKGROUND')
     holder:SetScale(C.DB.Map.MinimapScale)
     holder.bg = F.SetBD(holder, 1)
@@ -72,7 +74,7 @@ function MAP:RestyleMinimap()
     holder.bg:SetBackdropBorderColor(0, 0, 0, 1)
     Minimap.Holder = holder
 
-    local pos = { 'BOTTOMRIGHT', _G.UIParent, 'BOTTOMRIGHT', -C.UI_GAP, C.UI_GAP }
+    local pos = { 'BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -C.UI_GAP, C.UI_GAP }
     local mover = F.Mover(holder, _G.MINIMAP_LABEL, 'Minimap', pos)
 
     hooksecurefunc(Minimap, 'SetPoint', function(frame, _, parent)
@@ -173,17 +175,30 @@ function MAP:CreatePendingInvitation()
     _G.GameTimeCalendarInvitesTexture:SetParent(Minimap)
     _G.GameTimeCalendarInvitesTexture:SetPoint('TOPRIGHT')
 
-    local invt = CreateFrame('Button', nil, _G.UIParent)
+    local invt = CreateFrame('Button', nil, UIParent)
     invt:SetPoint('TOPRIGHT', _G.Minimap, 'TOPLEFT', -6, -6)
     invt:SetSize(300, 80)
     invt:Hide()
     F.SetBD(invt)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    F.CreateFS(invt, C.Assets.Fonts.Regular, 14, outline or nil, _G.GAMETIME_TOOLTIP_CALENDAR_INVITES, 'BLUE', outline and 'NONE' or 'THICK')
+    F.CreateFS(
+        invt,
+        C.Assets.Fonts.Regular,
+        14,
+        outline or nil,
+        _G.GAMETIME_TOOLTIP_CALENDAR_INVITES,
+        'BLUE',
+        outline and 'NONE' or 'THICK'
+    )
 
+    local lastInv = 0
     local function updateInviteVisibility()
-        invt:SetShown(C_Calendar.GetNumPendingInvites() > 0)
+        local thisTime = GetTime()
+        if thisTime - lastInv > 1 then
+            lastInv = thisTime
+            invt:SetShown(C_Calendar.GetNumPendingInvites() > 0)
+        end
     end
     F:RegisterEvent('CALENDAR_UPDATE_PENDING_INVITES', updateInviteVisibility)
     F:RegisterEvent('PLAYER_ENTERING_WORLD', updateInviteVisibility)
@@ -329,10 +344,30 @@ local function toggleExpansionLandingPageButton(_, ...)
 end
 
 MAP.ExpansionMenuList = {
-    { text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE, func = toggleExpansionLandingPageButton, arg1 = Enum.GarrisonType.Type_9_0, notCheckable = true },
-    { text = _G.WAR_CAMPAIGN, func = toggleExpansionLandingPageButton, arg1 = Enum.GarrisonType.Type_8_0, notCheckable = true },
-    { text = _G.ORDER_HALL_LANDING_PAGE_TITLE, func = toggleExpansionLandingPageButton, arg1 = Enum.GarrisonType.Type_7_0, notCheckable = true },
-    { text = _G.GARRISON_LANDING_PAGE_TITLE, func = toggleExpansionLandingPageButton, arg1 = Enum.GarrisonType.Type_6_0, notCheckable = true },
+    {
+        text = _G.GARRISON_TYPE_9_0_LANDING_PAGE_TITLE,
+        func = toggleExpansionLandingPageButton,
+        arg1 = Enum.GarrisonType.Type_9_0,
+        notCheckable = true,
+    },
+    {
+        text = _G.WAR_CAMPAIGN,
+        func = toggleExpansionLandingPageButton,
+        arg1 = Enum.GarrisonType.Type_8_0,
+        notCheckable = true,
+    },
+    {
+        text = _G.ORDER_HALL_LANDING_PAGE_TITLE,
+        func = toggleExpansionLandingPageButton,
+        arg1 = Enum.GarrisonType.Type_7_0,
+        notCheckable = true,
+    },
+    {
+        text = _G.GARRISON_LANDING_PAGE_TITLE,
+        func = toggleExpansionLandingPageButton,
+        arg1 = Enum.GarrisonType.Type_6_0,
+        notCheckable = true,
+    },
 }
 
 local function updateExpansionLandingPageButton(self)
@@ -372,11 +407,11 @@ function MAP:CreateExpansionLandingPageButton()
     end)
 
     elpBtn:SetScript('OnEnter', function(self)
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
-        _G.GameTooltip:SetText(self.title, 1, 1, 1)
-        _G.GameTooltip:AddLine(self.description, nil, nil, nil, true)
-        _G.GameTooltip:AddLine(L['Right click to switch expansion content'], nil, nil, nil, true)
-        _G.GameTooltip:Show()
+        GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
+        GameTooltip:SetText(self.title, 1, 1, 1)
+        GameTooltip:AddLine(self.description, nil, nil, nil, true)
+        GameTooltip:AddLine(L['Right click to switch expansion content'], nil, nil, nil, true)
+        GameTooltip:Show()
     end)
 end
 
@@ -394,19 +429,17 @@ function MAP:CreateQueueStatusButton()
     _G.QueueStatusFrame:ClearAllPoints()
     _G.QueueStatusFrame:SetPoint('BOTTOMRIGHT', Minimap, 'BOTTOMLEFT', -4, Minimap.halfDiff)
 
-    if C.IS_NEW_PATCH_10_1 then
-        hooksecurefunc(_G.QueueStatusButton, 'SetPoint', function(button, _, _, _, x)
-            if x == -15 then
-                button:ClearAllPoints()
-                button:SetPoint('BOTTOMRIGHT', Minimap, 0, Minimap.halfDiff)
-            end
-        end)
-    end
+    hooksecurefunc(_G.QueueStatusButton, 'SetPoint', function(button, _, _, _, x, y)
+        if not (x == 4 and y == Minimap.halfDiff - 4) then
+            button:ClearAllPoints()
+            button:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 4, Minimap.halfDiff - 4)
+        end
+    end)
 
-    local queueIcon = Minimap:CreateTexture(nil, 'ARTWORK')
+    local queueIcon = Minimap:CreateTexture(nil, 'OVERLAY')
     queueIcon:SetPoint('CENTER', _G.QueueStatusButton)
-    queueIcon:SetSize(50, 50)
-    queueIcon:SetTexture('Interface\\Minimap\\Raid_Icon')
+    queueIcon:SetSize(30, 30)
+    queueIcon:SetAtlas('Raid')
 
     local anim = queueIcon:CreateAnimationGroup()
     anim:SetLooping('REPEAT')
@@ -442,7 +475,8 @@ function MAP:WhoPings()
     f:SetAllPoints()
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    f.text = F.CreateFS(f, C.Assets.Fonts.Bold, 14, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'TOP', 0, -4)
+    f.text =
+        F.CreateFS(f, C.Assets.Fonts.Bold, 14, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'TOP', 0, -4)
 
     local anim = f:CreateAnimationGroup()
     anim:SetScript('OnPlay', function()
@@ -588,24 +622,6 @@ local function OnMouseWheel(self, zoom)
     end
 end
 
-function MAP:BuildDropDown()
-    local dropdown = CreateFrame('Frame', 'AndromedaMiniMapTrackingDropDown', _G.UIParent, 'UIDropDownMenuTemplate')
-    dropdown:SetID(1)
-    dropdown:SetClampedToScreen(true)
-    dropdown:Hide()
-    dropdown.noResize = true
-    _G.UIDropDownMenu_Initialize(dropdown, _G.MiniMapTrackingDropDown_Initialize, 'MENU')
-
-    hooksecurefunc(_G.MinimapCluster.Tracking.Button, 'Update', function()
-        if _G.UIDROPDOWNMENU_OPEN_MENU == dropdown then
-            UIDropDownMenu_RefreshAll(dropdown)
-        end
-    end)
-    F:LockCVar('minimapTrackingShowAll', '1')
-
-    MAP.MinimapTracking = dropdown
-end
-
 local function OnMouseUp(self, btn)
     if not C.DB.Map.Menu then
         return
@@ -618,7 +634,14 @@ local function OnMouseUp(self, btn)
         end
         EasyMenu(MAP.MenuList, F.EasyMenu, 'cursor', 0, 0, 'MENU', 3)
     elseif btn == 'RightButton' then
-        ToggleDropDownMenu(1, nil, MAP.MinimapTracking, self, -100, 100)
+        local button = _G.MinimapCluster.Tracking.Button
+        if button then
+            button:OpenMenu()
+            if button.menu then
+                button.menu:ClearAllPoints()
+                button.menu:SetPoint('CENTER', self, -100, 100)
+            end
+        end
     else
         _G.Minimap:OnClick()
     end
@@ -666,8 +689,8 @@ function MAP:SetupMinimap()
     MAP:CreateDifficultyFlag()
     MAP:CreateQueueStatusButton()
     MAP:AddOnIconCollector()
+    MAP:SetupACF()
     MAP:WhoPings()
-    MAP:BuildDropDown()
     MAP:SoundVolume()
     MAP:MouseFunc()
     MAP:CreateHelpTip()

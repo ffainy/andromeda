@@ -65,7 +65,7 @@ local function LoadMRTSkin()
 end
 
 function THEME:ReskinMRT()
-    if not IsAddOnLoaded('MRT') then
+    if not C_AddOns.IsAddOnLoaded('MRT') then
         return
     end
 

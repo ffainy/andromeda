@@ -19,6 +19,8 @@ tinsert(C.BlizzThemes, function()
     F.StripTextures(overlayFrames[3], 3)
     overlayFrames[3].ActiveTexture:SetTexture('Interface\\Minimap\\UI-Minimap-ZoomButton-Toggle')
 
+    F.ReskinFilterReset(overlayFrames[2].ResetButton)
+
     local sideToggle = WorldMapFrame.SidePanelToggle
     sideToggle:SetFrameLevel(3)
     sideToggle.OpenButton:GetRegions():Hide()
@@ -30,8 +32,9 @@ tinsert(C.BlizzThemes, function()
 
     for i = 1, #overlayFrames do
         local frame = overlayFrames[i]
-        if frame.BountyDropdownButton then
-            F.ReskinArrow(frame.BountyDropdownButton, 'right')
+        local dropdown = frame.BountyDropdown
+        if dropdown then
+            F.ReskinArrow(dropdown, 'right')
             break
         end
     end

@@ -42,11 +42,7 @@ C.Themes['Blizzard_MacroUI'] = function()
     F.ReskinIconSelector(_G.MacroPopupFrame)
     F.ReskinPortraitFrame(MacroFrame)
     F.CreateBDFrame(_G.MacroFrameScrollFrame, 0.25)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.MacroFrameScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.MacroFrameScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.MacroFrameScrollFrame.ScrollBar)
     F.ReskinButton(_G.MacroDeleteButton)
     F.ReskinButton(_G.MacroNewButton)
     F.ReskinButton(_G.MacroExitButton)

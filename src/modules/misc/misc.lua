@@ -55,7 +55,7 @@ do
             return
         end
 
-        local maxStack = select(8, GetItemInfo(itemLink))
+        local maxStack = select(8, C_Item.GetItemInfo(itemLink))
         if maxStack and maxStack > 1 then
             local numAvailable = select(5, GetMerchantItemInfo(id))
             if numAvailable > -1 then
@@ -443,7 +443,7 @@ do
     end
 
     function M:UpdateActionCamera()
-        _G.UIParent:UnregisterEvent('EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED')
+        UIParent:UnregisterEvent('EXPERIMENTAL_CVAR_CONFIRMATION_NEEDED')
 
         if C.DB.General.ActionCamera then
             exec('basic')

@@ -35,13 +35,8 @@ tinsert(C.BlizzThemes, function()
     F.ReskinEditbox(_G.SendMailMoneyGold)
     F.ReskinEditbox(_G.SendMailMoneySilver)
     F.ReskinEditbox(_G.SendMailMoneyCopper)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.SendMailScrollFrame.ScrollBar)
-        F.ReskinTrimScroll(_G.OpenMailScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.SendMailScrollFrameScrollBar)
-        F.ReskinScroll(_G.OpenMailScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.SendMailScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(_G.OpenMailScrollFrame.ScrollBar)
     F.ReskinRadio(_G.SendMailSendMoneyButton)
     F.ReskinRadio(_G.SendMailCODButton)
     F.ReskinArrow(_G.InboxPrevPageButton, 'left')

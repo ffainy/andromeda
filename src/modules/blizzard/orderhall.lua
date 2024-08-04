@@ -5,7 +5,7 @@ local LE_GARRISON_TYPE_7_0 = Enum.GarrisonType.Type_7_0_Garrison or Enum.Garriso
 local LE_FOLLOWER_TYPE_GARRISON_7_0 = Enum.GarrisonFollowerType.FollowerType_7_0_GarrisonFollower or Enum.GarrisonFollowerType.FollowerType_7_0
 
 function BLIZZARD:OrderHall_CreateIcon()
-    local hall = CreateFrame('Frame', C.ADDON_TITLE .. 'OrderHallIcon', _G.UIParent)
+    local hall = CreateFrame('Frame', C.ADDON_TITLE .. 'OrderHallIcon', UIParent)
     hall:SetSize(50, 50)
     hall:SetPoint('TOP', 0, -30)
     hall:SetFrameStrata('HIGH')
@@ -67,21 +67,21 @@ end
 function BLIZZARD:OrderHall_OnEnter()
     BLIZZARD.OrderHall_Refresh(self)
 
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT', 5, -5)
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:AddLine(C.MY_CLASS_COLOR .. _G['ORDER_HALL_' .. C.MY_CLASS])
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(getIconString(self.texture) .. self.name, self.amount, 1, 1, 1, 1, 1, 1)
+    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT', 5, -5)
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(C.MY_CLASS_COLOR .. _G['ORDER_HALL_' .. C.MY_CLASS])
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(getIconString(self.texture) .. self.name, self.amount, 1, 1, 1, 1, 1, 1)
 
     local blank
     for i = 1, self.numCategory do
         if not blank then
-            _G.GameTooltip:AddLine(' ')
+            GameTooltip:AddLine(' ')
             blank = true
         end
         local category = self.Category[i]
         if category then
-            _G.GameTooltip:AddDoubleLine(
+            GameTooltip:AddDoubleLine(
                 getIconString(category.icon) .. category.name,
                 category.count .. '/' .. category.limit,
                 1,
@@ -92,20 +92,20 @@ function BLIZZARD:OrderHall_OnEnter()
                 1
             )
             if IsShiftKeyDown() then
-                _G.GameTooltip:AddLine(category.description, 0.6, 0.8, 1, 1)
+                GameTooltip:AddLine(category.description, 0.6, 0.8, 1, 1)
             end
         end
     end
 
-    _G.GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    _G.GameTooltip:AddDoubleLine(' ', L['Hold SHIFT for more details'], 1, 1, 1, 0.6, 0.8, 1)
-    _G.GameTooltip:Show()
+    GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
+    GameTooltip:AddDoubleLine(' ', L['Hold SHIFT for more details'], 1, 1, 1, 0.6, 0.8, 1)
+    GameTooltip:Show()
 
     F:RegisterEvent('MODIFIER_STATE_CHANGED', BLIZZARD.OrderHall_OnShiftDown)
 end
 
 function BLIZZARD:OrderHall_OnLeave()
-    _G.GameTooltip:Hide()
+    GameTooltip:Hide()
     F:UnregisterEvent('MODIFIER_STATE_CHANGED', BLIZZARD.OrderHall_OnShiftDown)
 end
 
@@ -121,7 +121,7 @@ function BLIZZARD:OrderHall_OnInit()
         return
     end
 
-    if IsAddOnLoaded('Blizzard_OrderHallUI') then
+    if C_AddOns.IsAddOnLoaded('Blizzard_OrderHallUI') then
         BLIZZARD:OrderHall_CreateIcon()
     else
         F:RegisterEvent('ADDON_LOADED', BLIZZARD.OrderHall_OnLoad)

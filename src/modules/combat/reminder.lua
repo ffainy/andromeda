@@ -97,6 +97,13 @@ local buffsList = {
             weaponIndex = 2,
             spec = 2,
         },
+        {
+            spells = { -- 天怒
+                [462854] = true,
+            },
+            depend = 462854,
+            instance = true,
+        },
     },
     ROGUE = {
         {
@@ -105,6 +112,7 @@ local buffsList = {
                 [2823] = true, -- 致命药膏
                 [8679] = true, -- 致伤药膏
                 [315584] = true, -- 速效药膏
+                [381664] = true, -- 增效药膏
             },
             texture = 132273,
             depend = 315584,
@@ -117,6 +125,7 @@ local buffsList = {
                 -- 效果类毒药
                 [3408] = true, -- 减速药膏
                 [5761] = true, -- 迟钝药膏
+                [381637] = true, -- 萎缩药膏
             },
             depend = 3408,
             pvp = true,
@@ -193,7 +202,13 @@ function BR:Reminder_Update(cfg)
     end
 
     frame:Hide()
-    if isPlayerSpell and isRightSpec and (isInCombat or isInInst or isInPVP) and not UnitInVehicle('player') and not UnitIsDeadOrGhost('player') then
+    if
+        isPlayerSpell
+        and isRightSpec
+        and (isInCombat or isInInst or isInPVP)
+        and not UnitInVehicle('player')
+        and not UnitIsDeadOrGhost('player')
+    then
         if weaponIndex then
             local hasMainHandEnchant, _, _, _, hasOffHandEnchant = GetWeaponEnchantInfo()
             if (hasMainHandEnchant and weaponIndex == 1) or (hasOffHandEnchant and weaponIndex == 2) then
@@ -201,12 +216,12 @@ function BR:Reminder_Update(cfg)
                 return
             end
         else
-            for i = 1, 32 do
-                local name, _, _, _, _, _, _, _, _, spellID = UnitBuff('player', i)
-                if not name then
+            for i = 1, 40 do
+                local auraData = C_UnitAuras.GetBuffDataByIndex('player', i, 'HELPFUL')
+                if not auraData then
                     break
                 end
-                if name and cfg.spells[spellID] then
+                if auraData.spellId and cfg.spells[auraData.spellId] then
                     frame:Hide()
                     return
                 end
@@ -225,12 +240,23 @@ function BR:Reminder_Create(cfg)
     local texture = cfg.texture
     if not texture then
         for spellID in pairs(cfg.spells) do
-            texture = GetSpellTexture(spellID)
+            texture = C_Spell.GetSpellTexture(spellID)
             break
         end
     end
     frame.Icon:SetTexture(texture)
-    frame.text = F.CreateFS(frame, C.Assets.Fonts.Regular, 12, outline or nil, L['lacking'], 'RED', outline and 'NONE' or 'THICK', 'TOP', 1, 15)
+    frame.text = F.CreateFS(
+        frame,
+        C.Assets.Fonts.Regular,
+        12,
+        outline or nil,
+        L['lacking'],
+        'RED',
+        outline and 'NONE' or 'THICK',
+        'TOP',
+        1,
+        15
+    )
     frame:Hide()
     cfg.frame = frame
 
@@ -261,9 +287,9 @@ end
 
 function BR:Reminder_AddItemGroup()
     for _, value in pairs(buffsList['ITEMS']) do
-        if not value.disable and GetItemCount(value.itemID) > 0 then
+        if not value.disable and C_Item.GetItemCount(value.itemID) > 0 then
             if not value.texture then
-                value.texture = GetItemIcon(value.itemID)
+                value.texture = C_Item.GetItemIconByID(value.itemID)
             end
             if not groups then
                 groups = {}
@@ -282,7 +308,7 @@ function BR:OnLogin()
 
     if C.DB.Combat.BuffReminder then
         if not parentFrame then
-            parentFrame = CreateFrame('Frame', nil, _G.UIParent)
+            parentFrame = CreateFrame('Frame', nil, UIParent)
             parentFrame:SetPoint('TOP', 0, -100)
             parentFrame:SetSize(iconSize, iconSize)
         end
@@ -296,6 +322,7 @@ function BR:OnLogin()
         F:RegisterEvent('PLAYER_REGEN_DISABLED', BR.Reminder_OnEvent)
         F:RegisterEvent('ZONE_CHANGED_NEW_AREA', BR.Reminder_OnEvent)
         F:RegisterEvent('PLAYER_ENTERING_WORLD', BR.Reminder_OnEvent)
+        F:RegisterEvent('WEAPON_ENCHANT_CHANGED', BR.Reminder_OnEvent)
     else
         if parentFrame then
             parentFrame:Hide()
@@ -306,6 +333,7 @@ function BR:OnLogin()
             F:UnregisterEvent('PLAYER_REGEN_DISABLED', BR.Reminder_OnEvent)
             F:UnregisterEvent('ZONE_CHANGED_NEW_AREA', BR.Reminder_OnEvent)
             F:UnregisterEvent('PLAYER_ENTERING_WORLD', BR.Reminder_OnEvent)
+            F:UnregisterEvent('WEAPON_ENCHANT_CHANGED', BR.Reminder_OnEvent)
         end
     end
 end

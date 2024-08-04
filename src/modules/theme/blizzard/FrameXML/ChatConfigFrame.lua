@@ -1,33 +1,5 @@
 local F, C = unpack(select(2, ...))
 
-local function reskinPickerOptions(self)
-    local scrollTarget = self.ScrollBox.ScrollTarget
-    if scrollTarget then
-        for i = 1, scrollTarget:GetNumChildren() do
-            local child = select(i, scrollTarget:GetChildren())
-            if not child.styled then
-                child.UnCheck:SetTexture(nil)
-                child.Highlight:SetColorTexture(C.r, C.g, C.b, 0.25)
-
-                local check = child.Check
-                check:SetColorTexture(C.r, C.g, C.b, 0.6)
-                check:SetSize(10, 10)
-                check:SetPoint('LEFT', 2, 0)
-                F.CreateBDFrame(check, 0.25)
-
-                child.styled = true
-            end
-        end
-    end
-end
-
-local function ReskinVoicePicker(voicePicker)
-    local customFrame = voicePicker:GetChildren()
-    F.StripTextures(customFrame)
-    F.SetBD(customFrame, 0.7)
-    voicePicker:HookScript('OnShow', reskinPickerOptions)
-end
-
 tinsert(C.BlizzThemes, function()
     if not _G.ANDROMEDA_ADB.ReskinBlizz then
         return
@@ -42,7 +14,7 @@ tinsert(C.BlizzThemes, function()
             return
         end
 
-        local nameString = frame:GetName() .. 'CheckBox'
+        local nameString = frame:GetName() .. 'Checkbox'
         for index in ipairs(frame.checkBoxTable) do
             local checkBoxName = nameString .. index
             local checkbox = _G[checkBoxName]
@@ -62,7 +34,7 @@ tinsert(C.BlizzThemes, function()
             return
         end
 
-        local nameString = frame:GetName() .. 'CheckBox'
+        local nameString = frame:GetName() .. 'Checkbox'
         for index, value in ipairs(checkBoxTable) do
             local checkBoxName = nameString .. index
             F.ReskinCheckbox(_G[checkBoxName])
@@ -185,9 +157,6 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(_G.ChatConfigFrameOkayButton)
     F.ReskinButton(_G.ChatConfigFrameDefaultButton)
     F.ReskinButton(_G.ChatConfigFrameRedockButton)
-    if not C.IS_NEW_PATCH_10_1 then
-        F.ReskinButton(_G.ChatConfigFrame.ToggleChatButton)
-    end
     F.ReskinArrow(_G.ChatConfigMoveFilterUpButton, 'up')
     F.ReskinArrow(_G.ChatConfigMoveFilterDownButton, 'down')
     F.ReskinEditbox(_G.CombatConfigSettingsNameEditBox)
@@ -200,8 +169,20 @@ tinsert(C.BlizzThemes, function()
     _G.ChatConfigMoveFilterUpButton:SetSize(22, 22)
     _G.ChatConfigMoveFilterDownButton:SetSize(22, 22)
 
-    _G.ChatConfigCombatSettingsFiltersAddFilterButton:SetPoint('RIGHT', _G.ChatConfigCombatSettingsFiltersDeleteButton, 'LEFT', -1, 0)
-    _G.ChatConfigCombatSettingsFiltersCopyFilterButton:SetPoint('RIGHT', _G.ChatConfigCombatSettingsFiltersAddFilterButton, 'LEFT', -1, 0)
+    _G.ChatConfigCombatSettingsFiltersAddFilterButton:SetPoint(
+        'RIGHT',
+        _G.ChatConfigCombatSettingsFiltersDeleteButton,
+        'LEFT',
+        -1,
+        0
+    )
+    _G.ChatConfigCombatSettingsFiltersCopyFilterButton:SetPoint(
+        'RIGHT',
+        _G.ChatConfigCombatSettingsFiltersAddFilterButton,
+        'LEFT',
+        -1,
+        0
+    )
     _G.ChatConfigMoveFilterUpButton:SetPoint('TOPLEFT', _G.ChatConfigCombatSettingsFilters, 'BOTTOMLEFT', 3, 0)
     _G.ChatConfigMoveFilterDownButton:SetPoint('LEFT', _G.ChatConfigMoveFilterUpButton, 'RIGHT', 1, 0)
 
@@ -234,7 +215,7 @@ tinsert(C.BlizzThemes, function()
     hooksecurefunc('TextToSpeechFrame_UpdateMessageCheckboxes', function(frame)
         local checkBoxTable = frame.checkBoxTable
         if checkBoxTable then
-            local checkBoxNameString = frame:GetName() .. 'CheckBox'
+            local checkBoxNameString = frame:GetName() .. 'Checkbox'
             local checkBoxName, checkBox
             for index in ipairs(checkBoxTable) do
                 checkBoxName = checkBoxNameString .. index
@@ -249,8 +230,5 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- voice pickers
-    ReskinVoicePicker(_G.TextToSpeechFrameTtsVoicePicker)
-    ReskinVoicePicker(_G.TextToSpeechFrameTtsVoiceAlternatePicker)
-
     F.StripTextures(_G.ChatConfigTextToSpeechChannelSettingsLeft)
 end)

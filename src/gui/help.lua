@@ -150,7 +150,7 @@ function GUI:CreateCheatSheet()
         return
     end
 
-    local f = CreateFrame('Button', C.ADDON_TITLE .. 'CheatSheet', _G.UIParent)
+    local f = CreateFrame('Button', C.ADDON_TITLE .. 'CheatSheet', UIParent)
     f:SetFrameStrata('FULLSCREEN')
     f:SetAllPoints()
     f:EnableMouse(true)

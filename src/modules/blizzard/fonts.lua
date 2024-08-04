@@ -193,7 +193,7 @@ local function SetupBlizFonts()
     -- ChatFontNormal
     -- ChatFontSmall
 
-    ReplaceFont(_G.GameTooltipHeader, BOLD, 16)
+    ReplaceFont(GameTooltipHeader, BOLD, 16)
     ReplaceFont(_G.Tooltip_Med, NORMAL, 14)
     ReplaceFont(_G.Tooltip_Small, NORMAL, 12)
 

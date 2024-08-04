@@ -106,7 +106,7 @@ function THEME:ReskinDBM()
         return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo)
     end
 
-    if not IsAddOnLoaded('DBM-Core') then
+    if not C_AddOns.IsAddOnLoaded('DBM-Core') then
         return
     end
 

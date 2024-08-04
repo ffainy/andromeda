@@ -33,6 +33,6 @@ local function SetHyperlink(tooltip, refString)
 end
 
 function TOOLTIP:Achievement()
-    hooksecurefunc(_G.GameTooltip, 'SetHyperlink', SetHyperlink)
+    hooksecurefunc(GameTooltip, 'SetHyperlink', SetHyperlink)
     hooksecurefunc(_G.ItemRefTooltip, 'SetHyperlink', SetHyperlink)
 end

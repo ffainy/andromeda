@@ -656,7 +656,6 @@ function UNITFRAME:SpawnUnits()
             UNITFRAME:SpawnParty()
         end
 
-        UNITFRAME:UpdateRaidHealthMethod()
         UNITFRAME:SetGroupFramePos()
     end
 end

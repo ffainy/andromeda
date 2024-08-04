@@ -38,9 +38,9 @@ end
 
 local function reskinRequestCheckbox(self)
     for button in self.SpecsPool:EnumerateActive() do
-        if button.CheckBox then
-            F.ReskinCheckbox(button.CheckBox)
-            button.CheckBox:SetSize(26, 26)
+        if button.Checkbox then
+            F.ReskinCheckbox(button.Checkbox)
+            button.Checkbox:SetSize(26, 26)
         end
     end
 end
@@ -84,7 +84,7 @@ local function replacedRoleTex(icon, x1, x2, y1, y2)
     end
 end
 
-local function UpdateRoleTexture(icon)
+local function updateRoleTexture(icon)
     if not icon then
         return
     end
@@ -116,11 +116,11 @@ C.Themes['Blizzard_Communities'] = function()
     F.ReskinPortraitFrame(CommunitiesFrame)
     CommunitiesFrame.NineSlice:Hide()
     CommunitiesFrame.PortraitOverlay:SetAlpha(0)
-    F.ReskinDropdown(CommunitiesFrame.StreamDropDownMenu)
+    F.ReskinDropdown(CommunitiesFrame.StreamDropdown)
+    F.ReskinDropdown(CommunitiesFrame.CommunitiesListDropdown)
     F.ReskinMinMax(CommunitiesFrame.MaximizeMinimizeFrame)
     F.StripTextures(CommunitiesFrame.AddToChatButton)
     F.ReskinArrow(CommunitiesFrame.AddToChatButton, 'down')
-    F.ReskinDropdown(CommunitiesFrame.CommunitiesListDropDownMenu)
 
     local calendarButton = CommunitiesFrame.CommunitiesCalendarButton
     calendarButton:SetSize(24, 24)
@@ -130,7 +130,10 @@ C.Themes['Blizzard_Communities'] = function()
     calendarButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
     F.ReskinIcon(calendarButton:GetNormalTexture())
 
-    for _, name in next, { 'GuildFinderFrame', 'InvitationFrame', 'TicketFrame', 'CommunityFinderFrame', 'ClubFinderInvitationFrame' } do
+    for _, name in
+        next,
+        { 'GuildFinderFrame', 'InvitationFrame', 'TicketFrame', 'CommunityFinderFrame', 'ClubFinderInvitationFrame' }
+    do
         local frame = CommunitiesFrame[name]
         if frame then
             F.StripTextures(frame)
@@ -235,17 +238,15 @@ C.Themes['Blizzard_Communities'] = function()
 
     for _, name in next, { 'ChatTab', 'RosterTab', 'GuildBenefitsTab', 'GuildInfoTab' } do
         local tab = CommunitiesFrame[name]
-        reskinCommunityTab(tab)
+        if tab then
+            reskinCommunityTab(tab)
+        end
     end
 
     -- ChatTab
     F.ReskinButton(CommunitiesFrame.InviteButton)
     F.StripTextures(CommunitiesFrame.Chat)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(CommunitiesFrame.Chat.ScrollBar)
-    else
-        F.ReskinScroll(CommunitiesFrame.Chat.MessageFrame.ScrollBar)
-    end
+    F.ReskinTrimScroll(CommunitiesFrame.Chat.ScrollBar)
     CommunitiesFrame.ChatEditBox:DisableDrawLayer('BACKGROUND')
     local bg1 = F.CreateBDFrame(CommunitiesFrame.Chat.InsetFrame, 0.25)
     bg1:SetPoint('TOPLEFT', 1, -3)
@@ -258,7 +259,7 @@ C.Themes['Blizzard_Communities'] = function()
         local dialog = CommunitiesFrame.NotificationSettingsDialog
         F.StripTextures(dialog)
         F.SetBD(dialog)
-        F.ReskinDropdown(dialog.CommunitiesListDropDownMenu)
+        F.ReskinDropdown(dialog.CommunitiesListDropdown)
         if dialog.Selector then
             F.StripTextures(dialog.Selector)
             F.ReskinButton(dialog.Selector.OkayButton)
@@ -268,11 +269,7 @@ C.Themes['Blizzard_Communities'] = function()
         dialog.ScrollFrame.Child.QuickJoinButton:SetSize(25, 25)
         F.ReskinButton(dialog.ScrollFrame.Child.AllButton)
         F.ReskinButton(dialog.ScrollFrame.Child.NoneButton)
-        if C.IS_NEW_PATCH_10_1 then
-            F.ReskinTrimScroll(dialog.ScrollFrame.ScrollBar)
-        else
-            F.ReskinScroll(dialog.ScrollFrame.ScrollBar)
-        end
+        F.ReskinTrimScroll(dialog.ScrollFrame.ScrollBar)
 
         hooksecurefunc(dialog, 'Refresh', function(self)
             local frame = self.ScrollFrame.Child
@@ -298,7 +295,7 @@ C.Themes['Blizzard_Communities'] = function()
         bg:SetPoint('BOTTOMRIGHT', -4, 3)
         F.StripTextures(dialog.Description)
         F.CreateBDFrame(dialog.Description, 0.25)
-        F.ReskinCheckbox(dialog.TypeCheckBox)
+        F.ReskinCheckbox(dialog.TypeCheckbox)
         F.ReskinButton(dialog.Accept)
         F.ReskinButton(dialog.Delete)
         F.ReskinButton(dialog.Cancel)
@@ -313,8 +310,8 @@ C.Themes['Blizzard_Communities'] = function()
         F.ReskinButton(dialog.Copy)
         F.ReskinButton(dialog.Close)
         F.ReskinArrow(dialog.MaximizeButton, 'down')
-        F.ReskinDropdown(dialog.ExpiresDropDownMenu)
-        F.ReskinDropdown(dialog.UsesDropDownMenu)
+        F.ReskinDropdown(dialog.ExpiresDropdown)
+        F.ReskinDropdown(dialog.UsesDropdown)
         F.ReskinButton(dialog.GenerateLinkButton)
 
         dialog.InviteManager.ArtOverlay:Hide()
@@ -355,7 +352,7 @@ C.Themes['Blizzard_Communities'] = function()
     -- Roster
     CommunitiesFrame.MemberList.InsetFrame:Hide()
     F.StripTextures(CommunitiesFrame.MemberList.ColumnDisplay)
-    F.ReskinDropdown(CommunitiesFrame.GuildMemberListDropDownMenu)
+    F.ReskinDropdown(CommunitiesFrame.GuildMemberListDropdown)
     CommunitiesFrame.MemberList.ScrollBar:GetChildren():Hide()
     F.ReskinTrimScroll(CommunitiesFrame.MemberList.ScrollBar)
 
@@ -392,7 +389,7 @@ C.Themes['Blizzard_Communities'] = function()
     F.ReskinButton(CommunitiesFrame.CommunitiesControlFrame.GuildControlButton)
     F.ReskinButton(CommunitiesFrame.CommunitiesControlFrame.GuildRecruitmentButton)
     F.ReskinButton(CommunitiesFrame.CommunitiesControlFrame.CommunitiesSettingsButton)
-    F.ReskinDropdown(CommunitiesFrame.CommunityMemberListDropDownMenu)
+    F.ReskinDropdown(CommunitiesFrame.CommunityMemberListDropdown)
 
     local detailFrame = CommunitiesFrame.GuildMemberDetailFrame
     F.StripTextures(detailFrame)
@@ -427,9 +424,9 @@ C.Themes['Blizzard_Communities'] = function()
         F.ReskinCheckbox(dialog.MaxLevelOnly.Button)
         F.ReskinCheckbox(dialog.MinIlvlOnly.Button)
         F.ReskinEditbox(dialog.MinIlvlOnly.EditBox)
-        F.ReskinDropdown(_G.ClubFinderFocusDropdown)
-        F.ReskinDropdown(_G.ClubFinderLookingForDropdown)
-        F.ReskinDropdown(_G.ClubFinderLanguageDropdown)
+        F.ReskinDropdown(dialog.ClubFocusDropdown)
+        F.ReskinDropdown(dialog.LookingForDropdown)
+        F.ReskinDropdown(dialog.LanguageDropdown)
     end
 
     do
@@ -490,11 +487,8 @@ C.Themes['Blizzard_Communities'] = function()
     F.ReskinButton(CommunitiesFrame.GuildLogButton)
     F.StripTextures(_G.CommunitiesFrameGuildDetailsFrameInfo)
     F.StripTextures(_G.CommunitiesFrameGuildDetailsFrameNews)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.CommunitiesFrameGuildDetailsFrameInfoMOTDScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.CommunitiesFrameGuildDetailsFrameInfoMOTDScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.CommunitiesFrameGuildDetailsFrameInfoMOTDScrollFrame.ScrollBar)
+
     local bg3 = F.CreateBDFrame(_G.CommunitiesFrameGuildDetailsFrameInfoMOTDScrollFrame, 0.25)
     bg3:SetPoint('TOPLEFT', 0, 3)
     bg3:SetPoint('BOTTOMRIGHT', -5, -4)
@@ -504,21 +498,14 @@ C.Themes['Blizzard_Communities'] = function()
     _G.CommunitiesGuildTextEditFrameBg:Hide()
     F.StripTextures(_G.CommunitiesGuildTextEditFrame.Container)
     F.CreateBDFrame(_G.CommunitiesGuildTextEditFrame.Container, 0.25)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.CommunitiesGuildTextEditFrame.Container.ScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.CommunitiesGuildTextEditFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.CommunitiesGuildTextEditFrame.Container.ScrollFrame.ScrollBar)
     F.ReskinClose(_G.CommunitiesGuildTextEditFrameCloseButton)
     F.ReskinButton(_G.CommunitiesGuildTextEditFrameAcceptButton)
+
     local closeButton = select(4, _G.CommunitiesGuildTextEditFrame:GetChildren())
     F.ReskinButton(closeButton)
 
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.CommunitiesFrameGuildDetailsFrameInfo.DetailsFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.CommunitiesFrameGuildDetailsFrameInfoScrollBar)
-    end
+    F.ReskinTrimScroll(_G.CommunitiesFrameGuildDetailsFrameInfo.DetailsFrame.ScrollBar)
     F.CreateBDFrame(_G.CommunitiesFrameGuildDetailsFrameInfo.DetailsFrame, 0.25)
 
     _G.CommunitiesFrameGuildDetailsFrameNews.ScrollBar:GetChildren():Hide()
@@ -555,11 +542,7 @@ C.Themes['Blizzard_Communities'] = function()
     _G.CommunitiesGuildLogFrameBg:Hide()
     F.SetBD(_G.CommunitiesGuildLogFrame)
     F.ReskinClose(_G.CommunitiesGuildLogFrameCloseButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.CommunitiesGuildLogFrame.Container.ScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.CommunitiesGuildLogFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.CommunitiesGuildLogFrame.Container.ScrollFrame.ScrollBar)
     F.StripTextures(_G.CommunitiesGuildLogFrame.Container)
     F.CreateBDFrame(_G.CommunitiesGuildLogFrame.Container, 0.25)
     do
@@ -591,11 +574,7 @@ C.Themes['Blizzard_Communities'] = function()
         F.ReskinDropdown(dialog.LanguageDropdown)
         F.StripTextures(dialog.RecruitmentMessageFrame)
         F.StripTextures(dialog.RecruitmentMessageFrame.RecruitmentMessageInput)
-        if C.IS_NEW_PATCH_10_1 then
-            F.ReskinTrimScroll(dialog.RecruitmentMessageFrame.RecruitmentMessageInput.ScrollBar)
-        else
-            F.ReskinScroll(dialog.RecruitmentMessageFrame.RecruitmentMessageInput.ScrollBar)
-        end
+        F.ReskinTrimScroll(dialog.RecruitmentMessageFrame.RecruitmentMessageInput.ScrollBar)
         F.ReskinEditbox(dialog.RecruitmentMessageFrame)
         F.ReskinEditbox(dialog.MinIlvlOnly.EditBox)
         F.ReskinButton(dialog.Accept)
@@ -627,9 +606,9 @@ C.Themes['Blizzard_Communities'] = function()
         F.ReskinButton(button.CancelInvitationButton)
         hooksecurefunc(button, 'UpdateMemberInfo', updateMemberName)
 
-        UpdateRoleTexture(button.RoleIcon1)
-        UpdateRoleTexture(button.RoleIcon2)
-        UpdateRoleTexture(button.RoleIcon3)
+        updateRoleTexture(button.RoleIcon1)
+        updateRoleTexture(button.RoleIcon2)
+        updateRoleTexture(button.RoleIcon3)
         button.styled = true
     end
 

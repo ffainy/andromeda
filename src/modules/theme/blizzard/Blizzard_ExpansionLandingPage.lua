@@ -3,7 +3,7 @@ local F, C = unpack(select(2, ...))
 local function skinFactionCategory(button)
     if button.UnlockedState and not button.styled then
         button.UnlockedState.WatchFactionButton:SetSize(28, 28)
-        F.ReskinCheck(button.UnlockedState.WatchFactionButton)
+        F.ReskinCheckbox(button.UnlockedState.WatchFactionButton)
         button.UnlockedState.WatchFactionButton.Label:SetFontObject(_G.Game18Font)
         button.styled = true
     end
@@ -45,6 +45,10 @@ C.Themes['Blizzard_AdventureMap'] = function()
                 hooksecurefunc(panel.MajorFactionList.ScrollBox, 'Update', function(self)
                     self:ForEachFrame(skinFactionCategory)
                 end)
+            end
+
+            if panel.ScrollFadeOverlay then
+                panel.ScrollFadeOverlay:SetAlpha(0)
             end
 
             panel.styled = true

@@ -158,7 +158,7 @@ function MM:OnLogin()
     local buNum = #menuList
 
     local barWidth = (buSize * buNum) + (buGap * (buNum - 1))
-    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'GameMenu', _G.UIParent)
+    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'GameMenu', UIParent)
     bar:SetSize(barWidth, C.DB.General.GameMenuBarHeight)
 
     local glow = bar:CreateTexture(nil, 'BACKGROUND')

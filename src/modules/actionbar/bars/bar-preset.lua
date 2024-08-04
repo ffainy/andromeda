@@ -115,7 +115,7 @@ function ACTIONBAR:ImportBarLayout(preset)
             point = abbrToAnchor[point]
             if point and x and y then
                 mover:ClearAllPoints()
-                mover:SetPoint(point, _G.UIParent, point, x, y)
+                mover:SetPoint(point, UIParent, point, x, y)
                 C.DB['UIAnchor'][moverValues[moverIndex]] = { point, 'UIParent', point, x, y }
             else
                 _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Your actionbar layout string is incorrect.'])

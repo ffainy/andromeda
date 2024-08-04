@@ -64,6 +64,7 @@ function NAMEPLATE:UpdateNameOnlyMode()
     end
 
     SetCVar('nameplateShowDebuffsOnFriendly', not C.DB.Nameplate.NameOnlyMode)
+    SetCVar('nameplateMaxDistance', C.DB.Nameplate.PlateRange)
 end
 
 function NAMEPLATE:UpdateNameplateCVars()
@@ -94,6 +95,9 @@ function NAMEPLATE:UpdateNameplateCVars()
         SetCVar('nameplateSelfAlpha', 0)
         SetCVar('nameplateResourceOnTarget', 0)
     end
+
+    -- fix blizz friendly plate visibility
+    SetCVar('nameplatePlayerMaxDistance', 60)
 end
 
 -- AddOn
@@ -103,8 +107,8 @@ function NAMEPLATE:BlockAddons()
         return
     end
 
-    function _G.DBM.Nameplate:SupportedNPMod()
-        return true
+    if _G.DBM.Options then
+        _G.DBM.Options.DontShowNameplateIconsCD = true
     end
 
     local function showAurasForDBM(_, _, _, spellID)
@@ -214,7 +218,11 @@ function NAMEPLATE:CheckThreatStatus(unit)
     end
 
     local unitTarget = unit .. 'target'
-    local unitRole = isInGroup and UnitExists(unitTarget) and not UnitIsUnit(unitTarget, 'player') and groupRoles[UnitName(unitTarget)] or 'NONE'
+    local unitRole = isInGroup
+            and UnitExists(unitTarget)
+            and not UnitIsUnit(unitTarget, 'player')
+            and groupRoles[UnitName(unitTarget)]
+        or 'NONE'
 
     if C.MyRole == 'Tank' and unitRole == 'TANK' then
         return true, UnitThreatSituation(unitTarget, unit)
@@ -367,49 +375,13 @@ function NAMEPLATE:UpdateFocusColor()
     end
 end
 
--- Scale plates for explosives
-local hasExplosives
-local explosiveID = 120651
-function NAMEPLATE:UpdateExplosives(event, unit)
-    if not hasExplosives or unit ~= self.unit then
-        return
-    end
-
-    local scale = _G.UIParent:GetScale()
-    local npcID = self.npcID
-    if event == 'NAME_PLATE_UNIT_ADDED' and npcID == explosiveID then
-        self:SetScale(scale * 2)
-    elseif event == 'NAME_PLATE_UNIT_REMOVED' then
-        self:SetScale(scale)
-    end
-end
-
-local function CheckAffixes()
-    local _, affixes = C_ChallengeMode.GetActiveKeystoneInfo()
-    if affixes[3] and affixes[3] == 13 then
-        hasExplosives = true
-    else
-        hasExplosives = false
-    end
-end
-
-function NAMEPLATE:CheckExplosives()
-    if not C.DB.Nameplate.ExplosiveIndicator then
-        return
-    end
-
-    CheckAffixes()
-    F:RegisterEvent('ZONE_CHANGED_NEW_AREA', CheckAffixes)
-    F:RegisterEvent('CHALLENGE_MODE_START', CheckAffixes)
-end
-
 -- Major spells glow
 NAMEPLATE.MajorSpellsList = {}
 function NAMEPLATE:RefreshMajorSpellsFilter()
     wipe(NAMEPLATE.MajorSpellsList)
 
     for spellID in pairs(C.MajorSpellsList) do
-        local name = GetSpellInfo(spellID)
+        local name = C_Spell.GetSpellName(spellID)
         if name then
             local modValue = _G.ANDROMEDA_ADB['MajorSpellsList'][spellID]
             if modValue == nil then
@@ -491,7 +463,7 @@ function NAMEPLATE:CreateNameplateStyle()
 
     self:SetSize(C.DB.Nameplate.Width, C.DB.Nameplate.Height)
     self:SetPoint('CENTER')
-    self:SetScale(_G.UIParent:GetScale())
+    self:SetScale(UIParent:GetScale())
 
     NAMEPLATE:CreateHealthBar(self)
     NAMEPLATE:CreateNameTag(self)
@@ -736,13 +708,13 @@ function NAMEPLATE:PostUpdatePlates(event, unit)
         if blizzPlate then
             self.widgetContainer = blizzPlate.WidgetContainer
             if self.widgetContainer then
-                self.widgetContainer:SetParent(self)
+                -- self.widgetContainer:SetParent(self)
                 -- self.widgetContainer:SetScale(1/_G.ANDROMEDA_ADB.UIScale)
             end
 
             self.softTargetFrame = blizzPlate.SoftTargetFrame
             if self.softTargetFrame then
-                self.softTargetFrame:SetParent(self)
+                -- self.softTargetFrame:SetParent(self)
                 -- self.softTargetFrame:SetScale(1/_G.ANDROMEDA_ADB.UIScale)
             end
         end
@@ -758,7 +730,6 @@ function NAMEPLATE:PostUpdatePlates(event, unit)
         NAMEPLATE.UpdateSpitefulIndicator(self)
     end
 
-    NAMEPLATE.UpdateExplosives(self, event, unit)
     NAMEPLATE.UpdateTotemIcon(self, event, unit)
 end
 
@@ -766,7 +737,7 @@ local function RefreshNameplateAuraFilter(list, key)
     wipe(NAMEPLATE[key])
 
     for spellID in pairs(list) do
-        local name = GetSpellInfo(spellID)
+        local name = C_Spell.GetSpellName(spellID)
         if name then
             if _G.ANDROMEDA_ADB[key][spellID] == nil then
                 NAMEPLATE[key][spellID] = true
@@ -802,7 +773,6 @@ function NAMEPLATE:OnLogin()
 
     NAMEPLATE:UpdateNameplateCVars()
     NAMEPLATE:BlockAddons()
-    NAMEPLATE:CheckExplosives()
     NAMEPLATE:UpdateGroupRoles()
     NAMEPLATE:RefreshPlateByEvents()
     NAMEPLATE:RefreshMajorSpellsFilter()

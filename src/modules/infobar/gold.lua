@@ -1,13 +1,17 @@
 local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
-local function FormatMoney(money)
+local profit, spent, oldMoney = 0, 0, 0
+local myName, myRealm, myClass = C.MY_NAME, C.MY_REALM, C.MY_CLASS
+myRealm = gsub(myRealm, '%s', '') -- fix for multi words realm name
+
+local function formatMoney(money)
     return format('%s: %s', L['Gold'], GetMoneyString(money))
 end
 
 local crossRealms = GetAutoCompleteRealms()
 if not crossRealms or #crossRealms == 0 then
-    crossRealms = { [1] = C.MY_REALM }
+    crossRealms = { [1] = myRealm }
 end
 
 StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
@@ -21,7 +25,7 @@ StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
             end
         end
 
-        _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM][C.MY_NAME] = { GetMoney(), C.MY_CLASS }
+        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = { GetMoney(), myClass }
     end,
     timeout = 0,
     whileDead = 1,
@@ -37,7 +41,7 @@ local menuList = {
     },
 }
 
-local function GetClassIcon(class)
+local function getClassIcon(class)
     local c1, c2, c3, c4 = unpack(_G.CLASS_ICON_TCOORDS[class])
     c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
     local prefix = '|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:13:15:0:-1:50:50:'
@@ -45,15 +49,15 @@ local function GetClassIcon(class)
     return classStr or ''
 end
 
-local RebuildCharList
+local rebuildCharList
 
 local function clearCharGold(_, realm, name)
     _G.ANDROMEDA_ADB['GoldStatistic'][realm][name] = nil
     _G.DropDownList1:Hide()
-    RebuildCharList()
+    rebuildCharList()
 end
 
-function RebuildCharList()
+function rebuildCharList()
     for i = 2, #menuList do
         if menuList[i] then
             wipe(menuList[i])
@@ -62,9 +66,9 @@ function RebuildCharList()
 
     local index = 1
     for _, realm in pairs(crossRealms) do
-        if _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM] then
-            for name, value in pairs(_G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM]) do
-                if not (realm == C.MY_REALM and name == C.MY_REALM) then
+        if _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+            for name, value in pairs(_G.ANDROMEDA_ADB['GoldStatistic'][myRealm]) do
+                if not (realm == myRealm and name == myRealm) then
                     index = index + 1
                     if not menuList[index] then
                         menuList[index] = {}
@@ -80,9 +84,7 @@ function RebuildCharList()
     end
 end
 
-local profit, spent, oldMoney = 0, 0, 0
-
-local function Button_OnEvent(self, event)
+local function onEvent(self, event)
     if event == 'PLAYER_ENTERING_WORLD' then
         oldMoney = GetMoney()
         C_WowTokenPublic.UpdateMarketPrice()
@@ -102,21 +104,21 @@ local function Button_OnEvent(self, event)
         profit = profit + change
     end
 
-    self.text:SetText(FormatMoney(newMoney))
+    self.text:SetText(formatMoney(newMoney))
 
-    if not _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM] then
-        _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM] = {}
+    if not _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] = {}
     end
-    if not _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM][C.MY_NAME] then
-        _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM][C.MY_NAME] = {}
+    if not _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] then
+        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = {}
     end
-    _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM][C.MY_NAME][1] = GetMoney()
-    _G.ANDROMEDA_ADB['GoldStatistic'][C.MY_REALM][C.MY_NAME][2] = C.MY_CLASS
+    _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][1] = GetMoney()
+    _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][2] = myClass
 
     oldMoney = newMoney
 end
 
-local function Button_OnMouseUp(self, btn)
+local function onMouseUp(self, btn)
     if btn == 'LeftButton' then
         if not _G.StoreFrame then
             LoadAddOn('Blizzard_StoreUI')
@@ -124,32 +126,32 @@ local function Button_OnMouseUp(self, btn)
         securecall(_G.ToggleStoreUI)
     elseif btn == 'RightButton' then
         if not menuList[1].created then
-            RebuildCharList()
+            rebuildCharList()
             menuList[1].created = true
         end
         EasyMenu(menuList, F.EasyMenu, self, -80, 100, 'MENU', 1)
     end
 end
 
-local function Button_OnEnter(self)
+local function onEnter(self)
     local anchorTop = C.DB.Infobar.AnchorTop
-    _G.GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:AddLine(_G.WORLD_QUEST_REWARD_FILTERS_GOLD, 0.9, 0.8, 0.6)
-    _G.GameTooltip:AddLine(' ')
+    GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(_G.WORLD_QUEST_REWARD_FILTERS_GOLD, 0.9, 0.8, 0.6)
+    GameTooltip:AddLine(' ')
 
-    _G.GameTooltip:AddLine(L['Session'], 0.6, 0.8, 1)
-    _G.GameTooltip:AddDoubleLine(L['Earned'], GetMoneyString(profit, true), 1, 1, 1, 1, 1, 1)
-    _G.GameTooltip:AddDoubleLine(L['Spent'], GetMoneyString(spent, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddLine(L['Session'], 0.6, 0.8, 1)
+    GameTooltip:AddDoubleLine(L['Earned'], GetMoneyString(profit, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(L['Spent'], GetMoneyString(spent, true), 1, 1, 1, 1, 1, 1)
     if profit < spent then
-        _G.GameTooltip:AddDoubleLine(L['Deficit'], GetMoneyString(spent - profit, true), 1, 0, 0, 1, 1, 1)
+        GameTooltip:AddDoubleLine(L['Deficit'], GetMoneyString(spent - profit, true), 1, 0, 0, 1, 1, 1)
     elseif profit > spent then
-        _G.GameTooltip:AddDoubleLine(L['Profit'], GetMoneyString(profit - spent, true), 0, 1, 0, 1, 1, 1)
+        GameTooltip:AddDoubleLine(L['Profit'], GetMoneyString(profit - spent, true), 0, 1, 0, 1, 1, 1)
     end
-    _G.GameTooltip:AddLine(' ')
+    GameTooltip:AddLine(' ')
 
     local totalGold = 0
-    _G.GameTooltip:AddLine(_G.CHARACTER, 0.6, 0.8, 1)
+    GameTooltip:AddLine(_G.CHARACTER, 0.6, 0.8, 1)
 
     for _, realm in pairs(crossRealms) do
         local thisRealmList = _G.ANDROMEDA_ADB['GoldStatistic'][realm]
@@ -158,29 +160,42 @@ local function Button_OnEnter(self)
                 local name = Ambiguate(k .. '-' .. realm, 'none')
                 local gold, class = unpack(v)
                 local r, g, b = F:ClassColor(class)
-                _G.GameTooltip:AddDoubleLine(GetClassIcon(class) .. name, GetMoneyString(gold, true), r, g, b, 1, 1, 1)
+                GameTooltip:AddDoubleLine(getClassIcon(class) .. name, GetMoneyString(gold, true), r, g, b, 1, 1, 1)
                 totalGold = totalGold + gold
             end
         end
     end
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(_G.HONOR_LIFETIME, GetMoneyString(totalGold, true), 0.6, 0.8, 1, 1, 1, 1)
+    GameTooltip:AddLine(' ')
+    local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
+    if accountmoney > 0 then
+        GameTooltip:AddDoubleLine(
+            _G.ACCOUNT_BANK_PANEL_TITLE .. ':',
+            GetMoneyString(accountmoney),
+            0.6,
+            0.8,
+            1,
+            1,
+            1,
+            1
+        )
+    end
+    GameTooltip:AddDoubleLine(_G.TOTAL .. ':', GetMoneyString(totalGold + accountmoney), 0.6, 0.8, 1, 1, 1, 1)
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddLine(_G.ITEM_QUALITY8_DESC, 0.6, 0.8, 1)
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddLine(_G.ITEM_QUALITY8_DESC, 0.6, 0.8, 1)
 
     local tokenPrice = C_WowTokenPublic.GetCurrentMarketPrice() or 0
-    _G.GameTooltip:AddDoubleLine(_G.AUCTION_HOUSE_BROWSE_HEADER_PRICE, GetMoneyString(tokenPrice, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(_G.AUCTION_HOUSE_BROWSE_HEADER_PRICE, GetMoneyString(tokenPrice, true), 1, 1, 1, 1, 1, 1)
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Store Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_RIGHT_BUTTON .. L['Reset Gold Statistics'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    _G.GameTooltip:Show()
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
+    GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Store Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:AddDoubleLine(' ', C.MOUSE_RIGHT_BUTTON .. L['Reset Gold Statistics'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:Show()
 end
 
-local function Button_OnLeave(self)
+local function onLeave(self)
     F:HideTooltip()
 end
 
@@ -189,17 +204,17 @@ function INFOBAR:CreateGoldBlock()
         return
     end
 
-    local gold = INFOBAR:RegisterNewBlock('gold', 'LEFT', 200)
-    gold:HookScript('OnEvent', Button_OnEvent)
-    gold:HookScript('OnMouseUp', Button_OnMouseUp)
-    gold:HookScript('OnEnter', Button_OnEnter)
-    gold:HookScript('OnLeave', Button_OnLeave)
+    local bu = INFOBAR:RegisterNewBlock('gold', 'LEFT', 200)
+    bu:HookScript('OnEvent', onEvent)
+    bu:HookScript('OnMouseUp', onMouseUp)
+    bu:HookScript('OnEnter', onEnter)
+    bu:HookScript('OnLeave', onLeave)
 
-    gold:RegisterEvent('PLAYER_ENTERING_WORLD')
-    gold:RegisterEvent('PLAYER_MONEY')
-    gold:RegisterEvent('SEND_MAIL_MONEY_CHANGED')
-    gold:RegisterEvent('SEND_MAIL_COD_CHANGED')
-    gold:RegisterEvent('PLAYER_TRADE_MONEY')
-    gold:RegisterEvent('TRADE_MONEY_CHANGED')
-    gold:RegisterEvent('TOKEN_MARKET_PRICE_UPDATED')
+    bu:RegisterEvent('PLAYER_ENTERING_WORLD')
+    bu:RegisterEvent('PLAYER_MONEY')
+    bu:RegisterEvent('SEND_MAIL_MONEY_CHANGED')
+    bu:RegisterEvent('SEND_MAIL_COD_CHANGED')
+    bu:RegisterEvent('PLAYER_TRADE_MONEY')
+    bu:RegisterEvent('TRADE_MONEY_CHANGED')
+    bu:RegisterEvent('TOKEN_MARKET_PRICE_UPDATED')
 end

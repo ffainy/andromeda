@@ -386,7 +386,7 @@ function F:UIFrameFadeRemoveFrame(frame)
 end
 
 function F.CreateAnimationFrame(name, parent, strata, level, hidden, texture, isMirror, color)
-    parent = parent or _G.UIParent
+    parent = parent or UIParent
 
     local frame = CreateFrame('Frame', name, parent)
 

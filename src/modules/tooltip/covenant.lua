@@ -170,7 +170,7 @@ function M:AddCovenantInfo()
         return
     end
 
-    local _, unit = _G.GameTooltip:GetUnit()
+    local _, unit = GameTooltip:GetUnit()
     if not unit or not UnitIsPlayer(unit) then
         return
     end
@@ -183,7 +183,7 @@ function M:AddCovenantInfo()
     end
 
     if covenantID and covenantID ~= 0 then
-        _G.GameTooltip:AddLine(
+        GameTooltip:AddLine(
             format(
                 '%s %s %s',
                 C.WHITE_COLOR .. L['Covenant'] .. ':|r',
@@ -196,7 +196,7 @@ end
 
 function M:CovenantInfo()
     LibOR = _G.LibStub and _G.LibStub('LibOpenRaid-1.0', true)
-    DCLoaded = IsAddOnLoaded('Details_Covenants')
+    DCLoaded = C_AddOns.IsAddOnLoaded('Details_Covenants')
 
     for prefix in pairs(addonPrefixes) do
         C_ChatInfo.RegisterAddonMessagePrefix(prefix)

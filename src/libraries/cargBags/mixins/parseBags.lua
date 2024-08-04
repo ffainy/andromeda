@@ -31,8 +31,6 @@ DESCRIPTION
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local isNewPatch = select(4, GetBuildInfo()) == 100000
-
 local bagStrings = {
 	["backpack"]		= { 0 },
 	["bags"]			= { 1, 2, 3, 4, 5 },
@@ -42,6 +40,7 @@ local bagStrings = {
 	["bankreagent"]		= { -3 },
 	["bank"]			= { 6, 7, 8, 9, 10, 11, 12 },
 	["keyring"]			= { -2 },
+	["accountbank"]		= { 13, 14, 15, 16, 17 },
 }
 cargBags.BagStrings = bagStrings
 

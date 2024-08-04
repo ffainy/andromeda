@@ -169,7 +169,7 @@ function ACTIONBAR:UpdateFaderState()
     for key, name in pairs(barsList) do
         local bar = _G[name]
         if bar then
-            bar:SetParent(C.DB.Actionbar[key] and ACTIONBAR.fadeParent or _G.UIParent)
+            bar:SetParent(C.DB.Actionbar[key] and ACTIONBAR.fadeParent or UIParent)
         end
     end
 
@@ -187,7 +187,7 @@ function ACTIONBAR:BarFader()
         return
     end
 
-    ACTIONBAR.fadeParent = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionbarFadeParent', _G.UIParent, 'SecureHandlerStateTemplate')
+    ACTIONBAR.fadeParent = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionbarFadeParent', UIParent, 'SecureHandlerStateTemplate')
     ACTIONBAR.fadeParent:SetAlpha(C.DB.Actionbar.FadeOutAlpha)
     ACTIONBAR.fadeParent:RegisterEvent('ACTIONBAR_SHOWGRID')
     ACTIONBAR.fadeParent:RegisterEvent('ACTIONBAR_HIDEGRID')

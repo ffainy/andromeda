@@ -91,14 +91,15 @@ function ACTIONBAR:StanceBarOnEvent()
 end
 
 function ACTIONBAR:CreateStanceBar()
-    if not C.DB['Actionbar']['BarStance'] then
-        return
-    end
-
     local margin = C.DB['Actionbar']['ButtonMargin']
     local buttonList = {}
-    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionBarStance', _G.UIParent, 'SecureHandlerStateTemplate')
-    frame.mover = F.Mover(frame, L['StanceBar'], 'StanceBar', { 'BOTTOMLEFT', _G[C.ADDON_TITLE .. 'ActionBar2'], 'TOPLEFT', 0, margin })
+    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionBarStance', UIParent, 'SecureHandlerStateTemplate')
+    frame.mover = F.Mover(
+        frame,
+        L['StanceBar'],
+        'StanceBar',
+        { 'BOTTOMLEFT', _G[C.ADDON_TITLE .. 'ActionBar2'], 'TOPLEFT', 0, margin }
+    )
     ACTIONBAR.movers[11] = frame.mover
 
     -- StanceBar
@@ -122,5 +123,5 @@ function ACTIONBAR:CreateStanceBar()
     F:RegisterEvent('UPDATE_SHAPESHIFT_COOLDOWN', ACTIONBAR.StanceBarOnEvent)
 
     frame.frameVisibility = '[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show'
-    RegisterStateDriver(frame, 'visibility', frame.frameVisibility)
+    RegisterStateDriver(frame, 'visibility', not C.DB['Actionbar']['BarStance'] and 'hide' or frame.frameVisibility)
 end

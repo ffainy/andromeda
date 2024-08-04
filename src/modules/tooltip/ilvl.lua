@@ -2,91 +2,90 @@ local F, C, L = unpack(select(2, ...))
 local TOOLTIP = F:GetModule('Tooltip')
 
 local isPending = _G.LFG_LIST_LOADING
-local specPrefix = C.INFO_COLOR .. _G.SPECIALIZATION .. ':|r '
 local levelPrefix = C.INFO_COLOR .. _G.STAT_AVERAGE_ITEM_LEVEL .. ':|r '
 
 local resetTime, frequency = 900, 0.5
 local cache, weapon, currentUNIT, currentGUID = {}, {}
 
-TOOLTIP.tierSets = { -- t30
-    -- HUNTER
-    [200390] = true,
-    [200392] = true,
-    [200387] = true,
-    [200389] = true,
-    [200391] = true,
+TOOLTIP.tierSets = {
     -- WARRIOR
-    [200426] = true,
-    [200428] = true,
-    [200423] = true,
-    [200425] = true,
-    [200427] = true,
+    [217220] = true,
+    [217219] = true,
+    [217218] = true,
+    [217217] = true,
+    [217216] = true,
     -- PALADIN
-    [200417] = true,
-    [200419] = true,
-    [200414] = true,
-    [200416] = true,
-    [200418] = true,
+    [217200] = true,
+    [217199] = true,
+    [217198] = true,
+    [217197] = true,
+    [217196] = true,
+    -- HUNTER
+    [217185] = true,
+    [217184] = true,
+    [217183] = true,
+    [217182] = true,
+    [217181] = true,
     -- ROGUE
-    [200372] = true,
-    [200374] = true,
-    [200369] = true,
-    [200371] = true,
-    [200373] = true,
+    [217210] = true,
+    [217209] = true,
+    [217208] = true,
+    [217207] = true,
+    [217206] = true,
     -- PRIEST
-    [200327] = true,
-    [200329] = true,
-    [200324] = true,
-    [200326] = true,
-    [200328] = true,
-    -- DK
-    [200408] = true,
-    [200410] = true,
-    [200405] = true,
-    [200407] = true,
-    [200409] = true,
+    [217204] = true,
+    [217205] = true,
+    [217203] = true,
+    [217202] = true,
+    [217201] = true,
+    -- DEATHKNIGHT
+    [217225] = true,
+    [217224] = true,
+    [217223] = true,
+    [217222] = true,
+    [217221] = true,
     -- SHAMAN
-    [200399] = true,
-    [200401] = true,
-    [200396] = true,
-    [200398] = true,
-    [200400] = true,
+    [217240] = true,
+    [217239] = true,
+    [217238] = true,
+    [217237] = true,
+    [217236] = true,
     -- MAGE
-    [200318] = true,
-    [200320] = true,
-    [200315] = true,
-    [200317] = true,
-    [200319] = true,
+    [217234] = true,
+    [217233] = true,
+    [217232] = true,
+    [217231] = true,
+    [217235] = true,
     -- WARLOCK
-    [200336] = true,
-    [200338] = true,
-    [200333] = true,
-    [200335] = true,
-    [200337] = true,
+    [217214] = true,
+    [217215] = true,
+    [217213] = true,
+    [217212] = true,
+    [217211] = true,
     -- MONK
-    [200363] = true,
-    [200365] = true,
-    [200360] = true,
-    [200362] = true,
-    [200364] = true,
+    [217190] = true,
+    [217189] = true,
+    [217188] = true,
+    [217187] = true,
+    [217186] = true,
     -- DRUID
-    [200354] = true,
-    [200356] = true,
-    [200351] = true,
-    [200353] = true,
-    [200355] = true,
-    -- DH
-    [200345] = true,
-    [200347] = true,
-    [200342] = true,
-    [200344] = true,
-    [200346] = true,
+    [217195] = true,
+    [217194] = true,
+    [217193] = true,
+    [217192] = true,
+    [217191] = true,
+    -- DEMONHUNTER
+    [217230] = true,
+    [217229] = true,
+    [217228] = true,
+    [217227] = true,
+    [217226] = true,
     -- EVOKER
-    [200381] = true,
-    [200383] = true,
-    [200378] = true,
-    [200380] = true,
-    [200382] = true,
+    [217180] = true,
+    [217179] = true,
+    [217178] = true,
+    [217177] = true,
+    [217176] = true,
 }
 
 local formatSets = {
@@ -130,14 +129,12 @@ function TOOLTIP:GetInspectInfo(...)
     elseif self == 'INSPECT_READY' then
         local guid = ...
         if guid == currentGUID then
-            local spec = TOOLTIP:GetUnitSpec(currentUNIT)
             local level = TOOLTIP:GetUnitItemLevel(currentUNIT)
-            cache[guid].spec = spec
             cache[guid].level = level
             cache[guid].getTime = GetTime()
 
-            if spec and level then
-                TOOLTIP:SetupSpecLevel(spec, level)
+            if level then
+                TOOLTIP:SetupItemLevel(level)
             else
                 TOOLTIP:InspectUnit(currentUNIT, true)
             end
@@ -147,38 +144,26 @@ function TOOLTIP:GetInspectInfo(...)
 end
 F:RegisterEvent('UNIT_INVENTORY_CHANGED', TOOLTIP.GetInspectInfo)
 
-function TOOLTIP:SetupSpecLevel(spec, level)
-    local _, unit = _G.GameTooltip:GetUnit()
+function TOOLTIP:SetupItemLevel(level)
+    local _, unit = GameTooltip:GetUnit()
     if not unit or UnitGUID(unit) ~= currentGUID then
         return
     end
 
-    local specLine, levelLine
-    for i = 2, _G.GameTooltip:NumLines() do
+    local levelLine
+    for i = 2, GameTooltip:NumLines() do
         local line = _G['GameTooltipTextLeft' .. i]
         local text = line:GetText()
-        if text and strfind(text, specPrefix) then
-            specLine = line
-        elseif text and strfind(text, levelPrefix) then
+        if text and strfind(text, levelPrefix) then
             levelLine = line
         end
-    end
-
-    local r, g, b = F:UnitColor(unit)
-    local hexColor = F:RgbToHex(r, g, b)
-
-    spec = specPrefix .. (spec or isPending)
-    if specLine then
-        specLine:SetText(hexColor .. spec)
-    else
-        _G.GameTooltip:AddLine(hexColor .. spec)
     end
 
     level = levelPrefix .. (level or isPending)
     if levelLine then
         levelLine:SetText(level)
     else
-        _G.GameTooltip:AddLine(level)
+        GameTooltip:AddLine(level)
     end
 end
 
@@ -203,7 +188,7 @@ function TOOLTIP:GetUnitItemLevel(unit)
                 if not itemLink then
                     delay = true
                 else
-                    local _, _, quality, level, _, _, _, _, slot = GetItemInfo(itemLink)
+                    local _, _, quality, level, _, _, _, _, slot = C_Item.GetItemInfo(itemLink)
                     if not quality or not level then
                         delay = true
                     else
@@ -239,7 +224,11 @@ function TOOLTIP:GetUnitItemLevel(unit)
 
                                 weapon[1] = level
                                 haveWeapon = haveWeapon + 1
-                                if slot == 'INVTYPE_2HWEAPON' or slot == 'INVTYPE_RANGED' or (slot == 'INVTYPE_RANGEDRIGHT' and class == 'HUNTER') then
+                                if
+                                    slot == 'INVTYPE_2HWEAPON'
+                                    or slot == 'INVTYPE_RANGED'
+                                    or (slot == 'INVTYPE_RANGEDRIGHT' and class == 'HUNTER')
+                                then
                                     mainhand = true
                                     twohand = twohand + 1
                                 end
@@ -297,38 +286,12 @@ function TOOLTIP:GetUnitItemLevel(unit)
     return ilvl
 end
 
-function TOOLTIP:GetUnitSpec(unit)
-    if not unit or UnitGUID(unit) ~= currentGUID then
-        return
-    end
-
-    local specName
-    if unit == 'player' then
-        local specIndex = GetSpecialization()
-        if specIndex then
-            specName = select(2, GetSpecializationInfo(specIndex))
-        end
-    else
-        local specID = GetInspectSpecialization(unit)
-        if specID and specID > 0 then
-            specName = select(2, GetSpecializationInfoByID(specID))
-        end
-    end
-
-    if specName == '' then
-        specName = _G.NONE
-    end
-
-    return specName
-end
-
 function TOOLTIP:InspectUnit(unit, forced)
-    local spec, level
+    local level
 
     if UnitIsUnit(unit, 'player') then
-        spec = self:GetUnitSpec('player')
         level = self:GetUnitItemLevel('player')
-        self:SetupSpecLevel(spec, level)
+        self:SetupItemLevel(level)
     else
         if not unit or UnitGUID(unit) ~= currentGUID then
             return
@@ -338,15 +301,14 @@ function TOOLTIP:InspectUnit(unit, forced)
         end
 
         local currentDB = cache[currentGUID]
-        spec = currentDB.spec
         level = currentDB.level
-        self:SetupSpecLevel(spec, level)
+        self:SetupItemLevel(level)
 
         if not C.DB.Tooltip.SpecIlvlByAlt and IsAltKeyDown() then
             forced = true
         end
 
-        if spec and level and not forced and (GetTime() - currentDB.getTime < resetTime) then
+        if level and not forced and (GetTime() - currentDB.getTime < resetTime) then
             updater.elapsed = frequency
             return
         end
@@ -359,12 +321,12 @@ function TOOLTIP:InspectUnit(unit, forced)
             return
         end
 
-        self:SetupSpecLevel()
+        self:SetupItemLevel()
         updater:Show()
     end
 end
 
-function TOOLTIP:InspectUnitSpecAndLevel(unit)
+function TOOLTIP:InspectUnitItemLevel(unit)
     if not C.DB.Tooltip.SpecIlvl then
         return
     end

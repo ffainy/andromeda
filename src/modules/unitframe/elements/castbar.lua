@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local UNITFRAME = F:GetModule('UnitFrame')
 local NAMEPLATE = F:GetModule('Nameplate')
-local LBG = F.Libs.LibButtonGlow
+local LCG = F.Libs.LibCustomGlow
 
 local function createBarMover(bar, text, value, anchor)
     local mover = F.Mover(bar, text, value, anchor, bar:GetHeight() + bar:GetWidth() + 3, bar:GetHeight() + 3)
@@ -86,8 +86,8 @@ function UNITFRAME:OnCastbarUpdate(elapsed)
                     if pip and duration > pip.duration then
                         self.stageString:SetText(i)
 
-                        if self.pipStage ~= i then
-                            self.pipStage = i
+                        if self.curStage ~= i then
+                            self.curStage = i
                             local nextStage = self.numStages == i and 1 or i + 1
                             local nextPip = self.Pips[nextStage]
                             UIFrameFadeIn(nextPip.tex, 0.25, 0.3, 1)
@@ -181,9 +181,9 @@ function UNITFRAME:PostCastStart(unit)
     if style == 'nameplate' then
         -- Major spells glow
         if C.DB.Nameplate.MajorSpellsGlow and NAMEPLATE.MajorSpellsList[self.spellID] then
-            LBG.ShowOverlayGlow(self.glowFrame)
+            F.ShowOverlayGlow(self.glowFrame)
         else
-            LBG.HideOverlayGlow(self.glowFrame)
+            F.HideOverlayGlow(self.glowFrame)
         end
     end
 end
@@ -256,25 +256,27 @@ function UNITFRAME:CreatePip(stage)
     return pip
 end
 
-function UNITFRAME:PostUpdatePip(_, stage, stageTotalDuration)
+function UNITFRAME:PostUpdatePips(numStages)
     local pips = self.Pips
-    local pip = pips[stage]
     local numStages = self.numStages
 
-    pip.tex:SetAlpha(0.2) -- reset pip alpha
-    pip.duration = stageTotalDuration / 1000 -- save pip duration
+    for stage = 1, numStages do
+        local pip = pips[stage]
+        pip.tex:SetAlpha(0.3) -- reset pip alpha
+        pip.duration = self.stagePoints[stage]
 
-    if stage == numStages then
-        local firstPip = pips[1]
-        local anchor = pips[numStages]
-        firstPip.tex:SetPoint('BOTTOMRIGHT', self)
-        firstPip.tex:SetPoint('TOPLEFT', anchor.BasePip, 'TOPRIGHT')
-    end
+        if stage == numStages then
+            local firstPip = pips[1]
+            local anchor = pips[numStages]
+            firstPip.tex:SetPoint('BOTTOMRIGHT', self)
+            firstPip.tex:SetPoint('TOPLEFT', anchor.BasePip, 'TOPRIGHT')
+        end
 
-    if stage ~= 1 then
-        local anchor = pips[stage - 1]
-        pip.tex:SetPoint('BOTTOMRIGHT', pip.BasePip, 'BOTTOMLEFT')
-        pip.tex:SetPoint('TOPLEFT', anchor.BasePip, 'TOPRIGHT')
+        if stage ~= 1 then
+            local anchor = pips[stage - 1]
+            pip.tex:SetPoint('BOTTOMRIGHT', pip.BasePip, 'BOTTOMLEFT')
+            pip.tex:SetPoint('TOPLEFT', anchor.BasePip, 'TOPRIGHT')
+        end
     end
 end
 
@@ -339,7 +341,8 @@ function UNITFRAME:CreateCastBar(self)
         self:RegisterEvent('CURRENT_SPELL_CAST_CHANGED', UNITFRAME.OnCastSent, true)
     end
 
-    local stage = F.CreateFS(castbar, C.Assets.Fonts.Condensed, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+    local stage =
+        F.CreateFS(castbar, C.Assets.Fonts.Condensed, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
     stage:ClearAllPoints()
     stage:SetPoint('CENTER', castbar.Icon, 'TOP')
     castbar.stageString = stage
@@ -375,7 +378,7 @@ function UNITFRAME:CreateCastBar(self)
             spark:SetSize(20, targetHeight + 10)
         elseif style == 'focus' then
             castbar:SetSize(focusWidth, focusHeight)
-            createBarMover(castbar, L['FocusCastbar'], 'FocusCastbar', { 'CENTER', _G.UIParent, 'CENTER', 0, 120 })
+            createBarMover(castbar, L['FocusCastbar'], 'FocusCastbar', { 'CENTER', UIParent, 'CENTER', 0, 120 })
 
             icon:SetSize(focusHeight + iconAmp, focusHeight + iconAmp)
             icon:SetPoint('RIGHT', castbar, 'LEFT', -4, 0)
@@ -393,7 +396,7 @@ function UNITFRAME:CreateCastBar(self)
     castbar.PostCastFail = UNITFRAME.PostCastFailed
     castbar.PostCastInterruptible = UNITFRAME.PostUpdateInterruptible
     castbar.CreatePip = UNITFRAME.CreatePip
-    castbar.PostUpdatePip = UNITFRAME.PostUpdatePip
+    castbar.PostUpdatePips = UNITFRAME.PostUpdatePips
 end
 
 function NAMEPLATE:CreateCastBar(self)

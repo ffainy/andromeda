@@ -13,7 +13,6 @@
     <Script file="Blizzard_Calendar.lua"/>
     <Script file="Blizzard_ChallengesUI.lua"/>
     <Script file="Blizzard_ChromieTimeUI.lua"/>
-    <Script file="Blizzard_ClassTalentUI.lua"/>
     <Script file="Blizzard_ClickBindingUI.lua"/>
     <Script file="Blizzard_Collections.lua"/>
     <Script file="Blizzard_Communities.lua"/>
@@ -21,6 +20,7 @@
     <Script file="Blizzard_Covenant.lua"/>
     <Script file="Blizzard_DeathRecap.lua"/>
     <Script file="Blizzard_DebugTools.lua"/>
+    <Script file="Blizzard_Delves.lua"/>
     <Script file="Blizzard_EncounterJournal.lua"/>
     <Script file="Blizzard_EventTrace.lua"/>
     <Script file="Blizzard_ExpansionLandingPage.lua"/>
@@ -30,12 +30,10 @@
     <Script file="Blizzard_GMChatUI.lua"/>
     <Script file="Blizzard_GuildBankUI.lua"/>
     <Script file="Blizzard_GuildControlUI.lua"/>
-    <Script file="Blizzard_GuildUI.lua"/>
     <Script file="Blizzard_InspectUI.lua"/>
     <Script file="Blizzard_IslandsQueueUI.lua"/>
     <Script file="Blizzard_ItemSocketingUI.lua"/>
     <Script file="Blizzard_ItemUpgradeUI.lua"/>
-    <Script file="Blizzard_LookingForGuildUI.lua"/>
     <Script file="Blizzard_MacroUI.lua"/>
     <Script file="Blizzard_MajorFactions.lua"/>
     <Script file="Blizzard_NewPlayerExperienceGuide.lua"/>
@@ -43,13 +41,16 @@
     <Script file="Blizzard_PartyPoseUI.lua"/>
     <Script file="Blizzard_PerksProgram.lua"/>
     <Script file="Blizzard_PlayerChoice.lua"/>
+    <Script file="Blizzard_PlayerSpells.lua"/>
     <Script file="Blizzard_Professions.lua"/>
+    <Script file="Blizzard_ProfessionsBook.lua"/>
     <Script file="Blizzard_ProfessionsCustomerOrders.lua"/>
     <Script file="Blizzard_PVPUI.lua"/>
     <Script file="Blizzard_RaidUI.lua"/>
     <Script file="Blizzard_RuneforgeUI.lua"/>
     <Script file="Blizzard_ScrappingMachineUI.lua"/>
     <Script file="Blizzard_Soulbinds.lua"/>
+    <Script file="Blizzard_StableUI.lua"/>
     <Script file="Blizzard_SubscriptionInterstitialUI.lua"/>
     <Script file="Blizzard_TalentUI.lua"/>
     <Script file="Blizzard_TorghastLevelPicker.lua"/>

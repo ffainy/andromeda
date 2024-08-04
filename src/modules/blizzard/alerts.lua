@@ -6,7 +6,7 @@ local parentFrame
 
 function BLIZZARD:AlertFrame_UpdateAnchor()
     local y = select(2, parentFrame:GetCenter())
-    local screenHeight = _G.UIParent:GetTop()
+    local screenHeight = UIParent:GetTop()
     if y > screenHeight / 2 then
         POSITION = 'TOP'
         ANCHOR_POINT = 'BOTTOM'
@@ -97,9 +97,9 @@ local function NoTalkingHeads()
 end
 
 function BLIZZARD:AlertFrame_Setup()
-    parentFrame = CreateFrame('Frame', nil, _G.UIParent)
+    parentFrame = CreateFrame('Frame', nil, UIParent)
     parentFrame:SetSize(200, 30)
-    F.Mover(parentFrame, L['AlertFrame'], 'AlertFrame', { 'TOP', _G.UIParent, 0, -100 })
+    F.Mover(parentFrame, L['AlertFrame'], 'AlertFrame', { 'TOP', UIParent, 0, -100 })
 
     _G.GroupLootContainer:EnableMouse(false)
     _G.GroupLootContainer.ignoreFramePositionManager = true

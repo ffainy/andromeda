@@ -14,6 +14,7 @@ local isIgnoredZone = {
 
 local isIgnoredIDs = {
     [5485] = true, -- 海象人工具盒
+    [6149] = true, -- 奥妮克希亚龙蛋
 }
 
 local function isUsefulAtlas(info)
@@ -49,7 +50,8 @@ local function onEvent(id)
             local x, y = position:GetXY()
             nameStr = format(rareStr, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, '')
         end
-        F:Print(tex .. C.INFO_COLOR .. (nameStr or info.name or ''))
+        local debugStr = C.IS_DEVELOPER and info.vignetteID or ''
+        F:Print(tex .. C.INFO_COLOR .. (nameStr or info.name or '') .. debugStr)
 
         cache[id] = true
     end

@@ -185,7 +185,7 @@ function SS:CreateScreenSaver()
         return
     end
 
-    local f = CreateFrame('Button', C.ADDON_TITLE .. 'ScreenSave', _G.UIParent)
+    local f = CreateFrame('Button', C.ADDON_TITLE .. 'ScreenSave', UIParent)
     f:SetFrameStrata('FULLSCREEN')
     f:SetAllPoints()
     f:EnableMouse(true)

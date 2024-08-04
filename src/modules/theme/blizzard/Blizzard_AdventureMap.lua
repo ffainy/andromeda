@@ -8,11 +8,7 @@ C.Themes['Blizzard_AdventureMap'] = function()
     F.ReskinButton(dialog.AcceptButton)
     F.ReskinButton(dialog.DeclineButton)
     F.ReskinClose(dialog.CloseButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(dialog.Details.ScrollBar)
-    else
-        F.ReskinScroll(dialog.Details.ScrollBar)
-    end
+    F.ReskinTrimScroll(dialog.Details.ScrollBar)
 
     dialog:HookScript('OnShow', function(self)
         if self.styled then

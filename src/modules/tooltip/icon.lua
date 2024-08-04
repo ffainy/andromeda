@@ -41,15 +41,15 @@ end
 
 local getTooltipTextureByType = {
     [Enum.TooltipDataType.Item] = function(id)
-        return GetItemIcon(id)
+        return C_Item.GetItemIconByID(id)
     end,
 
     [Enum.TooltipDataType.Toy] = function(id)
-        return GetItemIcon(id)
+        return C_Item.GetItemIconByID(id)
     end,
 
     [Enum.TooltipDataType.Spell] = function(id)
-        return GetSpellTexture(id)
+        return C_Spell.GetSpellTexture(id)
     end,
 
     [Enum.TooltipDataType.Mount] = function(id)
@@ -62,7 +62,7 @@ function TOOLTIP:ReskinTipIcon()
         return
     end
 
-    local GameTooltip = _G.GameTooltip
+    local GameTooltip = GameTooltip
     local ItemRefTooltip = _G.ItemRefTooltip
     local TooltipDataProcessor = _G.TooltipDataProcessor
     local EmbeddedItemTooltip = _G.EmbeddedItemTooltip

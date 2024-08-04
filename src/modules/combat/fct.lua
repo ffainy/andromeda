@@ -79,7 +79,7 @@ local dmgFunc
 local mergeData = { [true] = { [true] = {}, [false] = {} }, [false] = { [true] = {}, [false] = {} } }
 
 local function createCTFrame(frameName, spacing, maxLines, fadeDuration, timeVisible, justify, width, height)
-    local frame = CreateFrame('ScrollingMessageFrame', frameName, _G.UIParent)
+    local frame = CreateFrame('ScrollingMessageFrame', frameName, UIParent)
     frame:SetSpacing(spacing)
     frame:SetMaxLines(maxLines)
     frame:SetFadeDuration(fadeDuration)
@@ -105,7 +105,7 @@ local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, H
             frame:AddMessage(
                 format(
                     isCritical and '|T%s:0:0:0:-5|t |cff%s%s*%s* x%d|r' or '|T%s:0:0:0:-5|t |cff%s%s%s x%d|r',
-                    GetSpellTexture(spellID) or '',
+                    C_Spell.GetSpellTexture(spellID) or '',
                     dmgcolor[school],
                     symbol,
                     F:Numb(amount / Hits),
@@ -116,7 +116,7 @@ local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, H
             frame:AddMessage(
                 format(
                     isCritical and '|T%s:0:0:0:-5|t |cff%s%s*%s*|r' or '|T%s:0:0:0:-5|t |cff%s%s%s|r',
-                    GetSpellTexture(spellID) or '',
+                    C_Spell.GetSpellTexture(spellID) or '',
                     dmgcolor[school],
                     symbol,
                     F:Numb(amount)
@@ -132,7 +132,7 @@ local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, H
                     symbol,
                     F:Numb(amount / Hits),
                     Hits,
-                    GetSpellTexture(spellID) or ''
+                    C_Spell.GetSpellTexture(spellID) or ''
                 )
             )
         else
@@ -142,7 +142,7 @@ local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, H
                     dmgcolor[school],
                     symbol,
                     F:Numb(amount),
-                    GetSpellTexture(spellID) or ''
+                    C_Spell.GetSpellTexture(spellID) or ''
                 )
             )
         end
@@ -157,13 +157,13 @@ local function missString(isIn, spellID, missType, amountMissed)
             frame:AddMessage(
                 format(
                     '|T%s:0:0:0:-5|t %s(%s)',
-                    GetSpellTexture(spellID) or '',
+                    C_Spell.GetSpellTexture(spellID) or '',
                     _G[missType],
                     F:Numb(amountMissed)
                 )
             )
         else
-            frame:AddMessage(format('|T%s:0:0:0:-5|t %s', GetSpellTexture(spellID) or '', _G[missType]))
+            frame:AddMessage(format('|T%s:0:0:0:-5|t %s', C_Spell.GetSpellTexture(spellID) or '', _G[missType]))
         end
     else
         if missType == 'ABSORB' then
@@ -172,11 +172,11 @@ local function missString(isIn, spellID, missType, amountMissed)
                     '%s(%s) |T%s:0:0:0:-5|t',
                     _G[missType],
                     F:Numb(amountMissed),
-                    GetSpellTexture(spellID) or ''
+                    C_Spell.GetSpellTexture(spellID) or ''
                 )
             )
         else
-            frame:AddMessage(format('%s |T%s:0:0:0:-5|t', _G[missType], GetSpellTexture(spellID) or ''))
+            frame:AddMessage(format('%s |T%s:0:0:0:-5|t', _G[missType], C_Spell.GetSpellTexture(spellID) or ''))
         end
     end
 end
@@ -221,7 +221,7 @@ function COMBAT:FloatingCombatText()
             inFrame,
             L['FCTInFrame'],
             'FCTInFrame',
-            { 'RIGHT', _G.UIParent, 'CENTER', -500, 0 },
+            { 'RIGHT', UIParent, 'CENTER', -500, 0 },
             inFrame:GetWidth(),
             inFrame:GetHeight()
         )
@@ -232,7 +232,7 @@ function COMBAT:FloatingCombatText()
             outFrame,
             L['FCTOutFrame'],
             'FCTOutFrame',
-            { 'LEFT', _G.UIParent, 'CENTER', 300, 140 },
+            { 'LEFT', UIParent, 'CENTER', 300, 140 },
             outFrame:GetWidth(),
             outFrame:GetHeight()
         )

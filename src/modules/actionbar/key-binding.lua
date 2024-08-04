@@ -50,7 +50,7 @@ function ACTIONBAR:Bind_Create()
         return
     end
 
-    local frame = CreateFrame('Frame', nil, _G.UIParent, 'BackdropTemplate')
+    local frame = CreateFrame('Frame', nil, UIParent, 'BackdropTemplate')
     frame:SetFrameStrata('DIALOG')
     frame:EnableMouse(true)
     frame:EnableKeyboard(true)
@@ -61,21 +61,21 @@ function ACTIONBAR:Bind_Create()
     frame:Hide()
 
     frame:SetScript('OnEnter', function()
-        _G.GameTooltip:SetOwner(frame, 'ANCHOR_NONE')
-        _G.GameTooltip:SetPoint('BOTTOM', frame, 'TOP', 0, 2)
-        _G.GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
+        GameTooltip:SetOwner(frame, 'ANCHOR_NONE')
+        GameTooltip:SetPoint('BOTTOM', frame, 'TOP', 0, 2)
+        GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
 
         if #frame.bindings == 0 then
-            _G.GameTooltip:AddLine(_G.NOT_BOUND, 1, 0, 0)
-            _G.GameTooltip:AddLine(_G.PRESS_KEY_TO_BIND)
+            GameTooltip:AddLine(_G.NOT_BOUND, 1, 0, 0)
+            GameTooltip:AddLine(_G.PRESS_KEY_TO_BIND)
         else
-            _G.GameTooltip:AddDoubleLine(L['Index'], L['Key'], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+            GameTooltip:AddDoubleLine(L['Index'], L['Key'], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
             for i = 1, #frame.bindings do
-                _G.GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
+                GameTooltip:AddDoubleLine(i, frame.bindings[i], 1, 1, 1, 0, 1, 0)
             end
-            _G.GameTooltip:AddLine(L['Press the escape key or right click to unbind this action.'], 1, 0.8, 0, 1)
+            GameTooltip:AddLine(L['Press the escape key or right click to unbind this action.'], 1, 0.8, 0, 1)
         end
-        _G.GameTooltip:Show()
+        GameTooltip:Show()
     end)
 
     frame:SetScript('OnLeave', ACTIONBAR.Bind_HideFrame)
@@ -105,7 +105,7 @@ function ACTIONBAR:Bind_Create()
         button:HookScript('OnEnter', hookSpellButton)
     end
 
-    if not IsAddOnLoaded('Blizzard_MacroUI') then
+    if not C_AddOns.IsAddOnLoaded('Blizzard_MacroUI') then
         hooksecurefunc('LoadAddOn', ACTIONBAR.Bind_RegisterMacro)
     else
         ACTIONBAR.Bind_RegisterMacro('Blizzard_MacroUI')
@@ -128,7 +128,7 @@ function ACTIONBAR:Bind_Update(button, spellmacro)
 
     if spellmacro == 'SPELL' then
         frame.id = SpellBook_GetSpellBookSlot(button)
-        frame.name = GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
+        frame.name = C_SpellBook.GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
         frame.bindings = { GetBindingKey(spellmacro .. ' ' .. frame.name) }
     elseif spellmacro == 'MACRO' then
         frame.id = button.selectionIndex or button:GetID()
@@ -242,8 +242,8 @@ function ACTIONBAR:Bind_HideFrame()
     local frame = ACTIONBAR.keybindFrame
     frame:ClearAllPoints()
     frame:Hide()
-    if not _G.GameTooltip:IsForbidden() then
-        _G.GameTooltip:Hide()
+    if not GameTooltip:IsForbidden() then
+        GameTooltip:Hide()
     end
 end
 
@@ -274,7 +274,7 @@ function ACTIONBAR:Bind_CreateDialog()
         return
     end
 
-    local frame = CreateFrame('Frame', nil, _G.UIParent)
+    local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetSize(320, 100)
     frame:SetPoint('TOP', 0, -135)
     F.SetBD(frame)

@@ -16,11 +16,9 @@ local function reskinFriendButton(button)
     if not button.styled then
         local gameIcon = button.gameIcon
         gameIcon:SetSize(22, 22)
-        gameIcon:SetTexCoord(0.17, 0.83, 0.17, 0.83)
         button.background:Hide()
         button:SetHighlightTexture(C.Assets.Textures.Backdrop)
         button:GetHighlightTexture():SetVertexColor(0.24, 0.56, 1, 0.2)
-        button.bg = F.CreateBDFrame(gameIcon, 0)
 
         local travelPass = button.travelPassButton
         travelPass:SetSize(22, 22)
@@ -42,8 +40,6 @@ local function reskinFriendButton(button)
 
         button.styled = true
     end
-
-    button.bg:SetShown(button.gameIcon:IsShown())
 end
 
 tinsert(C.BlizzThemes, function()
@@ -103,9 +99,6 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    _G.FriendsFrameStatusDropDown:ClearAllPoints()
-    _G.FriendsFrameStatusDropDown:SetPoint('TOPLEFT', _G.FriendsFrame, 'TOPLEFT', 10, -28)
-
     -- FriendsFrameBattlenetFrame
 
     _G.FriendsFrameBattlenetFrame:GetRegions():Hide()
@@ -151,9 +144,10 @@ tinsert(C.BlizzThemes, function()
     F.ReskinTrimScroll(_G.IgnoreListFrame.ScrollBar)
     F.ReskinTrimScroll(_G.WhoFrame.ScrollBar)
     F.ReskinTrimScroll(_G.FriendsFriendsFrame.ScrollBar)
-    F.ReskinDropdown(_G.FriendsFrameStatusDropDown)
-    F.ReskinDropdown(_G.WhoFrameDropDown)
-    F.ReskinDropdown(_G.FriendsFriendsFrameDropDown)
+    F.ReskinDropdown(_G.FriendsFrameStatusDropdown)
+    F.ReskinDropdown(_G.WhoFrameDropdown)
+    F.ReskinDropdown(_G.FriendsFriendsFrameDropdown)
+    _G.FriendsFrameStatusDropdown:SetWidth(58)
     F.ReskinButton(_G.FriendsListFrameContinueButton)
     F.ReskinEditbox(_G.AddFriendNameEditBox)
     F.StripTextures(_G.AddFriendFrame)

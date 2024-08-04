@@ -143,7 +143,7 @@ function GUI:CreateDataFrame()
         return
     end
 
-    dataFrame = CreateFrame('Frame', C.ADDON_TITLE .. 'ProfileData', _G.UIParent)
+    dataFrame = CreateFrame('Frame', C.ADDON_TITLE .. 'ProfileData', UIParent)
     dataFrame:SetPoint('CENTER')
     dataFrame:SetSize(500, 500)
     dataFrame:SetFrameStrata('DIALOG')
@@ -200,18 +200,18 @@ function GUI:CreateDataFrame()
         end
         UpdateTooltip()
 
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_TOP', 0, 10)
-        _G.GameTooltip:ClearLines()
+        GameTooltip:SetOwner(self, 'ANCHOR_TOP', 0, 10)
+        GameTooltip:ClearLines()
 
         if dataFrame.version then
-            _G.GameTooltip:AddLine(L['Data info'])
-            _G.GameTooltip:AddDoubleLine(L['Version'], dataFrame.version, 0.6, 0.8, 1, 1, 1, 1)
-            _G.GameTooltip:AddDoubleLine(L['Character'], dataFrame.name, 0.6, 0.8, 1, F:ClassColor(dataFrame.class))
+            GameTooltip:AddLine(L['Data info'])
+            GameTooltip:AddDoubleLine(L['Version'], dataFrame.version, 0.6, 0.8, 1, 1, 1, 1)
+            GameTooltip:AddDoubleLine(L['Character'], dataFrame.name, 0.6, 0.8, 1, F:ClassColor(dataFrame.class))
         else
-            _G.GameTooltip:AddLine(L['Data exception'], 1, 0, 0)
+            GameTooltip:AddLine(L['Data exception'], 1, 0, 0)
         end
 
-        _G.GameTooltip:Show()
+        GameTooltip:Show()
     end)
 
     accept:HookScript('OnLeave', F.HideTooltip)

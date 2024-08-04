@@ -9,6 +9,6 @@
     <Script file="item.lua"/>
     <Script file="itemref.lua"/>
     <Script file="paragon.lua"/>
-    <Script file="specilvl.lua"/>
+    <Script file="ilvl.lua"/>
     <Script file="style.lua"/>
 </Ui>

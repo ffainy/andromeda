@@ -76,14 +76,14 @@ function GUI:FormatTextString(str)
     return str
 end
 
-local function AddTextureToOption(parent, index)
+local function addTextureToOption(parent, index)
     local tex = parent[index]:CreateTexture()
     tex:SetInside(nil, 4, 4)
     tex:SetTexture(GUI.TexturesList[index].texture)
     tex:SetVertexColor(0.6, 0.6, 0.6)
 end
 
-local function UpdateValue(key, value, newValue)
+local function updateValue(key, value, newValue)
     if key == 'ACCOUNT' then
         if newValue ~= nil then
             _G.ANDROMEDA_ADB[value] = newValue
@@ -99,7 +99,7 @@ local function UpdateValue(key, value, newValue)
     end
 end
 
-local function GearButtonOnEnter(self)
+local function gearButtonOnEnter(self)
     local classColor = _G.ANDROMEDA_ADB.WidgetHighlightClassColor
     local newColor = _G.ANDROMEDA_ADB.WidgetHighlightColor
 
@@ -110,11 +110,11 @@ local function GearButtonOnEnter(self)
     end
 end
 
-local function GearButtonOnLeave(self)
+local function gearButtonOnLeave(self)
     self.tex:SetVertexColor(0.4, 0.4, 0.4)
 end
 
-local function CreateGearButton(self, name)
+local function createGearButton(self, name)
     local bu = CreateFrame('Button', name, self)
     bu:SetSize(16, 16)
 
@@ -126,13 +126,13 @@ local function CreateGearButton(self, name)
 
     bu.tex = tex
 
-    bu:HookScript('OnEnter', GearButtonOnEnter)
-    bu:HookScript('OnLeave', GearButtonOnLeave)
+    bu:HookScript('OnEnter', gearButtonOnEnter)
+    bu:HookScript('OnLeave', gearButtonOnLeave)
 
     return bu
 end
 
-local function CombatLockdown(event)
+local function combatLockdown(event)
     if not _G[C.ADDON_TITLE .. 'GUI'] then
         return
     end
@@ -140,15 +140,15 @@ local function CombatLockdown(event)
     if event == 'PLAYER_REGEN_DISABLED' then
         if _G[C.ADDON_TITLE .. 'GUI']:IsShown() then
             _G[C.ADDON_TITLE .. 'GUI']:Hide()
-            F:RegisterEvent('PLAYER_REGEN_ENABLED', CombatLockdown)
+            F:RegisterEvent('PLAYER_REGEN_ENABLED', combatLockdown)
         end
     else
         _G[C.ADDON_TITLE .. 'GUI']:Show()
-        F:UnregisterEvent(event, CombatLockdown)
+        F:UnregisterEvent(event, combatLockdown)
     end
 end
 
-local function CheckUIReload(name)
+local function checkUIReload(name)
     if name and not strfind(name, '%*') then
         GUI.NeedUIReload = true
     end
@@ -161,7 +161,7 @@ function GUI:CreateGradientLine(frame, width, x, y, x2, y2)
     flr:SetPoint('TOP', x2, y2)
 end
 
-local function SelectTab(i)
+local function selectTab(i)
     local r, g, b = C.r, C.g, C.b
     local gradStyle = _G.ANDROMEDA_ADB.GradientStyle
     local color = _G.ANDROMEDA_ADB.ButtonBackdropColor
@@ -174,9 +174,17 @@ local function SelectTab(i)
         if num == i then
             if gradStyle then
                 if classColor then
-                    guiTab[num].__gradient:SetGradient('Vertical', CreateColor(r, g, b, 0.25), CreateColor(0, 0, 0, 0.25))
+                    guiTab[num].__gradient:SetGradient(
+                        'Vertical',
+                        CreateColor(r, g, b, 0.25),
+                        CreateColor(0, 0, 0, 0.25)
+                    )
                 else
-                    guiTab[num].__gradient:SetGradient('Vertical', CreateColor(newColor.r, newColor.g, newColor.b, 0.25), CreateColor(0, 0, 0, 0.25))
+                    guiTab[num].__gradient:SetGradient(
+                        'Vertical',
+                        CreateColor(newColor.r, newColor.g, newColor.b, 0.25),
+                        CreateColor(0, 0, 0, 0.25)
+                    )
                 end
             else
                 if classColor then
@@ -189,7 +197,11 @@ local function SelectTab(i)
             guiPage[num]:Show()
         else
             if gradStyle then
-                guiTab[num].__gradient:SetGradient('Vertical', CreateColor(color.r, color.g, color.b, alpha), CreateColor(0, 0, 0, 0.25))
+                guiTab[num].__gradient:SetGradient(
+                    'Vertical',
+                    CreateColor(color.r, color.g, color.b, alpha),
+                    CreateColor(0, 0, 0, 0.25)
+                )
             else
                 guiTab[num].__gradient:SetVertexColor(color.r, color.g, color.b, alpha)
             end
@@ -199,24 +211,24 @@ local function SelectTab(i)
     end
 end
 
-local function Tab_OnClick(self)
+local function tabOnClick(self)
     PlaySound(_G.SOUNDKIT.GS_TITLE_OPTION_OK)
-    SelectTab(self.index)
+    selectTab(self.index)
 end
 
-local function Tab_OnEnter(self)
+local function tabOnEnter(self)
     if self.checked then
         return
     end
 end
 
-local function Tab_OnLeave(self)
+local function tabOnLeave(self)
     if self.checked then
         return
     end
 end
 
-local function CreateTab(parent, i, name)
+local function createTab(parent, i, name)
     local tab = CreateFrame('Button', nil, parent, 'BackdropTemplate')
     tab:SetSize(140, 26)
     F.ReskinButton(tab)
@@ -233,37 +245,37 @@ local function CreateTab(parent, i, name)
     tab.text = F.CreateFS(tab, C.Assets.Fonts.Bold, 13, outline or nil, name, nil, outline and 'NONE' or 'THICK')
     tab.text:SetPoint('LEFT', tab.icon, 'RIGHT', 6, 0)
 
-    tab:HookScript('OnEnter', Tab_OnEnter)
-    tab:HookScript('OnLeave', Tab_OnLeave)
-    tab:HookScript('OnClick', Tab_OnClick)
+    tab:HookScript('OnEnter', tabOnEnter)
+    tab:HookScript('OnLeave', tabOnLeave)
+    tab:HookScript('OnClick', tabOnClick)
 
     return tab
 end
 
-local function Checkbox_OnClick(self)
-    UpdateValue(self.__key, self.__value, self:GetChecked())
-    CheckUIReload(self.__name)
+local function checkboxOnClick(self)
+    updateValue(self.__key, self.__value, self:GetChecked())
+    checkUIReload(self.__name)
     if self.__callback then
         self:__callback()
     end
 end
 
-local function Editbox_OnEscapePressed(self)
-    self:SetText(UpdateValue(self.__key, self.__value))
+local function editboxOnEscapePressed(self)
+    self:SetText(updateValue(self.__key, self.__value))
 end
 
-local function Editbox_OnEnterPressed(self)
-    UpdateValue(self.__key, self.__value, self:GetText())
-    CheckUIReload(self.__name)
+local function editboxOnEnterPressed(self)
+    updateValue(self.__key, self.__value, self:GetText())
+    checkUIReload(self.__name)
     if self.__callback then
         self:__callback()
     end
 end
 
-local function Slider_OnValueChanged(self, v)
+local function sliderOnValueChanged(self, v)
     local current = F:Round(tonumber(v), 2)
-    UpdateValue(self.__key, self.__value, current)
-    CheckUIReload(self.__name)
+    updateValue(self.__key, self.__value, current)
+    checkUIReload(self.__name)
     self.value:SetText(current)
     if self.__callback then
         self:__callback()
@@ -276,7 +288,7 @@ local function updateDropdownSelection(self)
     local dd = self.__owner
     for i = 1, #dd.__options do
         local option = dd.options[i]
-        if i == UpdateValue(dd.__key, dd.__value) then
+        if i == updateValue(dd.__key, dd.__value) then
             if classColor then
                 option:SetBackdropColor(C.r, C.g, C.b, 0.25)
             else
@@ -308,8 +320,8 @@ end
 
 local function updateDropdownClick(self)
     local dd = self.__owner
-    UpdateValue(dd.__key, dd.__value, self.index)
-    CheckUIReload(dd.__name)
+    updateValue(dd.__key, dd.__value, self.index)
+    checkUIReload(dd.__name)
     if dd.__callback then
         dd:__callback()
     end
@@ -319,7 +331,7 @@ local function updateDropdownClick(self)
     end
 end
 
-local function CreateOptions(i)
+local function createOptions(i)
     local outline = _G.ANDROMEDA_ADB.FontOutline
     local parent, offset = guiPage[i].child, 20
 
@@ -342,14 +354,15 @@ local function CreateOptions(i)
             cb.__name = name
             cb.__callback = callback
 
-            cb.label = F.CreateFS(cb, C.Assets.Fonts.Regular, 12, outline or nil, name, nil, outline and 'NONE' or 'THICK')
+            cb.label =
+                F.CreateFS(cb, C.Assets.Fonts.Regular, 12, outline or nil, name, nil, outline and 'NONE' or 'THICK')
             cb.label:SetPoint('LEFT', cb, 'RIGHT', 4, 0)
 
-            cb:SetChecked(UpdateValue(key, value))
-            cb:SetScript('OnClick', Checkbox_OnClick)
+            cb:SetChecked(updateValue(key, value))
+            cb:SetScript('OnClick', checkboxOnClick)
 
             if data and type(data) == 'function' then
-                local bu = CreateGearButton(parent)
+                local bu = createGearButton(parent)
                 bu:SetPoint('LEFT', cb.label, 'RIGHT', 2, 0)
                 bu:SetScript('OnClick', data)
             end
@@ -375,11 +388,22 @@ local function CreateOptions(i)
             eb.__callback = callback
             eb.__default = (key == 'ACCOUNT' and C.AccountSettings[value]) or C.CharacterSettings[key][value]
 
-            eb.label = F.CreateFS(eb, C.Assets.Fonts.Condensed, 11, outline or nil, name, nil, outline and 'NONE' or 'THICK', 'CENTER', 0, 20)
-            eb:SetText(UpdateValue(key, value))
+            eb.label = F.CreateFS(
+                eb,
+                C.Assets.Fonts.Condensed,
+                11,
+                outline or nil,
+                name,
+                nil,
+                outline and 'NONE' or 'THICK',
+                'CENTER',
+                0,
+                20
+            )
+            eb:SetText(updateValue(key, value))
 
-            eb:HookScript('OnEscapePressed', Editbox_OnEscapePressed)
-            eb:HookScript('OnEnterPressed', Editbox_OnEnterPressed)
+            eb:HookScript('OnEscapePressed', editboxOnEscapePressed)
+            eb:HookScript('OnEnterPressed', editboxOnEnterPressed)
 
             if tip then
                 eb.tipHeader = name
@@ -403,10 +427,10 @@ local function CreateOptions(i)
             s.__callback = callback
             s.__default = (key == 'ACCOUNT' and C.AccountSettings[value]) or C.CharacterSettings[key][value]
 
-            s:SetValue(UpdateValue(key, value))
-            s:SetScript('OnValueChanged', Slider_OnValueChanged)
+            s:SetValue(updateValue(key, value))
+            s:SetScript('OnValueChanged', sliderOnValueChanged)
 
-            s.value:SetText(F:Round(UpdateValue(key, value), 2))
+            s.value:SetText(F:Round(updateValue(key, value), 2))
 
             if tip then
                 s.tipHeader = name
@@ -427,7 +451,7 @@ local function CreateOptions(i)
                 offset = offset + 70
             end
 
-            dd.Text:SetText(data[UpdateValue(key, value)])
+            dd.Text:SetText(data[updateValue(key, value)])
 
             dd.__key = key
             dd.__value = value
@@ -440,18 +464,19 @@ local function CreateOptions(i)
             for j = 1, #data do
                 dd.options[j]:HookScript('OnClick', updateDropdownClick)
                 if value == 'UnitframeTextureIndex' or value == 'NameplateTextureIndex' then
-                    AddTextureToOption(dd.options, j) -- texture preview
+                    addTextureToOption(dd.options, j) -- texture preview
                 end
             end
 
-            dd.label = F.CreateFS(dd, C.Assets.Fonts.Condensed, 11, outline or nil, name, nil, outline and 'NONE' or 'THICK')
+            dd.label =
+                F.CreateFS(dd, C.Assets.Fonts.Condensed, 11, outline or nil, name, nil, outline and 'NONE' or 'THICK')
             dd.label:SetPoint('BOTTOM', dd, 'TOP', 0, 4)
             if tip then
                 dd.tipHeader = name
                 F.AddTooltip(dd, 'ANCHOR_RIGHT', tip, 'BLUE')
             end
         elseif optType == 5 then -- colorswatch
-            local swatch = F.CreateColorSwatch(parent, name, UpdateValue(key, value))
+            local swatch = F.CreateColorSwatch(parent, name, updateValue(key, value))
             swatch:SetSize(22, 14)
             local width = 25 + (horizon or 0) * 115
             if horizon then
@@ -475,18 +500,18 @@ local function CreateOptions(i)
     footer:SetPoint('TOPLEFT', 25, -offset)
 end
 
-local function ScrollBar_OnMouseWheel(self, delta)
+local function scrollBarOnMouseWheel(self, delta)
     local scrollBar = self.ScrollBar
     scrollBar:SetValue(scrollBar:GetValue() - delta * 35)
 end
 
-local function CreateConsole(tabIndex)
+local function createGUI(tabIndex)
     if _G[C.ADDON_TITLE .. 'GUI'] then
         _G[C.ADDON_TITLE .. 'GUI']:Show()
         return
     end
 
-    local guiFrame = CreateFrame('Frame', C.ADDON_TITLE .. 'GUI', _G.UIParent)
+    local guiFrame = CreateFrame('Frame', C.ADDON_TITLE .. 'GUI', UIParent)
     tinsert(_G.UISpecialFrames, C.ADDON_TITLE .. 'GUI')
     guiFrame:SetSize(GUI.width, GUI.height)
     guiFrame:SetPoint('CENTER')
@@ -500,8 +525,30 @@ local function CreateConsole(tabIndex)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
     local verStr = format('%s: %s', L['Version'], C.ADDON_VERSION)
-    F.CreateFS(guiFrame, C.ASSET_PATH .. 'fonts\\suez-one.ttf', 22, outline or nil, C.COLORFUL_ADDON_TITLE, nil, outline and 'NONE' or 'THICK', 'TOP', 0, -4)
-    F.CreateFS(guiFrame, C.Assets.Fonts.Condensed, 10, outline or nil, verStr, { 0.7, 0.7, 0.7 }, outline and 'NONE' or 'THICK', 'TOP', 0, -30)
+    F.CreateFS(
+        guiFrame,
+        C.ASSET_PATH .. 'fonts\\suez-one.ttf',
+        22,
+        outline or nil,
+        C.COLORFUL_ADDON_TITLE,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOP',
+        0,
+        -4
+    )
+    F.CreateFS(
+        guiFrame,
+        C.Assets.Fonts.Condensed,
+        10,
+        outline or nil,
+        verStr,
+        { 0.7, 0.7, 0.7 },
+        outline and 'NONE' or 'THICK',
+        'TOP',
+        0,
+        -30
+    )
 
     GUI:CreateGradientLine(guiFrame, 140, -70, -26, 70, -26)
 
@@ -530,7 +577,7 @@ local function CreateConsole(tabIndex)
     F.ReskinButton(btnApply)
 
     for i, name in pairs(tabsList) do
-        guiTab[i] = CreateTab(guiFrame, i, name)
+        guiTab[i] = createTab(guiFrame, i, name)
 
         guiPage[i] = CreateFrame('ScrollFrame', nil, guiFrame, 'UIPanelScrollFrameTemplate')
         guiPage[i]:SetPoint('TOPLEFT', 170, -50)
@@ -542,9 +589,9 @@ local function CreateConsole(tabIndex)
         guiPage[i].child:SetSize(500, 1)
         guiPage[i]:SetScrollChild(guiPage[i].child)
         F.ReskinScroll(guiPage[i].ScrollBar)
-        guiPage[i]:SetScript('OnMouseWheel', ScrollBar_OnMouseWheel)
+        guiPage[i]:SetScript('OnMouseWheel', scrollBarOnMouseWheel)
 
-        CreateOptions(i)
+        createOptions(i)
     end
 
     GUI:CreateProfileFrame(guiPage[15])
@@ -552,13 +599,13 @@ local function CreateConsole(tabIndex)
     GUI:CreateCreditsFrame(guiPage[17])
 
     if tabIndex then
-        SelectTab(tabIndex)
+        selectTab(tabIndex)
     else
-        SelectTab(1)
+        selectTab(1)
     end
 end
 
-function F.ToggleConsole(index)
+function F.ToggleGUI(index)
     if _G[C.ADDON_TITLE .. 'GUI'] then
         if _G[C.ADDON_TITLE .. 'GUI']:IsShown() then
             _G[C.ADDON_TITLE .. 'GUI']:Hide()
@@ -567,86 +614,49 @@ function F.ToggleConsole(index)
         end
     else
         if index then
-            CreateConsole(index)
+            createGUI(index)
         else
-            CreateConsole()
+            createGUI()
         end
     end
     PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
-local function MainMenu_OnShow(self)
-    -- _G.GameMenuButtonLogout:SetPoint('TOP', GUI.GameMenuButton, 'BOTTOM', 0, -14)
-    -- self:SetHeight(self:GetHeight() + GUI.GameMenuButton:GetHeight() + 15 + 20)
-
-    -- _G.GameMenuButtonStore:ClearAllPoints()
-    -- _G.GameMenuButtonStore:SetPoint('TOP', _G.GameMenuButtonHelp, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonWhatsNew:ClearAllPoints()
-    -- _G.GameMenuButtonWhatsNew:SetPoint('TOP', _G.GameMenuButtonStore, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonUIOptions:ClearAllPoints()
-    -- _G.GameMenuButtonUIOptions:SetPoint('TOP', _G.GameMenuButtonOptions, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonEditMode:ClearAllPoints()
-    -- _G.GameMenuButtonEditMode:SetPoint('TOP', _G.GameMenuButtonUIOptions, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonMacros:ClearAllPoints()
-    -- _G.GameMenuButtonMacros:SetPoint('TOP', _G.GameMenuButtonEditMode, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonAddons:ClearAllPoints()
-    -- _G.GameMenuButtonAddons:SetPoint('TOP', _G.GameMenuButtonMacros, 'BOTTOM', 0, -4)
-
-    -- _G.GameMenuButtonQuit:ClearAllPoints()
-    -- _G.GameMenuButtonQuit:SetPoint('TOP', _G.GameMenuButtonLogout, 'BOTTOM', 0, -4)
-end
-
-local function Button_OnClick()
-    if InCombatLockdown() then
-        _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
-        return
-    end
-
-    CreateConsole()
-    HideUIPanel(_G.GameMenuFrame)
-
-    PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
-end
-
-local function CreateGameMenuButton()
-    local bu = CreateFrame('Button', 'GameMenuButton' .. C.ADDON_TITLE, _G.GameMenuFrame, 'GameMenuButtonTemplate, BackdropTemplate')
+local function createGameMenuButton()
+    local bu =
+        CreateFrame('Button', 'GameMenuButtonAndromeda', _G.GameMenuFrame, 'GameMenuButtonTemplate, BackdropTemplate')
     bu:SetText(C.COLORFUL_ADDON_TITLE)
     bu:SetPoint('TOP', _G.GameMenuButtonAddons, 'BOTTOM', 0, -14)
-    --bu:SetScript('OnClick', Button_OnClick)
 
-    GameMenuFrame:HookScript('OnShow', function(self)
-        GameMenuButtonLogout:SetPoint('TOP', bu, 'BOTTOM', 0, -21)
-        self:SetHeight(self:GetHeight() + bu:GetHeight() + 22)
-    end)
+    _G.GameMenuButtonAndromeda:SetSize(200, 36)
+    _G.GameMenuButtonAndromeda:SetPoint('TOP', _G.GameMenuFrame, 0, -15)
 
     bu:SetScript('OnClick', function()
         if InCombatLockdown() then
-            UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
+            _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
             return
         end
-        CreateConsole()
-        HideUIPanel(GameMenuFrame)
+        createGUI()
+        HideUIPanel(_G.GameMenuFrame)
         PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
     end)
 
     if _G.ANDROMEDA_ADB.ReskinBlizz then
-        F.ReskinButton(bu)
+        bu:DisableDrawLayer('BACKGROUND')
+        bu.bg = F.CreateBDFrame(bu, 0, true)
+        local hl = bu:GetHighlightTexture()
+        hl:SetColorTexture(C.r, C.g, C.b, 0.25)
+        hl:SetInside(bu.bg)
+        bu.bg:SetInside(nil, 3, 3)
     end
 
     GUI.GameMenuButton = bu
-
-    _G.GameMenuFrame:HookScript('OnShow', MainMenu_OnShow)
 end
 
 function GUI:OnLogin()
-    CreateGameMenuButton()
+    createGameMenuButton()
 
     GUI:CreateCheatSheet()
 
-    F:RegisterEvent('PLAYER_REGEN_DISABLED', CombatLockdown)
+    F:RegisterEvent('PLAYER_REGEN_DISABLED', combatLockdown)
 end

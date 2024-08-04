@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 local UNITFRAME = F:GetModule('UnitFrame')
-local LBG = F.Libs.LibButtonGlow
+local LCG = F.Libs.LibCustomGlow
 
 local invalidPrio = -1
 local instName
@@ -116,10 +116,10 @@ function UNITFRAME:AuraButton_OnEnter()
     if not self.index then
         return
     end
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
-    _G.GameTooltip:Show()
+    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+    GameTooltip:ClearLines()
+    GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
+    GameTooltip:Show()
 end
 
 function UNITFRAME:CreateAurasIndicator(self)
@@ -249,9 +249,9 @@ function UNITFRAME:AurasIndicator_UpdateButton(button, aura)
     end
     if button.glowFrame then
         if aura.priority == 6 then
-            LBG.ShowOverlayGlow(button.glowFrame)
+            F.ShowOverlayGlow(button.glowFrame)
         else
-            LBG.HideOverlayGlow(button.glowFrame)
+            F.HideOverlayGlow(button.glowFrame)
         end
     end
     button:Show()

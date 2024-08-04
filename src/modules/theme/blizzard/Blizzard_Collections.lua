@@ -77,6 +77,7 @@ C.Themes['Blizzard_Collections'] = function()
     PetJournal.PetCount:SetWidth(140)
     F.CreateBDFrame(MountJournal.MountDisplay.ModelScene, 0.25)
     F.ReskinIcon(MountJournal.MountDisplay.InfoButton.Icon)
+    F.ReskinModelControl(MountJournal.MountDisplay.ModelScene)
 
     F.ReskinButton(_G.MountJournalMountButton)
     F.ReskinButton(_G.PetJournalSummonButton)
@@ -119,7 +120,7 @@ C.Themes['Blizzard_Collections'] = function()
         if petID and isOwned then
             local rarity = select(5, C_PetJournal.GetPetStats(petID))
             if rarity then
-                local r, g, b = GetItemQualityColor(rarity - 1)
+                local r, g, b = C_Item.GetItemQualityColor(rarity - 1)
                 button.name:SetTextColor(r, g, b)
             else
                 button.name:SetTextColor(1, 1, 1)
@@ -143,10 +144,9 @@ C.Themes['Blizzard_Collections'] = function()
 
     F.ReskinEditbox(_G.MountJournalSearchBox)
     F.ReskinEditbox(_G.PetJournalSearchBox)
-    F.ReskinArrow(MountJournal.MountDisplay.ModelScene.RotateLeftButton, 'left')
-    F.ReskinArrow(MountJournal.MountDisplay.ModelScene.RotateRightButton, 'right')
-    F.ReskinFilterButton(_G.PetJournalFilterButton)
-    F.ReskinFilterButton(_G.MountJournalFilterButton)
+
+    F.ReskinFilterButton(PetJournal.FilterDropdown)
+    F.ReskinFilterButton(MountJournal.FilterDropdown)
 
     local togglePlayer = MountJournal.MountDisplay.ModelScene.TogglePlayer
     F.ReskinCheckbox(togglePlayer)
@@ -157,8 +157,6 @@ C.Themes['Blizzard_Collections'] = function()
     bg:SetPoint('TOPLEFT', 3, 0)
     bg:SetPoint('BOTTOMRIGHT', -24, 2)
 
-    _G.MountJournalFilterButton:SetPoint('TOPRIGHT', MountJournal.LeftInset, -5, -8)
-    _G.PetJournalFilterButton:SetPoint('TOPRIGHT', _G.PetJournalLeftInset, -5, -8)
     _G.PetJournalTutorialButton:SetPoint('TOPLEFT', PetJournal, 'TOPLEFT', -14, 14)
 
     local function reskinToolButton(button)
@@ -189,6 +187,22 @@ C.Themes['Blizzard_Collections'] = function()
             movedButton = true
         end
     end)
+
+    local function reskinDynamicButton(button, index)
+        if button.Border then
+            button.Border:Hide()
+        end
+        button:SetPushedTexture(0)
+        button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
+        F.ReskinIcon(select(index, button:GetRegions()), nil)
+        button:SetNormalTexture(0)
+    end
+    reskinDynamicButton(MountJournal.ToggleDynamicFlightFlyoutButton, 1)
+
+    local flyout = MountJournal.DynamicFlightFlyout
+    flyout.Background:Hide()
+    reskinDynamicButton(flyout.OpenDynamicFlightSkillTreeButton, 4)
+    reskinDynamicButton(flyout.DynamicFlightModeButton, 4)
 
     -- Pet card
 
@@ -323,7 +337,7 @@ C.Themes['Blizzard_Collections'] = function()
 
     F.StripTextures(iconsFrame)
     F.ReskinEditbox(ToyBox.searchBox)
-    F.ReskinFilterButton(_G.ToyBoxFilterButton)
+    F.ReskinFilterButton(ToyBox.FilterDropdown)
     F.ReskinArrow(ToyBox.PagingFrame.PrevPageButton, 'left')
     F.ReskinArrow(ToyBox.PagingFrame.NextPageButton, 'right')
 
@@ -350,9 +364,9 @@ C.Themes['Blizzard_Collections'] = function()
         local itemID = bu.itemID
 
         if PlayerHasToy(itemID) then
-            local quality = select(3, GetItemInfo(itemID))
+            local quality = select(3, C_Item.GetItemInfo(itemID))
             if quality then
-                local r, g, b = GetItemQualityColor(quality)
+                local r, g, b = C_Item.GetItemQualityColor(quality)
                 text:SetTextColor(r, g, b)
             else
                 text:SetTextColor(1, 1, 1)
@@ -387,8 +401,8 @@ C.Themes['Blizzard_Collections'] = function()
 
     F.StripTextures(icons)
     F.ReskinEditbox(_G.HeirloomsJournalSearchBox)
-    F.ReskinDropdown(_G.HeirloomsJournalClassDropDown)
-    F.ReskinFilterButton(HeirloomsJournal.FilterButton)
+    F.ReskinDropdown(HeirloomsJournal.ClassDropdown)
+    F.ReskinFilterButton(HeirloomsJournal.FilterDropdown)
     F.ReskinArrow(HeirloomsJournal.PagingFrame.PrevPageButton, 'left')
     F.ReskinArrow(HeirloomsJournal.PagingFrame.NextPageButton, 'right')
 
@@ -489,8 +503,9 @@ C.Themes['Blizzard_Collections'] = function()
 
     F.StripTextures(ItemsCollectionFrame)
     F.ReskinFilterButton(WardrobeCollectionFrame.FilterButton)
-    F.ReskinDropdown(_G.WardrobeCollectionFrameWeaponDropDown)
     F.ReskinEditbox(_G.WardrobeCollectionFrameSearchBox)
+    F.ReskinDropdown(WardrobeCollectionFrame.ClassDropdown)
+    F.ReskinDropdown(ItemsCollectionFrame.WeaponDropdown)
 
     hooksecurefunc(WardrobeCollectionFrame, 'SetTab', function(self, tabID)
         for index = 1, 2 do
@@ -532,9 +547,14 @@ C.Themes['Blizzard_Collections'] = function()
             if not child.styled then
                 child.Background:Hide()
                 child.HighlightTexture:SetTexture('')
-                child.Icon:SetSize(42, 42)
-                F.ReskinIcon(child.Icon)
-                child.IconCover:SetOutside(child.Icon)
+                local icon = child.IconFrame and child.IconFrame.Icon or child.Icon
+                if icon then
+                    icon:SetSize(42, 42)
+                    F.ReskinIcon(icon)
+                    if child.IconCover then
+                        child.IconCover:SetOutside(icon)
+                    end
+                end
 
                 child.SelectedTexture:SetDrawLayer('BACKGROUND')
                 child.SelectedTexture:SetColorTexture(r, g, b, 0.25)
@@ -551,7 +571,7 @@ C.Themes['Blizzard_Collections'] = function()
     local DetailsFrame = SetsCollectionFrame.DetailsFrame
     DetailsFrame.ModelFadeTexture:Hide()
     DetailsFrame.IconRowBackground:Hide()
-    F.ReskinFilterButton(DetailsFrame.VariantSetsButton, 'Down')
+    F.ReskinDropdown(DetailsFrame.VariantSetsDropdown)
 
     hooksecurefunc(SetsCollectionFrame, 'SetItemFrameQuality', function(_, itemFrame)
         local ic = itemFrame.Icon
@@ -582,15 +602,33 @@ C.Themes['Blizzard_Collections'] = function()
     F.StripTextures(WardrobeTransmogFrame)
     F.ReskinPortraitFrame(WardrobeFrame)
     F.ReskinButton(WardrobeTransmogFrame.ApplyButton)
-    F.StripTextures(WardrobeTransmogFrame.SpecButton)
-    F.ReskinArrow(WardrobeTransmogFrame.SpecButton, 'down')
-    WardrobeTransmogFrame.SpecButton:SetPoint('RIGHT', WardrobeTransmogFrame.ApplyButton, 'LEFT', -3, 0)
+    local specButton = WardrobeTransmogFrame.SpecDropdown
+    if specButton then
+        F.StripTextures(specButton)
+        F.ReskinArrow(specButton, 'down')
+        specButton:SetPoint('RIGHT', WardrobeTransmogFrame.ApplyButton, 'LEFT', -3, 0)
+    end
     F.ReskinCheckbox(WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox)
+    F.ReskinModelControl(WardrobeTransmogFrame.ModelScene)
 
     local modelScene = WardrobeTransmogFrame.ModelScene
     modelScene.ClearAllPendingButton:DisableDrawLayer('BACKGROUND')
 
-    local slots = { 'Head', 'Shoulder', 'Chest', 'Waist', 'Legs', 'Feet', 'Wrist', 'Hands', 'Back', 'Shirt', 'Tabard', 'MainHand', 'SecondaryHand' }
+    local slots = {
+        'Head',
+        'Shoulder',
+        'Chest',
+        'Waist',
+        'Legs',
+        'Feet',
+        'Wrist',
+        'Hands',
+        'Back',
+        'Shirt',
+        'Tabard',
+        'MainHand',
+        'SecondaryHand',
+    }
     for i = 1, #slots do
         local slot = modelScene[slots[i] .. 'Button']
         if slot then
@@ -604,15 +642,13 @@ C.Themes['Blizzard_Collections'] = function()
     end
 
     -- Outfit Frame
-    F.ReskinButton(_G.WardrobeOutfitDropDown.SaveButton)
-    F.ReskinDropdown(_G.WardrobeOutfitDropDown)
-    _G.WardrobeOutfitDropDown:SetHeight(32)
-    _G.WardrobeOutfitDropDown.SaveButton:SetPoint('LEFT', _G.WardrobeOutfitDropDown, 'RIGHT', -13, 2)
+    F.ReskinDropdown(WardrobeTransmogFrame.OutfitDropdown)
+    F.ReskinButton(WardrobeTransmogFrame.OutfitDropdown.SaveButton)
 
     -- HPetBattleAny
     local reskinHPet
     CollectionsJournal:HookScript('OnShow', function()
-        if not IsAddOnLoaded('HPetBattleAny') then
+        if not C_AddOns.IsAddOnLoaded('HPetBattleAny') then
             return
         end
         if not reskinHPet then

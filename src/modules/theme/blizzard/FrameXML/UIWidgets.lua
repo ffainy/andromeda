@@ -4,14 +4,15 @@ local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar
 local Type_CaptureBar = _G.Enum.UIWidgetVisualizationType.CaptureBar
 local Type_SpellDisplay = _G.Enum.UIWidgetVisualizationType.SpellDisplay
 local Type_DoubleStatusBar = _G.Enum.UIWidgetVisualizationType.DoubleStatusBar
+local Type_ItemDisplay = _G.Enum.UIWidgetVisualizationType.ItemDisplay
 
-local function ResetLabelColor(text, _, _, _, _, force)
+local function resetLabelColor(text, _, _, _, _, force)
     if not force then
         text:SetTextColor(1, 1, 1, 1, true)
     end
 end
 
-local function ReskinWidgetStatusBar(bar)
+local function reskinWidgetStatusBar(bar)
     if bar and not bar.styled then
         if bar.BG then
             bar.BG:SetAlpha(0)
@@ -56,8 +57,8 @@ local function ReskinWidgetStatusBar(bar)
         if bar.Label then
             bar.Label:SetPoint('CENTER')
             bar.Label:SetFontObject(_G.Game12Font)
-            ResetLabelColor(bar.Label)
-            hooksecurefunc(bar.Label, 'SetTextColor', ResetLabelColor)
+            resetLabelColor(bar.Label)
+            hooksecurefunc(bar.Label, 'SetTextColor', resetLabelColor)
         end
 
         F.SetBD(bar)
@@ -66,16 +67,16 @@ local function ReskinWidgetStatusBar(bar)
     end
 end
 
-local function ReskinDoubleStatusBarWidget(self)
+local function reskinDoubleStatusBarWidget(self)
     if not self.styled then
-        ReskinWidgetStatusBar(self.LeftBar)
-        ReskinWidgetStatusBar(self.RightBar)
+        reskinWidgetStatusBar(self.LeftBar)
+        reskinWidgetStatusBar(self.RightBar)
 
         self.styled = true
     end
 end
 
-local function ReskinPVPCaptureBar(self)
+local function reskinPVPCaptureBar(self)
     self.LeftBar:SetTexture(C.Assets.Textures.StatusbarNormal)
     self.NeutralBar:SetTexture(C.Assets.Textures.StatusbarNormal)
     self.RightBar:SetTexture(C.Assets.Textures.StatusbarNormal)
@@ -98,7 +99,7 @@ local function ReskinPVPCaptureBar(self)
     end
 end
 
-local function ReskinSpellDisplayWidget(spell)
+local function reskinSpellDisplayWidget(spell)
     if not spell.bg then
         spell.Border:SetAlpha(0)
         spell.DebuffBorder:SetAlpha(0)
@@ -107,59 +108,72 @@ local function ReskinSpellDisplayWidget(spell)
     spell.IconMask:Hide()
 end
 
-local function ReskinPowerBarWidget(self)
+local function reskinPowerBarWidget(self)
+    if not self.widgetFrames then
+        return
+    end
+
     for _, widgetFrame in pairs(self.widgetFrames) do
         if widgetFrame.widgetType == Type_StatusBar then
             if not widgetFrame:IsForbidden() then
-                ReskinWidgetStatusBar(widgetFrame.Bar)
+                reskinWidgetStatusBar(widgetFrame.Bar)
             end
         end
     end
 end
 
-local function ReskinWidgetGroups(self)
+local function reskinWidgetItemDisplay(item)
+    if not item.bg then
+        item.bg = F.ReskinIcon(item.Icon)
+        F.ReskinIconBorder(item.IconBorder, true)
+    end
+    item.IconMask:Hide()
+end
+
+local function reskinWidgetGroups(self)
+    if not self.widgetFrames then
+        return
+    end
+
     for _, widgetFrame in pairs(self.widgetFrames) do
         if not widgetFrame:IsForbidden() then
             local widgetType = widgetFrame.widgetType
             if widgetType == Type_DoubleStatusBar then
-                ReskinDoubleStatusBarWidget(widgetFrame)
+                reskinDoubleStatusBarWidget(widgetFrame)
             elseif widgetType == Type_SpellDisplay then
-                ReskinSpellDisplayWidget(widgetFrame.Spell)
+                reskinSpellDisplayWidget(widgetFrame.Spell)
             elseif widgetType == Type_StatusBar then
-                ReskinWidgetStatusBar(widgetFrame.Bar)
+                reskinWidgetStatusBar(widgetFrame.Bar)
+            elseif widgetType == Type_ItemDisplay then
+                reskinWidgetItemDisplay(widgetFrame.Item)
             end
         end
     end
 end
 
 tinsert(C.BlizzThemes, function()
-    hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, 'UpdateWidgetLayout', ReskinWidgetGroups)
-    ReskinWidgetGroups(_G.UIWidgetTopCenterContainerFrame)
+    hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, 'UpdateWidgetLayout', reskinWidgetGroups)
+    reskinWidgetGroups(_G.UIWidgetTopCenterContainerFrame)
 
     hooksecurefunc(_G.UIWidgetBelowMinimapContainerFrame, 'UpdateWidgetLayout', function(self)
+        if not self.widgetFrames then
+            return
+        end
+
         for _, widgetFrame in pairs(self.widgetFrames) do
             if widgetFrame.widgetType == Type_CaptureBar then
                 if not widgetFrame:IsForbidden() then
-                    ReskinPVPCaptureBar(widgetFrame)
+                    reskinPVPCaptureBar(widgetFrame)
                 end
             end
         end
     end)
 
-    hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, 'UpdateWidgetLayout', ReskinPowerBarWidget)
-    ReskinPowerBarWidget(_G.UIWidgetPowerBarContainerFrame)
+    hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, 'UpdateWidgetLayout', reskinPowerBarWidget)
+    reskinPowerBarWidget(_G.UIWidgetPowerBarContainerFrame)
 
-    hooksecurefunc(_G.TopScenarioWidgetContainerBlock.WidgetContainer, 'UpdateWidgetLayout', ReskinPowerBarWidget)
-
-    hooksecurefunc(_G.BottomScenarioWidgetContainerBlock.WidgetContainer, 'UpdateWidgetLayout', function(self)
-        for _, widgetFrame in pairs(self.widgetFrames) do
-            if widgetFrame.widgetType == Type_SpellDisplay then
-                if not widgetFrame:IsForbidden() then
-                    ReskinSpellDisplayWidget(widgetFrame.Spell)
-                end
-            end
-        end
-    end)
+    hooksecurefunc(_G.ObjectiveTrackerUIWidgetContainer, 'UpdateWidgetLayout', reskinPowerBarWidget)
+    reskinPowerBarWidget(_G.ObjectiveTrackerUIWidgetContainer)
 
     -- if font outline enabled in tooltip, fix text shows in two lines on Torghast info
     hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, 'Setup', function(self)
@@ -172,7 +186,7 @@ tinsert(C.BlizzThemes, function()
             return
         end
 
-        ReskinWidgetStatusBar(self.Bar)
+        reskinWidgetStatusBar(self.Bar)
     end)
 
     F.ReskinButton(_G.UIWidgetCenterDisplayFrame.CloseButton)

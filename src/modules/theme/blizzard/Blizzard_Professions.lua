@@ -2,36 +2,49 @@ local F, C = unpack(select(2, ...))
 
 local flyoutFrame
 
+local function reskinFlyoutButton(button)
+    if not button.styled then
+        button.bg = F.ReskinIcon(button.icon)
+        button:SetNormalTexture(0)
+        button:SetPushedTexture(0)
+        button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
+        F.ReskinIconBorder(button.IconBorder, true)
+
+        button.styled = true
+    end
+end
+
 local function refreshFlyoutButtons(self)
     for i = 1, self.ScrollTarget:GetNumChildren() do
         local button = select(i, self.ScrollTarget:GetChildren())
-        if button.IconBorder and not button.styled then
-            button.bg = F.ReskinIcon(button.icon)
-            button:SetNormalTexture(0)
-            button:SetPushedTexture(0)
-            button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-            F.ReskinIconBorder(button.IconBorder, true)
-
-            button.styled = true
+        if button.IconBorder then
+            reskinFlyoutButton(button)
         end
     end
 end
 
-local function reskinProfessionsFlyout(_, parent)
+local function resetFrameStrata(frame)
+    frame.bg:SetFrameStrata('LOW')
+end
+
+function F:ReskinProfessionsFlyout(parent)
     if flyoutFrame then
         return
     end
 
     for i = 1, parent:GetNumChildren() do
         local child = select(i, parent:GetChildren())
-        if child.HideUnownedCheckBox then
+        local checkbox = child.HideUnownedCheckbox
+        if checkbox then
             flyoutFrame = child
 
             F.StripTextures(flyoutFrame)
-            F.SetBD(flyoutFrame):SetFrameLevel(2)
-            F.ReskinCheckbox(flyoutFrame.HideUnownedCheckBox)
-            flyoutFrame.HideUnownedCheckBox.bg:SetInside(nil, 6, 6)
+            flyoutFrame.bg = F.SetBD(flyoutFrame)
+            hooksecurefunc(flyoutFrame, 'SetParent', resetFrameStrata)
+            F.ReskinCheckbox(checkbox)
+            checkbox.bg:SetInside(nil, 6, 6)
             F.ReskinTrimScroll(flyoutFrame.ScrollBar)
+            reskinFlyoutButton(flyoutFrame.UndoItem)
             hooksecurefunc(flyoutFrame.ScrollBox, 'Update', refreshFlyoutButtons)
 
             break
@@ -39,25 +52,25 @@ local function reskinProfessionsFlyout(_, parent)
     end
 end
 
+local function resetButton(button)
+    button:SetNormalTexture(0)
+    button:SetPushedTexture(0)
+    local hl = button:GetHighlightTexture()
+    hl:SetColorTexture(1, 1, 1, 0.25)
+    hl:SetInside(button.bg)
+end
+
 local function reskinSlotButton(button)
     if button and not button.styled then
-        button:SetNormalTexture(0)
-        button:SetPushedTexture(0)
         button.bg = F.ReskinIcon(button.Icon)
         F.ReskinIconBorder(button.IconBorder, true)
-        local hl = button:GetHighlightTexture()
-        hl:SetColorTexture(1, 1, 1, 0.25)
-        hl:SetInside(button.bg)
         if button.SlotBackground then
             button.SlotBackground:Hide()
         end
+        resetButton(button)
+        hooksecurefunc(button, 'Update', resetButton)
 
         button.styled = true
-    end
-
-    if C.IS_NEW_PATCH_10_1 then
-        button:SetNormalTexture(0)
-        button:SetPushedTexture(0)
     end
 end
 
@@ -89,13 +102,13 @@ local function reskinProfessionForm(form)
         hl:SetInside(button.bg)
     end
 
-    local trackBox = form.TrackRecipeCheckBox
+    local trackBox = form.TrackRecipeCheckbox
     if trackBox then
         F.ReskinCheckbox(trackBox)
         trackBox:SetSize(24, 24)
     end
 
-    local checkBox = form.AllocateBestQualityCheckBox
+    local checkBox = form.AllocateBestQualityCheckbox
     if checkBox then
         F.ReskinCheckbox(checkBox)
         checkBox:SetSize(24, 24)
@@ -128,7 +141,6 @@ local function reskinProfessionForm(form)
         if eSlot then
             reskinSlotButton(eSlot.Button)
         end
-        -- todo: salvage flyout, item flyout, recraft flyout
     end)
 end
 
@@ -191,6 +203,7 @@ local function reskinRankBar(rankBar)
     rankBar.Background:Hide()
     rankBar.Rank.Text:SetFontObject(_G.Game12Font)
     F.CreateBDFrame(rankBar.Fill, 1)
+    F.ReskinArrow(rankBar.ExpansionDropdownButton, 'down')
 end
 
 C.Themes['Blizzard_Professions'] = function()
@@ -203,9 +216,9 @@ C.Themes['Blizzard_Professions'] = function()
     F.ReskinButton(craftingPage.CreateAllButton)
     F.ReskinButton(craftingPage.ViewGuildCraftersButton)
     reskinArrowInput(craftingPage.CreateMultipleInputBox)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinMinMax(frame.MaximizeMinimize)
-    end
+    F.ReskinMinMax(frame.MaximizeMinimize)
+    F.ReskinEditbox(craftingPage.MinimizedSearchBox)
+    F.ReskinIcon(craftingPage.ConcentrationDisplay.Icon)
 
     local guildFrame = craftingPage.GuildFrame
     F.StripTextures(guildFrame)
@@ -253,16 +266,14 @@ C.Themes['Blizzard_Professions'] = function()
     end -- in case blizz rename
     F.CreateBDFrame(recipeList, 0.25):SetInside()
     F.ReskinEditbox(recipeList.SearchBox)
-    F.ReskinFilterButton(recipeList.FilterButton)
+    F.ReskinFilterButton(recipeList.FilterDropdown)
 
     local form = craftingPage.SchematicForm
     F.StripTextures(form)
     form.Background:SetAlpha(0)
     F.CreateBDFrame(form, 0.25):SetInside()
     reskinProfessionForm(form)
-    if C.IS_NEW_PATCH_10_1 then
-        form.MinimalBackground:SetAlpha(0)
-    end
+    form.MinimalBackground:SetAlpha(0)
 
     local rankBar = craftingPage.RankBar
     reskinRankBar(rankBar)
@@ -310,7 +321,7 @@ C.Themes['Blizzard_Professions'] = function()
 
     -- Item flyout
     if _G.OpenProfessionsItemFlyout then
-        hooksecurefunc('OpenProfessionsItemFlyout', reskinProfessionsFlyout)
+        hooksecurefunc('OpenProfessionsItemFlyout', F.ReskinProfessionsFlyout)
     end
 
     -- Order page
@@ -331,11 +342,12 @@ C.Themes['Blizzard_Professions'] = function()
     end -- in case blizz rename
     F.CreateBDFrame(rList, 0.25):SetInside()
     F.ReskinEditbox(rList.SearchBox)
-    F.ReskinFilterButton(rList.FilterButton)
+    F.ReskinFilterButton(recipeList.FilterDropdown)
 
     F.ReskinTab(browseFrame.PublicOrdersButton)
     F.ReskinTab(browseFrame.GuildOrdersButton)
     F.ReskinTab(browseFrame.PersonalOrdersButton)
+    F.ReskinTab(browseFrame.NpcOrdersButton)
     F.StripTextures(browseFrame.OrdersRemainingDisplay)
     F.CreateBDFrame(browseFrame.OrdersRemainingDisplay, 0.25)
 
@@ -390,4 +402,34 @@ C.Themes['Blizzard_Professions'] = function()
 
     F.StripTextures(orderDetails.FulfillmentForm.NoteEditBox)
     F.CreateBDFrame(orderDetails.FulfillmentForm.NoteEditBox, 0.25)
+
+    F.ReskinIcon(orderView.ConcentrationDisplay.Icon)
+
+    local rewardsFrame = orderInfo.NPCRewardsFrame
+    if rewardsFrame then
+        rewardsFrame.Background:Hide()
+        F.CreateBDFrame(rewardsFrame.Background, 0.25)
+
+        local function handleRewardButton(button)
+            if not button then
+                return
+            end
+            F.StripTextures(button)
+            button.bg = F.ReskinIcon(button.Icon)
+            F.ReskinIconBorder(button.IconBorder, true)
+        end
+        handleRewardButton(rewardsFrame.RewardItem1)
+        handleRewardButton(rewardsFrame.RewardItem2)
+    end
+
+    -- InspectRecipeFrame
+    local inspectFrame = _G.InspectRecipeFrame
+    if inspectFrame then
+        F.ReskinPortraitFrame(inspectFrame)
+
+        local form = inspectFrame.SchematicForm
+        reskinProfessionForm(form)
+        form.MinimalBackground:SetAlpha(0)
+        F.CreateBDFrame(form, 0.25):SetInside()
+    end
 end

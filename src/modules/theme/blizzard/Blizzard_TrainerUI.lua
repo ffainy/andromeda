@@ -21,7 +21,9 @@ C.Themes['Blizzard_TrainerUI'] = function()
     F.StripTextures(_G.ClassTrainerStatusBar)
     _G.ClassTrainerStatusBar:SetPoint('TOPLEFT', _G.ClassTrainerFrame, 'TOPLEFT', 64, -35)
     _G.ClassTrainerStatusBar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
-    _G.ClassTrainerStatusBar:GetStatusBarTexture():SetGradient('VERTICAL', CreateColor(0.1, 0.3, 0.9, 1), CreateColor(0.2, 0.4, 1, 1))
+    _G.ClassTrainerStatusBar
+        :GetStatusBarTexture()
+        :SetGradient('VERTICAL', CreateColor(0.1, 0.3, 0.9, 1), CreateColor(0.2, 0.4, 1, 1))
     F.ReskinTrimScroll(_G.ClassTrainerFrame.ScrollBar)
 
     hooksecurefunc(_G.ClassTrainerFrame.ScrollBox, 'Update', function(self)
@@ -52,5 +54,5 @@ C.Themes['Blizzard_TrainerUI'] = function()
     F.CreateBDFrame(_G.ClassTrainerStatusBar, 0.25)
 
     F.ReskinButton(_G.ClassTrainerTrainButton)
-    F.ReskinDropdown(_G.ClassTrainerFrameFilterDropDown)
+    F.ReskinFilterButton(_G.ClassTrainerFrame.FilterDropdown)
 end

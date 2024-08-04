@@ -154,6 +154,8 @@ local ignoreInstances = {
     [1626] = true, -- 群星庭院
 }
 
+local QUEST_STRING = 'cFF0000FF.-' .. _G.TRANSMOG_SOURCE_2
+
 QuickQuest:Register('GOSSIP_SHOW', function()
     local npcID = GetNPCID()
     if C.IgnoreQuestNPC[npcID] then
@@ -207,7 +209,7 @@ QuickQuest:Register('GOSSIP_SHOW', function()
     local questGossipID
     for i = 1, numOptions do
         local option = gossipInfoTable[i]
-        if option.name and strfind(option.name, 'cFF0000FF') then
+        if option.name and (strfind(option.name, QUEST_STRING) or option.flags == _G.QuestLabelPrepend) then
             numQuestGossips = numQuestGossips + 1
             questGossipID = option.gossipOptionID
         end
@@ -374,7 +376,7 @@ QuickQuest:Register('QUEST_COMPLETE', function()
         for index = 1, choices do
             local link = GetQuestItemLink('choice', index)
             if link then
-                local value = select(11, GetItemInfo(link))
+                local value = select(11, C_Item.GetItemInfo(link))
                 local itemID = GetItemInfoFromHyperlink(link)
                 value = cashRewards[itemID] or value
 
@@ -441,10 +443,15 @@ local function UnitQuickQuestStatus(self)
         local frame = CreateFrame('Frame', nil, self)
         frame:SetSize(100, 14)
         frame:SetPoint('TOP', self, 'BOTTOM', 0, -2)
-        F.AddTooltip(frame, 'ANCHOR_RIGHT', L['You no longer auto interact quests with current NPC. You can hold key ALT and click the name above to undo this.'])
+        F.AddTooltip(
+            frame,
+            'ANCHOR_RIGHT',
+            L['You no longer auto interact quests with current NPC. You can hold key ALT and click the name above to undo this.']
+        )
 
         local outline = _G.ANDROMEDA_ADB.FontOutline
-        F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, _G.IGNORED, nil, outline and 'NONE' or 'THICK'):SetTextColor(1, 0, 0)
+        F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, _G.IGNORED, nil, outline and 'NONE' or 'THICK')
+            :SetTextColor(1, 0, 0)
 
         self.__ignore = frame
 

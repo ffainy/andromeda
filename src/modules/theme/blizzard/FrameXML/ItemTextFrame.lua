@@ -14,11 +14,7 @@ tinsert(C.BlizzThemes, function()
     _G.ItemTextMaterialBotRight:SetAlpha(0)
 
     F.ReskinPortraitFrame(_G.ItemTextFrame)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.ItemTextScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.ItemTextScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.ItemTextScrollFrame.ScrollBar)
     F.ReskinArrow(_G.ItemTextPrevPageButton, 'left')
     F.ReskinArrow(_G.ItemTextNextPageButton, 'right')
     _G.ItemTextFramePageBg:SetAlpha(0)

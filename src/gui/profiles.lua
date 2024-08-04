@@ -58,10 +58,10 @@ function GUI:Icon_OnEnter()
         return
     end
 
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_TOP')
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:AddLine(L['Shared characters'])
-    _G.GameTooltip:AddLine(' ')
+    GameTooltip:SetOwner(self, 'ANCHOR_TOP')
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(L['Shared characters'])
+    GameTooltip:AddLine(' ')
     local r, g, b
     for _, value in pairs(self.list) do
         for name, class in pairs(value) do
@@ -70,10 +70,10 @@ function GUI:Icon_OnEnter()
             else
                 r, g, b = F:ClassColor(class)
             end
-            _G.GameTooltip:AddLine(name, r, g, b)
+            GameTooltip:AddLine(name, r, g, b)
         end
     end
-    _G.GameTooltip:Show()
+    GameTooltip:Show()
 end
 
 function GUI:Note_OnEscape()

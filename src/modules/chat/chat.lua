@@ -12,7 +12,7 @@ local function updateAnchor(self, _, _, _, x, y)
 
     if not (x == C.UI_GAP and y == C.UI_GAP) then
         self:ClearAllPoints()
-        self:SetPoint('BOTTOMLEFT', _G.UIParent, 'BOTTOMLEFT', C.UI_GAP, C.UI_GAP)
+        self:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', C.UI_GAP, C.UI_GAP)
         self:SetWidth(C.DB.Chat.Width)
         self:SetHeight(C.DB.Chat.Height)
     end
@@ -38,7 +38,7 @@ function CHAT:UpdateSizeAndPosition()
     end
 
     _G.ChatFrame1:ClearAllPoints()
-    _G.ChatFrame1:SetPoint('BOTTOMLEFT', _G.UIParent, 'BOTTOMLEFT', C.UI_GAP, C.UI_GAP)
+    _G.ChatFrame1:SetPoint('BOTTOMLEFT', UIParent, 'BOTTOMLEFT', C.UI_GAP, C.UI_GAP)
     _G.ChatFrame1:SetSize(C.DB.Chat.Width, C.DB.Chat.Height)
 
     isScaling = false
@@ -88,6 +88,15 @@ function CHAT:UpdateTabEventColors(event)
     end
 end
 
+local function updateEditboxFont(editbox)
+    local font = C.Assets.Fonts.Bold
+    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local fontSize = C.DB.Chat.EditboxFontSize
+
+    editbox:SetFont(font, fontSize or 14, outline and 'OUTLINE' or '')
+    editbox.header:SetFont(font, fontSize or 14, outline and 'OUTLINE' or '')
+end
+
 local chatEditboxes = {}
 local function updateEditBoxAnchor(eb)
     local parent = eb.__owner
@@ -103,6 +112,7 @@ end
 
 function CHAT:ToggleEditBoxAnchor()
     for _, eb in pairs(chatEditboxes) do
+        updateEditboxFont(eb)
         updateEditBoxAnchor(eb)
     end
 end
@@ -154,6 +164,8 @@ function CHAT:SetupBackground()
     end
 end
 
+
+
 local function setupChatFrame(frame)
     if not frame or frame.styled then
         return
@@ -181,6 +193,7 @@ local function setupChatFrame(frame)
     eb:SetClampedToScreen(true)
     eb.__owner = frame
     updateEditBoxAnchor(eb)
+    updateEditboxFont(eb)
     eb.bd = F.SetBD(eb)
     tinsert(chatEditboxes, eb)
 
@@ -210,27 +223,17 @@ local function setupChatFrame(frame)
     SetCVar('whisperMode', 'inline') -- blizz reset this on NPE
     _G.CombatLogQuickButtonFrame_CustomTexture:SetTexture(nil)
 
-    for i = 1, 15 do
-        _G.CHAT_FONT_HEIGHTS[i] = i + 9
-    end
-
     CHAT:UpdateTextFading()
-
     CHAT:SetupSizeAndPosition()
 
     F.HideObject(frame.buttonFrame)
-    if not C.IS_NEW_PATCH_10_1 then
-        F.HideObject(frame.ScrollBar)
-        F.HideObject(frame.ScrollToBottomButton)
-    end
-
     F.HideObject(_G.ChatFrameMenuButton)
     F.HideObject(_G.QuickJoinToastButton)
 
     if C.DB.Chat.VoiceButton then
         _G.ChatFrameChannelButton:ClearAllPoints()
         _G.ChatFrameChannelButton:SetPoint('TOPRIGHT', _G.ChatFrame1, 'TOPLEFT', -6, -26)
-        _G.ChatFrameChannelButton:SetParent(_G.UIParent)
+        _G.ChatFrameChannelButton:SetParent(UIParent)
         CHAT.VoiceButton = _G.ChatFrameChannelButton
     else
         F.HideObject(_G.ChatFrameChannelButton)
@@ -238,7 +241,9 @@ local function setupChatFrame(frame)
         F.HideObject(_G.ChatFrameToggleVoiceMuteButton)
     end
 
-    frame.oldAlpha = frame.oldAlpha or 0 -- fix blizz error, need reviewed
+    frame.oldAlpha = frame.oldAlpha or 0 -- fix blizz error
+
+    frame:HookScript('OnMouseWheel', CHAT.OnMouseScroll)
 
     frame.styled = true
 end
@@ -285,12 +290,20 @@ function CHAT:UpdateEditBoxBorderColor()
             if id == 0 then
                 editBox.bd:SetBackdropBorderColor(0, 0, 0)
             else
-                editBox.bd:SetBackdropBorderColor(_G.ChatTypeInfo[mType .. id].r, _G.ChatTypeInfo[mType .. id].g, _G.ChatTypeInfo[mType .. id].b)
+                editBox.bd:SetBackdropBorderColor(
+                    _G.ChatTypeInfo[mType .. id].r,
+                    _G.ChatTypeInfo[mType .. id].g,
+                    _G.ChatTypeInfo[mType .. id].b
+                )
             end
         elseif mType == 'SAY' then
             editBox.bd:SetBackdropBorderColor(0, 0, 0)
         else
-            editBox.bd:SetBackdropBorderColor(_G.ChatTypeInfo[mType].r, _G.ChatTypeInfo[mType].g, _G.ChatTypeInfo[mType].b)
+            editBox.bd:SetBackdropBorderColor(
+                _G.ChatTypeInfo[mType].r,
+                _G.ChatTypeInfo[mType].g,
+                _G.ChatTypeInfo[mType].b
+            )
         end
     end)
 end
@@ -415,12 +428,20 @@ function CHAT:OnMouseScroll(dir)
         end
     end
 end
-hooksecurefunc('FloatingChatFrame_OnMouseScroll', CHAT.OnMouseScroll)
 
 -- Smart bubble
 local function updateChatBubble()
     local name, instType = GetInstanceInfo()
-    if name and (instType == 'raid' or instType == 'party' or instType == 'scenario' or instType == 'pvp' or instType == 'arena') then
+    if
+        name
+        and (
+            instType == 'raid'
+            or instType == 'party'
+            or instType == 'scenario'
+            or instType == 'pvp'
+            or instType == 'arena'
+        )
+    then
         SetCVar('chatBubbles', 1)
     else
         SetCVar('chatBubbles', 0)
@@ -458,7 +479,10 @@ end
 function CHAT.OnChatWhisper(event, ...)
     local msg, author, _, _, _, _, _, _, _, _, _, guid, presenceID = ...
     for word in pairs(whisperList) do
-        if (not IsInGroup() or UnitIsGroupLeader('player') or UnitIsGroupAssistant('player')) and strlower(msg) == strlower(word) then
+        if
+            (not IsInGroup() or UnitIsGroupLeader('player') or UnitIsGroupAssistant('player'))
+            and strlower(msg) == strlower(word)
+        then
             if event == 'CHAT_MSG_BN_WHISPER' then
                 local accountInfo = C_BattleNet.GetAccountInfoByID(presenceID)
                 if accountInfo then
@@ -467,7 +491,10 @@ function CHAT.OnChatWhisper(event, ...)
                     if gameID then
                         local charName = gameAccountInfo.characterName
                         local realmName = gameAccountInfo.realmName
-                        if _G.CanCooperateWithGameAccount(accountInfo) and (not C.DB.Chat.GuildOnly or CHAT:IsUnitInGuild(charName .. '-' .. realmName)) then
+                        if
+                            _G.CanCooperateWithGameAccount(accountInfo)
+                            and (not C.DB.Chat.GuildOnly or CHAT:IsUnitInGuild(charName .. '-' .. realmName))
+                        then
                             BNInviteFriend(gameID)
                         end
                     end
@@ -547,7 +574,10 @@ function CHAT:AltClickToInvite(link)
                 return
             end
             local accountInfo = C_BattleNet.GetAccountInfoByID(bnID)
-            if accountInfo.gameAccountInfo.clientProgram == _G.BNET_CLIENT_WOW and _G.CanCooperateWithGameAccount(accountInfo) then
+            if
+                accountInfo.gameAccountInfo.clientProgram == _G.BNET_CLIENT_WOW
+                and _G.CanCooperateWithGameAccount(accountInfo)
+            then
                 BNInviteFriend(accountInfo.gameAccountInfo.gameAccountID)
             end
         end
@@ -721,4 +751,24 @@ function CHAT:OnLogin()
     CHAT:AddRoleIcon()
     CHAT:UpdateLanguageFilter()
     CHAT:HideInCombat()
+
+    -- Extra elements in chat tab menu
+    do
+        -- Font size
+        local function isSelected(height)
+            local _, fontHeight = FCF_GetCurrentChatFrame():GetFont()
+            return height == floor(fontHeight + 0.5)
+        end
+
+        local function setSelected(height)
+            FCF_SetChatWindowFontSize(nil, FCF_GetChatFrameByID(_G.CURRENT_CHAT_FRAME_ID), height)
+        end
+
+        Menu.ModifyMenu('MENU_FCF_TAB', function(self, rootDescription, data)
+            local fontSizeSubmenu = rootDescription:CreateButton(C.INFO_COLOR .. L['More font size'])
+            for i = 10, 30 do
+                fontSizeSubmenu:CreateRadio((format(_G.FONT_SIZE_TEMPLATE, i)), isSelected, setSelected, i)
+            end
+        end)
+    end
 end

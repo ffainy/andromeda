@@ -1,5 +1,7 @@
 local F, C = unpack(select(2, ...))
 
+local Type_ItemDisplay = Enum.UIWidgetVisualizationType.ItemDisplay
+
 local function ReskinOptionText(text, r, g, b)
     if text then
         text:SetTextColor(r, g, b)
@@ -136,6 +138,19 @@ C.Themes['Blizzard_PlayerChoice'] = function()
                     ReskinOptionText(widgetFrame.Text, 1, 1, 1)
                     if widgetFrame.Spell then
                         ReskinSpellWidget(widgetFrame.Spell)
+                    end
+
+                    if widgetFrame.widgetType == Type_ItemDisplay then
+                        local item = widgetFrame.Item
+                        if item then
+                            item.IconMask:Hide()
+                            item.NameFrame:SetAlpha(0)
+                            if not item.bg then
+                                item.bg = F.ReskinIcon(item.Icon)
+                                item.bg:SetFrameLevel(item.bg:GetFrameLevel() + 1)
+                                F.ReskinIconBorder(item.IconBorder, true)
+                            end
+                        end
                     end
                 end
             end

@@ -50,6 +50,14 @@ function IL:CreateItemTexture(slot, relF, x, y)
     return icon
 end
 
+function IL:ItemString_Expand()
+    self:SetWidth(0)
+end
+
+function IL:ItemString_Collapse()
+    self:SetWidth(100)
+end
+
 function IL:CreateItemString(frame, strType)
     if frame.fontCreated then
         return
@@ -59,14 +67,24 @@ function IL:CreateItemString(frame, strType)
     for index, slot in pairs(inspectSlots) do
         if index ~= 4 then
             local slotFrame = _G[strType .. slot .. 'Slot']
-            slotFrame.iLvlText = F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+            slotFrame.iLvlText =
+                F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
             slotFrame.iLvlText:ClearAllPoints()
             slotFrame.iLvlText:SetPoint('BOTTOMRIGHT', slotFrame, -1, 1)
             local relF, x, y = IL:GetSlotAnchor(index)
-            slotFrame.enchantText = F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+            slotFrame.enchantText =
+                F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
             slotFrame.enchantText:ClearAllPoints()
             slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
             slotFrame.enchantText:SetTextColor(0, 1, 0)
+
+            slotFrame.enchantText:SetJustifyH(strsub(relF, 7))
+            slotFrame.enchantText:SetWidth(100)
+            slotFrame.enchantText:EnableMouse(true)
+            slotFrame.enchantText:HookScript('OnEnter', IL.ItemString_Expand)
+            slotFrame.enchantText:HookScript('OnLeave', IL.ItemString_Collapse)
+            slotFrame.enchantText:HookScript('OnShow', IL.ItemString_Collapse)
+
             for i = 1, 10 do
                 local offset = (i - 1) * 18 + 5
                 local iconX = x > 0 and x + offset or x - offset
@@ -120,7 +138,7 @@ function IL:ItemLevel_UpdateTraits(button, id, link)
             local selected = C_AzeriteEmpoweredItem.IsPowerSelected(empoweredItemLocation, powerID)
             if selected then
                 local spellID = TT:Azerite_PowerToSpell(powerID)
-                local name, _, icon = GetSpellInfo(spellID)
+                local name, icon = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
                 local texture = button['textureIcon' .. i]
                 if name and texture then
                     texture:SetTexture(icon)
@@ -191,7 +209,7 @@ end
 
 function IL:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
     C_Timer.After(0.1, function()
-        local quality = select(3, GetItemInfo(link))
+        local quality = select(3, C_Item.GetItemInfo(link))
         local info = F.GetItemLevel(link, unit, index, C.DB.General.GemEnchant)
         if info == 'tooSoon' then
             return
@@ -220,7 +238,7 @@ function IL:ItemLevel_SetupLevel(frame, strType, unit)
 
             local link = GetInventoryItemLink(unit, index)
             if link then
-                local quality = select(3, GetItemInfo(link))
+                local quality = select(3, C_Item.GetItemInfo(link))
                 local info = F.GetItemLevel(link, unit, index, C.DB.General.GemEnchant)
                 if info == 'tooSoon' then
                     IL:ItemLevel_RefreshInfo(link, unit, index, slotFrame)
@@ -250,7 +268,18 @@ end
 function IL:ItemLevel_FlyoutUpdate(bag, slot, quality)
     if not self.iLvl then
         local outline = _G.ANDROMEDA_ADB.FontOutline
-        self.iLvl = F.CreateFS(self, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -1, 1)
+        self.iLvl = F.CreateFS(
+            self,
+            C.Assets.Fonts.Bold,
+            11,
+            outline or nil,
+            '',
+            nil,
+            outline and 'NONE' or 'THICK',
+            'BOTTOMRIGHT',
+            -1,
+            1
+        )
     end
 
     if quality and quality <= 1 then
@@ -312,7 +341,18 @@ end
 function IL:ItemLevel_ScrappingUpdate()
     if not self.iLvl then
         local outline = _G.ANDROMEDA_ADB.FontOutline
-        self.iLvl = F.CreateFS(self, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -1, 1)
+        self.iLvl = F.CreateFS(
+            self,
+            C.Assets.Fonts.Bold,
+            11,
+            outline or nil,
+            '',
+            nil,
+            outline and 'NONE' or 'THICK',
+            'BOTTOMRIGHT',
+            -1,
+            1
+        )
     end
     if not self.itemLink then
         self.iLvl:SetText('')
@@ -329,11 +369,17 @@ function IL:ItemLevel_ScrappingUpdate()
     self.iLvl:SetTextColor(color.r, color.g, color.b)
 end
 
-function IL.ItemLevel_ScrappingShow(event, addon)
-    if addon == 'Blizzard_ScrappingMachineUI' then
-        for button in pairs(_G.ScrappingMachineFrame.ItemSlots.scrapButtons.activeObjects) do
+function IL:ItemLevel_ScrappingSetup()
+    for button in self.ItemSlots.scrapButtons:EnumerateActive() do
+        if button and not button.iLvl then
             hooksecurefunc(button, 'RefreshIcon', IL.ItemLevel_ScrappingUpdate)
         end
+    end
+end
+
+function IL.ItemLevel_ScrappingShow(event, addon)
+    if addon == 'Blizzard_ScrappingMachineUI' then
+        hooksecurefunc(_G.ScrappingMachineFrame, 'SetupScrapButtonPool', IL.ItemLevel_ScrappingSetup)
 
         F:UnregisterEvent(event, IL.ItemLevel_ScrappingShow)
     end
@@ -342,9 +388,20 @@ end
 function IL:ItemLevel_UpdateMerchant(link)
     if not self.iLvl then
         local outline = _G.ANDROMEDA_ADB.FontOutline
-        self.iLvl = F.CreateFS(_G[self:GetName() .. 'ItemButton'], C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'BOTTOMRIGHT', -1, 1)
+        self.iLvl = F.CreateFS(
+            _G[self:GetName() .. 'ItemButton'],
+            C.Assets.Fonts.Bold,
+            11,
+            outline or nil,
+            '',
+            nil,
+            outline and 'NONE' or 'THICK',
+            'BOTTOMRIGHT',
+            -1,
+            1
+        )
     end
-    local quality = link and select(3, GetItemInfo(link)) or nil
+    local quality = link and select(3, C_Item.GetItemInfo(link)) or nil
     if quality and quality > 1 then
         local level = F.GetItemLevel(link)
         local color = C.QualityColors[quality]
@@ -427,7 +484,18 @@ function IL:ItemLevel_UpdateLoot()
         local button = select(i, self.ScrollTarget:GetChildren())
         if button and button.Item and button.GetElementData then
             if not button.iLvl then
-                button.iLvl = F.CreateFS(button.Item, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'BOTTOMLEFT', 1, 1)
+                button.iLvl = F.CreateFS(
+                    button.Item,
+                    C.Assets.Fonts.Bold,
+                    11,
+                    outline or nil,
+                    '',
+                    nil,
+                    outline and 'NONE' or 'THICK',
+                    'BOTTOMLEFT',
+                    1,
+                    1
+                )
             end
 
             local slotIndex = button:GetSlotIndex()
@@ -449,7 +517,18 @@ function IL:ItemLevel_UpdateBags()
 
     if not button.iLvl then
         local outline = _G.ANDROMEDA_ADB.FontOutline
-        button.iLvl = F.CreateFS(button, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'BOTTOMLEFT', 1, 1)
+        button.iLvl = F.CreateFS(
+            button,
+            C.Assets.Fonts.Bold,
+            11,
+            outline or nil,
+            '',
+            nil,
+            outline and 'NONE' or 'THICK',
+            'BOTTOMLEFT',
+            1,
+            1
+        )
     end
 
     local bagID = button:GetBagID()

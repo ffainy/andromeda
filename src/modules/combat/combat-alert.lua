@@ -313,7 +313,7 @@ function COMBAT:CombatAlert()
         return
     end
 
-    self.combatAlertHolder = CreateFrame('Frame', nil, _G.UIParent)
+    self.combatAlertHolder = CreateFrame('Frame', nil, UIParent)
     self.combatAlertHolder:SetPoint('CENTER')
 
     self.combatAlertWidth = 0
@@ -325,7 +325,7 @@ function COMBAT:CombatAlert()
     COMBAT:UpdateTextFrame()
     COMBAT:UpdateHolderSize()
 
-    F.Mover(self.combatAlertHolder, L['CombatAlert'], 'CombatAlert', { 'CENTER', _G.UIParent, 0, 200 }, self.combatAlertWidth, self.combatAlertHeight)
+    F.Mover(self.combatAlertHolder, L['CombatAlert'], 'CombatAlert', { 'CENTER', UIParent, 0, 200 }, self.combatAlertWidth, self.combatAlertHeight)
 
     F:RegisterEvent('PLAYER_REGEN_DISABLED', COMBAT.PLAYER_REGEN_DISABLED)
     F:RegisterEvent('PLAYER_REGEN_ENABLED', COMBAT.PLAYER_REGEN_ENABLED)

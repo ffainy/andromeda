@@ -23,7 +23,7 @@ A default texture will be applied to the StatusBar and Texture widgets if they d
 ## Options
 
 .timeToHold      - Indicates for how many seconds the castbar should be visible after a _FAILED or _INTERRUPTED
-				   event. Defaults to 0 (number)
+                   event. Defaults to 0 (number)
 .hideTradeSkills - Makes the element ignore casts related to crafting professions (boolean)
 
 ## Attributes
@@ -34,57 +34,61 @@ A default texture will be applied to the StatusBar and Texture widgets if they d
 .empowering       - Indicates whether the current spell is an empowering cast (boolean)
 .notInterruptible - Indicates whether the current spell is interruptible (boolean)
 .spellID          - The spell identifier of the currently cast/channeled/empowering spell (number)
+.numStages        - The number of empowerment stages of the current spell (number?)
+.curStage         - The current empowerment stage of the spell. It updates only if the PostUpdateStage callback is
+                    defined (number?)
+.stagePoints      - The timestamps (in seconds) for each empowerment stage (table)
 
 ## Examples
 
-	-- Position and size
-	local Castbar = CreateFrame('StatusBar', nil, self)
-	Castbar:SetSize(20, 20)
-	Castbar:SetPoint('TOP')
-	Castbar:SetPoint('LEFT')
-	Castbar:SetPoint('RIGHT')
+    -- Position and size
+    local Castbar = CreateFrame('StatusBar', nil, self)
+    Castbar:SetSize(20, 20)
+    Castbar:SetPoint('TOP')
+    Castbar:SetPoint('LEFT')
+    Castbar:SetPoint('RIGHT')
 
-	-- Add a background
-	local Background = Castbar:CreateTexture(nil, 'BACKGROUND')
-	Background:SetAllPoints(Castbar)
-	Background:SetColorTexture(1, 1, 1, .5)
+    -- Add a background
+    local Background = Castbar:CreateTexture(nil, 'BACKGROUND')
+    Background:SetAllPoints(Castbar)
+    Background:SetColorTexture(1, 1, 1, .5)
 
-	-- Add a spark
-	local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
-	Spark:SetSize(20, 20)
-	Spark:SetBlendMode('ADD')
-	Spark:SetPoint('CENTER', Castbar:GetStatusBarTexture(), 'RIGHT', 0, 0)
+    -- Add a spark
+    local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
+    Spark:SetSize(20, 20)
+    Spark:SetBlendMode('ADD')
+    Spark:SetPoint('CENTER', Castbar:GetStatusBarTexture(), 'RIGHT', 0, 0)
 
-	-- Add a timer
-	local Time = Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-	Time:SetPoint('RIGHT', Castbar)
+    -- Add a timer
+    local Time = Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+    Time:SetPoint('RIGHT', Castbar)
 
-	-- Add spell text
-	local Text = Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-	Text:SetPoint('LEFT', Castbar)
+    -- Add spell text
+    local Text = Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+    Text:SetPoint('LEFT', Castbar)
 
-	-- Add spell icon
-	local Icon = Castbar:CreateTexture(nil, 'OVERLAY')
-	Icon:SetSize(20, 20)
-	Icon:SetPoint('TOPLEFT', Castbar, 'TOPLEFT')
+    -- Add spell icon
+    local Icon = Castbar:CreateTexture(nil, 'OVERLAY')
+    Icon:SetSize(20, 20)
+    Icon:SetPoint('TOPLEFT', Castbar, 'TOPLEFT')
 
-	-- Add Shield
-	local Shield = Castbar:CreateTexture(nil, 'OVERLAY')
-	Shield:SetSize(20, 20)
-	Shield:SetPoint('CENTER', Castbar)
+    -- Add Shield
+    local Shield = Castbar:CreateTexture(nil, 'OVERLAY')
+    Shield:SetSize(20, 20)
+    Shield:SetPoint('CENTER', Castbar)
 
-	-- Add safezone
-	local SafeZone = Castbar:CreateTexture(nil, 'OVERLAY')
+    -- Add safezone
+    local SafeZone = Castbar:CreateTexture(nil, 'OVERLAY')
 
-	-- Register it with oUF
-	Castbar.bg = Background
-	Castbar.Spark = Spark
-	Castbar.Time = Time
-	Castbar.Text = Text
-	Castbar.Icon = Icon
-	Castbar.Shield = Shield
-	Castbar.SafeZone = SafeZone
-	self.Castbar = Castbar
+    -- Register it with oUF
+    Castbar.bg = Background
+    Castbar.Spark = Spark
+    Castbar.Time = Time
+    Castbar.Text = Text
+    Castbar.Icon = Icon
+    Castbar.Shield = Shield
+    Castbar.SafeZone = SafeZone
+    self.Castbar = Castbar
 --]]
 
 local _, ns = ...
@@ -102,7 +106,10 @@ local function resetAttributes(self)
 	self.empowering = nil
 	self.notInterruptible = nil
 	self.spellID = nil
-	self.pipStage = nil -- andromeda
+	self.numStages = nil
+	self.curStage = nil
+
+	table.wipe(self.stagePoints)
 
 	for _, pip in next, self.Pips do
 		pip:Hide()
@@ -118,6 +125,8 @@ local function UpdatePips(element, numStages)
 	local stageMaxValue = element.max * 1000
 	local isHoriz = element:GetOrientation() == 'HORIZONTAL'
 	local elementSize = isHoriz and element:GetWidth() or element:GetHeight()
+	element.numStages = numStages
+	element.curStage = 0 -- NOTE: Updates only if the PostUpdateStage callback is present
 
 	for stage = 1, numStages do
 		local duration
@@ -129,6 +138,7 @@ local function UpdatePips(element, numStages)
 
 		if(duration > CASTBAR_STAGE_DURATION_INVALID) then
 			stageTotalDuration = stageTotalDuration + duration
+			element.stagePoints[stage] = stageTotalDuration / 1000
 
 			local portion = stageTotalDuration / stageMaxValue
 			local offset = elementSize * portion
@@ -152,7 +162,9 @@ local function UpdatePips(element, numStages)
 			pip:Show()
 
 			if(isHoriz) then
-				pip:RotateTextures(0)
+				if(pip.RotateTextures) then
+					pip:RotateTextures(0)
+				end
 
 				if(element:GetReverseFill()) then
 					pip:SetPoint('TOP', element, 'TOPRIGHT', -offset, 0)
@@ -162,7 +174,9 @@ local function UpdatePips(element, numStages)
 					pip:SetPoint('BOTTOM', element, 'BOTTOMLEFT', offset, 0)
 				end
 			else
-				pip:RotateTextures(1.5708)
+				if(pip.RotateTextures) then
+					pip:RotateTextures(1.5708)
+				end
 
 				if(element:GetReverseFill()) then
 					pip:SetPoint('LEFT', element, 'TOPLEFT', 0, -offset)
@@ -172,18 +186,36 @@ local function UpdatePips(element, numStages)
 					pip:SetPoint('RIGHT', element, 'BOTTOMRIGHT', 0, offset)
 				end
 			end
-
-			if element.PostUpdatePip then -- andromeda
-				element:PostUpdatePip(pip, stage, stageTotalDuration)
-			end
 		end
+	end
+
+	--[[ Callback: Castbar:PostUpdatePips(numStages)
+	Called after the element has updated stage separators (pips) in an empowered cast.
+
+	* self - the Castbar widget
+	* numStages - the number of stages in the current cast (number)
+	--]]
+	if(element.PostUpdatePips) then
+		element:PostUpdatePips(numStages)
 	end
 end
 
-local function CastStart(self, event, unit)
-	if(self.unit ~= unit) then return end
+--[[ Override: Castbar:ShouldShow(unit)
+Handles check for which unit the castbar should show for.
+Defaults to the object unit.
 
+* self - the Castbar widget
+* unit - the unit for which the update has been triggered (string)
+--]]
+local function ShouldShow(element, unit)
+	return element.__owner.unit == unit
+end
+
+local function CastStart(self, event, unit)
 	local element = self.Castbar
+	if(not (element.ShouldShow or ShouldShow) (element, unit)) then
+		return
+	end
 
 	local numStages, _
 	local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit)
@@ -218,8 +250,6 @@ local function CastStart(self, event, unit)
 	element.holdTime = 0
 	element.castID = castID
 	element.spellID = spellID
-	element.numStages = numStages -- Andromeda
-	-- print(spellID)
 
 	if(element.channeling) then
 		element.duration = endTime - GetTime()
@@ -235,29 +265,6 @@ local function CastStart(self, event, unit)
 	if(element.Spark) then element.Spark:Show() end
 	if(element.Text) then element.Text:SetText(text) end
 	if(element.Time) then element.Time:SetText() end
-
-	-- #TODO
-	-- Andromeda: Get spell target, need a better way to do this
-	local unitTarget = unit and unit .. 'target'
-	if unitTarget and UnitExists(unitTarget) then
-		local tarName = ns[1].ShortenString(UnitName(unitTarget), 4)
-		local hexStr = ns[1]:RgbToHex(ns[1]:UnitColor(unitTarget))
-		local nameStr
-
-		if UnitIsUnit(unitTarget, 'player') then
-			nameStr = string.format('|cffff0000%s|r', string.upper(_G.YOU))
-		else
-			nameStr = string.format('%s%s|r', hexStr, tarName)
-		end
-
-		if element.Text and element.SpellTarget then
-			element.Text:SetFormattedText('%s (%s)', name, nameStr)
-		end
-	else
-		if self.Text then
-			self.Text:SetText('')
-		end
-	end
 
 	local safeZone = element.SafeZone
 	if(safeZone) then
@@ -305,9 +312,11 @@ local function CastStart(self, event, unit)
 end
 
 local function CastUpdate(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
-
 	local element = self.Castbar
+	if(not (element.ShouldShow or ShouldShow) (element, unit)) then
+		return
+	end
+
 	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
 		return
 	end
@@ -362,9 +371,11 @@ local function CastUpdate(self, event, unit, castID, spellID)
 end
 
 local function CastStop(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
-
 	local element = self.Castbar
+	if(not (element.ShouldShow or ShouldShow) (element, unit)) then
+		return
+	end
+
 	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
 		return
 	end
@@ -384,9 +395,11 @@ local function CastStop(self, event, unit, castID, spellID)
 end
 
 local function CastFail(self, event, unit, castID, spellID)
-	if(self.unit ~= unit) then return end
-
 	local element = self.Castbar
+	if(not (element.ShouldShow or ShouldShow) (element, unit)) then
+		return
+	end
+
 	if(not element:IsShown() or element.castID ~= castID or element.spellID ~= spellID) then
 		return
 	end
@@ -415,9 +428,11 @@ local function CastFail(self, event, unit, castID, spellID)
 end
 
 local function CastInterruptible(self, event, unit)
-	if(self.unit ~= unit) then return end
-
 	local element = self.Castbar
+	if(not (element.ShouldShow or ShouldShow) (element, unit)) then
+		return
+	end
+
 	if(not element:IsShown()) then return end
 
 	element.notInterruptible = event == 'UNIT_SPELLCAST_NOT_INTERRUPTIBLE'
@@ -484,6 +499,29 @@ local function onUpdate(self, elapsed)
 			end
 		end
 
+		--[[ Callback: Castbar:PostUpdateStage(stage)
+		Called after the current stage changes.
+
+		* self - the Castbar widget
+		* stage - the stage of the empowered cast (number)
+		--]]
+		if(self.empowering and self.PostUpdateStage) then
+			local old = self.curStage
+			for i = old + 1, self.numStages do
+				if(self.stagePoints[i]) then
+					if(self.duration > self.stagePoints[i]) then
+						self.curStage = i
+
+						if(self.curStage ~= old) then
+							self:PostUpdateStage(i)
+						end
+					else
+						break
+					end
+				end
+			end
+		end
+
 		self:SetValue(self.duration)
 	elseif(self.holdTime > 0) then
 		self.holdTime = self.holdTime - elapsed
@@ -522,7 +560,8 @@ local function Enable(self, unit)
 		self:RegisterEvent('UNIT_SPELLCAST_NOT_INTERRUPTIBLE', CastInterruptible)
 
 		element.holdTime = 0
-		element.Pips = {}
+		element.stagePoints = {}
+		element.Pips = element.Pips or {}
 
 		element:SetScript('OnUpdate', element.OnUpdate or onUpdate)
 

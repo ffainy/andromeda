@@ -3,7 +3,7 @@
 
 local F, C, L = unpack(select(2, ...))
 local EL = F:RegisterModule('EnhancedLoot')
-local LBG = F.Libs.LibButtonGlow
+local LCG = F.Libs.LibCustomGlow
 
 local lootFrame
 local iconSize = 32
@@ -22,8 +22,8 @@ local coinTextureIDs = {
 local function OnEnter(slot)
     local id = slot:GetID()
     if LootSlotHasItem(id) then
-        _G.GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
-        _G.GameTooltip:SetLootItem(id)
+        GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
+        GameTooltip:SetLootItem(id)
 
         CursorUpdate(slot)
     end
@@ -40,7 +40,7 @@ local function OnLeave(slot)
         slot.drop:Hide()
     end
 
-    _G.GameTooltip:Hide()
+    GameTooltip:Hide()
 
     ResetCursor()
 end
@@ -62,9 +62,9 @@ local function OnClick(slot)
 end
 
 local function OnShow(slot)
-    if _G.GameTooltip:IsOwned(slot) then
-        _G.GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
-        _G.GameTooltip:SetLootItem(slot:GetID())
+    if GameTooltip:IsOwned(slot) then
+        GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
+        GameTooltip:SetLootItem(slot:GetID())
 
         CursorOnUpdate(slot)
     end
@@ -171,7 +171,7 @@ function EL.LOOT_OPENED(_, autoloot)
     y = y / lootFrame:GetEffectiveScale()
 
     lootFrame:ClearAllPoints()
-    lootFrame:SetPoint('TOPLEFT', _G.UIParent, 'BOTTOMLEFT', x - 40, y + 20)
+    lootFrame:SetPoint('TOPLEFT', UIParent, 'BOTTOMLEFT', x - 40, y + 20)
     lootFrame:Raise()
 
     local maxQuality = 0
@@ -237,13 +237,13 @@ function EL.LOOT_OPENED(_, autoloot)
                 local questTexture = slot.questTexture
                 if questID and not isActive then
                     questTexture:Show()
-                    LBG.ShowOverlayGlow(slot.iconFrame)
+                    F.ShowOverlayGlow(slot.iconFrame)
                 elseif questID or isQuestItem then
                     questTexture:Hide()
-                    LBG.ShowOverlayGlow(slot.iconFrame)
+                    F.ShowOverlayGlow(slot.iconFrame)
                 else
                     questTexture:Hide()
-                    LBG.HideOverlayGlow(slot.iconFrame)
+                    F.HideOverlayGlow(slot.iconFrame)
                 end
 
                 if lootIcon then
@@ -331,7 +331,7 @@ function EL:OnLogin()
         return
     end
 
-    lootFrame = CreateFrame('Button', C.ADDON_TITLE .. 'LootFrame', _G.UIParent)
+    lootFrame = CreateFrame('Button', C.ADDON_TITLE .. 'LootFrame', UIParent)
     lootFrame:SetFrameStrata('HIGH')
     lootFrame:SetClampedToScreen(true)
     lootFrame:SetSize(slotWidth, slotHeight)

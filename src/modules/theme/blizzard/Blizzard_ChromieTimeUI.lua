@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
---/run LoadAddOn"Blizzard_ChromieTimeUI" ChromieTimeFrame:Show()
+--/run C_AddOns.LoadAddOn"Blizzard_ChromieTimeUI" ChromieTimeFrame:Show()
 C.Themes['Blizzard_ChromieTimeUI'] = function()
     local frame = _G.ChromieTimeFrame
 

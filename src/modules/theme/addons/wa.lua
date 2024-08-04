@@ -1,7 +1,7 @@
 local F, C = unpack(select(2, ...))
 local THEME = F:GetModule('Theme')
 
-local function UpdateIconBgAlpha(icon, _, _, _, alpha)
+local function updateIconBgAlpha(icon, _, _, _, alpha)
     icon.bg:SetAlpha(alpha)
     if icon.bg.__shadow then
         icon.bg.__shadow:SetAlpha(alpha)
@@ -9,7 +9,7 @@ local function UpdateIconBgAlpha(icon, _, _, _, alpha)
 end
 
 local x1, x2, y1, y2 = unpack(C.TEX_COORD)
-local function UpdateIconTexCoord(icon)
+local function updateIconTexCoord(icon)
     if icon.isCutting then
         return
     end
@@ -34,32 +34,37 @@ local function UpdateIconTexCoord(icon)
     icon.isCutting = nil
 end
 
-local function HandleIcon(icon)
-    UpdateIconTexCoord(icon)
-    hooksecurefunc(icon, 'SetTexCoord', UpdateIconTexCoord)
+local function handleIcon(icon)
+    updateIconTexCoord(icon)
+    hooksecurefunc(icon, 'SetTexCoord', updateIconTexCoord)
     icon.bg = F.SetBD(icon, 0)
     icon.bg:SetBackdropBorderColor(0, 0, 0)
     icon.bg:SetFrameLevel(0)
-    hooksecurefunc(icon, 'SetVertexColor', UpdateIconBgAlpha)
+    hooksecurefunc(icon, 'SetVertexColor', updateIconBgAlpha)
 end
 
-local function HandleBar(f)
+local function handleBar(f)
     f.bg = F.SetBD(f.bar, 0)
     f.bg:SetFrameLevel(0)
     f.bg:SetBackdropBorderColor(0, 0, 0)
 end
 
-local function RestyleIconAndBar(f, fType)
+local function resetBgLevel(frame)
+    frame.bg:SetFrameLevel(0)
+end
+
+local function setupIconAndBar(f, fType)
     if fType == 'icon' then
         if not f.styled then
-            HandleIcon(f.icon)
+            handleIcon(f.icon)
 
             f.styled = true
         end
     elseif fType == 'aurabar' then
         if not f.styled then
-            HandleBar(f)
-            HandleIcon(f.icon)
+            handleBar(f)
+            handleIcon(f.icon)
+            hooksecurefunc(f, 'SetFrameStrata', resetBgLevel)
 
             f.styled = true
         end
@@ -68,21 +73,28 @@ local function RestyleIconAndBar(f, fType)
     end
 end
 
-local function RestyleObjects()
+local function reskinWeakAuras()
     if not _G.ANDROMEDA_ADB.ReskinWeakAuras then
         return
     end
 
-    local function OnPrototypeCreate(region)
-        RestyleIconAndBar(region, region.regionType)
+    local WeakAuras = _G.WeakAuras
+    if not WeakAuras or not WeakAuras.Private then
+        return
     end
 
-    local function OnPrototypeModifyFinish(_, region)
-        RestyleIconAndBar(region, region.regionType)
-    end
+    if WeakAuras.Private.regionPrototype then
+        local function OnPrototypeCreate(region)
+            setupIconAndBar(region, region.regionType)
+        end
 
-    hooksecurefunc(_G.WeakAuras.regionPrototype, 'create', OnPrototypeCreate)
-    hooksecurefunc(_G.WeakAuras.regionPrototype, 'modifyFinish', OnPrototypeModifyFinish)
+        local function OnPrototypeModifyFinish(_, region)
+            setupIconAndBar(region, region.regionType)
+        end
+
+        hooksecurefunc(WeakAuras.Private.regionPrototype, 'create', OnPrototypeCreate)
+        hooksecurefunc(WeakAuras.Private.regionPrototype, 'modifyFinish', OnPrototypeModifyFinish)
+    end
 end
 
-THEME:RegisterSkin('WeakAuras', RestyleObjects)
+THEME:RegisterSkin('WeakAuras', reskinWeakAuras)

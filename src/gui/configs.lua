@@ -56,7 +56,7 @@ C.CharacterSettings = {
         GameMenuBarHeight = 22,
         GroupTool = true,
         RuneCheck = false,
-        Countdown = '10',
+        RaidToolCountdown = '10',
 
         MuteAnnoyingSounds = true,
         WeeklyLottery = true,
@@ -166,6 +166,7 @@ C.CharacterSettings = {
         FilterAnima = true,
         FilterRelic = true,
         FilterStone = true,
+        FilterAOE = true,
         AutoSellJunk = true,
         AutoRepair = true,
     },
@@ -178,8 +179,6 @@ C.CharacterSettings = {
         HealthColor = { r = 0.82, g = 0.8, b = 0.77 },
         InvertedHealthColor = { r = 0.1, g = 0.1, b = 0.1 },
         InvertedHealthAlpha = 0.8,
-        FrequentHealth = false,
-        HealthFrequency = 0.2,
         AlternativePower = true,
 
         ShowAuras = true,
@@ -192,6 +191,7 @@ C.CharacterSettings = {
         MinAlpha = 0,
         MaxAlpha = 1,
         Delay = 0,
+        Smooth = 0.3,
         Instance = true,
         Hover = true,
         Combat = true,
@@ -199,6 +199,7 @@ C.CharacterSettings = {
         Focus = true,
         Health = true,
         Casting = true,
+        Vehicle = true,
 
         AbbrName = true,
         RangeCheck = true,
@@ -363,7 +364,6 @@ C.CharacterSettings = {
         ExecuteIndicator = false,
         ExecuteRatio = 0,
         SpitefulIndicator = true,
-        ExplosiveIndicator = true,
         RaidTargetIndicator = true,
         FriendlyClassColor = false,
         HostileClassColor = true,
@@ -413,6 +413,7 @@ C.CharacterSettings = {
         OccludedAlpha = 0.2,
         VerticalSpacing = 0.7,
         HorizontalSpacing = 0.3,
+        PlateRange = 45,
     },
     Tooltip = {
         Enable = true,
@@ -425,7 +426,7 @@ C.CharacterSettings = {
         HideTitle = true,
         HideRealm = true,
         HideGuildRank = true,
-        HideInCombat = false,
+        HideInCombat = 1,
         SpecIlvl = true,
         Covenant = true,
         MythicPlusScore = true,
@@ -511,6 +512,7 @@ C.CharacterSettings = {
         GroupLootThreshold = 2,
         GroupRoleIcon = true,
         DisableProfanityFilter = true,
+        EditboxFontSize = 14,
     },
     Actionbar = {
         Enable = true,
@@ -735,4 +737,5 @@ C.AccountSettings = {
     NameplateTextureIndex = 1,
     NameplateCustomTexture = '',
     IgnoreNotesList = {},
+    LibCustomGlowType = 3,
 }

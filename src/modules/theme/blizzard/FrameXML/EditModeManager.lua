@@ -17,12 +17,10 @@ tinsert(C.BlizzThemes, function()
     F.ReskinClose(frame.CloseButton)
     F.ReskinButton(frame.RevertAllChangesButton)
     F.ReskinButton(frame.SaveChangesButton)
-    F.ReskinDropdown(frame.LayoutDropdown.DropDownMenu)
+    F.ReskinDropdown(frame.LayoutDropdown)
     reskinOptionCheck(frame.ShowGridCheckButton.Button)
     reskinOptionCheck(frame.EnableSnapCheckButton.Button)
-    if C.IS_NEW_PATCH_10_1 then
-        reskinOptionCheck(frame.EnableAdvancedOptionsCheckButton.Button)
-    end
+    reskinOptionCheck(frame.EnableAdvancedOptionsCheckButton.Button)
     F.ReskinStepperSlider(frame.GridSpacingSlider.Slider, true)
     if frame.Tutorial then
         frame.Tutorial.Ring:Hide()
@@ -34,7 +32,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinClose(ssd.CloseButton)
 
     hooksecurefunc(frame.AccountSettings, 'OnEditModeEnter', function(self)
-        local settings = C.IS_NEW_PATCH_10_1 and self.SettingsContainer.ScrollChild.BasicOptionsContainer or self.Settings
+        local settings = self.SettingsContainer.ScrollChild.BasicOptionsContainer
 
         if not settings then
             return
@@ -73,7 +71,7 @@ tinsert(C.BlizzThemes, function()
 
         for dropdown in self.pools:EnumerateActiveByTemplate('EditModeSettingDropdownTemplate') do
             if not dropdown.styled then
-                F.ReskinDropdown(dropdown.Dropdown.DropDownMenu)
+                F.ReskinDropdown(dropdown.Dropdown)
                 dropdown.styled = true
             end
         end

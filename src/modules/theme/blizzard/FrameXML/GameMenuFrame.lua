@@ -11,6 +11,11 @@ tinsert(C.BlizzThemes, function()
     GameMenuFrame.Header:SetPoint('TOP', GameMenuFrame, 0, 7)
     F.SetBD(GameMenuFrame)
     GameMenuFrame.Border:Hide()
+    GameMenuFrame.Header.Text:SetFontObject(_G.Game16Font)
+    local line = GameMenuFrame.Header:CreateTexture(nil, 'ARTWORK')
+    line:SetSize(190, C.MULT)
+    line:SetPoint('BOTTOM', 0, 5)
+    line:SetColorTexture(1, 1, 1, 0.25)
 
     local buttons = {
         'GameMenuButtonHelp',
@@ -31,4 +36,17 @@ tinsert(C.BlizzThemes, function()
             F.ReskinButton(button)
         end
     end
+
+    hooksecurefunc(GameMenuFrame, 'InitButtons', function(self)
+        if not self.buttonPool then
+            return
+        end
+
+        for button in self.buttonPool:EnumerateActive() do
+            if not button.styled then
+                F.ReskinButton(button)
+                button.styled = true
+            end
+        end
+    end)
 end)

@@ -1,13 +1,13 @@
 local F, C = unpack(select(2, ...))
 
-local function SetupButtonHighlight(button, bg)
+local function setupButtonHighlight(button, bg)
     button:SetHighlightTexture(C.Assets.Textures.Backdrop)
     local hl = button:GetHighlightTexture()
     hl:SetVertexColor(C.r, C.g, C.b, 0.25)
     hl:SetInside(bg)
 end
 
-local function SetupStatusbar(bar)
+local function setupStatusbar(bar)
     F.StripTextures(bar)
     bar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
     bar:GetStatusBarTexture():SetGradient('VERTICAL', CreateColor(0, 0.4, 0, 1), CreateColor(0, 0.6, 0, 1))
@@ -36,11 +36,10 @@ C.Themes['Blizzard_AchievementUI'] = function()
         end
     end
 
-    F.ReskinDropdown(_G.AchievementFrameFilterDropDown)
-    _G.AchievementFrameFilterDropDown:ClearAllPoints()
-    _G.AchievementFrameFilterDropDown:SetPoint('TOPRIGHT', -120, 0)
-    _G.AchievementFrameFilterDropDownText:ClearAllPoints()
-    _G.AchievementFrameFilterDropDownText:SetPoint('CENTER', -10, 1)
+    F.ReskinFilterButton(_G.AchievementFrameFilterDropdown)
+    _G.AchievementFrameFilterDropdown:ClearAllPoints()
+    _G.AchievementFrameFilterDropdown:SetPoint('TOPLEFT', 25, -5)
+
     F.ReskinClose(_G.AchievementFrameCloseButton)
 
     -- Search box
@@ -80,7 +79,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
                 F.ReskinIcon(child.Icon)
                 local bg = F.CreateBDFrame(child, 0.25)
                 bg:SetInside()
-                SetupButtonHighlight(child, bg)
+                setupButtonHighlight(child, bg)
 
                 child.styled = true
             end
@@ -99,7 +98,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
                 local bg = F.CreateBDFrame(button, 0.25)
                 bg:SetPoint('TOPLEFT', 0, -1)
                 bg:SetPoint('BOTTOMRIGHT')
-                SetupButtonHighlight(button, bg)
+                setupButtonHighlight(button, bg)
 
                 button.styled = true
             end
@@ -131,7 +130,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
         if objectives and objectives.progressBars then
             for _, bar in next, objectives.progressBars do
                 if not bar.styled then
-                    SetupStatusbar(bar)
+                    setupStatusbar(bar)
                     bar.styled = true
                 end
             end
@@ -207,7 +206,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
 
     for i = 1, 12 do
         local bu = _G['AchievementFrameSummaryCategoriesCategory' .. i]
-        SetupStatusbar(bu)
+        setupStatusbar(bu)
         bu.Label:SetTextColor(1, 1, 1)
         bu.Label:SetPoint('LEFT', bu, 'LEFT', 6, 0)
         bu.Text:SetPoint('RIGHT', bu, 'RIGHT', -5, 0)
@@ -216,7 +215,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
 
     local bar = _G.AchievementFrameSummaryCategoriesStatusBar
     if bar then
-        SetupStatusbar(bar)
+        setupStatusbar(bar)
         _G[bar:GetName() .. 'Title']:SetPoint('LEFT', bar, 'LEFT', 6, 0)
         _G[bar:GetName() .. 'Text']:SetPoint('RIGHT', bar, 'RIGHT', -5, 0)
     end
@@ -255,7 +254,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
                 local bg = F.CreateBDFrame(child, 0.25)
                 bg:SetPoint('TOPLEFT', 2, -C.MULT)
                 bg:SetPoint('BOTTOMRIGHT', 4, C.MULT)
-                SetupButtonHighlight(child, bg)
+                setupButtonHighlight(child, bg)
 
                 child.styled = true
             end
@@ -279,7 +278,7 @@ C.Themes['Blizzard_AchievementUI'] = function()
     local function handleCompareSummary(frame)
         F.StripTextures(frame)
         local bar = frame.StatusBar
-        SetupStatusbar(bar)
+        setupStatusbar(bar)
         bar.Title:SetTextColor(1, 1, 1)
         bar.Title:SetPoint('LEFT', bar, 'LEFT', 6, 0)
         bar.Text:SetPoint('RIGHT', bar, 'RIGHT', -5, 0)

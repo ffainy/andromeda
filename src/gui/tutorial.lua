@@ -153,7 +153,7 @@ end
 local function SetupAddons() end
 
 function TUTORIAL:HelloWorld()
-    local f = CreateFrame('Frame', C.ADDON_TITLE .. 'InstallFrame', _G.UIParent, 'BackdropTemplate')
+    local f = CreateFrame('Frame', C.ADDON_TITLE .. 'InstallFrame', UIParent, 'BackdropTemplate')
     f:SetSize(400, 400)
     f:SetPoint('CENTER')
     f:SetFrameStrata('HIGH')

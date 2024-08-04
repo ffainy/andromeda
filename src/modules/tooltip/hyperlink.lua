@@ -21,10 +21,17 @@ local linkTypes = {
 }
 
 function TOOLTIP:HyperLink_SetPet(link)
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
-    _G.GameTooltip:Show()
+    GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
+    GameTooltip:Show()
     local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(':', link)
-    _G.BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed))
+    _G.BattlePetToolTip_Show(
+        tonumber(speciesID),
+        tonumber(level),
+        tonumber(breedQuality),
+        tonumber(maxHealth),
+        tonumber(power),
+        tonumber(speed)
+    )
 end
 
 function TOOLTIP:HyperLink_GetSectionInfo(id)
@@ -55,19 +62,19 @@ function TOOLTIP:HyperLink_SetJournal(link)
         return
     end
 
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
-    _G.GameTooltip:AddDoubleLine(name, GetDifficultyInfo(diffID))
-    _G.GameTooltip:AddLine(description, 1, 1, 1, 1)
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(idString, C.INFO_COLOR .. id)
-    _G.GameTooltip:Show()
+    GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
+    GameTooltip:AddDoubleLine(name, GetDifficultyInfo(diffID))
+    GameTooltip:AddLine(description, 1, 1, 1, 1)
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(idString, C.INFO_COLOR .. id)
+    GameTooltip:Show()
 end
 
 function TOOLTIP:HyperLink_SetTypes(link)
-    _G.GameTooltip.__isHoverTip = true
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
-    _G.GameTooltip:SetHyperlink(link)
-    _G.GameTooltip:Show()
+    GameTooltip.__isHoverTip = true
+    GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
+    GameTooltip:SetHyperlink(link)
+    GameTooltip:Show()
 end
 
 function TOOLTIP:HyperLink_OnEnter(link, ...)
@@ -89,20 +96,24 @@ end
 
 function TOOLTIP:HyperLink_OnLeave(_, ...)
     _G.BattlePetTooltip:Hide()
-    _G.GameTooltip:Hide()
-    _G.GameTooltip.__isHoverTip = nil
+    GameTooltip:Hide()
+    GameTooltip.__isHoverTip = nil
 
     if orig2[self] then
         return orig2[self](self, ...)
     end
 end
 
-local function HookCommunitiesFrame(event, addon)
-    if addon == 'Blizzard_Communities' then
-        _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkEnter', TOOLTIP.HyperLink_OnEnter)
-        _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkLeave', TOOLTIP.HyperLink_OnLeave)
+local function hookMessageFrame()
+    _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkEnter', TOOLTIP.HyperLink_OnEnter)
+    _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkLeave', TOOLTIP.HyperLink_OnLeave)
+end
 
-        F:UnregisterEvent(event, HookCommunitiesFrame)
+local function hookCommunitiesFrame(event, addon)
+    if addon == 'Blizzard_Communities' then
+        hookMessageFrame()
+
+        F:UnregisterEvent(event, hookCommunitiesFrame)
     end
 end
 
@@ -115,5 +126,9 @@ function TOOLTIP:HyperLink()
         frame:SetScript('OnHyperlinkLeave', TOOLTIP.HyperLink_OnLeave)
     end
 
-    F:RegisterEvent('ADDON_LOADED', HookCommunitiesFrame)
+    if C_AddOns.IsAddOnLoaded('Blizzard_Communities') then
+        hookMessageFrame()
+    else
+        F:RegisterEvent('ADDON_LOADED', hookCommunitiesFrame)
+    end
 end

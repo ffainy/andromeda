@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
-local function ReskinQuestHeader(header, isCalling)
+local function reskinQuestHeader(header, isCalling)
     if header.styled then
         return
     end
@@ -15,18 +15,10 @@ local function ReskinQuestHeader(header, isCalling)
         header.TopFiligree:Hide()
     end
 
-    local collapseButton = isCalling and header or header.CollapseButton
-    if collapseButton then
-        collapseButton:GetPushedTexture():SetAlpha(0)
-        collapseButton:GetHighlightTexture():SetAlpha(0)
-        F.ReskinCollapse(collapseButton, true)
-        collapseButton.bg:SetFrameLevel(6)
-    end
-
     header.styled = true
 end
 
-local function ReskinSessionDialog(_, dialog)
+local function reskinSessionDialog(_, dialog)
     if not dialog.styled then
         F.StripTextures(dialog)
         F.SetBD(dialog)
@@ -40,8 +32,8 @@ local function ReskinSessionDialog(_, dialog)
     end
 end
 
-local function ReskinAWQHeader()
-    if IsAddOnLoaded('AngrierWorldQuests') then
+local function reskinAWQHeader()
+    if C_AddOns.IsAddOnLoaded('AngrierWorldQuests') then
         local button = _G['AngrierWorldQuestsHeader']
         if button and not button.styled then
             F.ReskinCollapse(button, true)
@@ -58,26 +50,22 @@ tinsert(C.BlizzThemes, function()
 
     local QuestMapFrame = _G.QuestMapFrame
     QuestMapFrame.VerticalSeparator:SetAlpha(0)
-    QuestMapFrame.Background:SetAlpha(0)
 
     local QuestScrollFrame = _G.QuestScrollFrame
-    QuestScrollFrame.DetailFrame.TopDetail:SetAlpha(0)
-    QuestScrollFrame.DetailFrame.BottomDetail:SetAlpha(0)
     QuestScrollFrame.Contents.Separator:SetAlpha(0)
-    ReskinQuestHeader(QuestScrollFrame.Contents.StoryHeader)
+    reskinQuestHeader(QuestScrollFrame.Contents.StoryHeader)
+
+    QuestScrollFrame.Background:SetAlpha(0)
+    F.StripTextures(QuestScrollFrame.BorderFrame)
+    F.StripTextures(QuestMapFrame.DetailsFrame.BackFrame)
 
     local campaignOverview = QuestMapFrame.CampaignOverview
     campaignOverview.BG:SetAlpha(0)
-    ReskinQuestHeader(campaignOverview.Header)
+    reskinQuestHeader(campaignOverview.Header)
 
-    if C.IS_NEW_PATCH_10_1 then
-        QuestScrollFrame.Edge:Hide()
-        F.ReskinTrimScroll(QuestScrollFrame.ScrollBar)
-        F.ReskinTrimScroll(campaignOverview.ScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(QuestScrollFrame.ScrollBar)
-        F.ReskinScroll(campaignOverview.ScrollFrame.ScrollBar)
-    end
+    QuestScrollFrame.Edge:Hide()
+    F.ReskinTrimScroll(QuestScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(campaignOverview.ScrollFrame.ScrollBar)
 
     -- Quest details
 
@@ -85,20 +73,17 @@ tinsert(C.BlizzThemes, function()
     local CompleteQuestFrame = DetailsFrame.CompleteQuestFrame
 
     F.StripTextures(DetailsFrame)
-    F.StripTextures(DetailsFrame.RewardsFrame)
     F.StripTextures(DetailsFrame.ShareButton)
     DetailsFrame.Bg:SetAlpha(0)
     DetailsFrame.SealMaterialBG:SetAlpha(0)
 
-    F.ReskinButton(DetailsFrame.BackButton)
     F.ReskinButton(DetailsFrame.AbandonButton)
     F.ReskinButton(DetailsFrame.ShareButton)
     F.ReskinButton(DetailsFrame.TrackButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.QuestMapDetailsScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.QuestMapDetailsScrollFrame.ScrollBar)
-    end
+    F.ReskinTrimScroll(_G.QuestMapDetailsScrollFrame.ScrollBar)
+
+    F.ReskinButton(DetailsFrame.BackFrame.BackButton)
+    F.StripTextures(DetailsFrame.RewardsFrameContainer.RewardsFrame)
 
     DetailsFrame.AbandonButton:ClearAllPoints()
     DetailsFrame.AbandonButton:SetPoint('BOTTOMLEFT', DetailsFrame, -1, 0)
@@ -129,30 +114,43 @@ tinsert(C.BlizzThemes, function()
 
         for button in QuestScrollFrame.titleFramePool:EnumerateActive() do
             if not button.styled then
-                button.Check:SetAtlas('checkmark-minimal')
+                if button.Checkbox then
+                    F.StripTextures(button.Checkbox, 2)
+                    F.CreateBDFrame(button.Checkbox, 0, true)
+                end
                 button.styled = true
             end
         end
 
         for header in QuestScrollFrame.campaignHeaderFramePool:EnumerateActive() do
-            ReskinQuestHeader(header)
+            reskinQuestHeader(header)
         end
 
         for header in QuestScrollFrame.campaignHeaderMinimalFramePool:EnumerateActive() do
-            ReskinQuestHeader(header)
+            if header.CollapseButton and not header.styled then
+                F.StripTextures(header)
+                F.CreateBDFrame(header.Background, 0.25)
+                header.Highlight:SetColorTexture(1, 1, 1, 0.25)
+                header.styled = true
+            end
         end
 
         for header in QuestScrollFrame.covenantCallingsHeaderFramePool:EnumerateActive() do
-            ReskinQuestHeader(header, true)
+            reskinQuestHeader(header, true)
         end
 
-        ReskinAWQHeader()
+        reskinAWQHeader()
     end)
 
-    -- Complete quest frame
-    F.StripTextures(CompleteQuestFrame)
-    F.StripTextures(CompleteQuestFrame.CompleteButton)
-    F.ReskinButton(CompleteQuestFrame.CompleteButton)
+    -- Map legend
+    local mapLegend = QuestMapFrame.MapLegend
+    if mapLegend then
+        F.StripTextures(mapLegend.BorderFrame)
+        F.ReskinButton(mapLegend.BackButton)
+        F.ReskinTrimScroll(mapLegend.ScrollFrame.ScrollBar)
+        F.StripTextures(mapLegend.ScrollFrame)
+        F.CreateBDFrame(mapLegend.ScrollFrame, 0.25)
+    end
 
     -- [[ Quest log popup detail frame ]]
 
@@ -163,11 +161,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(QuestLogPopupDetailFrame.TrackButton)
     F.ReskinButton(QuestLogPopupDetailFrame.ShareButton)
     QuestLogPopupDetailFrame.SealMaterialBG:SetAlpha(0)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.QuestLogPopupDetailFrameScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.QuestLogPopupDetailFrameScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.QuestLogPopupDetailFrameScrollFrame.ScrollBar)
 
     -- Show map button
 
@@ -206,7 +200,7 @@ tinsert(C.BlizzThemes, function()
     sessionManagement.BG:Hide()
     F.CreateBDFrame(sessionManagement, 0.25)
 
-    hooksecurefunc(_G.QuestSessionManager, 'NotifyDialogShow', ReskinSessionDialog)
+    hooksecurefunc(_G.QuestSessionManager, 'NotifyDialogShow', reskinSessionDialog)
 
     local executeSessionCommand = sessionManagement.ExecuteSessionCommand
     F.ReskinButton(executeSessionCommand)

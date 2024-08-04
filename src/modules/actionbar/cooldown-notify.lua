@@ -1,17 +1,17 @@
 local F, C, L = unpack(select(2, ...))
 local ACTIONBAR = F:GetModule('ActionBar')
 
-local function SendNotifyMessage(msg)
+local function sendMsg(text)
     if IsPartyLFG() then
-        SendChatMessage(msg, 'INSTANCE_CHAT')
+        SendChatMessage(text, 'INSTANCE_CHAT')
     elseif IsInRaid() then
-        SendChatMessage(msg, 'RAID')
+        SendChatMessage(text, 'RAID')
     elseif IsInGroup() then
-        SendChatMessage(msg, 'PARTY')
+        SendChatMessage(text, 'PARTY')
     end
 end
 
-local function GetRemainTime(second)
+local function getRemainTime(second)
     if second > 60 then
         return format('%d:%.2d', second / 60, second % 60)
     else
@@ -22,32 +22,40 @@ end
 local lastCDSend = 0
 function ACTIONBAR:SendCurrentSpell(thisTime, spellID)
     local spellLink = GetSpellLink(spellID)
-    local charges, maxCharges, chargeStart, chargeDuration = GetSpellCharges(spellID)
+    local chargeInfo = C_Spell.GetSpellCharges(spellID)
+    local charges = chargeInfo and chargeInfo.currentCharges
+    local maxCharges = chargeInfo and chargeInfo.maxCharges
+    local chargeStart = chargeInfo and chargeInfo.cooldownStartTime
+    local chargeDuration = chargeInfo and chargeInfo.cooldownDuration
     if charges and maxCharges then
         if charges ~= maxCharges then
             local remain = chargeStart + chargeDuration - thisTime
-            SendChatMessage(format(L['%s %s/%s next charge remaining %s.'], spellLink, charges, maxCharges, GetRemainTime(remain)), 'PARTY')
+            sendMsg(
+                format(L['%s %s/%s next charge remaining %s.'], spellLink, charges, maxCharges, getRemainTime(remain))
+            )
         else
-            SendChatMessage(format(L['%s %s/%s all charges ready.'], spellLink, charges, maxCharges), 'PARTY')
+            sendMsg(format(L['%s %s/%s all charges ready.'], spellLink, charges, maxCharges))
         end
     else
-        local start, duration = GetSpellCooldown(spellID)
+        local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
+        local start = cooldownInfo and cooldownInfo.startTime
+        local duration = cooldownInfo and cooldownInfo.duration
         if start and duration > 0 then
             local remain = start + duration - thisTime
-            SendChatMessage(format(L['%s cooldown remaining %s.'], spellLink, GetRemainTime(remain)), 'PARTY')
+            sendMsg(format(L['%s cooldown remaining %s.'], spellLink, getRemainTime(remain)))
         else
-            SendChatMessage(format(L['%s is now available.'], spellLink), 'PARTY')
+            sendMsg(format(L['%s is now available.'], spellLink))
         end
     end
 end
 
-function ACTIONBAR:SendCurrentItem(thisTime, itemID, itemLink)
+function ACTIONBAR:SendCurrentItem(thisTime, itemID, itemLink, itemCount)
     local start, duration = GetItemCooldown(itemID)
     if start and duration > 0 then
         local remain = start + duration - thisTime
-        SendNotifyMessage(format(L['%s cooldown remaining %s.'], itemLink, GetRemainTime(remain)))
+        sendMsg(format(L['%s cooldown remaining %s.'], itemLink .. ' x' .. itemCount, getRemainTime(remain)))
     else
-        SendNotifyMessage(format(L['%s is now available.'], itemLink))
+        sendMsg(format(L['%s is now available.'], itemLink .. ' x' .. itemCount))
     end
 end
 
@@ -68,26 +76,31 @@ function ACTIONBAR:AnalyzeButtonCooldown()
     end
     lastCDSend = thisTime
 
-    local spellType, id = GetActionInfo(self._state_action)
+    local spellType, id, subType = GetActionInfo(self._state_action)
+    local itemCount = GetActionCount(self._state_action)
     if spellType == 'spell' then
         ACTIONBAR:SendCurrentSpell(thisTime, id)
     elseif spellType == 'item' then
-        local itemName, itemLink = GetItemInfo(id)
-        ACTIONBAR:SendCurrentItem(thisTime, id, itemLink or itemName)
+        local itemName, itemLink = C_Item.GetItemInfo(id)
+        ACTIONBAR:SendCurrentItem(thisTime, id, itemLink or itemName, itemCount)
     elseif spellType == 'macro' then
-        local spellID = GetMacroSpell(id)
+        local spellID = subType == 'spell' and id or GetMacroSpell(id)
         local _, itemLink = GetMacroItem(id)
         local itemID = itemLink and GetItemInfoFromHyperlink(itemLink)
         if spellID then
             ACTIONBAR:SendCurrentSpell(thisTime, spellID)
         elseif itemID then
-            ACTIONBAR:SendCurrentItem(thisTime, itemID, itemLink)
+            ACTIONBAR:SendCurrentItem(thisTime, itemID, itemLink, itemCount)
         end
     end
 end
 
 function ACTIONBAR:CooldownNotify()
     if not C.DB.Actionbar.Enable then
+        return
+    end
+
+    if not ACTIONBAR then
         return
     end
 

@@ -17,18 +17,40 @@ local AddonDependency = {
 
 local IncompatibleList = {}
 local function ConstructFrame()
-    local frame = CreateFrame('Frame', nil, _G.UIParent)
+    local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetPoint('TOP', 0, -200)
     frame:SetFrameStrata('HIGH')
     F.CreateMF(frame)
     F.SetBD(frame)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    F.CreateFS(frame, C.Assets.Fonts.Bold, 18, outline or nil, L['Incompatible AddOns:'], 'RED', outline and 'NONE' or 'THICK', 'TOPLEFT', 10, -10)
+    F.CreateFS(
+        frame,
+        C.Assets.Fonts.Bold,
+        18,
+        outline or nil,
+        L['Incompatible AddOns:'],
+        'RED',
+        outline and 'NONE' or 'THICK',
+        'TOPLEFT',
+        10,
+        -10
+    )
 
     local offset = 0
     for _, addon in pairs(IncompatibleList) do
-        F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, addon, false, outline and 'NONE' or 'THICK', 'TOPLEFT', 10, -(50 + offset))
+        F.CreateFS(
+            frame,
+            C.Assets.Fonts.Regular,
+            14,
+            outline or nil,
+            addon,
+            false,
+            outline and 'NONE' or 'THICK',
+            'TOPLEFT',
+            10,
+            -(50 + offset)
+        )
         offset = offset + 24
     end
     frame:SetSize(300, 100 + offset)
@@ -44,9 +66,9 @@ local function ConstructFrame()
     disable.text:SetTextColor(1, 0.8, 0)
     disable:SetScript('OnClick', function()
         for _, addon in pairs(IncompatibleList) do
-            DisableAddOn(addon, true)
+            C_AddOns.DisableAddOn(addon)
             if AddonDependency[addon] then
-                DisableAddOn(AddonDependency[addon], true)
+                C_AddOns.DisableAddOn(AddonDependency[addon])
             end
         end
         ReloadUI()
@@ -55,7 +77,7 @@ end
 
 function NOTIFICATION:CheckIncompatible()
     for addon in pairs(IncompatibleAddOns) do
-        if IsAddOnLoaded(addon) then
+        if C_AddOns.IsAddOnLoaded(addon) then
             tinsert(IncompatibleList, addon)
         end
     end

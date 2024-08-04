@@ -69,15 +69,15 @@ function M:InboxItem_OnEnter()
         end
 
         if itemAttached > 1 then
-            _G.GameTooltip:AddLine(L['Attach List'])
+            GameTooltip:AddLine(L['Attach List'])
             for itemID, count in pairs(inboxItems) do
-                local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = GetItemInfo(itemID)
+                local itemName, _, itemQuality, _, _, _, _, _, _, itemTexture = C_Item.GetItemInfo(itemID)
                 if itemName then
-                    local r, g, b = GetItemQualityColor(itemQuality)
-                    _G.GameTooltip:AddDoubleLine(' |T' .. itemTexture .. ':12:12:0:0:50:50:4:46:4:46|t ' .. itemName, count, r, g, b)
+                    local r, g, b = C_Item.GetItemQualityColor(itemQuality)
+                    GameTooltip:AddDoubleLine(' |T' .. itemTexture .. ':12:12:0:0:50:50:4:46:4:46|t ' .. itemName, count, r, g, b)
                 end
             end
-            _G.GameTooltip:Show()
+            GameTooltip:Show()
         end
     end
 end
@@ -326,9 +326,9 @@ function M:TotalCash_OnEnter()
     end
 
     if totalCash > 0 then
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-        _G.GameTooltip:AddLine(M:GetMoneyString(totalCash, true), 1, 1, 1)
-        _G.GameTooltip:Show()
+        GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+        GameTooltip:AddLine(M:GetMoneyString(totalCash, true), 1, 1, 1)
+        GameTooltip:Show()
     end
 end
 
@@ -456,15 +456,15 @@ function M:ArrangeDefaultElements()
     _G.SendMailCostMoneyFrame:SetAlpha(0)
 
     _G.SendMailMailButton:HookScript('OnEnter', function(self)
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_TOP')
-        _G.GameTooltip:ClearLines()
+        GameTooltip:SetOwner(self, 'ANCHOR_TOP')
+        GameTooltip:ClearLines()
         local sendPrice = GetSendMailPrice()
         local colorStr = '|cffffffff'
         if sendPrice > GetMoney() then
             colorStr = '|cffff0000'
         end
-        _G.GameTooltip:AddLine(_G.SEND_MAIL_COST .. colorStr .. M:GetMoneyString(sendPrice, true))
-        _G.GameTooltip:Show()
+        GameTooltip:AddLine(_G.SEND_MAIL_COST .. colorStr .. M:GetMoneyString(sendPrice, true))
+        GameTooltip:Show()
     end)
     _G.SendMailMailButton:HookScript('OnLeave', F.HideTooltip)
 end
@@ -473,7 +473,7 @@ function M:OnLogin()
     if not C.DB.General.EnhancedMailBox then
         return
     end
-    if IsAddOnLoaded('Postal') then
+    if C_AddOns.IsAddOnLoaded('Postal') then
         return
     end
 

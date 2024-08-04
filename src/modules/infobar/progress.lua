@@ -42,9 +42,11 @@ local questlist = {
     { name = L['Timewarped Badge Reward'], id = 45799, texture = 1530590 }, -- MoP
     { name = L['Timewarped Badge Reward'], id = 55499, texture = 1129683 }, -- WoD
     { name = L['Timewarped Badge Reward'], id = 64710, texture = 1467047 }, -- Legion
-    { name = GetSpellInfo(388945), id = 70866 }, -- SoDK
+    { name = C_Spell.GetSpellName(388945), id = 70866 }, -- SoDK
     { name = '', id = 70906, itemID = 200468 }, -- Grand hunt
-    { name = '', id = 70893, itemID = 200095 }, -- Community feast
+    { name = '', id = 70893, questName = true }, -- Community feast
+    { name = '', id = 79226, questName = true }, -- The big dig
+    { name = '', id = 78319, questName = true }, -- The superbloom
 }
 
 local lesserVisions = { 58151, 58155, 58156, 58167, 58168 }
@@ -202,29 +204,29 @@ local function getFormattedTimeLeft(timeLeft)
     return format('%.2d:%.2d', timeLeft / 60, timeLeft % 60)
 end
 
-local communityFeastTime = {
-    ['TW'] = 1679747400, -- 20:30
-    ['KR'] = 1679747400, -- 20:30
-    ['EU'] = 1679749200, -- 21:00
-    ['US'] = 1679751000, -- 21:30
-    ['CN'] = 1679751000, -- 21:30
-}
-
 local itemCache = {}
 local function getItemLink(itemID)
     local link = itemCache[itemID]
     if not link then
-        link = select(2, GetItemInfo(itemID))
+        link = select(2, C_Item.GetItemInfo(itemID))
         itemCache[itemID] = link
     end
     return link
 end
 
+local communityFeastTime = {
+    ["CN"] = 1679747400, -- 20:30
+    ['TW'] = 1679747400, -- 20:30
+    ['KR'] = 1679747400, -- 20:30
+    ['EU'] = 1679749200, -- 21:00
+    ['US'] = 1679751000, -- 21:30
+}
+
 local title
 local function addTitle(text)
     if not title then
-        _G.GameTooltip:AddLine(' ')
-        _G.GameTooltip:AddLine(text, 0.6, 0.8, 1)
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(text, 0.6, 0.8, 1)
         title = true
     end
 end
@@ -232,12 +234,17 @@ end
 local function onMouseUp(_, btn)
     if btn == 'RightButton' then
         if not _G.WeeklyRewardsFrame then
-            LoadAddOn('Blizzard_WeeklyRewards')
+            C_AddOns.LoadAddOn('Blizzard_WeeklyRewards')
         end
         if InCombatLockdown() then
             F:TogglePanel(_G.WeeklyRewardsFrame)
         else
             ToggleFrame(_G.WeeklyRewardsFrame)
+        end
+
+        local dialog = _G.WeeklyRewardExpirationWarningDialog
+        if dialog and dialog:IsShown() then
+            dialog:Hide()
         end
     else
         ToggleCalendar()
@@ -250,7 +257,7 @@ local function onShiftDown(self)
     end
 end
 
-local communityFeastStr = GetSpellInfo(388961)
+local communityFeastStr = C_Spell.GetSpellName(388961)
 local function onEnter(self)
     self.entered = true
 
@@ -258,7 +265,7 @@ local function onEnter(self)
 
     local r, g, b
     local anchorTop = C.DB.Infobar.AnchorTop
-    local GameTooltip = _G.GameTooltip
+    local GameTooltip = GameTooltip
 
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
@@ -310,7 +317,16 @@ local function onEnter(self)
         if v.name and C_QuestLog.IsQuestFlaggedCompleted(v.id) then
             if v.name == L['Timewarped'] and isTimeWalker and checkTexture(v.texture) or v.name ~= L['Timewarped'] then
                 addTitle(_G.QUESTS_LABEL)
-                GameTooltip:AddDoubleLine(v.itemID and getItemLink(v.itemID) or v.name, _G.QUEST_COMPLETE, 1, 1, 1, 1, 0, 0)
+                GameTooltip:AddDoubleLine(
+                    (v.itemID and getItemLink(v.itemID)) or (v.questName and QuestUtils_GetQuestName(v.id)) or v.name,
+                    _G.QUEST_COMPLETE,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0
+                )
             end
         end
     end
@@ -321,7 +337,9 @@ local function onEnter(self)
         for _, areaPoiIDs in next, stormGroup do
             for _, areaPoiID in next, areaPoiIDs do
                 local poiInfo = C_AreaPoiInfo.GetAreaPOIInfo(mapID, areaPoiID)
-                local elementType = poiInfo and poiInfo.atlasName and strmatch(poiInfo.atlasName, 'ElementalStorm%-Lesser%-(.+)')
+                local elementType = poiInfo
+                    and poiInfo.atlasName
+                    and strmatch(poiInfo.atlasName, 'ElementalStorm%-Lesser%-(.+)')
 
                 if elementType then
                     addTitle(poiInfo.name)
@@ -337,7 +355,16 @@ local function onEnter(self)
                         r, g, b = 0, 1, 0
                     end
 
-                    GameTooltip:AddDoubleLine(mapInfo.name .. getElementalType(elementType), getFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+                    GameTooltip:AddDoubleLine(
+                        mapInfo.name .. getElementalType(elementType),
+                        getFormattedTimeLeft(timeLeft),
+                        1,
+                        1,
+                        1,
+                        r,
+                        g,
+                        b
+                    )
 
                     break
                 end
@@ -386,8 +413,26 @@ local function onEnter(self)
             r, g, b = 0.6, 0.6, 0.6
         end -- green text if progressing
 
-        GameTooltip:AddDoubleLine(date('%m/%d %H:%M', nextTime - duration * 2), date('%m/%d %H:%M', nextTime - duration), 0.6, 0.6, 0.6, r, g, b)
-        GameTooltip:AddDoubleLine(date('%m/%d %H:%M', nextTime), date('%m/%d %H:%M', nextTime + duration), 1, 1, 1, 1, 1, 1)
+        GameTooltip:AddDoubleLine(
+            date('%m/%d %H:%M', nextTime - duration * 2),
+            date('%m/%d %H:%M', nextTime - duration),
+            0.6,
+            0.6,
+            0.6,
+            r,
+            g,
+            b
+        )
+        GameTooltip:AddDoubleLine(
+            date('%m/%d %H:%M', nextTime),
+            date('%m/%d %H:%M', nextTime + duration),
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+        )
     end
 
     if IsShiftKeyDown() then
@@ -434,12 +479,39 @@ local function onEnter(self)
                     r, g, b = 0, 1, 0
                 end
 
-                GameTooltip:AddDoubleLine(L['Current Invasion: '] .. zoneName, format('%.2d:%.2d', timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
-                GameTooltip:AddDoubleLine(L['Current Invasion: '] .. zoneName, getFormattedTimeLeft(timeLeft), 1, 1, 1, r, g, b)
+                GameTooltip:AddDoubleLine(
+                    L['Current Invasion: '] .. zoneName,
+                    format('%.2d:%.2d', timeLeft / 60, timeLeft % 60),
+                    1,
+                    1,
+                    1,
+                    r,
+                    g,
+                    b
+                )
+                GameTooltip:AddDoubleLine(
+                    L['Current Invasion: '] .. zoneName,
+                    getFormattedTimeLeft(timeLeft),
+                    1,
+                    1,
+                    1,
+                    r,
+                    g,
+                    b
+                )
             end
 
             local nextLocation = getNextLocation(nextTime, index)
-            GameTooltip:AddDoubleLine(L['Next Invasion: '] .. nextLocation, date('%m/%d %H:%M', nextTime), 1, 1, 1, 1, 1, 1)
+            GameTooltip:AddDoubleLine(
+                L['Next Invasion: '] .. nextLocation,
+                date('%m/%d %H:%M', nextTime),
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            )
         end
     else
         GameTooltip:AddLine(' ')

@@ -13,7 +13,7 @@ local itemSpells, ignoredSpells = {}, {}
 local FRAME
 local TEXTURE
 
-FRAME = CreateFrame('Frame', C.ADDON_TITLE .. 'CooldownPulseFrame', _G.UIParent, 'BackdropTemplate')
+FRAME = CreateFrame('Frame', C.ADDON_TITLE .. 'CooldownPulseFrame', UIParent, 'BackdropTemplate')
 FRAME:SetSize(iconSize, iconSize)
 
 TEXTURE = FRAME:CreateTexture(nil, 'ARTWORK')
@@ -88,10 +88,13 @@ local function onUpdate(_, update)
                 local getCooldownDetails
                 if v[2] == 'spell' then
                     getCooldownDetails = memoize(function()
-                        local start, duration, enabled = GetSpellCooldown(v[3])
+                        local cooldownInfo = C_Spell.GetSpellCooldown(v[3])
+			            local start = cooldownInfo and cooldownInfo.startTime
+			            local duration = cooldownInfo and cooldownInfo.duration
+                        local enabled = cooldownInfo and cooldownInfo.isEnabled
                         return {
-                            name = GetSpellInfo(v[3]),
-                            texture = GetSpellTexture(v[3]),
+                            name = C_Spell.GetSpellName(v[3]),
+                            texture = C_Spell.GetSpellTexture(v[3]),
                             start = start,
                             duration = duration,
                             enabled = enabled,
@@ -101,7 +104,7 @@ local function onUpdate(_, update)
                     getCooldownDetails = memoize(function()
                         local start, duration, enabled = C_Container.GetItemCooldown(i)
                         return {
-                            name = GetItemInfo(i),
+                            name = C_Item.GetItemInfo(i),
                             texture = v[3],
                             start = start,
                             duration = duration,
@@ -210,7 +213,7 @@ function FRAME:UNIT_SPELLCAST_SUCCEEDED(unit, _, spellID)
     if unit == 'player' then
         local itemID = itemSpells[spellID]
         if itemID then
-            local texture = select(10, GetItemInfo(itemID))
+            local texture = select(10, C_Item.GetItemInfo(itemID))
             watching[itemID] = { GetTime(), 'item', texture }
             itemSpells[spellID] = nil
         else
@@ -230,7 +233,7 @@ function FRAME:COMBAT_LOG_EVENT_UNFILTERED()
 
     if eventType == 'SPELL_CAST_SUCCESS' then
         if isPet and isMine then
-            local name = GetSpellInfo(spellID)
+            local name = C_Spell.GetSpellName(spellID)
             local index = getPetActionIndexByName(name)
             if index and not select(6, GetPetActionInfo(index)) then
                 watching[spellID] = { GetTime(), 'pet', index }
@@ -271,7 +274,7 @@ function CDP:OnLogin()
     FRAME.bg = F.SetBD(FRAME)
     FRAME.bg:Hide()
 
-    local mover = F.Mover(FRAME, L['CooldownPulse'], 'CooldownPulse', { 'CENTER', _G.UIParent }, iconSize, iconSize)
+    local mover = F.Mover(FRAME, L['CooldownPulse'], 'CooldownPulse', { 'CENTER', UIParent }, iconSize, iconSize)
     FRAME:ClearAllPoints()
     FRAME:SetPoint('CENTER', mover)
 
@@ -304,13 +307,13 @@ function CDP:OnLogin()
     hooksecurefunc(C_Container, 'UseContainerItem', function(bag, slot)
         local itemID = C_Container.GetContainerItemID(bag, slot)
         if itemID and not trackItemSpell(itemID) then
-            local texture = select(10, GetItemInfo(itemID))
+            local texture = select(10, C_Item.GetItemInfo(itemID))
             watching[itemID] = { GetTime(), 'item', texture }
         end
     end)
 end
 
 F:RegisterSlashCommand('/cdpulse', function()
-    tinsert(animating, { GetSpellTexture(87214) })
+    tinsert(animating, { C_Spell.GetSpellTexture(87214) })
     FRAME:SetScript('OnUpdate', onUpdate)
 end)

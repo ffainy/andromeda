@@ -3,16 +3,10 @@ local F, C = unpack(select(2, ...))
 C.Themes['Blizzard_AlliedRacesUI'] = function()
     local AlliedRacesFrame = _G.AlliedRacesFrame
     F.ReskinPortraitFrame(AlliedRacesFrame)
-    select(2, AlliedRacesFrame.ModelFrame:GetRegions()):Hide()
+    select(2, AlliedRacesFrame.ModelScene:GetRegions()):Hide()
 
     local scrollFrame = AlliedRacesFrame.RaceInfoFrame.ScrollFrame
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(scrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(scrollFrame.ScrollBar)
-        scrollFrame.ScrollBar.ScrollUpBorder:Hide()
-        scrollFrame.ScrollBar.ScrollDownBorder:Hide()
-    end
+    F.ReskinTrimScroll(scrollFrame.ScrollBar)
     AlliedRacesFrame.RaceInfoFrame.AlliedRacesRaceName:SetTextColor(1, 0.8, 0)
     scrollFrame.Child.RaceDescriptionText:SetTextColor(1, 1, 1)
     scrollFrame.Child.RacialTraitsLabel:SetTextColor(1, 0.8, 0)

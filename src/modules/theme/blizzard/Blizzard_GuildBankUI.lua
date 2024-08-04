@@ -8,13 +8,8 @@ C.Themes['Blizzard_GuildBankUI'] = function()
     _G.GuildBankFrame.MoneyFrameBG:Hide()
     F.ReskinButton(_G.GuildBankFrame.WithdrawButton)
     F.ReskinButton(_G.GuildBankFrame.DepositButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.GuildBankFrame.Log.ScrollBar)
-        F.ReskinTrimScroll(_G.GuildBankInfoScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.GuildBankTransactionsScrollFrameScrollBar)
-        F.ReskinScroll(_G.GuildBankInfoScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.GuildBankFrame.Log.ScrollBar)
+    F.ReskinTrimScroll(_G.GuildBankInfoScrollFrame.ScrollBar)
     F.ReskinButton(_G.GuildBankFrame.BuyInfo.PurchaseButton)
     F.ReskinButton(_G.GuildBankFrame.Info.SaveButton)
     F.ReskinEditbox(_G.GuildItemSearchBox)

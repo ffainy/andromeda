@@ -61,7 +61,7 @@ do
             if name == addonName then
                 callback()
                 return true
-            elseif name == C.ADDON_NAME and IsAddOnLoaded(addonName) then
+            elseif name == C.ADDON_NAME and C_AddOns.IsAddOnLoaded(addonName) then
                 callback()
                 return true
             end
@@ -156,12 +156,24 @@ do
             return
         end
 
-        local width, height, txLeft, txRight, txTop, txBottom = info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
+        local width, height, txLeft, txRight, txTop, txBottom =
+            info.width, info.height, info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
         local atlasWidth = width / (txRight - txLeft)
         local atlasHeight = height / (txBottom - txTop)
         local str = '|T%s:%d:%d:0:0:%d:%d:%d:%d:%d:%d|t'
 
-        return format(str, file, (sizeX or 0), (sizeY or 0), atlasWidth, atlasHeight, atlasWidth * txLeft, atlasWidth * txRight, atlasHeight * txTop, atlasHeight * txBottom)
+        return format(
+            str,
+            file,
+            (sizeX or 0),
+            (sizeY or 0),
+            atlasWidth,
+            atlasHeight,
+            atlasWidth * txLeft,
+            atlasWidth * txRight,
+            atlasHeight * txTop,
+            atlasHeight * txBottom
+        )
     end
 
     -- GUID to npcID
@@ -242,64 +254,32 @@ do
             slotData.iLvl = nil
             slotData.enchantText = nil
 
-            local isHoA = C.IS_NEW_PATCH_10_1 and data.id == 158075 or data.args and data.args[2] and data.args[2].intVal == 158075
             local num = 0
             for i = 2, #data.lines do
                 local lineData = data.lines[i]
-                if C.IS_NEW_PATCH_10_1 then
-                    if not slotData.iLvl then
-                        local text = lineData.leftText
-                        local found = text and strfind(text, ilvlStr)
-                        if found then
-                            local level = strmatch(text, '(%d+)%)?$')
-                            slotData.iLvl = tonumber(level) or 0
-                        end
-                    elseif isHoA then
-                        if lineData.essenceIcon then
-                            num = num + 1
-                            slotData.gems[num] = lineData.essenceIcon
-                            slotData.gemsColor[num] = lineData.leftColor
-                        end
-                    else
-                        if lineData.enchantID then
-                            slotData.enchantText = strmatch(lineData.leftText, enchantStr)
-                        elseif lineData.gemIcon then
-                            num = num + 1
-                            slotData.gems[num] = lineData.gemIcon
-                        elseif lineData.socketType then
-                            num = num + 1
-                            slotData.gems[num] = format('Interface\\ItemSocketingFrame\\UI-EmptySocket-%s', lineData.socketType)
-                        end
+                if not slotData.iLvl then
+                    local text = lineData.leftText
+                    local found = text and strfind(text, ilvlStr)
+                    if found then
+                        local level = strmatch(text, '(%d+)%)?$')
+                        slotData.iLvl = tonumber(level) or 0
+                    end
+                elseif data.id == 158075 then -- heart of azeroth
+                    if lineData.essenceIcon then
+                        num = num + 1
+                        slotData.gems[num] = lineData.essenceIcon
+                        slotData.gemsColor[num] = lineData.leftColor
                     end
                 else
-                    local argVal = lineData and lineData.args
-                    if argVal then
-                        if not slotData.iLvl then
-                            local text = argVal[2] and argVal[2].stringVal
-                            local found = text and strfind(text, ilvlStr)
-                            if found then
-                                local level = strmatch(text, '(%d+)%)?$')
-                                slotData.iLvl = tonumber(level) or 0
-                            end
-                        elseif isHoA then
-                            if argVal[6] and argVal[6].field == 'essenceIcon' then
-                                num = num + 1
-                                slotData.gems[num] = argVal[6].intVal
-                                slotData.gemsColor[num] = argVal[3] and argVal[3].colorVal
-                            end
-                        else
-                            local lineInfo = argVal[4] and argVal[4].field
-                            if lineInfo == 'enchantID' then
-                                local enchant = argVal[2] and argVal[2].stringVal
-                                slotData.enchantText = strmatch(enchant, enchantStr)
-                            elseif lineInfo == 'gemIcon' then
-                                num = num + 1
-                                slotData.gems[num] = argVal[4].intVal
-                            elseif lineInfo == 'socketType' then
-                                num = num + 1
-                                slotData.gems[num] = format('Interface\\ItemSocketingFrame\\UI-EmptySocket-%s', argVal[4].stringVal)
-                            end
-                        end
+                    if lineData.enchantID then
+                        slotData.enchantText = strmatch(lineData.leftText, enchantStr)
+                    elseif lineData.gemIcon then
+                        num = num + 1
+                        slotData.gems[num] = lineData.gemIcon
+                    elseif lineData.socketType then
+                        num = num + 1
+                        slotData.gems[num] =
+                            format('Interface\\ItemSocketingFrame\\UI-EmptySocket-%s', lineData.socketType)
                     end
                 end
             end
@@ -329,25 +309,12 @@ do
                     break
                 end
 
-                if C.IS_NEW_PATCH_10_1 then
-                    local text = lineData.leftText
-                    local found = text and strfind(text, ilvlStr)
-                    if found then
-                        local level = strmatch(text, '(%d+)%)?$')
-                        iLvlDB[link] = tonumber(level)
-                        break
-                    end
-                else
-                    local argVal = lineData.args
-                    if argVal then
-                        local text = argVal[2] and argVal[2].stringVal
-                        local found = text and strfind(text, ilvlStr)
-                        if found then
-                            local level = strmatch(text, '(%d+)%)?$')
-                            iLvlDB[link] = tonumber(level)
-                            break
-                        end
-                    end
+                local text = lineData.leftText
+                local found = text and strfind(text, ilvlStr)
+                if found then
+                    local level = strmatch(text, '(%d+)%)?$')
+                    iLvlDB[link] = tonumber(level)
+                    break
                 end
             end
 
@@ -434,27 +401,11 @@ do
             end
 
             for i = #lineData, 1, -1 do
-                if C.IS_NEW_PATCH_10_1 then
-                    local line = lineData[i]
-
-                    if line.price then
-                        return false
-                    end
-
-                    return line.leftText and unknownStr[line.leftText]
-                else
-                    local argVal = lineData[i] and lineData[i].args
-                    if argVal then
-                        if argVal[4] and argVal[4].field == 'price' then
-                            return false
-                        end
-
-                        local stringVal = argVal[2] and argVal[2].stringVal
-                        if unknownStr[stringVal] then
-                            return true
-                        end
-                    end
+                local line = lineData[i]
+                if line.price then
+                    return false
                 end
+                return line.leftText and unknownStr[line.leftText]
             end
         end
 
@@ -506,7 +457,7 @@ end
 do
     -- Dropdown menu
 
-    F.EasyMenu = CreateFrame('Frame', C.ADDON_TITLE .. 'EasyMenu', _G.UIParent, 'UIDropDownMenuTemplate')
+    F.EasyMenu = CreateFrame('Frame', C.ADDON_TITLE .. 'EasyMenu', UIParent, 'UIDropDownMenuTemplate')
 
     -- Toggle panel
 
@@ -734,21 +685,21 @@ do
 
     do
         function F:HideTooltip()
-            _G.GameTooltip:Hide()
+            GameTooltip:Hide()
         end
 
         local function tooltipOnEnter(self)
-            _G.GameTooltip:SetOwner(self, self.anchor, 0, 4)
-            _G.GameTooltip:ClearLines()
+            GameTooltip:SetOwner(self, self.anchor, 0, 4)
+            GameTooltip:ClearLines()
 
             if self.tipHeader then
-                _G.GameTooltip:AddLine(self.tipHeader)
+                GameTooltip:AddLine(self.tipHeader)
             end
 
             local r, g, b
 
             if tonumber(self.text) then
-                _G.GameTooltip:SetSpellByID(self.text)
+                GameTooltip:SetSpellByID(self.text)
             elseif self.text then
                 if self.color == 'CLASS' then
                     r, g, b = F:HexToRgb(C.MY_CLASS_COLOR)
@@ -769,13 +720,13 @@ do
                 end
 
                 if self.blankLine then
-                    _G.GameTooltip:AddLine(' ')
+                    GameTooltip:AddLine(' ')
                 end
 
-                _G.GameTooltip:AddLine(self.text, r / 255, g / 255, b / 255, 1)
+                GameTooltip:AddLine(self.text, r / 255, g / 255, b / 255, 1)
             end
 
-            _G.GameTooltip:Show()
+            GameTooltip:Show()
         end
 
         function F:AddTooltip(anchor, text, color, blankLine)
@@ -1211,7 +1162,8 @@ do
                 opt[i]:SetSize(width - 8, height)
                 F.CreateBD(opt[i])
 
-                local text = F.CreateFS(opt[i], font, 11, outline or nil, j, nil, outline and 'NONE' or 'THICK', 'LEFT', 5, 0)
+                local text =
+                    F.CreateFS(opt[i], font, 11, outline or nil, j, nil, outline and 'NONE' or 'THICK', 'LEFT', 5, 0)
                 text:SetPoint('RIGHT', -5, 0)
                 opt[i].text = j
                 opt[i].index = i
@@ -1247,7 +1199,7 @@ do
 
         local function cancelPicker()
             local swatch = _G.ColorPickerFrame.__swatch
-            local r, g, b = _G.ColorPicker_GetPreviousValues()
+            local r, g, b = _G.ColorPickerFrame:GetPreviousValues()
             swatch.tex:SetVertexColor(r, g, b)
             swatch.color.r, swatch.color.g, swatch.color.b = r, g, b
         end
@@ -1255,14 +1207,14 @@ do
         local function pickerOnClick(self)
             local r, g, b = self.color.r, self.color.g, self.color.b
             _G.ColorPickerFrame.__swatch = self
-            _G.ColorPickerFrame.func = updatePicker
+            _G.ColorPickerFrame.swatchFunc = updatePicker
             _G.ColorPickerFrame.previousValues = { r = r, g = g, b = b }
             _G.ColorPickerFrame.cancelFunc = cancelPicker
-            _G.ColorPickerFrame:SetColorRGB(r, g, b)
+            _G.ColorPickerFrame.Content.ColorPicker:SetColorRGB(r, g, b)
             _G.ColorPickerFrame:Show()
         end
 
-        local function GetSwatchTexColor(tex)
+        local function getSwatchTexColor(tex)
             local r, g, b = tex:GetVertexColor()
             r = F:Round(r, 2)
             g = F:Round(g, 2)
@@ -1273,7 +1225,7 @@ do
         local function pickerOnDoubleClick(swatch)
             local defaultColor = swatch.__default
             if defaultColor then
-                _G.ColorPickerFrame:SetColorRGB(defaultColor.r, defaultColor.g, defaultColor.b)
+                _G.ColorPickerFrame.Content.ColorPicker:SetColorRGB(defaultColor.r, defaultColor.g, defaultColor.b)
             end
         end
 
@@ -1289,7 +1241,15 @@ do
 
             if name then
                 local outline = _G.ANDROMEDA_ADB.FontOutline
-                swatch.text = F.CreateFS(swatch, C.Assets.Fonts.Regular, 12, outline or nil, name, nil, outline and 'NONE' or 'THICK')
+                swatch.text = F.CreateFS(
+                    swatch,
+                    C.Assets.Fonts.Regular,
+                    12,
+                    outline or nil,
+                    name,
+                    nil,
+                    outline and 'NONE' or 'THICK'
+                )
                 swatch.text:SetPoint('LEFT', swatch, 'RIGHT', 6, 0)
             end
 
@@ -1301,7 +1261,7 @@ do
             tex:SetInside(swatch, C.MULT, C.MULT)
             tex:SetTexture(gradStyle and gradTex or normTex)
             tex:SetVertexColor(color.r, color.g, color.b)
-            tex.GetColor = GetSwatchTexColor
+            tex.GetColor = getSwatchTexColor
 
             swatch.tex = tex
             swatch.color = color
@@ -1386,7 +1346,15 @@ do
             F.PixelIcon(bu, fontSize, true)
         else
             F.ReskinButton(bu)
-            bu.text = F.CreateFS(bu, C.Assets.Fonts.Regular, fontSize or 12, outline or nil, text, nil, outline and 'NONE' or 'THICK')
+            bu.text = F.CreateFS(
+                bu,
+                C.Assets.Fonts.Regular,
+                fontSize or 12,
+                outline or nil,
+                text,
+                nil,
+                outline and 'NONE' or 'THICK'
+            )
         end
 
         return bu
@@ -1410,6 +1378,7 @@ do
         local frame = CreateFrame('Frame', nil, self)
         frame:SetPoint('CENTER')
         frame:SetSize(size + 8, size + 8)
+        frame:SetFrameLevel(frame:GetFrameLevel() + 1)
 
         return frame
     end
@@ -1775,7 +1744,11 @@ do
             F.SetBorderColor(self.__bg)
 
             if gradStyle then
-                self.__gradient:SetGradient('Vertical', CreateColor(color.r, color.g, color.b, alpha), CreateColor(0, 0, 0, 0.25))
+                self.__gradient:SetGradient(
+                    'Vertical',
+                    CreateColor(color.r, color.g, color.b, alpha),
+                    CreateColor(0, 0, 0, 0.25)
+                )
             else
                 self.__gradient:SetVertexColor(color.r, color.g, color.b, alpha)
             end
@@ -1982,11 +1955,9 @@ do
 
         -- WowTrimScrollBar
         function F:ReskinTrimScroll()
-            local minimal = self:GetWidth() < 10
-
             F.StripTextures(self)
-            reskinScrollArrow(self.Back, 'up', minimal)
-            reskinScrollArrow(self.Forward, 'down', minimal)
+            reskinScrollArrow(self.Back, 'up', true)
+            reskinScrollArrow(self.Forward, 'down', true)
             if self.Track then
                 self.Track:DisableDrawLayer('ARTWORK')
             end
@@ -1999,10 +1970,6 @@ do
                 thumb:DisableDrawLayer('BACKGROUND')
                 thumb.bg = F.CreateBDFrame(thumb)
                 thumb.bg:SetBackdropColor(color.r, color.g, color.b, alpha)
-                if not minimal then
-                    thumb.bg:SetPoint('TOPLEFT', 4, -1)
-                    thumb.bg:SetPoint('BOTTOMRIGHT', -4, 1)
-                end
 
                 thumb:HookScript('OnEnter', thumbOnEnter)
                 thumb:HookScript('OnLeave', thumbOnLeave)
@@ -2016,7 +1983,7 @@ do
 
     do
         function F:Texture_OnEnter()
-            if self:IsEnabled() then
+            if self.IsEnabled and self:IsEnabled() then
                 if self.__texture then
                     local classColor = _G.ANDROMEDA_ADB.WidgetHighlightClassColor
                     local newColor = _G.ANDROMEDA_ADB.WidgetHighlightColor
@@ -2107,6 +2074,9 @@ do
         function F:ReskinArrow(direction)
             F.StripTextures(self)
             self:SetSize(16, 16)
+            if self.Texture then
+                self.Texture:SetAlpha(0)
+            end
             -- self:SetDisabledTexture(C.Assets.Textures.Backdrop)
 
             -- local dis = self:GetDisabledTexture()
@@ -2153,6 +2123,12 @@ do
             if self.ResetButton then
                 F.ReskinFilterReset(self.ResetButton)
             end
+            self.__bg:SetOutside()
+            local tex = self:CreateTexture(nil, 'ARTWORK')
+            F.SetupArrow(tex, 'right')
+            tex:SetSize(16, 16)
+            tex:SetPoint('RIGHT', -2, 0)
+            self.__texture = tex
         end
 
         function F:ReskinNavBar()
@@ -2274,7 +2250,8 @@ do
 
     do
         local function updateCollapseTexture(texture, collapsed)
-            local atlas = collapsed and 'Soulbinds_Collection_CategoryHeader_Expand' or 'Soulbinds_Collection_CategoryHeader_Collapse'
+            local atlas = collapsed and 'Soulbinds_Collection_CategoryHeader_Expand'
+                or 'Soulbinds_Collection_CategoryHeader_Collapse'
             texture:SetAtlas(atlas, true)
         end
 
@@ -2307,7 +2284,7 @@ do
             local bg = F.CreateBDFrame(self)
             bg:ClearAllPoints()
             bg:SetSize(13, 13)
-            bg:SetPoint('TOPLEFT', self:GetNormalTexture())
+            bg:SetPoint('LEFT', self:GetNormalTexture())
             F.CreateSD(bg, 0.25)
             self.bg = bg
 
@@ -2463,7 +2440,12 @@ do
         end
 
         function F:AffixesSetup()
-            for _, frame in ipairs(self.Affixes) do
+            local list = self.AffixesContainer and self.AffixesContainer.Affixes or self.Affixes
+            if not list then
+                return
+            end
+
+            for _, frame in ipairs(list) do
                 frame.Border:SetTexture(nil)
                 frame.Portrait:SetTexture(nil)
                 if not frame.bg then
@@ -2483,41 +2465,20 @@ do
     -- Role Icons
 
     do
-        function F:GetRoleTexCoord()
-            if self == 'TANK' then
-                return 0.34 / 9.03, 2.85 / 9.03, 3.16 / 9.03, 5.67 / 9.03
-            elseif self == 'DPS' or self == 'DAMAGER' then
-                return 3.27 / 9.03, 5.78 / 9.03, 3.16 / 9.03, 5.67 / 9.03
-            elseif self == 'HEALER' then
-                return 3.27 / 9.03, 5.78 / 9.03, 0.27 / 9.03, 2.78 / 9.03
-            elseif self == 'LEADER' then
-                return 0.34 / 9.03, 2.85 / 9.03, 0.27 / 9.03, 2.78 / 9.03
-            elseif self == 'READY' then
-                return 6.17 / 9.03, 8.68 / 9.03, 0.27 / 9.03, 2.78 / 9.03
-            elseif self == 'PENDING' then
-                return 6.17 / 9.03, 8.68 / 9.03, 3.16 / 9.03, 5.67 / 9.03
-            elseif self == 'REFUSE' then
-                return 3.27 / 9.03, 5.78 / 9.03, 6.04 / 9.03, 8.55 / 9.03
-            end
-        end
-
-        function F:GetRoleTex()
-            if self == 'TANK' then
-                return C.Assets.Textures.RoleTank
-            elseif self == 'DPS' or self == 'DAMAGER' then
-                return C.Assets.Textures.RoleDamager
-            elseif self == 'HEALER' then
-                return C.Assets.Textures.RoleHealer
-            end
-        end
+        local groupRoleTex = {
+            TANK = 'groupfinder-icon-role-micro-tank',
+            HEALER = 'groupfinder-icon-role-micro-heal',
+            DAMAGER = 'groupfinder-icon-role-micro-dps',
+            DPS = 'groupfinder-icon-role-micro-dps',
+        }
 
         function F:ReskinSmallRole(role)
-            self:SetTexture(F.GetRoleTex(role))
             self:SetTexCoord(0, 1, 0, 1)
             self:SetSize(32, 32)
+            self:SetAtlas(groupRoleTex[role])
         end
 
-        function F:ReskinRole(role)
+        function F:ReskinRole()
             if self.background then
                 self.background:SetTexture('')
             end
@@ -2527,30 +2488,12 @@ do
                 cover:SetTexture('')
             end
 
-            local texture = self.GetNormalTexture and self:GetNormalTexture() or self.texture or self.Texture or (self.SetTexture and self) or self.Icon
-            if texture then
-                texture:SetTexture(C.Assets.Textures.RoleLfgIcons)
-                texture:SetTexCoord(F.GetRoleTexCoord(role))
-            end
-            self.bg = F.CreateBDFrame(self)
-
-            local checkButton = self.checkButton or self.CheckButton or self.CheckBox
+            local checkButton = self.checkButton or self.CheckButton or self.CheckBox or self.Checkbox
             if checkButton then
                 checkButton:SetFrameLevel(self:GetFrameLevel() + 2)
                 checkButton:SetPoint('BOTTOMLEFT', -2, -2)
                 checkButton:SetSize(20, 20)
                 F.ReskinCheckbox(checkButton, true)
-            end
-
-            local shortageBorder = self.shortageBorder
-            if shortageBorder then
-                shortageBorder:SetTexture('')
-                local icon = self.incentiveIcon
-                icon:SetPoint('BOTTOMRIGHT')
-                icon:SetSize(14, 14)
-                icon.texture:SetSize(14, 14)
-                F.ReskinIcon(icon.texture)
-                icon.border:SetTexture('')
             end
         end
     end
@@ -2696,17 +2639,22 @@ do
     function F:ReskinDropdown()
         F.StripTextures(self)
 
-        local frameName = self.GetName and self:GetName()
-        local down = self.Button or frameName and (_G[frameName .. 'Button'] or _G[frameName .. '_Button'])
+        if self.Arrow then
+            self.Arrow:SetAlpha(0)
+        end
 
         local bg = F.CreateBDFrame(self, 0.45)
-        bg:SetPoint('TOPLEFT', 16, -4)
-        bg:SetPoint('BOTTOMRIGHT', -18, 8)
+        bg:SetPoint('TOPLEFT', 0, -2)
+        bg:SetPoint('BOTTOMRIGHT', 0, 2)
+        local tex = self:CreateTexture(nil, 'ARTWORK')
+        tex:SetPoint('RIGHT', bg, -3, 0)
+        tex:SetSize(18, 18)
+        F.SetupArrow(tex, 'down')
+        self.__texture = tex
         F.CreateSD(bg, 0.25)
 
-        down:ClearAllPoints()
-        down:SetPoint('RIGHT', bg, -2, 0)
-        F.ReskinArrow(down, 'down')
+        self:HookScript('OnEnter', F.Texture_OnEnter)
+        self:HookScript('OnLeave', F.Texture_OnLeave)
     end
 
     -- Handle class icon

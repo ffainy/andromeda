@@ -25,4 +25,8 @@ tinsert(C.BlizzThemes, function()
     F.ReskinPortraitFrame(_G.RaidParentFrame)
     _G.RaidInfoInstanceLabel:DisableDrawLayer('BACKGROUND')
     _G.RaidInfoIDLabel:DisableDrawLayer('BACKGROUND')
+
+    F.ReskinSmallRole(_G.RaidFrame.RoleCount.TankIcon, 'TANK')
+    F.ReskinSmallRole(_G.RaidFrame.RoleCount.HealerIcon, 'HEALER')
+    F.ReskinSmallRole(_G.RaidFrame.RoleCount.DamagerIcon, 'DPS')
 end)

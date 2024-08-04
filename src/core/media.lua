@@ -11,7 +11,6 @@ C.Assets = {
         RoleTank              = C.ASSET_PATH .. 'textures\\role-tank',
         RoleHealer            = C.ASSET_PATH .. 'textures\\role-healer',
         RoleDamager           = C.ASSET_PATH .. 'textures\\role-damager',
-        RoleLfgIcons          = C.ASSET_PATH .. 'textures\\role-lfg-icons',
         ClassifyRare          = C.ASSET_PATH .. 'textures\\nameplate-rare',
         ClassifyElite         = C.ASSET_PATH .. 'textures\\nameplate-elite',
         ClassifyBoss          = C.ASSET_PATH .. 'textures\\nameplate-boss',
@@ -118,10 +117,10 @@ C.Assets = {
         SekiroLowHealth  = C.ASSET_PATH .. 'sounds\\sekiro-lowhealth.ogg',
     },
     Fonts = {
-        Regular    = C.ASSET_PATH .. 'fonts\\firasans-regular.ttf',
-        Bold       = C.ASSET_PATH .. 'fonts\\firasans-bold.ttf',
-        Heavy      = C.ASSET_PATH .. 'fonts\\firasans-heavy.ttf',
-        Condensed  = C.ASSET_PATH .. 'fonts\\firasans-condensed.ttf',
+        Regular    = C.ASSET_PATH .. 'fonts\\ITCAvantGardeStd-Md.otf',
+        Bold       = C.ASSET_PATH .. 'fonts\\ITCAvantGardeStd-Demi.otf',
+        Heavy      = C.ASSET_PATH .. 'fonts\\ITCAvantGardeStd-Bold.otf',
+        Condensed  = C.ASSET_PATH .. 'fonts\\ITCAvantGardeStd-MdCn.otf',
         Combat     = C.ASSET_PATH .. 'fonts\\carter-one.ttf',
         Header     = C.ASSET_PATH .. 'fonts\\suez-one.ttf',
         Pixel      = C.ASSET_PATH .. 'fonts\\tempesta-seven.ttf',
@@ -227,7 +226,7 @@ end
 
 do
     local preloader = CreateFrame('Frame')
-    preloader:SetPoint('TOP', _G.UIParent, 'BOTTOM', 0, -500)
+    preloader:SetPoint('TOP', UIParent, 'BOTTOM', 0, -500)
     preloader:SetSize(100, 100)
 
     local cacheFont = function(key, data)

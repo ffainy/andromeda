@@ -1,6 +1,6 @@
 local F, C, L = unpack(select(2, ...))
 local EOT = F:RegisterModule('EnhancedObjectiveTracker')
-
+if C.IS_WW then return end --#FIXME
 local progressColors = {
     start = { r = 1.000, g = 0.647, b = 0.008 },
     complete = { r = 0.180, g = 0.835, b = 0.451 },
@@ -218,10 +218,10 @@ function EOT:AutoCollapse()
 end
 
 function EOT:ObjectiveTrackerMover()
-    local frame = CreateFrame('Frame', 'ObjectiveTrackerMover', _G.UIParent)
+    local frame = CreateFrame('Frame', 'ObjectiveTrackerMover', UIParent)
     frame:SetSize(240, 50)
 
-    F.Mover(frame, L['ObjectiveTracker'], 'ObjectiveTracker', { 'TOPRIGHT', _G.UIParent, 'TOPRIGHT', -C.UI_GAP, -60 })
+    F.Mover(frame, L['ObjectiveTracker'], 'ObjectiveTracker', { 'TOPRIGHT', UIParent, 'TOPRIGHT', -C.UI_GAP, -60 })
 
     local tracker = _G.ObjectiveTrackerFrame
     tracker:ClearAllPoints()
@@ -254,7 +254,7 @@ function EOT:OnLogin()
 
     hooksecurefunc('BonusObjectiveTracker_AnimateReward', function()
         _G.ObjectiveTrackerBonusRewardsFrame:ClearAllPoints()
-        _G.ObjectiveTrackerBonusRewardsFrame:SetPoint('BOTTOM', _G.UIParent, 'TOP', 0, 90)
+        _G.ObjectiveTrackerBonusRewardsFrame:SetPoint('BOTTOM', UIParent, 'TOP', 0, 90)
     end)
 
     -- Auto collapse Objective Tracker

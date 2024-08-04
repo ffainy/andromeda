@@ -19,7 +19,8 @@ function COOLDOWN.FormattedTimer(s, modRate)
         if s < C.DB.Cooldown.MmssTH then
             return format('|cff21c8de%d:%.2d|r', s / minute, s % minute), s - floor(s) -- blue
         else
-            return format(onlyNumbers and '|cff21c8de%d|r' or '|cff21c8de%d|r|cffa28d7bm|r', s / minute + 0.5), s % minute -- blue
+            return format(onlyNumbers and '|cff21c8de%d|r' or '|cff21c8de%d|r|cffa28d7bm|r', s / minute + 0.5),
+                s % minute -- blue
         end
     else
         local colorStr = (s < 3 and '|cfffd3612') or (s < 10 and '|cfffd3612') or '|cffffe700' -- red / yellow
@@ -103,7 +104,10 @@ function COOLDOWN:OnCreate()
     timer.text = text
 
     if C.IS_DEVELOPER then
-        if (not C.DB.Cooldown.IgnoreWA and strfind(frameName, 'WeakAurasCooldown')) or strfind(frameName, C.ADDON_TITLE .. 'PartyWatcher') then
+        if
+            (not C.DB.Cooldown.IgnoreWA and strfind(frameName, 'WeakAurasCooldown'))
+            or strfind(frameName, C.ADDON_TITLE .. 'PartyWatcher')
+        then
             text:SetPoint('CENTER', timer, 'BOTTOM')
         end
     end
@@ -149,7 +153,7 @@ function COOLDOWN:StartTimer(start, duration, modRate)
             COOLDOWN.StopTimer(chargeTimer)
         end
 
-        if timer.fontScale >= minScale then
+        if timer.fontScale and timer.fontScale >= minScale then
             timer:Show()
         end
     elseif self.timer then

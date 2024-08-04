@@ -245,21 +245,21 @@ function ACTIONBAR:CreateBars()
     ACTIONBAR.headers = {}
 
     for index = 1, 8 do
-        ACTIONBAR.headers[index] = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionBar' .. index, _G.UIParent, 'SecureHandlerStateTemplate')
+        ACTIONBAR.headers[index] = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionBar' .. index, UIParent, 'SecureHandlerStateTemplate')
     end
 
     local margin = C.DB['Actionbar']['ButtonMargin']
     local padding = C.DB['Actionbar']['BarPadding']
 
     local barData = {
-        [1] = { page = 1, bindName = 'ACTIONBUTTON', anchor = { 'BOTTOM', _G.UIParent, 'BOTTOM', 0, 33 } },
+        [1] = { page = 1, bindName = 'ACTIONBUTTON', anchor = { 'BOTTOM', UIParent, 'BOTTOM', 0, 33 } },
         [2] = { page = 6, bindName = 'MULTIACTIONBAR1BUTTON', anchor = { 'BOTTOM', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOP', 0, -margin } },
         [3] = { page = 5, bindName = 'MULTIACTIONBAR2BUTTON', anchor = { 'RIGHT', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOPLEFT', -margin, -padding / 2 } },
-        [4] = { page = 3, bindName = 'MULTIACTIONBAR3BUTTON', anchor = { 'RIGHT', _G.UIParent, 'RIGHT', -1, 0 } },
+        [4] = { page = 3, bindName = 'MULTIACTIONBAR3BUTTON', anchor = { 'RIGHT', UIParent, 'RIGHT', -1, 0 } },
         [5] = { page = 4, bindName = 'MULTIACTIONBAR4BUTTON', anchor = { 'RIGHT', _G[C.ADDON_TITLE .. 'ActionBar4'], 'LEFT', margin, 0 } },
-        [6] = { page = 13, bindName = 'MULTIACTIONBAR5BUTTON', anchor = { 'CENTER', _G.UIParent, 'CENTER', 0, 0 } },
-        [7] = { page = 14, bindName = 'MULTIACTIONBAR6BUTTON', anchor = { 'CENTER', _G.UIParent, 'CENTER', 0, 40 } },
-        [8] = { page = 15, bindName = 'MULTIACTIONBAR7BUTTON', anchor = { 'CENTER', _G.UIParent, 'CENTER', 0, 80 } },
+        [6] = { page = 13, bindName = 'MULTIACTIONBAR5BUTTON', anchor = { 'CENTER', UIParent, 'CENTER', 0, 0 } },
+        [7] = { page = 14, bindName = 'MULTIACTIONBAR6BUTTON', anchor = { 'CENTER', UIParent, 'CENTER', 0, 40 } },
+        [8] = { page = 15, bindName = 'MULTIACTIONBAR7BUTTON', anchor = { 'CENTER', UIParent, 'CENTER', 0, 80 } },
     }
 
     local mIndex = 1

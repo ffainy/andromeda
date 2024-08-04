@@ -45,11 +45,7 @@ C.Themes['Blizzard_ArchaeologyUI'] = function()
     _G.ArchaeologyFrameCompletedButton:SetFrameLevel(_G.ArchaeologyFrame:GetFrameLevel() - 1)
 
     F.ReskinDropdown(_G.ArchaeologyFrameRaceFilter)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.ArchaeologyFrameArtifactPageHistoryScroll.ScrollBar)
-    else
-        F.ReskinScroll(_G.ArchaeologyFrameArtifactPageHistoryScrollScrollBar)
-    end
+    F.ReskinTrimScroll(_G.ArchaeologyFrameArtifactPageHistoryScroll.ScrollBar)
     F.ReskinArrow(_G.ArchaeologyFrameCompletedPagePrevPageButton, 'left')
     F.ReskinArrow(_G.ArchaeologyFrameCompletedPageNextPageButton, 'right')
     _G.ArchaeologyFrameCompletedPagePrevPageButtonIcon:Hide()

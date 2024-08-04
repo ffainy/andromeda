@@ -9,11 +9,9 @@
 
 --]]
 
-local getAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata -- isPatch10_1
-
 do
     -- binding header
-    _G.BINDING_HEADER_ANDROMEDA = getAddOnMetadata(..., 'Title')
+    _G.BINDING_HEADER_ANDROMEDA = C_AddOns.GetAddOnMetadata(..., 'Title')
 end
 
 local addonName, engine = ...
@@ -49,7 +47,7 @@ do
     -- ADDON_NAME is the name of the addon folder, which is 'andromeda'
     -- ADDON_TITLE is the title of the addon, which is 'AndromedaUI'
     C.ADDON_NAME = tostring(addonName)
-    C.COLORFUL_ADDON_TITLE = getAddOnMetadata(C.ADDON_NAME, 'Title')
+    C.COLORFUL_ADDON_TITLE = C_AddOns.GetAddOnMetadata(C.ADDON_NAME, 'Title')
     C.ADDON_TITLE = gsub(C.COLORFUL_ADDON_TITLE, '|c........([^|]+)|r', '%1')
 end
 
@@ -73,10 +71,9 @@ do
 
     F:AddLib('AceAddon', aceAddon, aceAddonMinor)
     F:AddLib('AceLocale', 'AceLocale-3.0')
-    F:AddLib('LibActionButton', 'LibActionButton-1.0')
-    F:AddLib('LibButtonGlow', 'LibButtonGlow-1.0')
-    F:AddLib('LibCustomGlow', 'LibCustomGlow-1.0')
-    F:AddLib('LibRangeCheck', 'LibRangeCheck-2.0')
+    F:AddLib('LibActionButton', 'LibActionButton-1.0-AndromedaUI')
+    F:AddLib('LibCustomGlow', 'LibCustomGlow-1.0-AndromedaUI')
+    F:AddLib('LibRangeCheck', 'LibRangeCheck-3.0')
     F:AddLib('LibSharedMedia', 'LibSharedMedia-3.0')
     F:AddLib('LibBase64', 'LibBase64-1.0')
 
@@ -166,6 +163,12 @@ F:RegisterEvent('PLAYER_LOGIN', function()
         F:RegisterEvent('UI_SCALE_CHANGED', F.UpdatePixelScale)
     else
         F:SetupUIScale(true)
+    end
+
+    local LCG = F.Libs.LibCustomGlow
+    if LCG then
+        F.ShowOverlayGlow = LCG.ShowOverlayGlow
+        F.HideOverlayGlow = LCG.HideOverlayGlow
     end
 
     local L = engine[3]

@@ -140,7 +140,7 @@ function INFOBAR:CreateInfoBar()
     local mouseover = C.DB.Infobar.Mouseover
     local anchorTop = C.DB.Infobar.AnchorTop
 
-    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'Infobar', _G.UIParent, 'BackdropTemplate')
+    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'Infobar', UIParent, 'BackdropTemplate')
     bar:SetFrameStrata('BACKGROUND')
     bar:SetHeight(C.DB.Infobar.Height)
     bar:SetPoint(anchorTop and 'TOPLEFT' or 'BOTTOMLEFT', 0, 0)

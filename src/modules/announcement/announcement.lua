@@ -30,7 +30,7 @@ function ANNOUNCEMENT:RefreshSpells()
     wipe(ANNOUNCEMENT.AnnounceableSpellsList)
 
     for spellID in pairs(C.AnnounceableSpellsList) do
-        local name = GetSpellInfo(spellID)
+        local name = C_Spell.GetSpellName(spellID)
         if name then
             local modValue = _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID]
             if modValue == nil then
@@ -119,7 +119,7 @@ end
 
 function ANNOUNCEMENT:CheckAnnounceableSpells()
     for spellID in pairs(C.AnnounceableSpellsList) do
-        local name = GetSpellInfo(spellID)
+        local name = C_Spell.GetSpellName(spellID)
         if name then
             if _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] then
                 _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] = nil

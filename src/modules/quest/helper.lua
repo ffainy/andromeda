@@ -1,6 +1,6 @@
 local F, C, L = unpack(select(2, ...))
 local QH = F:RegisterModule('QuestHelper')
-local LBG = F.Libs.LibButtonGlow
+local LCG = F.Libs.LibCustomGlow
 
 local watchQuests = {
     -- check npc
@@ -48,11 +48,11 @@ function QH:QuestTool_SetGlow(msg)
         for i = 1, 3 do
             local button = _G['ActionButton' .. i]
             local _, spellID = GetActionInfo(button.action)
-            local name = spellID and GetSpellInfo(spellID)
+            local name = spellID and C_Spell.GetSpellName(spellID)
             if fixedStrings[name] and isActionMatch(msg, fixedStrings[name]) or isActionMatch(msg, name) then
-                LBG.ShowOverlayGlow(button)
+                F.ShowOverlayGlow(button)
             else
-                LBG.HideOverlayGlow(button)
+                F.HideOverlayGlow(button)
             end
         end
         QH.isGlowing = true
@@ -65,7 +65,7 @@ function QH:QuestTool_ClearGlow()
     if QH.isGlowing then
         QH.isGlowing = nil
         for i = 1, 3 do
-            LBG.HideOverlayGlow(_G['ActionButton' .. i])
+            F.HideOverlayGlow(_G['ActionButton' .. i])
         end
     end
 end
@@ -83,13 +83,13 @@ function QH:QuestTool_SetQuestUnit()
 end
 
 function QH:OnLogin()
-    local handler = CreateFrame('Frame', nil, _G.UIParent)
+    local handler = CreateFrame('Frame', nil, UIParent)
     QH.QuestHandler = handler
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
     local text = F.CreateFS(handler, C.Assets.Fonts.Bold, 20, outline or nil, nil, nil, outline and 'NONE' or 'THICK')
     text:ClearAllPoints()
-    text:SetPoint('TOP', _G.UIParent, 0, -200)
+    text:SetPoint('TOP', UIParent, 0, -200)
     text:SetWidth(800)
     text:SetWordWrap(true)
     text:Hide()
@@ -117,7 +117,7 @@ function QH:OnLogin()
         if npcID == 174498 then
             C_GossipInfo.SelectOption(3)
         elseif npcID == 174371 then
-            if GetItemCount(183961) == 0 then
+            if C_Item.GetItemCount(183961) == 0 then
                 return
             end
             if C_GossipInfo.GetNumOptions() ~= 5 then

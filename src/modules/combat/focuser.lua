@@ -78,7 +78,7 @@ function COMBAT:EasyFocus()
     end
 
     -- Keybinding override so that models can be shift/alt/ctrl+clicked
-    local f = CreateFrame('CheckButton', 'FocuserButton', _G.UIParent, 'SecureActionButtonTemplate')
+    local f = CreateFrame('CheckButton', 'FocuserButton', UIParent, 'SecureActionButtonTemplate')
     f:SetAttribute('type1', 'macro')
     f:SetAttribute('macrotext', '/focus mouseover')
     SetOverrideBindingClick(_G.FocuserButton, true, modifier .. '-BUTTON' .. mouseButton, 'FocuserButton')

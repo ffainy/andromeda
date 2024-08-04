@@ -164,7 +164,9 @@ local function UpdateClassColor(self)
     r = ConvertColor(r)
     g = ConvertColor(g)
     b = ConvertColor(b)
-    _G.ColorPickerFrame:SetColorRGB(r, g, b)
+
+    local frame = C.IS_NEW_PATCH and _G.ColorPickerFrame.Content.ColorPicker or _G.ColorPickerFrame
+	frame:SetColorRGB(r, g, b)
 end
 
 local function CreateClassColorButton()
@@ -190,7 +192,8 @@ local function CreateClassColorButton()
 end
 
 function BLIZZARD:EnhancedColorPicker()
-    if IsAddOnLoaded('ColorPickerPlus') then
+    if C.IS_WW then return end --#FIXME
+    if C_AddOns.IsAddOnLoaded('ColorPickerPlus') then
         return
     end
 

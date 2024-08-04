@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
-local function ReskinEventList(frame)
+local function reskinEventList(frame)
     F.StripTextures(frame)
     F.CreateBDFrame(frame, 0.25)
 
@@ -9,7 +9,7 @@ local function ReskinEventList(frame)
     end
 end
 
-local function ReskinCalendarPage(frame)
+local function reskinCalendarPage(frame)
     F.StripTextures(frame)
     F.SetBD(frame)
     F.StripTextures(frame.Header)
@@ -74,17 +74,17 @@ C.Themes['Blizzard_Calendar'] = function()
     F.SetBD(_G.CalendarFrame, nil, 9, 0, -7, 1)
     F.CreateBDFrame(_G.CalendarClassTotalsButton)
 
-    ReskinEventList(_G.CalendarViewEventInviteList)
-    ReskinEventList(_G.CalendarViewEventDescriptionContainer)
-    ReskinEventList(_G.CalendarCreateEventInviteList)
-    ReskinEventList(_G.CalendarCreateEventDescriptionContainer)
+    reskinEventList(_G.CalendarViewEventInviteList)
+    reskinEventList(_G.CalendarViewEventDescriptionContainer)
+    reskinEventList(_G.CalendarCreateEventInviteList)
+    reskinEventList(_G.CalendarCreateEventDescriptionContainer)
 
-    ReskinCalendarPage(_G.CalendarViewHolidayFrame)
-    ReskinCalendarPage(_G.CalendarCreateEventFrame)
-    ReskinCalendarPage(_G.CalendarViewEventFrame)
-    ReskinCalendarPage(_G.CalendarTexturePickerFrame)
-    ReskinCalendarPage(_G.CalendarEventPickerFrame)
-    ReskinCalendarPage(_G.CalendarViewRaidFrame)
+    reskinCalendarPage(_G.CalendarViewHolidayFrame)
+    reskinCalendarPage(_G.CalendarCreateEventFrame)
+    reskinCalendarPage(_G.CalendarViewEventFrame)
+    reskinCalendarPage(_G.CalendarTexturePickerFrame)
+    reskinCalendarPage(_G.CalendarEventPickerFrame)
+    reskinCalendarPage(_G.CalendarViewRaidFrame)
 
     local frames = {
         _G.CalendarViewEventTitleFrame,
@@ -123,22 +123,13 @@ C.Themes['Blizzard_Calendar'] = function()
         F.ClassIconTexCoord(bu:GetNormalTexture(), class)
     end
 
-    F.StripTextures(_G.CalendarFilterFrame)
-    local cffbg = F.CreateBDFrame(_G.CalendarFilterFrame, 0, true)
-    cffbg:SetPoint('TOPLEFT', 35, -1)
-    cffbg:SetPoint('BOTTOMRIGHT', -18, 1)
-    F.ReskinArrow(_G.CalendarFilterButton, 'down')
-
+    F.ReskinFilterButton(_G.CalendarFrame.FilterButton)
     _G.CalendarViewEventFrame:SetPoint('TOPLEFT', _G.CalendarFrame, 'TOPRIGHT', -6, -24)
     _G.CalendarViewHolidayFrame:SetPoint('TOPLEFT', _G.CalendarFrame, 'TOPRIGHT', -6, -24)
     _G.CalendarViewRaidFrame:SetPoint('TOPLEFT', _G.CalendarFrame, 'TOPRIGHT', -6, -24)
     _G.CalendarCreateEventFrame:SetPoint('TOPLEFT', _G.CalendarFrame, 'TOPRIGHT', -6, -24)
     _G.CalendarCreateEventInviteButton:SetPoint('TOPLEFT', _G.CalendarCreateEventInviteEdit, 'TOPRIGHT', 1, 1)
     _G.CalendarClassButton1:SetPoint('TOPLEFT', _G.CalendarClassButtonContainer, 'TOPLEFT', 5, 0)
-
-    _G.CalendarCreateEventHourDropDown:SetWidth(80)
-    _G.CalendarCreateEventMinuteDropDown:SetWidth(80)
-    _G.CalendarCreateEventAMPMDropDown:SetWidth(90)
 
     local line = _G.CalendarMassInviteFrame:CreateTexture(nil, 'BACKGROUND')
     line:SetSize(240, C.MULT)
@@ -185,14 +176,14 @@ C.Themes['Blizzard_Calendar'] = function()
     F.ReskinClose(_G.CalendarViewRaidCloseButton)
     F.ReskinClose(_G.CalendarMassInviteCloseButton)
 
-    F.ReskinDropdown(_G.CalendarCreateEventCommunityDropDown)
-    F.ReskinDropdown(_G.CalendarCreateEventTypeDropDown)
-    F.ReskinDropdown(_G.CalendarCreateEventHourDropDown)
-    F.ReskinDropdown(_G.CalendarCreateEventMinuteDropDown)
-    F.ReskinDropdown(_G.CalendarCreateEventAMPMDropDown)
-    F.ReskinDropdown(_G.CalendarCreateEventDifficultyOptionDropDown)
-    F.ReskinDropdown(_G.CalendarMassInviteCommunityDropDown)
-    F.ReskinDropdown(_G.CalendarMassInviteRankMenu)
+    F.ReskinDropdown(_G.CalendarCreateEventFrame.CommunityDropdown)
+    F.ReskinDropdown(_G.CalendarCreateEventFrame.EventTypeDropdown)
+    F.ReskinDropdown(_G.CalendarCreateEventFrame.HourDropdown)
+    F.ReskinDropdown(_G.CalendarCreateEventFrame.MinuteDropdown)
+    F.ReskinDropdown(_G.CalendarCreateEventFrame.AMPMDropdown)
+    F.ReskinDropdown(_G.CalendarMassInviteFrame.CommunityDropdown)
+    F.ReskinDropdown(_G.CalendarMassInviteFrame.RankDropdown)
+
     F.ReskinEditbox(_G.CalendarCreateEventTitleEdit)
     F.ReskinEditbox(_G.CalendarCreateEventInviteEdit)
     F.ReskinEditbox(_G.CalendarMassInviteMinLevelEdit)
@@ -202,6 +193,4 @@ C.Themes['Blizzard_Calendar'] = function()
     _G.CalendarPrevMonthButton:SetSize(19, 19)
     _G.CalendarNextMonthButton:SetSize(19, 19)
     F.ReskinCheckbox(_G.CalendarCreateEventLockEventCheck)
-
-    _G.CalendarCreateEventDifficultyOptionDropDown:SetWidth(150)
 end

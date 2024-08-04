@@ -640,6 +640,19 @@ GUI.OptionsList = {
             nil,
             L['Allow space bar, escape key and enter key to cancel cinematic without confirmation.'],
         },
+        {
+            4,
+            'ACCOUNT',
+            'LibCustomGlowType',
+            L['Button Glow Type'],
+            true,
+            {
+                'Pixel',
+                'Autocast',
+                'Action Button',
+                'Proc',
+            },
+        },
         {},
         {
             1,
@@ -702,7 +715,6 @@ GUI.OptionsList = {
             nil,
             L['If checked, only popout join requests from friends and guild members.'],
         },
-
     },
     [2] = { -- notification
         {
@@ -1138,6 +1150,15 @@ GUI.OptionsList = {
             nil,
             UpdateWhisperList,
             L['Setup whisper invite keywords. If you have more than one word, press key SPACE in between.'],
+        },
+        {
+            3,
+            'Chat',
+            'EditboxFontSize',
+            L['Editbox Font Size'],
+            nil,
+            { 10, 30, 1 },
+            UpdateEditBoxAnchor,
         },
     },
     [5] = { -- actionbar
@@ -1752,10 +1773,14 @@ GUI.OptionsList = {
             L['Follow Cursor'],
         },
         {
-            1,
+            4,
             'Tooltip',
             'HideInCombat',
             L['Hide in Combat'],
+            nil,
+            { _G.DISABLE, 'ALT', 'SHIFT', 'CTRL', _G.ALWAYS },
+            nil,
+            L['Select the way to hide GameTooltip in combat.|nGameTooltip only visible when you hold the modified key you selected.'],
         },
         {
             3,
@@ -2611,19 +2636,9 @@ GUI.OptionsList = {
         {
             1,
             'Nameplate',
-            'ExplosiveIndicator',
-            L['Explosive Indicator'],
-            nil,
-            nil,
-            nil,
-            L['Magnifies the nameplate of Explosive when in a mythic plus dungeon.'],
-        },
-        {
-            1,
-            'Nameplate',
             'SpitefulIndicator',
             L['Spiteful Indicator'],
-            true,
+            nil,
             nil,
             nil,
             L['Display the name of the target Spiteful Shade is currently tracking when in mythic plus dungeon.'],
@@ -2791,6 +2806,15 @@ GUI.OptionsList = {
             SetupNameplateColorByDot,
             nil,
             L['Color units nameplate that affected by your specific debuff.|nYou can customize the color and the debuff list to match your requirement.'],
+        },
+        {
+            3,
+            'Nameplate',
+            'PlateRange',
+            L['Nameplate Max Range'],
+            nil,
+            { 0, 60, 1 },
+            UpdateNamePlateCVars,
         },
     },
     [14] = { -- theme

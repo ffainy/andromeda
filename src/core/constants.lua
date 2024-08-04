@@ -1,8 +1,8 @@
 local F, C, L = unpack(select(2, ...))
 
 do
-    C.IS_NEW_PATCH = select(4, GetBuildInfo()) >= 100007 -- 10.0.7
-    C.IS_NEW_PATCH_10_1 = select(4, GetBuildInfo()) >= 100100 -- 10.1.0
+    C.IS_NEW_PATCH = select(4, GetBuildInfo()) >= 110002 -- 11.0.2
+    C.IS_WW = select(4, GetBuildInfo()) >= 110000 -- 11.0.0
     C.MY_REALM = GetRealmName()
     C.MY_CLASS = select(2, UnitClass('player'))
     C.MY_NAME = UnitName('player')
@@ -20,6 +20,27 @@ do
     C.LINE_STRING = '|cff7f7f7f---------------|r'
 end
 
+-- Deprecated
+if C.IS_WW then
+    local function EasyMenu_Initialize(frame, level, menuList)
+        for index = 1, #menuList do
+            local value = menuList[index]
+            if value.text then
+                value.index = index
+                UIDropDownMenu_AddButton(value, level)
+            end
+        end
+    end
+
+    function EasyMenu(menuList, menuFrame, anchor, x, y, displayMode, autoHideDelay)
+        if displayMode == 'MENU' then
+            menuFrame.displayMode = displayMode
+        end
+        UIDropDownMenu_Initialize(menuFrame, EasyMenu_Initialize, displayMode, nil, menuList)
+        ToggleDropDownMenu(1, nil, menuFrame, anchor, x, y, menuList, nil, autoHideDelay)
+    end
+end
+
 do
     C.ClassList = {}
     for k, v in pairs(_G.LOCALIZED_CLASS_NAMES_MALE) do
@@ -31,7 +52,8 @@ do
 
     C.ClassColors = {}
     function F.UpdateCustomClassColors()
-        local colors = _G.ANDROMEDA_ADB.UseCustomClassColor and _G.ANDROMEDA_ADB.CustomClassColors or _G.RAID_CLASS_COLORS
+        local colors = _G.ANDROMEDA_ADB.UseCustomClassColor and _G.ANDROMEDA_ADB.CustomClassColors
+            or _G.RAID_CLASS_COLORS
         for class, value in pairs(colors) do
             C.ClassColors[class] = {}
             C.ClassColors[class].r = value.r
@@ -79,7 +101,8 @@ do
         C.QualityColors[index] = { r = value.r, g = value.g, b = value.b }
     end
     C.QualityColors[-1] = { r = 0, g = 0, b = 0 }
-    C.QualityColors[Enum.ItemQuality.Poor] = { r = _G.COMMON_GRAY_COLOR.r, g = _G.COMMON_GRAY_COLOR.g, b = _G.COMMON_GRAY_COLOR.b }
+    C.QualityColors[Enum.ItemQuality.Poor] =
+        { r = _G.COMMON_GRAY_COLOR.r, g = _G.COMMON_GRAY_COLOR.g, b = _G.COMMON_GRAY_COLOR.b }
     C.QualityColors[Enum.ItemQuality.Common] = { r = 0, g = 0, b = 0 }
     C.QualityColors[99] = { r = 1, g = 0, b = 0 }
 
@@ -123,8 +146,18 @@ do
         return _G.bit.band(flags, _G.COMBATLOG_OBJECT_AFFILIATION_MINE) > 0
     end
 
-    C.PartyPetFlags = _G.bit.bor(_G.COMBATLOG_OBJECT_AFFILIATION_PARTY, _G.COMBATLOG_OBJECT_REACTION_FRIENDLY, _G.COMBATLOG_OBJECT_CONTROL_PLAYER, _G.COMBATLOG_OBJECT_TYPE_PET)
-    C.RaidPetFlags = _G.bit.bor(_G.COMBATLOG_OBJECT_AFFILIATION_RAID, _G.COMBATLOG_OBJECT_REACTION_FRIENDLY, _G.COMBATLOG_OBJECT_CONTROL_PLAYER, _G.COMBATLOG_OBJECT_TYPE_PET)
+    C.PartyPetFlags = _G.bit.bor(
+        _G.COMBATLOG_OBJECT_AFFILIATION_PARTY,
+        _G.COMBATLOG_OBJECT_REACTION_FRIENDLY,
+        _G.COMBATLOG_OBJECT_CONTROL_PLAYER,
+        _G.COMBATLOG_OBJECT_TYPE_PET
+    )
+    C.RaidPetFlags = _G.bit.bor(
+        _G.COMBATLOG_OBJECT_AFFILIATION_RAID,
+        _G.COMBATLOG_OBJECT_REACTION_FRIENDLY,
+        _G.COMBATLOG_OBJECT_CONTROL_PLAYER,
+        _G.COMBATLOG_OBJECT_TYPE_PET
+    )
 
     function C:IsInMyGroup(flags)
         local inParty = IsInGroup() and _G.bit.band(flags, _G.COMBATLOG_OBJECT_AFFILIATION_PARTY) ~= 0

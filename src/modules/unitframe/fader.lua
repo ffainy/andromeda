@@ -20,6 +20,7 @@ function UNITFRAME:ConfigureFader(frame)
         frame.Fader:SetOption('Focus', C.DB.Unitframe['Target'])
         frame.Fader:SetOption('Health', C.DB.Unitframe['Health'])
         frame.Fader:SetOption('Casting', C.DB.Unitframe['Casting'])
+        frame.Fader:SetOption('Vehicle', C.DB.Unitframe['Vehicle'])
         frame.Fader:SetOption('MinAlpha', C.DB.Unitframe['MinAlpha'])
         frame.Fader:SetOption('MaxAlpha', C.DB.Unitframe['MaxAlpha'])
 
@@ -27,7 +28,7 @@ function UNITFRAME:ConfigureFader(frame)
             frame.Fader:SetOption('UnitTarget', C.DB.Unitframe['Target'])
         end
 
-        frame.Fader:SetOption('Smooth', 0.3)
+        frame.Fader:SetOption('Smooth', C.DB.Unitframe['Smooth'])
         frame.Fader:SetOption('Delay', C.DB.Unitframe['Delay'])
 
         frame.Fader:ClearTimers()

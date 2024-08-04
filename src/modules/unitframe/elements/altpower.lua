@@ -7,7 +7,7 @@ local function onEnter(self)
         return
     end
 
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
+    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
     self:UpdateTooltip()
 end
 
@@ -15,10 +15,10 @@ local function updateTooltip(self)
     local value = self:GetValue()
     local min, max = self:GetMinMaxValues()
     local name, tooltip = GetUnitPowerBarStringsByID(self.__barID)
-    _G.GameTooltip:SetText(name or '', 1, 1, 1)
-    _G.GameTooltip:AddLine(tooltip or '', nil, nil, nil, true)
-    _G.GameTooltip:AddLine(format('%d (%d%%)', value, (value - min) / (max - min) * 100), 1, 1, 1)
-    _G.GameTooltip:Show()
+    GameTooltip:SetText(name or '', 1, 1, 1)
+    GameTooltip:AddLine(tooltip or '', nil, nil, nil, true)
+    GameTooltip:AddLine(format('%d (%d%%)', value, (value - min) / (max - min) * 100), 1, 1, 1)
+    GameTooltip:Show()
 end
 
 local function postUpdate(self, _, cur, _, max)

@@ -15,11 +15,13 @@ local function setHighlight(self)
     end
 end
 
+local defaultColor = GetMaterialTextColors('Default')
+
 local function replaceTextColor(object, r)
-    if r == 0 then
+    if r == 0 or r == defaultColor[1] then
         object:SetTextColor(1, 1, 1)
     elseif r == 0.2 then
-        object:SetTextColor(0.8, 0.8, 0.8)
+        object:SetTextColor(0.7, 0.7, 0.7)
     end
 end
 
@@ -144,26 +146,19 @@ tinsert(C.BlizzThemes, function()
             if object.hooked then
                 break
             end
+
+            object:SetTextColor(1, 1, 1)
             hooksecurefunc(object, 'SetTextColor', replaceTextColor)
-            local r, g, b = object:GetTextColor()
-            object:SetTextColor(r, g, b)
 
             object.hooked = true
         end
 
         local rewardsFrame = _G.QuestInfoFrame.rewardsFrame
         local isQuestLog = _G.QuestInfoFrame.questLog ~= nil
-        local numSpellRewards
+        local questID = isQuestLog and C_QuestLog.GetSelectedQuest() or GetQuestID()
+        local spellRewards = C_QuestInfoSystem.GetQuestRewardSpells(questID) or {}
 
-        if C.IS_NEW_PATCH_10_1 then
-            local questID = isQuestLog and C_QuestLog.GetSelectedQuest() or GetQuestID()
-            local spellRewards = C_QuestInfoSystem.GetQuestRewardSpells(questID) or {}
-            numSpellRewards = #spellRewards
-        else
-            numSpellRewards = isQuestLog and GetNumQuestLogRewardSpells() or GetNumRewardSpells()
-        end
-
-        if numSpellRewards > 0 then
+        if #spellRewards > 0 then
             -- Spell Headers
             for spellHeader in rewardsFrame.spellHeaderPool:EnumerateActive() do
                 spellHeader:SetVertexColor(1, 1, 1)
@@ -211,6 +206,12 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
+    hooksecurefunc(_G.QuestInfoQuestType, 'SetTextColor', function(text, r, g, b)
+        if not (r == 1 and g == 1 and b == 1) then
+            text:SetTextColor(1, 1, 1)
+        end
+    end)
+
     -- Change text colors
     hooksecurefunc(_G.QuestInfoRequiredMoneyText, 'SetTextColor', replaceTextColor)
     hooksecurefunc(_G.QuestInfoSpellObjectiveLearnLabel, 'SetTextColor', replaceTextColor)
@@ -220,6 +221,7 @@ tinsert(C.BlizzThemes, function()
         _G.QuestInfoDescriptionHeader,
         _G.QuestInfoObjectivesHeader,
         _G.QuestInfoRewardsFrame.Header,
+        _G.QuestInfoAccountCompletedNotice,
     }
     for _, font in pairs(yellowish) do
         setTextColor_Yellow(font)

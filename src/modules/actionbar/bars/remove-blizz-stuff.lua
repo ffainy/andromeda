@@ -37,6 +37,8 @@ local framesToHide = {
     _G.TalentMicroButton,
     _G.SpellbookMicroButton,
     _G.CharacterMicroButton,
+    _G.ProfessionMicroButton,
+    _G.PlayerSpellsMicroButton,
     _G.BagsBar,
     _G.MicroButtonAndBagsBar,
 }
@@ -85,7 +87,7 @@ end
 
 local function updateTokenVisibility()
     TokenFrame_LoadUI()
-    TokenFrame_Update()
+    _G.TokenFrame:Update()
 end
 
 local function buttonEventsRegisterFrame(self, added)
@@ -152,7 +154,7 @@ function ACTIONBAR:RemoveBlizzStuff()
     _G.MainMenuBarVehicleLeaveButton:RegisterEvent('PLAYER_ENTERING_WORLD')
 
     -- Update token panel
-    F:RegisterEvent('CURRENCY_DISPLAY_UPDATE', updateTokenVisibility)
+    --F:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility) -- needs review, taint the money transfer
 
     -- Hide blizzard expbar
     _G.StatusTrackingBarManager:UnregisterAllEvents()

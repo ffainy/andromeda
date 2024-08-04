@@ -5,24 +5,6 @@ local function ReanchorTutorial(button)
     button:SetPoint('TOPLEFT', _G.PlayerTalentFrame, 'TOPLEFT', -12, 12)
 end
 
-local function ReskinPvPTalent(self)
-    if not self.styled then
-        F.ReskinIcon(self.Icon)
-        local bg = F.CreateBDFrame(self, 0.25)
-        bg:SetPoint('TOPLEFT', self.Icon, 'TOPRIGHT', 0, C.MULT)
-        bg:SetPoint('BOTTOMRIGHT', -1, C.MULT)
-        local hl = self:GetHighlightTexture()
-        hl:SetColorTexture(1, 1, 1, 0.1)
-        hl:SetInside(bg)
-        self:GetRegions():SetAlpha(0)
-        self.Selected:SetColorTexture(C.r, C.g, C.b, 0.25)
-        self.Selected:SetDrawLayer('BACKGROUND')
-        self.Selected:SetInside(bg)
-
-        self.styled = true
-    end
-end
-
 C.Themes['Blizzard_TalentUI'] = function()
     local r, g, b = C.r, C.g, C.b
 
@@ -67,7 +49,7 @@ C.Themes['Blizzard_TalentUI'] = function()
 
         for i = 1, 4 do
             local bu = frame['specButton' .. i]
-            local _, _, _, icon, role = GetSpecializationInfo(i, false, frame.isPet)
+            local _, _, _, icon = GetSpecializationInfo(i, false, frame.isPet)
             F.StripTextures(bu)
             F.ReskinButton(bu)
 
@@ -79,22 +61,11 @@ C.Themes['Blizzard_TalentUI'] = function()
             bu.specIcon:SetSize(56, 56)
             bu.specIcon:SetPoint('LEFT', bu, 'LEFT', 2, 0)
             F.ReskinIcon(bu.specIcon)
-
-            local roleIcon = bu.roleIcon
-            roleIcon:SetTexture(C.Assets.Textures.RoleLfgIcons)
-            F.CreateBDFrame(roleIcon):SetFrameLevel(2)
-            if role then
-                roleIcon:SetTexCoord(F.GetRoleTexCoord(role))
-            end
         end
 
         local scrollChild = frame.spellsScroll.child
         F.StripTextures(scrollChild)
         F.ReskinIcon(scrollChild.specIcon)
-
-        local roleIcon = scrollChild.roleIcon
-        roleIcon:SetTexture(C.Assets.Textures.RoleLfgIcons)
-        F.CreateBDFrame(roleIcon)
     end
 
     hooksecurefunc('PlayerTalentFrame_UpdateSpecFrame', function(self, spec)
@@ -102,7 +73,7 @@ C.Themes['Blizzard_TalentUI'] = function()
         local shownSpec = spec or playerTalentSpec or 1
         local numSpecs = GetNumSpecializations(nil, self.isPet)
         local sex = self.isPet and UnitSex('pet') or UnitSex('player')
-        local id, _, _, icon, role = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex)
+        local id, _, _, icon = GetSpecializationInfo(shownSpec, nil, self.isPet, nil, sex)
 
         if not id then
             return
@@ -110,9 +81,6 @@ C.Themes['Blizzard_TalentUI'] = function()
 
         local scrollChild = self.spellsScroll.child
         scrollChild.specIcon:SetTexture(icon)
-        if role then
-            scrollChild.roleIcon:SetTexCoord(F.GetRoleTexCoord(role))
-        end
 
         local index = 1
         local bonuses
@@ -127,8 +95,7 @@ C.Themes['Blizzard_TalentUI'] = function()
         if bonuses then
             for i = 1, #bonuses, bonusesIncrement do
                 local frame = scrollChild['abilityButton' .. index]
-                local _, icon = GetSpellTexture(bonuses[i])
-                frame.icon:SetTexture(icon)
+                frame.icon:SetTexture(C_Spell.GetSpellTexture(bonuses[i]))
                 frame.subText:SetTextColor(0.75, 0.75, 0.75)
 
                 if not frame.styled then
@@ -213,16 +180,5 @@ C.Themes['Blizzard_TalentUI'] = function()
     F.ReskinButton(select(4, talentList:GetChildren()), nil)
 
     F.StripTextures(_G.PlayerTalentFrameTalentsPvpTalentFrame)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(talentList.ScrollBar)
-
-        -- todo, might removed in the future build
-    else
-        F.ReskinScroll(_G.PlayerTalentFrameTalentsPvpTalentFrameTalentListScrollFrameScrollBar)
-
-        for i = 1, 10 do
-            local bu = _G['PlayerTalentFrameTalentsPvpTalentFrameTalentListScrollFrameButton' .. i]
-            hooksecurefunc(bu, 'Update', ReskinPvPTalent)
-        end
-    end
+    F.ReskinTrimScroll(talentList.ScrollBar)
 end

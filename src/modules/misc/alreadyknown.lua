@@ -1,5 +1,4 @@
 local F, C = unpack(select(2, ...))
-local TOOLTIP = F:GetModule('Tooltip')
 
 local COLOR = { r = 0.1, g = 1, b = 0.1 }
 local knowables = {
@@ -31,7 +30,7 @@ local function IsAlreadyKnown(link, index)
     if linkType == 'battlepet' then
         return isPetCollected(linkID)
     elseif linkType == 'item' then
-        local name, _, _, level, _, _, _, _, _, _, _, itemClassID = GetItemInfo(link)
+        local name, _, _, _, _, _, _, _, _, _, _, itemClassID = C_Item.GetItemInfo(link)
         if not name then
             return
         end
@@ -39,14 +38,7 @@ local function IsAlreadyKnown(link, index)
         if itemClassID == Enum.ItemClass.Battlepet and index then
             local data = C_TooltipInfo.GetGuildBankItem(GetCurrentGuildBankTab(), index)
             if data then
-                if C.IS_NEW_PATCH_10_1 then
-                    return data.battlePetSpeciesID and isPetCollected(data.battlePetSpeciesID)
-                else
-                    local argVal = data.args and data.args[2]
-                    if argVal.field == 'battlePetSpeciesID' then
-                        return isPetCollected(argVal.intVal)
-                    end
-                end
+                return data.battlePetSpeciesID and isPetCollected(data.battlePetSpeciesID)
             end
         else
             if knowns[link] then
@@ -60,28 +52,13 @@ local function IsAlreadyKnown(link, index)
             if data then
                 for i = 1, #data.lines do
                     local lineData = data.lines[i]
-                    if C.IS_NEW_PATCH_10_1 then
-                        local text = lineData.leftText
-                        if text then
-                            if strfind(text, _G.COLLECTED) or text == _G.ITEM_SPELL_KNOWN then
-                                knowns[link] = true
-
-                                return true
-                            end
-                        end
-                    else
-                        local argVal = lineData and lineData.args
-                        if argVal then
-                            local text = argVal[2] and argVal[2].stringVal
-                            if text then
-                                if strfind(text, _G.COLLECTED) or text == _G.ITEM_SPELL_KNOWN then
-                                    knowns[link] = true
-
-                                    return true
-                                end
-                            end
-                        end
-                    end
+                    local text = lineData and lineData.leftText
+					if text then
+						if strfind(text, _G.COLLECTED) or text == _G.ITEM_SPELL_KNOWN then
+							knowns[link] = true
+							return true
+						end
+					end
                 end
             end
         end

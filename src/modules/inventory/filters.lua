@@ -42,7 +42,9 @@ local function isItemJunk(item)
         return
     end
 
-    return (item.quality == Enum.ItemQuality.Poor or _G.ANDROMEDA_ADB['CustomJunkList'][item.id]) and item.hasPrice and not INVENTORY:IsPetTrashCurrency(item.id)
+    return (item.quality == Enum.ItemQuality.Poor or _G.ANDROMEDA_ADB['CustomJunkList'][item.id])
+        and item.hasPrice
+        and not INVENTORY:IsPetTrashCurrency(item.id)
 end
 
 local function isItemEquipSet(item)
@@ -278,6 +280,24 @@ local function isPrimordialStone(item)
     return item.id and primordialStones[item.id]
 end
 
+local function isWarboundUntilEquipped(item)
+    if not C.DB['Inventory']['ItemFilter'] then
+        return
+    end
+    if not C.DB['Inventory']['FilterAOE'] then
+        return
+    end
+    return item.bindOn and item.bindOn == 'accountequip'
+end
+
+local accountBankIDs = {
+    [Enum.BagIndex.AccountBankTab_1 or 13] = true,
+    [Enum.BagIndex.AccountBankTab_2 or 14] = true,
+    [Enum.BagIndex.AccountBankTab_3 or 15] = true,
+    [Enum.BagIndex.AccountBankTab_4 or 16] = true,
+    [Enum.BagIndex.AccountBankTab_5 or 17] = true,
+}
+
 function INVENTORY:GetFilters()
     local filters = {}
 
@@ -375,6 +395,18 @@ function INVENTORY:GetFilters()
 
     filters.bagStone = function(item)
         return isItemInBag(item) and isPrimordialStone(item)
+    end
+
+    filters.accountBank = function(item)
+        return accountBankIDs[item.bagId] and not isEmptySlot(item)
+    end
+
+    filters.bagAOE = function(item)
+        return isItemInBag(item) and isWarboundUntilEquipped(item)
+    end
+
+    filters.bankAOE = function(item)
+        return isItemInBank(item) and isWarboundUntilEquipped(item)
     end
 
     for i = 1, 5 do

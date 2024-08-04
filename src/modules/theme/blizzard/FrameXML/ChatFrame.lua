@@ -1,37 +1,12 @@
 local F, C = unpack(select(2, ...))
 
-local function scrollOnEnter(self)
-    self.thumbBG:SetBackdropColor(C.r, C.g, C.b, 0.25)
-    self.thumbBG:SetBackdropBorderColor(C.r, C.g, C.b)
-end
-
-local function scrollOnLeave(self)
-    self.thumbBG:SetBackdropColor(0, 0, 0, 0)
-    self.thumbBG:SetBackdropBorderColor(0, 0, 0)
-end
-
 local function reskinChatScroll(self)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(self.ScrollBar)
-        F.StripTextures(self.ScrollToBottomButton)
+    F.ReskinTrimScroll(self.ScrollBar)
+    F.StripTextures(self.ScrollToBottomButton)
 
-        local flash = self.ScrollToBottomButton.Flash
-        F.SetupArrow(flash, 'down')
-        flash:SetVertexColor(1, 0.8, 0)
-    else
-        local bu = _G[self:GetName() .. 'ThumbTexture']
-        bu:SetAlpha(0)
-        bu:SetWidth(16)
-
-        local bg = F.CreateBDFrame(bu, 0, true)
-        local down = self.ScrollToBottomButton
-        F.ReskinArrow(down, 'down')
-        down:SetPoint('BOTTOMRIGHT', _G[self:GetName() .. 'ResizeButton'], 'TOPRIGHT', -4, -2)
-
-        self.ScrollBar.thumbBG = bg
-        self.ScrollBar:HookScript('OnEnter', scrollOnEnter)
-        self.ScrollBar:HookScript('OnLeave', scrollOnLeave)
-    end
+    local flash = self.ScrollToBottomButton.Flash
+    F.SetupArrow(flash, 'down')
+    flash:SetVertexColor(1, 0.8, 0)
 end
 
 tinsert(C.BlizzThemes, function()
@@ -112,11 +87,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinPortraitFrame(_G.ChannelFrame)
     F.ReskinButton(_G.ChannelFrame.NewButton)
     F.ReskinButton(_G.ChannelFrame.SettingsButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.ChannelFrame.ChannelList.ScrollBar)
-    else
-        F.ReskinScroll(_G.ChannelFrame.ChannelList.ScrollBar)
-    end
+    F.ReskinTrimScroll(_G.ChannelFrame.ChannelList.ScrollBar)
     F.ReskinTrimScroll(_G.ChannelFrame.ChannelRoster.ScrollBar)
 
     hooksecurefunc(_G.ChannelFrame.ChannelList, 'Update', function(self)
@@ -144,9 +115,6 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(_G.VoiceChatPromptActivateChannel.AcceptButton)
     _G.VoiceChatChannelActivatedNotification:SetBackdrop(nil)
     F.SetBD(_G.VoiceChatChannelActivatedNotification)
-
-    F.ReskinSlider(_G.UnitPopupVoiceMicrophoneVolume.Slider)
-    F.ReskinSlider(_G.UnitPopupVoiceSpeakerVolume.Slider)
 
     -- VoiceActivityManager
     hooksecurefunc(_G.VoiceActivityManager, 'LinkFrameNotificationAndGuid', function(_, _, notification, guid)

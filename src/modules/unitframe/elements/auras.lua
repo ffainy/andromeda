@@ -525,10 +525,10 @@ do
             return
         end
 
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
-        _G.GameTooltip:ClearLines()
-        _G.GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
-        _G.GameTooltip:Show()
+        GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+        GameTooltip:ClearLines()
+        GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
+        GameTooltip:Show()
     end
 
     UNITFRAME.RaidDebuffsBlackList = {}
@@ -536,7 +536,7 @@ do
         wipe(UNITFRAME.RaidDebuffsBlackList)
 
         for spellID in pairs(C.RaidDebuffsBlackList) do
-            local name = GetSpellInfo(spellID)
+            local name = C_Spell.GetSpellName(spellID)
             if name then
                 if _G.ANDROMEDA_ADB['RaidDebuffsBlackList'][spellID] == nil then
                     UNITFRAME.RaidDebuffsBlackList[spellID] = true
@@ -688,7 +688,7 @@ do
         wipe(UNITFRAME.RaidBuffsWhiteList)
 
         for spellID in pairs(C.RaidBuffsWhiteList) do
-            local name = GetSpellInfo(spellID)
+            local name = C_Spell.GetSpellName(spellID)
             if name then
                 if _G.ANDROMEDA_ADB['RaidBuffsWhiteList'][spellID] == nil then
                     UNITFRAME.RaidBuffsWhiteList[spellID] = true

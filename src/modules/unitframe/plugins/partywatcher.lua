@@ -56,7 +56,7 @@ local function Update(self, event, unit, _, spellID)
             index = index + 1
             button = element[index]
             button.lastTime = thisTime
-            button.Icon:SetTexture(GetSpellTexture(spellID))
+            button.Icon:SetTexture(C_Spell.GetSpellTexture(spellID))
             button.spellID = spellID
             button:Show()
 

@@ -1,12 +1,12 @@
 local F, C = unpack(select(2, ...))
 
-local function ReskinEventTraceButton(button)
+local function reskinEventTraceButton(button)
     F.ReskinButton(button)
     button.NormalTexture:SetAlpha(0)
     button.MouseoverOverlay:SetAlpha(0)
 end
 
-local function ReskinScrollChild(self)
+local function reskinScrollChild(self)
     for i = 1, self.ScrollTarget:GetNumChildren() do
         local child = select(i, self.ScrollTarget:GetChildren())
         local hideButton = child and child.HideButton
@@ -26,14 +26,14 @@ local function ReskinScrollChild(self)
     end
 end
 
-local function ReskinEventTraceScrollBox(frame)
+local function reskinEventTraceScrollBox(frame)
     frame:DisableDrawLayer('BACKGROUND')
     F.CreateBDFrame(frame, 0.25)
-    hooksecurefunc(frame, 'Update', ReskinScrollChild)
+    hooksecurefunc(frame, 'Update', reskinScrollChild)
 end
 
-local function ReskinEventTraceFrame(frame)
-    ReskinEventTraceScrollBox(frame.ScrollBox)
+local function reskinEventTraceFrame(frame)
+    reskinEventTraceScrollBox(frame.ScrollBox)
     F.ReskinTrimScroll(frame.ScrollBar)
 end
 
@@ -41,15 +41,15 @@ C.Themes['Blizzard_EventTrace'] = function()
     F.ReskinPortraitFrame(_G.EventTrace)
 
     local subtitleBar = _G.EventTrace.SubtitleBar
-    F.ReskinFilterButton(subtitleBar.OptionsDropDown)
+    F.ReskinFilterButton(subtitleBar.OptionsDropdown)
 
     local logBar = _G.EventTrace.Log.Bar
     local filterBar = _G.EventTrace.Filter.Bar
     F.ReskinEditbox(logBar.SearchBox)
 
-    ReskinEventTraceFrame(_G.EventTrace.Log.Events)
-    ReskinEventTraceFrame(_G.EventTrace.Log.Search)
-    ReskinEventTraceFrame(_G.EventTrace.Filter)
+    reskinEventTraceFrame(_G.EventTrace.Log.Events)
+    reskinEventTraceFrame(_G.EventTrace.Log.Search)
+    reskinEventTraceFrame(_G.EventTrace.Filter)
 
     local buttons = {
         subtitleBar.ViewLog,
@@ -62,6 +62,6 @@ C.Themes['Blizzard_EventTrace'] = function()
         filterBar.CheckAllButton,
     }
     for _, button in pairs(buttons) do
-        ReskinEventTraceButton(button)
+        reskinEventTraceButton(button)
     end
 end

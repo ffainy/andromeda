@@ -6,7 +6,7 @@ function UNITFRAME:UpdatePartyWatcherSpellsList()
     wipe(UNITFRAME.PartySpellsList)
 
     for spellID, duration in pairs(C.PartySpellsList) do
-        local name = GetSpellInfo(spellID)
+        local name = C_Spell.GetSpellName(spellID)
         if name then
             local modDuration = _G.ANDROMEDA_ADB['PartySpellsList'][spellID]
 
@@ -74,16 +74,17 @@ function UNITFRAME:SendCooldownMsg()
         local value = watchingList[UNITFRAME.myGUID]
         if value then
             for spellID in pairs(value) do
-                local start, duration, enabled = GetSpellCooldown(spellID)
+                local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
+                local start = cooldownInfo and cooldownInfo.startTime
+                local duration = cooldownInfo and cooldownInfo.duration
+                local enabled = cooldownInfo and cooldownInfo.isEnabled
                 if enabled ~= 0 and start ~= 0 then
                     local remaining = start + duration - thisTime
                     if remaining < 0 then
                         remaining = 0
                     end
 
-                    sendSyncMsg(
-                        format('3:U:%s:%d:%.2f:%.2f:%s', UNITFRAME.myGUID, spellID, duration, remaining, '-')
-                    ) -- sync to others
+                    sendSyncMsg(format('3:U:%s:%d:%.2f:%.2f:%s', UNITFRAME.myGUID, spellID, duration, remaining, '-')) -- sync to others
                 end
             end
         end
@@ -186,5 +187,3 @@ function UNITFRAME:CreatePartyWatcher(self)
         self.PartyWatcher.PostUpdate = UNITFRAME.PartyWatcherPostUpdate
     end
 end
-
-

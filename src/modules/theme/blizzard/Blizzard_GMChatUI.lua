@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
--- /run LoadAddOn'Blizzard_GMChatUI' GMChatFrame:Show()
+-- /run C_AddOns.LoadAddOn'Blizzard_GMChatUI' GMChatFrame:Show()
 C.Themes['Blizzard_GMChatUI'] = function()
     local frame = _G['GMChatFrame']
     frame:SetClampRectInsets(0, 0, 0, 0)

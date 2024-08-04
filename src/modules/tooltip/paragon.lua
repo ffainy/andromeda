@@ -504,7 +504,7 @@ function TOOLTIP:AddParagonRewards()
 
     for _, data in ipairs(rewards) do
         local collected
-        local name, _, quality, _, _, _, _, _, _, icon = GetItemInfo(data.itemID)
+        local name, _, quality, _, _, _, _, _, _, icon = C_Item.GetItemInfo(data.itemID)
         if data.type == MOUNT then
             collected = select(11, C_MountJournal.GetMountInfoByID(data.mountID))
         elseif data.type == PET then
@@ -519,19 +519,19 @@ function TOOLTIP:AddParagonRewards()
 
         local color = _G.ITEM_QUALITY_COLORS[quality]
         if name then
-            _G.GameTooltip:AddLine(
+            GameTooltip:AddLine(
                 format(lineStr, collected and readyTex or notReadyTex, icon, name, data.covenant or data.type),
                 color.r,
                 color.g,
                 color.b
             )
         else
-            _G.GameTooltip:AddLine(_G.ERR_TRAVEL_PASS_NO_INFO, 1, 0, 0)
+            GameTooltip:AddLine(_G.ERR_TRAVEL_PASS_NO_INFO, 1, 0, 0)
         end
     end
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:Show()
+    GameTooltip:AddLine(' ')
+    GameTooltip:Show()
 end
 
 function TOOLTIP:ParagonRewards()

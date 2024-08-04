@@ -21,8 +21,8 @@ end
 local title
 local function addTitle(text)
     if not title then
-        _G.GameTooltip:AddLine(' ')
-        _G.GameTooltip:AddLine(text, 0.6, 0.8, 1)
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(text, 0.6, 0.8, 1)
 
         title = true
     end
@@ -41,17 +41,17 @@ end
 
 local function onEnter(self)
     local anchorTop = C.DB.Infobar.AnchorTop
-    _G.GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:AddLine(_G.CURRENCY, 0.9, 0.8, 0.6)
+    GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(_G.CURRENCY, 0.9, 0.8, 0.6)
 
     title = false
-    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2167) -- Tier charges
+    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2912) -- Tier charges
     if chargeInfo then
         addTitle('Tier Charges')
 
         local iconTexture = ' |T' .. chargeInfo.iconFileID .. ':13:15:0:0:50:50:4:46:4:46|t'
-        _G.GameTooltip:AddDoubleLine(chargeInfo.name, chargeInfo.quantity .. '/' .. chargeInfo.maxQuantity .. iconTexture, 1, 1, 1, 1, 1, 1)
+        GameTooltip:AddDoubleLine(chargeInfo.name, chargeInfo.quantity .. '/' .. chargeInfo.maxQuantity .. iconTexture, 1, 1, 1, 1, 1, 1)
     end
 
     title = false
@@ -61,7 +61,7 @@ local function onEnter(self)
         local info = C_CurrencyInfo.GetCurrencyInfo(id)
         local amount = format('|cff20ff20%s|r', BreakUpLargeNumbers(info.quantity))
 
-        _G.GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
+        GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
     end
 
     title = false
@@ -71,13 +71,13 @@ local function onEnter(self)
         local info = C_CurrencyInfo.GetCurrencyInfo(id)
         local amount = format('|cff20ff20%s|r', BreakUpLargeNumbers(info.quantity))
 
-        _G.GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
+        GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
     end
 
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    _G.GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Currency Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    _G.GameTooltip:Show()
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
+    GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Currency Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:Show()
 end
 
 local function onLeave(self)

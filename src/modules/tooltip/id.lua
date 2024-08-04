@@ -33,7 +33,12 @@ function TOOLTIP:AddLineForId(id, linkType, noadd)
         end
     end
 
-    if self.__isHoverTip and linkType == typesList.spell and IsPlayerSpell(id) and C_MountJournal.GetMountFromSpell(id) then
+    if
+        self.__isHoverTip
+        and linkType == typesList.spell
+        and IsPlayerSpell(id)
+        and C_MountJournal.GetMountFromSpell(id)
+    then
         self:AddLine(LEARNT_STRING)
     end
 
@@ -75,7 +80,7 @@ function TOOLTIP:AddIDs()
         return
     end
 
-    local GameTooltip = _G.GameTooltip
+    local GameTooltip = GameTooltip
     local ItemRefTooltip = _G.ItemRefTooltip
     local TooltipDataProcessor = _G.TooltipDataProcessor
 
@@ -89,7 +94,12 @@ function TOOLTIP:AddIDs()
             return
         end
 
-        local _, _, _, _, _, _, caster, _, _, id = UnitAura(...)
+        local auraData = C_UnitAuras.GetAuraDataByIndex(...)
+        if not auraData then
+            return
+        end
+        local caster = auraData.sourceUnit
+        local id = auraData.spellId
         if id then
             TOOLTIP.AddLineForId(self, id, typesList.spell)
         end

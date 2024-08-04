@@ -4,7 +4,7 @@ local CT = F:RegisterModule('CursorTrail')
 local pollingRate, numLines = 0.05, 15
 local lines = {}
 for i = 1, numLines do
-    local line = _G.UIParent:CreateLine()
+    local line = UIParent:CreateLine()
     line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
     line:SetColorTexture(1, 1, 1)
 
@@ -35,8 +35,8 @@ local function UpdateTrail()
             info.line:Hide()
         else
             info.line:Show()
-            info.line:SetStartPoint('BOTTOMLEFT', _G.UIParent, startX, startY)
-            info.line:SetEndPoint('BOTTOMLEFT', _G.UIParent, endX, endY)
+            info.line:SetStartPoint('BOTTOMLEFT', UIParent, startX, startY)
+            info.line:SetEndPoint('BOTTOMLEFT', UIParent, endX, endY)
         end
 
         info.x, info.y = startX, startY
@@ -62,10 +62,10 @@ local function UpdateGlow(self, elapsed)
     speed = min(weight * speed + (1 - weight) * sqrt(dX * dX + dY * dY) / elapsed, 1024)
     local size = speed / 6 - 16
     if size > 0 then
-        local scale = _G.UIParent:GetEffectiveScale()
+        local scale = UIParent:GetEffectiveScale()
         self.texture:SetHeight(size)
         self.texture:SetWidth(size)
-        self.texture:SetPoint('CENTER', _G.UIParent, 'BOTTOMLEFT', (x + 0.5 * dX) / scale, (y + 0.5 * dY) / scale)
+        self.texture:SetPoint('CENTER', UIParent, 'BOTTOMLEFT', (x + 0.5 * dX) / scale, (y + 0.5 * dY) / scale)
         self.texture:Show()
     else
         self.texture:Hide()
@@ -73,7 +73,7 @@ local function UpdateGlow(self, elapsed)
 end
 
 local function AddGlow()
-    local frame = CreateFrame('Frame', nil, _G.UIParent)
+    local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetFrameStrata('TOOLTIP')
 
     local texture = frame:CreateTexture()

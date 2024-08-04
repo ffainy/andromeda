@@ -6,7 +6,7 @@ local function onEvent(_, isLogin, isReload)
     if isLogin or isReload then
         F.HideObject(_G.BuffFrame)
         F.HideObject(_G.DebuffFrame)
-        _G.BuffFrame.numHideableBuffs = 0 -- IS_NEW_PATCH_10_1
+        _G.BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
     end
 end
 
@@ -43,12 +43,22 @@ function AURA:BuildBuffFrame()
 
     -- Movers
     AURA.BuffFrame = AURA:CreateAuraHeader('HELPFUL')
-    AURA.BuffFrame.mover = F.Mover(AURA.BuffFrame, L['BuffFrame'], 'BuffAnchor', { 'TOPLEFT', _G.UIParent, 'TOPLEFT', C.UI_GAP, -C.UI_GAP })
+    AURA.BuffFrame.mover = F.Mover(
+        AURA.BuffFrame,
+        L['BuffFrame'],
+        'BuffAnchor',
+        { 'TOPLEFT', UIParent, 'TOPLEFT', C.UI_GAP, -C.UI_GAP }
+    )
     AURA.BuffFrame:ClearAllPoints()
     AURA.BuffFrame:SetPoint('TOPRIGHT', AURA.BuffFrame.mover)
 
     AURA.DebuffFrame = AURA:CreateAuraHeader('HARMFUL')
-    AURA.DebuffFrame.mover = F.Mover(AURA.DebuffFrame, L['DebuffFrame'], 'DebuffAnchor', { 'TOPLEFT', AURA.BuffFrame.mover, 'BOTTOMLEFT', 0, 30 })
+    AURA.DebuffFrame.mover = F.Mover(
+        AURA.DebuffFrame,
+        L['DebuffFrame'],
+        'DebuffAnchor',
+        { 'TOPLEFT', AURA.BuffFrame.mover, 'BOTTOMLEFT', 0, 30 }
+    )
     AURA.DebuffFrame:ClearAllPoints()
     AURA.DebuffFrame:SetPoint('TOPRIGHT', AURA.DebuffFrame.mover)
 
@@ -77,16 +87,14 @@ function AURA:FormatAuraTime(s)
 end
 
 function AURA:UpdateTimer(elapsed)
-    local onTooltip = _G.GameTooltip:IsOwned(self)
+    local onTooltip = GameTooltip:IsOwned(self)
 
     if not (self.timeLeft or self.expiration or onTooltip) then
         self:SetScript('OnUpdate', nil)
         return
     end
 
-    if self.expiration then
-        self.timeLeft = self.expiration / 1e3
-    elseif self.timeLeft then
+    if self.timeLeft then
         self.timeLeft = self.timeLeft - elapsed
     end
 
@@ -162,6 +170,7 @@ function AURA:UpdateTempEnchant(button, index)
         button.icon:SetTexture(GetInventoryItemTexture('player', index))
 
         button.expiration = expirationTime
+        button.oldTime = GetTime()
         button:SetScript('OnUpdate', AURA.UpdateTimer)
         button.nextUpdate = -1
         AURA.UpdateTimer(button, 0)
@@ -238,7 +247,7 @@ function AURA:CreateAuraHeader(filter)
         name = C.ADDON_TITLE .. 'PlayerBuffs'
     end
 
-    local header = CreateFrame('Frame', name, _G.UIParent, 'SecureAuraHeaderTemplate')
+    local header = CreateFrame('Frame', name, UIParent, 'SecureAuraHeaderTemplate')
     header:SetClampedToScreen(true)
     header:UnregisterEvent('UNIT_AURA') -- we only need to watch player and vehicle
     header:RegisterUnitEvent('UNIT_AURA', 'player', 'vehicle')
@@ -247,7 +256,8 @@ function AURA:CreateAuraHeader(filter)
     header.filter = filter
     RegisterAttributeDriver(header, 'unit', '[vehicleui] vehicle; player')
 
-    header.visibility = CreateFrame('Frame', nil, _G.UIParent, 'SecureHandlerStateTemplate')
+    header.visibility = CreateFrame('Frame', nil, UIParent, 'SecureHandlerStateTemplate')
+    header.visibility:RegisterEvent('WEAPON_ENCHANT_CHANGED')
     SecureHandlerSetFrameRef(header.visibility, 'AuraHeader', header)
     RegisterStateDriver(header.visibility, 'customVisibility', '[petbattle] 0;1')
     header.visibility:SetAttribute(
@@ -272,14 +282,14 @@ end
 
 function AURA:Button_SetTooltip(button)
     if button:GetAttribute('index') then
-        _G.GameTooltip:SetUnitAura(button.header:GetAttribute('unit'), button:GetID(), button.filter)
+        GameTooltip:SetUnitAura(button.header:GetAttribute('unit'), button:GetID(), button.filter)
     elseif button:GetAttribute('target-slot') then
-        _G.GameTooltip:SetInventoryItem('player', button:GetID())
+        GameTooltip:SetInventoryItem('player', button:GetID())
     end
 end
 
 function AURA:Button_OnEnter()
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', -5, -5)
+    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT', -5, -5)
     -- Update tooltip
     self.nextUpdate = -1
     self:SetScript('OnUpdate', AURA.UpdateTimer)
@@ -327,7 +337,7 @@ end
 local auraAnchor = {
     unitToken = 'player',
     auraIndex = 1,
-    parent = _G.UIParent,
+    parent = UIParent,
     showCountdownFrame = true,
     showCountdownNumbers = true,
 
@@ -336,7 +346,7 @@ local auraAnchor = {
         iconHeight = 30,
         iconAnchor = {
             point = 'CENTER',
-            relativeTo = _G.UIParent,
+            relativeTo = UIParent,
             relativePoint = 'CENTER',
             offsetX = 0,
             offsetY = 0,
@@ -345,7 +355,7 @@ local auraAnchor = {
 
     durationAnchor = {
         point = 'TOP',
-        relativeTo = _G.UIParent,
+        relativeTo = UIParent,
         relativePoint = 'BOTTOM',
         offsetX = 0,
         offsetY = 0,
@@ -353,17 +363,21 @@ local auraAnchor = {
 }
 
 function AURA:CreatePrivateAuras()
-    if not C.IS_NEW_PATCH_10_1 then
-        return
-    end
-
     local maxButtons = 4 -- only 4 in blzz code, needs review
     local buttonSize = C.DB.Aura.PrivateSize
     local reverse = C.DB.Aura.PrivateReverse
 
-    AURA.PrivateFrame = CreateFrame('Frame', 'NDuiPrivateAuras', _G.UIParent)
-    AURA.PrivateFrame:SetSize((buttonSize + C.DB.Aura.Margin) * maxButtons - C.DB.Aura.Margin, buttonSize + 2 * C.DB.Aura.Margin)
-    AURA.PrivateFrame.mover = F.Mover(AURA.PrivateFrame, 'PrivateAuras', 'PrivateAuras', { 'TOPRIGHT', AURA.DebuffFrame.mover, 'BOTTOMRIGHT', 0, -12 })
+    AURA.PrivateFrame = CreateFrame('Frame', 'NDuiPrivateAuras', UIParent)
+    AURA.PrivateFrame:SetSize(
+        (buttonSize + C.DB.Aura.Margin) * maxButtons - C.DB.Aura.Margin,
+        buttonSize + 2 * C.DB.Aura.Margin
+    )
+    AURA.PrivateFrame.mover = F.Mover(
+        AURA.PrivateFrame,
+        'PrivateAuras',
+        'PrivateAuras',
+        { 'TOPRIGHT', AURA.DebuffFrame.mover, 'BOTTOMRIGHT', 0, -12 }
+    )
     AURA.PrivateFrame:ClearAllPoints()
     AURA.PrivateFrame:SetPoint('TOPRIGHT', AURA.PrivateFrame.mover)
 

@@ -50,7 +50,7 @@ function BLIZZARD:UpdateBossEmote()
 end
 
 function BLIZZARD:VehicleIndicatorMover()
-    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'VehicleIndicatorMover', _G.UIParent)
+    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'VehicleIndicatorMover', UIParent)
     frame:SetSize(100, 100)
     F.Mover(frame, L['VehicleIndicator'], 'VehicleIndicator', { 'BOTTOMRIGHT', _G.Minimap, 'TOPRIGHT', 0, 0 })
 
@@ -64,9 +64,14 @@ function BLIZZARD:VehicleIndicatorMover()
 end
 
 function BLIZZARD:DurabilityFrameMover()
-    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'DurabilityFrameMover', _G.UIParent)
+    local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'DurabilityFrameMover', UIParent)
     frame:SetSize(100, 100)
-    F.Mover(frame, L['DurabilityIndicator'], 'DurabilityIndicator', { 'TOPRIGHT', _G.ObjectiveTrackerFrame, 'TOPLEFT', -10, 0 })
+    F.Mover(
+        frame,
+        L['DurabilityIndicator'],
+        'DurabilityIndicator',
+        { 'TOPRIGHT', _G.ObjectiveTrackerFrame, 'TOPLEFT', -10, 0 }
+    )
 
     hooksecurefunc(_G.DurabilityFrame, 'SetPoint', function(self, _, parent)
         if parent == 'MinimapCluster' or parent == _G.MinimapCluster then
@@ -81,13 +86,13 @@ function BLIZZARD:TicketStatusMover()
     hooksecurefunc(_G.TicketStatusFrame, 'SetPoint', function(self, relF)
         if relF == 'TOPRIGHT' then
             self:ClearAllPoints()
-            self:SetPoint('TOP', _G.UIParent, 'TOP', 0, -100)
+            self:SetPoint('TOP', UIParent, 'TOP', 0, -100)
         end
     end)
 end
 
 function BLIZZARD:UIWidgetFrameMover()
-    local frame1 = CreateFrame('Frame', C.ADDON_TITLE .. 'UIWidgetMover', _G.UIParent)
+    local frame1 = CreateFrame('Frame', C.ADDON_TITLE .. 'UIWidgetMover', UIParent)
     frame1:SetSize(200, 50)
     F.Mover(frame1, L['UIWidgetFrame'], 'UIWidgetFrame', { 'TOP', 0, -80 })
 
@@ -98,9 +103,9 @@ function BLIZZARD:UIWidgetFrameMover()
         end
     end)
 
-    local frame2 = CreateFrame('Frame', C.ADDON_TITLE .. 'WidgetPowerBarMover', _G.UIParent)
+    local frame2 = CreateFrame('Frame', C.ADDON_TITLE .. 'WidgetPowerBarMover', UIParent)
     frame2:SetSize(260, 40)
-    F.Mover(frame2, L['UIWidgetPowerBar'], 'UIWidgetPowerBar', { 'BOTTOM', _G.UIParent, 'BOTTOM', 0, 150 })
+    F.Mover(frame2, L['UIWidgetPowerBar'], 'UIWidgetPowerBar', { 'BOTTOM', UIParent, 'BOTTOM', 0, 150 })
 
     hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, 'SetPoint', function(self, _, parent)
         if parent ~= frame2 then
@@ -112,7 +117,13 @@ end
 
 -- Add ClickBinding tab to SpellBookFrame
 function BLIZZARD:ClickBindingTab()
-    local cb = CreateFrame('CheckButton', C.ADDON_TITLE .. 'ClickCastingTab', _G.SpellBookSideTabsFrame, 'SpellBookSkillLineTabTemplate')
+    if C.IS_WW then return end --#FIXME
+    local cb = CreateFrame(
+        'CheckButton',
+        C.ADDON_TITLE .. 'ClickCastingTab',
+        _G.SpellBookSideTabsFrame,
+        'SpellBookSkillLineTabTemplate'
+    )
     cb:SetNormalTexture('Interface\\Icons\\trade_engineering')
     cb:Show()
     cb.tooltip = L['Click Binding']
@@ -309,13 +320,6 @@ do
     end
 end
 
--- Fix empty string in party guide promote
-do
-    if not _G.PROMOTE_GUIDE then
-        _G.PROMOTE_GUIDE = _G.PARTY_PROMOTE_GUIDE
-    end
-end
-
 -- Unregister talent event
 do
     if _G.PlayerTalentFrame then
@@ -343,4 +347,9 @@ do
         end
         F:RegisterEvent('ADDON_LOADED', fixAchievementData)
     end
+end
+
+-- Fix missing localization file
+if not _G.GuildControlUIRankSettingsFrameRosterLabel then
+    _G.GuildControlUIRankSettingsFrameRosterLabel = CreateFrame('Frame')
 end

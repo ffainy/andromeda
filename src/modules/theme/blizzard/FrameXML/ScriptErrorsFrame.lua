@@ -7,7 +7,7 @@ tinsert(C.BlizzThemes, function()
 
     local ScriptErrorsFrame = _G.ScriptErrorsFrame
 
-    ScriptErrorsFrame:SetScale(_G.UIParent:GetScale())
+    ScriptErrorsFrame:SetScale(UIParent:GetScale())
     F.StripTextures(ScriptErrorsFrame)
     F.SetBD(ScriptErrorsFrame)
 
@@ -15,10 +15,6 @@ tinsert(C.BlizzThemes, function()
     F.ReskinArrow(ScriptErrorsFrame.NextError, 'right')
     F.ReskinButton(ScriptErrorsFrame.Reload)
     F.ReskinButton(ScriptErrorsFrame.Close)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(ScriptErrorsFrame.ScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.ScriptErrorsFrameScrollBar)
-    end
+    F.ReskinTrimScroll(ScriptErrorsFrame.ScrollFrame.ScrollBar)
     F.ReskinClose(_G.ScriptErrorsFrameClose)
 end)

@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
-local function ReskinMissionPage(self)
+local function reskinMissionPage(self)
     F.StripTextures(self)
     local bg = F.CreateBDFrame(self, 0.25)
     bg:SetPoint('TOPLEFT', 3, 2)
@@ -51,7 +51,7 @@ local function ReskinMissionPage(self)
     end
 end
 
-local function ReskinMissionTabs(self)
+local function reskinMissionTabs(self)
     for i = 1, 2 do
         local tab = _G[self:GetName() .. 'Tab' .. i]
         if tab then
@@ -64,7 +64,7 @@ local function ReskinMissionTabs(self)
     end
 end
 
-local function ReskinXPBar(self)
+local function reskinXPBar(self)
     local xpBar = self.XPBar
     if xpBar then
         xpBar:GetRegions():Hide()
@@ -76,7 +76,7 @@ local function ReskinXPBar(self)
     end
 end
 
-local function ReskinGarrMaterial(self)
+local function reskinGarrMaterial(self)
     local frame = self.MaterialFrame
     frame.BG:Hide()
     if frame.LeftFiligree then
@@ -92,7 +92,7 @@ local function ReskinGarrMaterial(self)
     bg:SetPoint('BOTTOMRIGHT', -5, 6)
 end
 
-local function ReskinMissionButton(button)
+local function reskinMissionButton(button)
     if not button.styled then
         local rareOverlay = button.RareOverlay
         local rareText = button.RareText
@@ -127,14 +127,14 @@ local function ReskinMissionButton(button)
     end
 end
 
-local function ReskinMissionList(self)
+local function reskinMissionList(self)
     for i = 1, self.ScrollTarget:GetNumChildren() do
         local button = select(i, self.ScrollTarget:GetChildren())
-        ReskinMissionButton(button)
+        reskinMissionButton(button)
     end
 end
 
-local function ReskinMissionComplete(self)
+local function reskinMissionComplete(self)
     local missionComplete = self.MissionComplete
     local bonusRewards = missionComplete.BonusRewards
     if bonusRewards then
@@ -170,7 +170,7 @@ local function ReskinMissionComplete(self)
     end
 end
 
-local function ReskinFollowerTab(self)
+local function reskinFollowerTab(self)
     for i = 1, 2 do
         local trait = self.Traits[i]
         trait.Border:Hide()
@@ -183,14 +183,14 @@ local function ReskinFollowerTab(self)
     end
 end
 
-local function UpdateFollowerQuality(self, followerInfo)
+local function updateFollowerQuality(self, followerInfo)
     if followerInfo then
         local color = C.QualityColors[followerInfo.quality or 1]
         self.squareBG:SetBackdropBorderColor(color.r, color.g, color.b)
     end
 end
 
-local function ReskinFollowerButton(button)
+local function reskinFollowerButton(button)
     if not button.styled then
         button.BG:Hide()
         button.Selection:SetTexture('')
@@ -207,7 +207,7 @@ local function ReskinFollowerButton(button)
             F.ReskinGarrisonPortrait(portrait)
             portrait:ClearAllPoints()
             portrait:SetPoint('TOPLEFT', 4, -1)
-            hooksecurefunc(portrait, 'SetupPortrait', UpdateFollowerQuality)
+            hooksecurefunc(portrait, 'SetupPortrait', updateFollowerQuality)
         end
 
         if button.BusyFrame then
@@ -233,18 +233,18 @@ local function ReskinFollowerButton(button)
     end
 end
 
-local function ReskinFollowerButtons(self)
+local function reskinFollowerButtons(self)
     for i = 1, self.ScrollTarget:GetNumChildren() do
         local child = select(i, self.ScrollTarget:GetChildren())
-        ReskinFollowerButton(child.Follower)
+        reskinFollowerButton(child.Follower)
     end
 end
 
-local function ReskinFollowerList(followerList)
-    hooksecurefunc(followerList.ScrollBox, 'Update', ReskinFollowerButtons)
+local function reskinFollowerList(followerList)
+    hooksecurefunc(followerList.ScrollBox, 'Update', reskinFollowerButtons)
 end
 
-local function UpdateSpellAbilities(self)
+local function updateSpellAbilities(self)
     for abilityFrame in self.autoSpellPool:EnumerateActive() do
         if not abilityFrame.styled then
             F.ReskinIcon(abilityFrame.Icon)
@@ -260,7 +260,7 @@ local function UpdateSpellAbilities(self)
     end
 end
 
-local function UpdateFollowerAbilities(followerList)
+local function updateFollowerAbilities(followerList)
     local followerTab = followerList.followerTab
     local abilitiesFrame = followerTab.AbilitiesFrame
     if not abilitiesFrame then
@@ -317,7 +317,7 @@ local function reskinFollowerItem(item)
     bg:SetPoint('BOTTOMRIGHT', 0, 1)
 end
 
-local function ReskinMissionFrame(self)
+local function reskinMissionFrame(self)
     F.StripTextures(self, 0)
     F.SetBD(self)
     F.StripTextures(self.CloseButton, 0)
@@ -344,11 +344,11 @@ local function ReskinMissionFrame(self)
         self.MapTab.ScrollContainer.Child.TiledBackground:Hide()
     end
 
-    ReskinMissionComplete(self)
-    ReskinMissionPage(self.MissionTab.MissionPage)
+    reskinMissionComplete(self)
+    reskinMissionPage(self.MissionTab.MissionPage)
     F.StripTextures(self.FollowerTab)
-    ReskinXPBar(self.FollowerTab)
-    hooksecurefunc(self.FollowerTab, 'UpdateAutoSpellAbilities', UpdateSpellAbilities)
+    reskinXPBar(self.FollowerTab)
+    hooksecurefunc(self.FollowerTab, 'UpdateAutoSpellAbilities', updateSpellAbilities)
 
     reskinFollowerItem(self.FollowerTab.ItemWeapon)
     reskinFollowerItem(self.FollowerTab.ItemArmor)
@@ -357,10 +357,10 @@ local function ReskinMissionFrame(self)
     F.StripTextures(missionList)
     F.ReskinTrimScroll(missionList.ScrollBar)
 
-    ReskinGarrMaterial(missionList)
-    ReskinMissionTabs(missionList)
+    reskinGarrMaterial(missionList)
+    reskinMissionTabs(missionList)
     F.ReskinButton(missionList.CompleteDialog.BorderFrame.ViewButton)
-    hooksecurefunc(missionList.ScrollBox, 'Update', ReskinMissionList)
+    hooksecurefunc(missionList.ScrollBox, 'Update', reskinMissionList)
 
     local FollowerList = self.FollowerList
     F.StripTextures(FollowerList)
@@ -369,9 +369,9 @@ local function ReskinMissionFrame(self)
     end
 
     F.ReskinTrimScroll(FollowerList.ScrollBar)
-    ReskinGarrMaterial(FollowerList)
-    ReskinFollowerList(FollowerList)
-    hooksecurefunc(FollowerList, 'ShowFollower', UpdateFollowerAbilities)
+    reskinGarrMaterial(FollowerList)
+    reskinFollowerList(FollowerList)
+    hooksecurefunc(FollowerList, 'ShowFollower', updateFollowerAbilities)
 end
 
 -- Missions board in 9.0
@@ -418,7 +418,7 @@ local function reskinFollowerBoard(self, group)
     end
 end
 
-local function ReskinMissionBoards(self)
+local function reskinMissionBoards(self)
     reskinFollowerBoard(self, 'enemy')
     reskinFollowerBoard(self, 'follower')
 end
@@ -445,7 +445,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     -- Building list
     local buildingList = GarrisonBuildingFrame.BuildingList
     buildingList:DisableDrawLayer('BORDER')
-    ReskinGarrMaterial(buildingList)
+    reskinGarrMaterial(buildingList)
 
     for i = 1, _G.GARRISON_NUM_BUILDING_SIZES do
         local tab = buildingList['Tab' .. i]
@@ -503,8 +503,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     followerList:DisableDrawLayer('BORDER')
 
     F.ReskinTrimScroll(followerList.ScrollBar)
-    ReskinFollowerList(followerList)
-    hooksecurefunc(followerList, 'ShowFollower', UpdateFollowerAbilities)
+    reskinFollowerList(followerList)
+    hooksecurefunc(followerList, 'ShowFollower', updateFollowerAbilities)
 
     -- Info box
     local infoBox = GarrisonBuildingFrame.InfoBox
@@ -656,8 +656,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         F.ReskinEditbox(followerList.SearchBox)
         F.ReskinTrimScroll(followerList.ScrollBar)
 
-        ReskinFollowerList(_G.GarrisonLandingPageFollowerList)
-        hooksecurefunc(_G.GarrisonLandingPageFollowerList, 'ShowFollower', UpdateFollowerAbilities)
+        reskinFollowerList(_G.GarrisonLandingPageFollowerList)
+        hooksecurefunc(_G.GarrisonLandingPageFollowerList, 'ShowFollower', updateFollowerAbilities)
     end
 
     -- Ship follower list
@@ -668,19 +668,19 @@ C.Themes['Blizzard_GarrisonUI'] = function()
 
     -- Follower tab
     local followerTab = GarrisonLandingPage.FollowerTab
-    ReskinXPBar(followerTab)
-    hooksecurefunc(followerTab, 'UpdateAutoSpellAbilities', UpdateSpellAbilities)
+    reskinXPBar(followerTab)
+    hooksecurefunc(followerTab, 'UpdateAutoSpellAbilities', updateSpellAbilities)
 
     -- Ship follower tab
     do
         local followerTab = GarrisonLandingPage.ShipFollowerTab
-        ReskinXPBar(followerTab)
-        ReskinFollowerTab(followerTab)
+        reskinXPBar(followerTab)
+        reskinFollowerTab(followerTab)
     end
 
     -- Mission UI
     local GarrisonMissionFrame = _G.GarrisonMissionFrame
-    ReskinMissionFrame(GarrisonMissionFrame)
+    reskinMissionFrame(GarrisonMissionFrame)
 
     hooksecurefunc('GarrisonMissonListTab_SetSelected', function(tab, isSelected)
         if isSelected then
@@ -830,7 +830,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     -- Pick
     local Pick = GarrisonRecruiterFrame.Pick
     F.ReskinButton(Pick.ChooseRecruits)
-    F.ReskinDropdown(Pick.ThreatDropDown)
+    F.ReskinDropdown(Pick.ThreatDropdown)
     F.ReskinRadio(Pick.Radio1)
     F.ReskinRadio(Pick.Radio2)
 
@@ -852,8 +852,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
 
     F.ReskinTrimScroll(rsfollowerList.ScrollBar)
     F.ReskinEditbox(rsfollowerList.SearchBox)
-    ReskinFollowerList(rsfollowerList)
-    hooksecurefunc(rsfollowerList, 'ShowFollower', UpdateFollowerAbilities)
+    reskinFollowerList(rsfollowerList)
+    hooksecurefunc(rsfollowerList, 'ShowFollower', updateFollowerAbilities)
 
     -- Follower selection
     local FollowerSelection = GarrisonRecruitSelectFrame.FollowerSelection
@@ -919,12 +919,12 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinEditbox(_G.GarrisonShipyardFrameFollowers.SearchBox)
     F.ReskinTrimScroll(GarrisonShipyardFrame.FollowerList.ScrollBar)
     F.StripTextures(_G.GarrisonShipyardFrameFollowers)
-    ReskinGarrMaterial(_G.GarrisonShipyardFrameFollowers)
+    reskinGarrMaterial(_G.GarrisonShipyardFrameFollowers)
 
     local shipyardTab = GarrisonShipyardFrame.FollowerTab
     shipyardTab:DisableDrawLayer('BORDER')
-    ReskinXPBar(shipyardTab)
-    ReskinFollowerTab(shipyardTab)
+    reskinXPBar(shipyardTab)
+    reskinFollowerTab(shipyardTab)
 
     F.ReskinClose(GarrisonShipyardFrame.BorderFrame.CloseButton2)
     F.ReskinTab(_G.GarrisonShipyardFrameTab1)
@@ -949,7 +949,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
 
     -- Orderhall UI
     local OrderHallMissionFrame = _G.OrderHallMissionFrame
-    ReskinMissionFrame(OrderHallMissionFrame)
+    reskinMissionFrame(OrderHallMissionFrame)
 
     -- allies
     local combatAlly = _G.OrderHallMissionFrameMissions.CombatAllyUI
@@ -988,11 +988,11 @@ C.Themes['Blizzard_GarrisonUI'] = function()
 
     -- BFA Mission UI
     local BFAMissionFrame = _G.BFAMissionFrame
-    ReskinMissionFrame(BFAMissionFrame)
+    reskinMissionFrame(BFAMissionFrame)
 
     -- Covenant Mission UI
     local CovenantMissionFrame = _G.CovenantMissionFrame
-    ReskinMissionFrame(CovenantMissionFrame)
+    reskinMissionFrame(CovenantMissionFrame)
     CovenantMissionFrame.RaisedBorder:SetAlpha(0)
     F.StripTextures(_G.CovenantMissionFrameMissions, 0)
     _G.CovenantMissionFrameMissions.RaisedFrameEdges:SetAlpha(0)
@@ -1005,11 +1005,6 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     _G.CombatLog.ElevatedFrame:SetAlpha(0)
     F.StripTextures(_G.CombatLog.CombatLogMessageFrame)
     F.CreateBDFrame(_G.CombatLog.CombatLogMessageFrame, 0.25)
-    if C.IS_NEW_PATCH_10_1 then
-        -- todo
-    else
-        F.ReskinScroll(_G.CombatLog.CombatLogMessageFrame.ScrollBar)
-    end
 
     F.ReskinButton(_G.HealFollowerButtonTemplate)
     local bg = F.CreateBDFrame(CovenantMissionFrame.FollowerTab, 0.25)
@@ -1022,8 +1017,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinButton(_G.CovenantMissionFrameFollowers.HealAllButton)
     F.ReskinIcon(CovenantMissionFrame.FollowerTab.HealFollowerFrame.CostFrame.CostIcon)
 
-    CovenantMissionFrame.MissionTab.MissionPage.Board:HookScript('OnShow', ReskinMissionBoards)
-    CovenantMissionFrame.MissionComplete.Board:HookScript('OnShow', ReskinMissionBoards)
+    CovenantMissionFrame.MissionTab.MissionPage.Board:HookScript('OnShow', reskinMissionBoards)
+    CovenantMissionFrame.MissionComplete.Board:HookScript('OnShow', reskinMissionBoards)
 
     -- Addon supports
 
@@ -1034,7 +1029,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end
 
     -- WarPlan
-    if IsAddOnLoaded('WarPlan') then
+    if C_AddOns.IsAddOnLoaded('WarPlan') then
         local function reskinWarPlanMissions(self)
             local missions = self.TaskBoard.Missions
             for i = 1, #missions do
@@ -1086,7 +1081,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end
 
     -- VenturePlan, 4.30 and higher
-    if IsAddOnLoaded('VenturePlan') then
+    if C_AddOns.IsAddOnLoaded('VenturePlan') then
         local ANIMA_TEXTURE = 3528288
         local ANIMA_SPELLID = { [347555] = 3, [345706] = 5, [336327] = 35, [336456] = 250 }
         local function GetAnimaMultiplier(itemID)
@@ -1340,7 +1335,7 @@ local atlasToColor = {
     ['orderhalltalents-spellborder-yellow'] = { 1, 0.8, 0 },
 }
 
-local function UpdateTalentBorder(bu, atlas)
+local function updateTalentBorder(bu, atlas)
     if not bu.bg then
         return
     end
@@ -1377,8 +1372,8 @@ C.Themes['Blizzard_OrderHallUI'] = function()
                     bu.Highlight:SetColorTexture(1, 1, 1, 0.25)
                     bu.bg = F.ReskinIcon(bu.Icon)
 
-                    UpdateTalentBorder(bu, bu.Border:GetAtlas())
-                    hooksecurefunc(bu, 'SetBorder', UpdateTalentBorder)
+                    updateTalentBorder(bu, bu.Border:GetAtlas())
+                    hooksecurefunc(bu, 'SetBorder', updateTalentBorder)
                 end
             end
         end

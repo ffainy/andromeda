@@ -31,7 +31,7 @@ local function reskinScrollChild(self)
             child.FrameHighlight:SetColorTexture(1, 1, 1, 0.15) -- 0.25 might be too much
 
             child.NewOutline:SetTexture('')
-            child.BindingText:SetFontObject(Game12Font)
+            child.BindingText:SetFontObject(_G.Game12Font)
             hooksecurefunc(child, 'Init', updateNewGlow)
 
             local iconHighlight = child.IconHighlight
@@ -40,24 +40,6 @@ local function reskinScrollChild(self)
             hooksecurefunc(iconHighlight, 'SetShown', updateIconGlow)
         end
     end
-end
-
-local function updateButtonSelection(button, isSelected)
-    if isSelected then
-        button.bg:SetBackdropBorderColor(1, 0.8, 0)
-    else
-        button.bg:SetBackdropBorderColor(0, 0, 0)
-    end
-end
-
-local function reskinPortraitIcon(button, texture)
-    F.StripTextures(button)
-    button.Portrait:SetTexture(texture)
-    button.bg = F.ReskinIcon(button.Portrait)
-    button.bg:SetBackdropColor(0, 0, 0)
-    button.Highlight:SetColorTexture(1, 1, 1, 0.25)
-    button.Highlight:SetInside(button.bg)
-    hooksecurefunc(button, 'SetSelectedState', updateButtonSelection)
 end
 
 C.Themes['Blizzard_ClickBindingUI'] = function()
@@ -74,9 +56,6 @@ C.Themes['Blizzard_ClickBindingUI'] = function()
 
     frame.ScrollBoxBackground:Hide()
     hooksecurefunc(frame.ScrollBox, 'Update', reskinScrollChild)
-
-    reskinPortraitIcon(frame.SpellbookPortrait, 136830)
-    reskinPortraitIcon(frame.MacrosPortrait, 136377)
 
     frame.TutorialFrame.NineSlice:Hide()
     F.SetBD(frame.TutorialFrame)

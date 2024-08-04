@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
-local function ReskinPvPFrame(frame)
+local function reskinPvPFrame(frame)
     frame:DisableDrawLayer('BACKGROUND')
     frame:DisableDrawLayer('BORDER')
     F.ReskinRole(frame.TankIcon, 'TANK')
@@ -17,9 +17,12 @@ local function ReskinPvPFrame(frame)
     reward.Ring:Hide()
     reward.CircleMask:Hide()
     F.ReskinIcon(reward.Icon)
+    if reward.CheckMark then
+        reward.CheckMark:SetAtlas('checkmark-minimal')
+    end
 end
 
-local function ConquestFrameButton_OnEnter(self)
+local function buttonOnEnter(self)
     _G.ConquestTooltip:ClearAllPoints()
     _G.ConquestTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 1, 0)
 end
@@ -103,10 +106,9 @@ C.Themes['Blizzard_PVPUI'] = function()
     -- Honor frame
 
     HonorFrame.Inset:Hide()
-    ReskinPvPFrame(HonorFrame)
+    reskinPvPFrame(HonorFrame)
     F.ReskinButton(HonorFrame.QueueButton)
-    F.ReskinDropdown(_G.HonorFrameTypeDropDown)
-
+    F.ReskinDropdown(_G.HonorFrameTypeDropdown)
     F.ReskinTrimScroll(HonorFrame.SpecificScrollBar)
 
     hooksecurefunc(HonorFrame.SpecificScrollBox, 'Update', function(self)
@@ -161,17 +163,17 @@ C.Themes['Blizzard_PVPUI'] = function()
 
     -- Conquest Frame
 
-    ReskinPvPFrame(ConquestFrame)
+    reskinPvPFrame(ConquestFrame)
     ConquestFrame.Inset:Hide()
     ConquestFrame.RatedBGTexture:Hide()
     ConquestFrame.ShadowOverlay:Hide()
 
-    ConquestFrame.Arena2v2:HookScript('OnEnter', ConquestFrameButton_OnEnter)
-    ConquestFrame.Arena3v3:HookScript('OnEnter', ConquestFrameButton_OnEnter)
-    ConquestFrame.RatedBG:HookScript('OnEnter', ConquestFrameButton_OnEnter)
+    ConquestFrame.Arena2v2:HookScript('OnEnter', buttonOnEnter)
+    ConquestFrame.Arena3v3:HookScript('OnEnter', buttonOnEnter)
+    ConquestFrame.RatedBG:HookScript('OnEnter', buttonOnEnter)
     F.ReskinButton(ConquestFrame.JoinButton)
 
-    local names = { 'RatedSoloShuffle', 'Arena2v2', 'Arena3v3', 'RatedBG' }
+    local names = { 'RatedSoloShuffle', 'RatedBGBlitz', 'Arena2v2', 'Arena3v3', 'RatedBG' }
     for _, name in pairs(names) do
         local bu = ConquestFrame[name]
         if bu then
@@ -199,7 +201,13 @@ C.Themes['Blizzard_PVPUI'] = function()
                 local info = C_CurrencyInfo.GetCurrencyInfo(reward.id)
                 local name, texture, quality = info.name, info.iconFileID, info.quality
                 if quality == Enum.ItemQuality.Artifact then
-                    _, rewardTexture, _, rewardQuaility = _G.CurrencyContainerUtil_GetCurrencyContainerInfo(reward.id, reward.quantity, name, texture, quality)
+                    _, rewardTexture, _, rewardQuaility = _G.CurrencyContainerUtil_GetCurrencyContainerInfo(
+                        reward.id,
+                        reward.quantity,
+                        name,
+                        texture,
+                        quality
+                    )
                 end
             end
         end
@@ -207,14 +215,17 @@ C.Themes['Blizzard_PVPUI'] = function()
         if not rewardTexture and itemRewards then
             local reward = itemRewards[1]
             if reward then
-                _, _, rewardQuaility, _, _, _, _, _, _, rewardTexture = GetItemInfo(reward.id)
+                _, _, rewardQuaility, _, _, _, _, _, _, rewardTexture = C_Item.GetItemInfo(reward.id)
             end
         end
 
         if rewardTexture then
-            rewardFrame.Icon:SetTexture(rewardTexture)
-            local color = C.QualityColors[rewardQuaility]
-            rewardFrame.Icon.bg:SetBackdropBorderColor(color.r, color.g, color.b)
+            local icon = rewardFrame.Icon
+            icon:SetTexture(rewardTexture)
+            if icon.bg then
+                local color = C.QualityColors[rewardQuaility]
+                icon.bg:SetBackdropBorderColor(color.r, color.g, color.b)
+            end
         end
     end)
 end

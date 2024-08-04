@@ -20,6 +20,19 @@ local function reskinRewardButton(button)
     button.styled = true
 end
 
+local function setupSetButton(button)
+    if button.bg then
+        return
+    end
+    button.bg = F.ReskinIcon(button.Icon)
+    F.ReskinIconBorder(button.IconBorder, true, true)
+    button.BackgroundTexture:SetAlpha(0)
+    button.SelectedTexture:SetColorTexture(1, 0.8, 0, 0.25)
+    button.SelectedTexture:SetInside()
+    button.HighlightTexture:SetColorTexture(1, 1, 1, 0.25)
+    button.HighlightTexture:SetInside()
+end
+
 C.Themes['Blizzard_PerksProgram'] = function()
     local frame = _G.PerksProgramFrame
 
@@ -42,10 +55,21 @@ C.Themes['Blizzard_PerksProgram'] = function()
 
     local productsFrame = frame.ProductsFrame
     if productsFrame then
-        reskinCustomizeButton(productsFrame.PerksProgramFilter.FilterDropDownButton)
+        F.ReskinButton(productsFrame.PerksProgramFilter)
         F.ReskinIcon(productsFrame.PerksProgramCurrencyFrame.Icon)
         F.StripTextures(productsFrame.PerksProgramProductDetailsContainerFrame)
         F.SetBD(productsFrame.PerksProgramProductDetailsContainerFrame)
+        F.ReskinTrimScroll(
+            productsFrame.PerksProgramProductDetailsContainerFrame.SetDetailsScrollBoxContainer.ScrollBar
+        )
+
+        hooksecurefunc(
+            productsFrame.PerksProgramProductDetailsContainerFrame.SetDetailsScrollBoxContainer.ScrollBox,
+            'Update',
+            function(self)
+                self:ForEachFrame(setupSetButton)
+            end
+        )
 
         local productsContainer = productsFrame.ProductsScrollBoxContainer
         F.StripTextures(productsContainer)

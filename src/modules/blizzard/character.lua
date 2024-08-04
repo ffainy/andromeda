@@ -6,7 +6,7 @@ function M:MissingStats()
         return
     end
 
-    if IsAddOnLoaded('DejaCharacterStats') then
+    if C_AddOns.IsAddOnLoaded('DejaCharacterStats') then
         return
     end
 

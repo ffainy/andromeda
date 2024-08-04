@@ -134,14 +134,3 @@ function UNITFRAME:CreateHealthBar(self)
 
     UNITFRAME:UpdateHealthBarColor(self)
 end
-
--- set health update frequency
-function UNITFRAME:UpdateRaidHealthMethod()
-    for _, frame in pairs(oUF.objects) do
-        if frame.unitStyle == 'raid' then
-            frame:SetHealthUpdateMethod(C.DB.Unitframe.FrequentHealth)
-            frame:SetHealthUpdateSpeed(C.DB.Unitframe.HealthFrequency)
-            frame.Health:ForceUpdate()
-        end
-    end
-end

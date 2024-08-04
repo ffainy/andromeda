@@ -114,7 +114,12 @@ local completeHiddenItems = {
     [193915] = true, -- 黑龙军团的旗帜，questID 66633
 }
 
-local ExtraQuestButton = CreateFrame('Button', 'ExtraQuestButton', _G.UIParent, 'SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate')
+local ExtraQuestButton = CreateFrame(
+    'Button',
+    'ExtraQuestButton',
+    UIParent,
+    'SecureActionButtonTemplate, SecureHandlerStateTemplate, SecureHandlerAttributeTemplate'
+)
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent('PLAYER_LOGIN')
 ExtraQuestButton:RegisterForClicks('AnyDown')
@@ -159,7 +164,7 @@ local onAttributeChanged = [[
 
 function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
     if self:IsShown() and self.itemID then
-        local start, duration = GetItemCooldown(self.itemID)
+        local start, duration = C_Item.GetItemCooldown(self.itemID)
         if duration > 0 then
             self.Cooldown:SetCooldown(start, duration)
             self.Cooldown:Show()
@@ -170,8 +175,8 @@ function ExtraQuestButton:BAG_UPDATE_COOLDOWN()
 end
 
 function ExtraQuestButton:UpdateCount()
-    if self:IsShown() then
-        local count = GetItemCount(self.itemLink)
+    if self:IsShown() and self.itemLink then
+        local count = C_Item.GetItemCount(self.itemLink)
         self.Count:SetText(count and count > 1 and count or '')
     end
 end
@@ -227,7 +232,7 @@ function ExtraQuestButton:PLAYER_LOGIN()
         if _G[C.ADDON_TITLE .. 'ActionBarExtra'] then
             self:SetPoint('CENTER', _G[C.ADDON_TITLE .. 'ActionBarExtra'])
         else
-            F.Mover(self, L['QuestItemButton'], 'QuestItemButton', { 'CENTER', _G.UIParent, 'CENTER', 0, 300 })
+            F.Mover(self, L['QuestItemButton'], 'QuestItemButton', { 'CENTER', UIParent, 'CENTER', 0, 300 })
         end
     end
 
@@ -283,18 +288,18 @@ ExtraQuestButton:SetScript('OnEnter', function(self)
     if not self.itemLink then
         return
     end
-    _G.GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
-    _G.GameTooltip:SetHyperlink(self.itemLink)
+    GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
+    GameTooltip:SetHyperlink(self.itemLink)
 end)
 
 ExtraQuestButton:SetScript('OnUpdate', function(self, elapsed)
     if self.updateRange then
-        if (self.rangeTimer or 0) > _G.TOOLTIP_UPDATE_TIME then
+        if not InCombatLockdown() and ((self.rangeTimer or 0) > _G.TOOLTIP_UPDATE_TIME) then
             local HotKey = self.HotKey
             local Icon = self.Icon
 
-            -- BUG: IsItemInRange() is broken versus friendly npcs (and possibly others)
-            local inRange = IsItemInRange(self.itemLink, 'target')
+            -- BUG: C_Item.IsItemInRange() is broken versus friendly npcs (and possibly others)
+            local inRange = C_Item.IsItemInRange(self.itemLink, 'target')
             if HotKey:GetText() == _G.RANGE_INDICATOR then
                 if inRange == false then
                     HotKey:SetTextColor(1, 0.1, 0.1)
@@ -355,7 +360,7 @@ function ExtraQuestButton:SetItem(itemLink)
     end
 
     if itemLink then
-        self.Icon:SetTexture(GetItemIcon(itemLink))
+        self.Icon:SetTexture(C_Item.GetItemIconByID(itemLink))
         local itemID = GetItemInfoFromHyperlink(itemLink)
         self.itemID = itemID
         self.itemLink = itemLink
@@ -368,7 +373,7 @@ function ExtraQuestButton:SetItem(itemLink)
     if self.itemID then
         local HotKey = self.HotKey
         local key = GetBindingKey('EXTRAACTIONBUTTON1')
-        local hasRange = ItemHasRange(itemLink)
+        local hasRange = C_Item.ItemHasRange(self.itemID)
         if key then
             HotKey:SetText(GetBindingText(key, 1))
             HotKey:Show()
@@ -412,7 +417,7 @@ local function GetQuestDistanceWithItem(questID)
     if not itemLink then
         return
     end
-    if GetItemCount(itemLink) == 0 then
+    if C_Item.GetItemCount(itemLink) == 0 then
         return
     end
     local itemID = GetItemInfoFromHyperlink(itemLink)
@@ -488,7 +493,12 @@ local function GetClosestQuestItem()
         for index = 1, C_QuestLog.GetNumQuestLogEntries() do
             local info = C_QuestLog.GetInfo(index)
             local questID = info and info.questID
-            if questID and not info.isHeader and (not info.isHidden or C_QuestLog.IsWorldQuest(questID)) and QuestHasPOIInfo(questID) then
+            if
+                questID
+                and not info.isHeader
+                and (not info.isHidden or C_QuestLog.IsWorldQuest(questID))
+                and QuestHasPOIInfo(questID)
+            then
                 local distance, itemLink = GetQuestDistanceWithItem(questID)
                 if distance and distance <= closestDistance then
                     closestDistance = distance

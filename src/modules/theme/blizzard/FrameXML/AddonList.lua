@@ -11,11 +11,10 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(_G.AddonListCancelButton)
     F.ReskinButton(_G.AddonListOkayButton)
     F.ReskinCheckbox(_G.AddonListForceLoad)
-    F.ReskinDropdown(_G.AddonCharacterDropDown)
+    F.ReskinDropdown(_G.AddonList.Dropdown)
     F.ReskinTrimScroll(_G.AddonList.ScrollBar)
 
     _G.AddonListForceLoad:SetSize(18, 18)
-    _G.AddonCharacterDropDown:SetWidth(170)
 
     local function forceSaturation(self, _, force)
         if force then
@@ -33,10 +32,8 @@ tinsert(C.BlizzThemes, function()
 
             hooksecurefunc(entry.Enabled:GetCheckedTexture(), 'SetDesaturated', forceSaturation)
 
-            if C.IS_NEW_PATCH_10_1 then
-                F.ReplaceIconString(entry.Title)
-                hooksecurefunc(entry.Title, 'SetText', F.ReplaceIconString)
-            end
+            F.ReplaceIconString(entry.Title)
+            hooksecurefunc(entry.Title, 'SetText', F.ReplaceIconString)
 
             entry.styled = true
         end

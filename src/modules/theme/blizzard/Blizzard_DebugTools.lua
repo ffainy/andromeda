@@ -27,11 +27,7 @@ local function ReskinTableAttribute(frame)
 
     F.StripTextures(frame.ScrollFrameArt)
     F.CreateBDFrame(frame.ScrollFrameArt, 0.25)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(frame.LinesScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(frame.LinesScrollFrame.ScrollBar)
-    end
+    F.ReskinTrimScroll(frame.LinesScrollFrame.ScrollBar)
 
     frame.styled = true
 end

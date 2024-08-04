@@ -1,6 +1,8 @@
 local F, C, L = unpack(select(2, ...))
 local BLIZZARD = F:GetModule('Blizzard')
 
+local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION or 0
+
 local RUNEFORGING_ID = 53428
 local PICK_LOCK = 1804
 local CHEF_HAT = 134020
@@ -37,8 +39,8 @@ function BLIZZARD:UpdateProfessions()
         if numSpells > 0 then
             for i = 1, numSpells do
                 local slotID = i + spelloffset
-                if not IsPassiveSpell(slotID, _G.BOOKTYPE_PROFESSION) then
-                    local spellID = select(2, GetSpellBookItemInfo(slotID, _G.BOOKTYPE_PROFESSION))
+                if not C_Spell.IsSpellPassive(slotID) then
+                    local spellID = C_SpellBook.GetSpellBookItemInfo(slotID, BOOKTYPE_PROFESSION).spellID
                     if i == 1 then
                         BLIZZARD:TradeTabs_Create(spellID)
                     else
@@ -52,7 +54,7 @@ function BLIZZARD:UpdateProfessions()
     if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox.IsToyUsable(CHEF_HAT) then
         BLIZZARD:TradeTabs_Create(nil, CHEF_HAT)
     end
-    if GetItemCount(THERMAL_ANVIL) > 0 then
+    if C_Item.GetItemCount(THERMAL_ANVIL) > 0 then
         BLIZZARD:TradeTabs_Create(nil, nil, THERMAL_ANVIL)
     end
 end
@@ -62,7 +64,7 @@ function BLIZZARD:TradeTabs_Update()
         local spellID = tab.spellID
         local itemID = tab.itemID
 
-        if IsCurrentSpell(spellID) then
+        if spellID and C_Spell.IsCurrentSpell(spellID) then
             tab:SetChecked(true)
             tab.cover:Show()
         else
@@ -74,7 +76,9 @@ function BLIZZARD:TradeTabs_Update()
         if itemID then
             start, duration = GetItemCooldown(itemID)
         else
-            start, duration = GetSpellCooldown(spellID)
+            local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
+            start = cooldownInfo and cooldownInfo.startTime
+            duration = cooldownInfo and cooldownInfo.duration
         end
         if start and duration and duration > 1.5 then
             tab.CD:SetCooldown(start, duration)
@@ -89,7 +93,6 @@ function BLIZZARD:TradeTabs_Reskin()
 
     for _, tab in pairs(tabList) do
         tab:SetCheckedTexture(C.Assets.Textures.ButtonChecked)
-        tab:GetRegions():Hide()
         F.CreateBDFrame(tab)
         local texture = tab:GetNormalTexture()
         if texture then
@@ -104,15 +107,16 @@ function BLIZZARD:TradeTabs_Create(spellID, toyID, itemID)
     if toyID then
         _, name, texture = C_ToyBox.GetToyInfo(toyID)
     elseif itemID then
-        name, _, _, _, _, _, _, _, _, texture = GetItemInfo(itemID)
+        name, _, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(itemID)
     else
-        name, _, texture = GetSpellInfo(spellID)
+        name, texture = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
     end
     if not name then
         return
     end -- precaution
 
-    local tab = CreateFrame('CheckButton', nil, _G.ProfessionsFrame, 'SpellBookSkillLineTabTemplate, SecureActionButtonTemplate')
+    local tab = CreateFrame('CheckButton', nil, _G.ProfessionsFrame, 'SecureActionButtonTemplate')
+    tab:SetSize(32, 32)
     tab.tooltip = name
     tab.spellID = spellID
     tab.itemID = toyID or itemID
@@ -127,7 +131,8 @@ function BLIZZARD:TradeTabs_Create(spellID, toyID, itemID)
         tab:SetAttribute(tab.type, spellID or name)
     end
     tab:SetNormalTexture(texture)
-    tab:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
+    tab:SetHighlightTexture(C.Assets.Textures.Backdrop)
+    tab:GetHighlightTexture():SetVertexColor(1, 1, 1, 0.25)
     tab:Show()
 
     tab.CD = CreateFrame('Cooldown', nil, tab, 'CooldownFrameTemplate')
@@ -173,7 +178,13 @@ function BLIZZARD:TradeTabs_FilterIcons()
     for index, value in pairs(buttonList) do
         local bu = CreateFrame('Button', nil, _G.ProfessionsFrame.CraftingPage.RecipeList, 'BackdropTemplate')
         bu:SetSize(22, 22)
-        bu:SetPoint('BOTTOMRIGHT', _G.ProfessionsFrame.CraftingPage.RecipeList.FilterButton, 'TOPRIGHT', -(index - 1) * 27, 10)
+        bu:SetPoint(
+            'BOTTOMRIGHT',
+            _G.ProfessionsFrame.CraftingPage.RecipeList.FilterButton,
+            'TOPRIGHT',
+            -(index - 1) * 27,
+            10
+        )
         F.PixelIcon(bu, value[1], true)
         F.AddTooltip(bu, 'ANCHOR_TOP', value[2])
         bu.__value = value
@@ -216,20 +227,15 @@ function BLIZZARD:TradeTabs()
         return
     end
 
-    if not _G.ProfessionsFrame then
-        return
+    if _G.ProfessionsFrame then
+        _G.ProfessionsFrame:HookScript('OnShow', BLIZZARD.TradeTabs_OnLoad)
+    else
+        F:RegisterEvent('ADDON_LOADED', function(_, addon)
+            if addon == 'Blizzard_Professions' then
+                BLIZZARD:TradeTabs_OnLoad()
+            end
+        end)
     end
-
-    _G.ProfessionsFrame:HookScript('OnShow', function()
-        if init then
-            return
-        end
-        if InCombatLockdown() then
-            F:RegisterEvent('PLAYER_REGEN_ENABLED', BLIZZARD.TradeTabs_OnLoad)
-        else
-            BLIZZARD:TradeTabs_OnLoad()
-        end
-    end)
 end
 
 BLIZZARD:RegisterBlizz('TradeTabs', BLIZZARD.TradeTabs)

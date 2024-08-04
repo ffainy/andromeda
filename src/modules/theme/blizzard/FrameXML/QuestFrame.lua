@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 
-local function UpdateProgressItemQuality(self)
+local function updateProgressItemQuality(self)
     local button = self.__owner
     local index = button:GetID()
     local buttonType = button.type
@@ -39,7 +39,7 @@ tinsert(C.BlizzThemes, function()
         button.NameFrame:Hide()
         button.bg = F.ReskinIcon(button.Icon)
         button.Icon.__owner = button
-        hooksecurefunc(button.Icon, 'SetTexture', UpdateProgressItemQuality)
+        hooksecurefunc(button.Icon, 'SetTexture', updateProgressItemQuality)
 
         local bg = F.CreateBDFrame(button, 0.25)
         bg:SetPoint('TOPLEFT', button.bg, 'TOPRIGHT', 2, 0)
@@ -63,17 +63,10 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(_G.QuestFrameGoodbyeButton)
     F.ReskinButton(_G.QuestFrameGreetingGoodbyeButton)
 
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.QuestProgressScrollFrame.ScrollBar)
-        F.ReskinTrimScroll(_G.QuestRewardScrollFrame.ScrollBar)
-        F.ReskinTrimScroll(_G.QuestDetailScrollFrame.ScrollBar)
-        F.ReskinTrimScroll(_G.QuestGreetingScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.QuestProgressScrollFrameScrollBar)
-        F.ReskinScroll(_G.QuestRewardScrollFrameScrollBar)
-        F.ReskinScroll(_G.QuestDetailScrollFrameScrollBar)
-        F.ReskinScroll(_G.QuestGreetingScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.QuestProgressScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(_G.QuestRewardScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(_G.QuestDetailScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(_G.QuestGreetingScrollFrame.ScrollBar)
 
     -- Text colour stuff
 
@@ -97,9 +90,13 @@ tinsert(C.BlizzThemes, function()
     -- Quest NPC model
 
     F.StripTextures(_G.QuestModelScene)
-    F.StripTextures(_G.QuestNPCModelTextFrame)
     local bg = F.SetBD(_G.QuestModelScene)
-    bg:SetOutside(nil, nil, nil, _G.QuestNPCModelTextFrame)
+
+    local modelText = _G.QuestNPCModelTextFrame or _G.QuestModelScene.ModelTextFrame
+    if modelText then -- isNewPatch
+        F.StripTextures(modelText)
+        bg:SetOutside(nil, nil, nil, modelText)
+    end
 
     hooksecurefunc('QuestFrame_ShowQuestPortrait', function(parentFrame, _, _, _, _, _, x, y)
         x = x + 6

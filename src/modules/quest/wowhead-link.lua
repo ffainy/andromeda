@@ -20,6 +20,7 @@ function QUEST:Load(addon)
 end
 
 function QUEST:WowheadLink()
+    if C.IS_WW then return end --#FIXME
     if not C.DB.Quest.WowheadLink then
         return
     end
@@ -60,7 +61,7 @@ function QUEST:WowheadLink()
         _G.UIDropDownMenu_AddButton(info, _G.UIDROPDOWN_MENU_LEVEL)
     end)
 
-    -- if IsAddOnLoaded('Blizzard_AchievementUI') then
+    -- if C_AddOns.IsAddOnLoaded('Blizzard_AchievementUI') then
     --     hooksecurefunc('AchievementButton_OnClick', Button_Onclick)
     -- else
     --     F:RegisterEvent('ADDON_LOADED', QUEST.Load)

@@ -18,10 +18,6 @@ C.Themes['Blizzard_NewPlayerExperienceGuide'] = function()
     F.ReskinPortraitFrame(GuideFrame)
     GuideFrame.Title:SetTextColor(1, 0.8, 0)
     GuideFrame.ScrollFrame.Child.Text:SetTextColor(1, 1, 1)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(GuideFrame.ScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(GuideFrame.ScrollFrame.ScrollBar)
-    end
+    F.ReskinTrimScroll(GuideFrame.ScrollFrame.ScrollBar)
     F.ReskinButton(GuideFrame.ScrollFrame.ConfirmationButton)
 end

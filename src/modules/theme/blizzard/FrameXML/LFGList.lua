@@ -1,31 +1,17 @@
 local F, C = unpack(select(2, ...))
 
-local function Highlight_OnEnter(self)
+local function onEnter(self)
     self.hl:Show()
 end
 
-local function Highlight_OnLeave(self)
+local function onLeave(self)
     self.hl:Hide()
 end
 
-local function HandleRoleAnchor(self, role)
+local function handleRoleAnchor(self, role)
     self[role .. 'Count']:SetWidth(24)
     self[role .. 'Count']:SetFontObject(_G.Game13Font)
     self[role .. 'Count']:SetPoint('RIGHT', self[role .. 'Icon'], 'LEFT', 1, 0)
-end
-
-local atlasToRole = {
-    ['groupfinder-icon-role-large-tank'] = 'TANK',
-    ['groupfinder-icon-role-large-heal'] = 'HEALER',
-    ['groupfinder-icon-role-large-dps'] = 'DAMAGER',
-}
-
-local function ReplaceApplicantRoles(texture, atlas)
-    local role = atlasToRole[atlas]
-    if role then
-        texture:SetTexture(C.Assets.Textures.RoleLfgIcons)
-        texture:SetTexCoord(F.GetRoleTexCoord(role))
-    end
 end
 
 tinsert(C.BlizzThemes, function()
@@ -76,19 +62,21 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Search panel ]]
 
-    local searchPanel = LFGListFrame.SearchPanel
+    local SearchPanel = LFGListFrame.SearchPanel
 
-    F.ReskinButton(searchPanel.RefreshButton)
-    F.ReskinButton(searchPanel.BackButton)
-    F.ReskinButton(searchPanel.BackToGroupButton)
-    F.ReskinButton(searchPanel.SignUpButton)
-    F.ReskinEditbox(searchPanel.SearchBox)
-    F.ReskinFilterButton(searchPanel.FilterButton)
+    F.ReskinButton(SearchPanel.RefreshButton)
+    F.ReskinButton(SearchPanel.BackButton)
+    F.ReskinButton(SearchPanel.BackToGroupButton)
+    F.ReskinButton(SearchPanel.SignUpButton)
+    F.ReskinEditbox(SearchPanel.SearchBox)
+    SearchPanel.SearchBox:SetHeight(22)
+    F.ReskinFilterButton(SearchPanel.FilterButton)
+    F.ReskinFilterReset(SearchPanel.FilterButton.ResetButton)
 
-    searchPanel.RefreshButton:SetSize(24, 24)
-    searchPanel.RefreshButton.Icon:SetPoint('CENTER')
-    searchPanel.ResultsInset:Hide()
-    F.StripTextures(searchPanel.AutoCompleteFrame)
+    SearchPanel.RefreshButton:SetSize(24, 24)
+    SearchPanel.RefreshButton.Icon:SetPoint('CENTER')
+    SearchPanel.ResultsInset:Hide()
+    F.StripTextures(SearchPanel.AutoCompleteFrame)
 
     local numResults = 1
     hooksecurefunc('LFGListSearchPanel_UpdateAutoComplete', function(self)
@@ -117,8 +105,8 @@ tinsert(C.BlizzThemes, function()
             hl:Hide()
             result.hl = hl
 
-            result:HookScript('OnEnter', Highlight_OnEnter)
-            result:HookScript('OnLeave', Highlight_OnLeave)
+            result:HookScript('OnEnter', onEnter)
+            result:HookScript('OnLeave', onLeave)
 
             numResults = numResults + 1
         end
@@ -133,10 +121,10 @@ tinsert(C.BlizzThemes, function()
     end
 
     local delayStyled -- otherwise it taints while listing
-    hooksecurefunc(searchPanel.ScrollBox, 'Update', function(self)
+    hooksecurefunc(SearchPanel.ScrollBox, 'Update', function(self)
         if not delayStyled then
             F.ReskinButton(self.StartGroupButton, true)
-            F.ReskinTrimScroll(searchPanel.ScrollBar)
+            F.ReskinTrimScroll(SearchPanel.ScrollBar)
 
             delayStyled = true
         end
@@ -172,8 +160,8 @@ tinsert(C.BlizzThemes, function()
         hl:Hide()
         header.hl = hl
 
-        header:HookScript('OnEnter', Highlight_OnEnter)
-        header:HookScript('OnLeave', Highlight_OnLeave)
+        header:HookScript('OnEnter', onEnter)
+        header:HookScript('OnLeave', onLeave)
 
         if prevHeader then
             header:SetPoint('LEFT', prevHeader, 'RIGHT', C.MULT, 0)
@@ -201,20 +189,6 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    hooksecurefunc('LFGListApplicationViewer_UpdateRoleIcons', function(member)
-        if not member.styled then
-            for i = 1, 3 do
-                local button = member['RoleIcon' .. i]
-                local texture = button:GetNormalTexture()
-                ReplaceApplicantRoles(texture, _G.LFG_LIST_GROUP_DATA_ATLASES[button.role])
-                hooksecurefunc(texture, 'SetAtlas', ReplaceApplicantRoles)
-                F.CreateBDFrame(button)
-            end
-
-            member.styled = true
-        end
-    end)
-
     -- [[ Entry creation ]]
 
     local entryCreation = LFGListFrame.EntryCreation
@@ -226,8 +200,8 @@ tinsert(C.BlizzThemes, function()
     F.ReskinEditbox(entryCreation.Name)
     F.ReskinEditbox(entryCreation.ItemLevel.EditBox)
     F.ReskinEditbox(entryCreation.VoiceChat.EditBox)
-    F.ReskinDropdown(entryCreation.GroupDropDown)
-    F.ReskinDropdown(entryCreation.ActivityDropDown)
+    F.ReskinDropdown(entryCreation.GroupDropdown)
+    F.ReskinDropdown(entryCreation.ActivityDropdown)
     F.ReskinDropdown(entryCreation.PlayStyleDropdown)
     F.ReskinCheckbox(entryCreation.MythicPlusRating.CheckButton)
     F.ReskinEditbox(entryCreation.MythicPlusRating.EditBox)
@@ -250,13 +224,15 @@ tinsert(C.BlizzThemes, function()
             F.ReskinSmallRole(self.HealerIcon, 'HEALER')
             F.ReskinSmallRole(self.DamagerIcon, 'DPS')
 
-            self.DamagerIcon:ClearAllPoints() -- fix for PGFinder
+            -- fix for PGFinder
+            self.DamagerIcon:ClearAllPoints()
+            self.DamagerIcon:SetPoint('RIGHT', -11, 0)
             self.HealerIcon:SetPoint('RIGHT', self.DamagerIcon, 'LEFT', -22, 0)
             self.TankIcon:SetPoint('RIGHT', self.HealerIcon, 'LEFT', -22, 0)
 
-            HandleRoleAnchor(self, 'Tank')
-            HandleRoleAnchor(self, 'Healer')
-            HandleRoleAnchor(self, 'Damager')
+            handleRoleAnchor(self, 'Tank')
+            handleRoleAnchor(self, 'Healer')
+            handleRoleAnchor(self, 'Damager')
 
             self.styled = true
         end
@@ -303,13 +279,4 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(LFGListInviteDialog.AcceptButton)
     F.ReskinButton(LFGListInviteDialog.DeclineButton)
     F.ReskinButton(LFGListInviteDialog.AcknowledgeButton)
-
-    local roleIcon = LFGListInviteDialog.RoleIcon
-    roleIcon:SetTexture(C.Assets.Textures.RoleLfgIcons)
-    F.CreateBDFrame(roleIcon)
-
-    hooksecurefunc('LFGListInviteDialog_Show', function(self, resultID)
-        local role = select(5, C_LFGList.GetApplicationInfo(resultID))
-        self.RoleIcon:SetTexCoord(F.GetRoleTexCoord(role))
-    end)
 end)

@@ -3,6 +3,7 @@ local TOOLTIP = F:GetModule('Tooltip')
 
 local npcIDstring = '%s ' .. C.INFO_COLOR .. '%s'
 local ignoreString = '|cffff0000' .. _G.IGNORED .. ':|r %s'
+local specPrefix = '|cffFFCC00' .. _G.SPECIALIZATION .. ': ' .. C.INFO_COLOR
 local blanchyFix = '|n%s+|n'
 
 TOOLTIP.MountIDs = {}
@@ -36,6 +37,10 @@ local FACTION_COLORS = {
     [_G.FACTION_HORDE] = '|cffff5040%s|r',
 }
 
+local function replaceSpecInfo(str)
+    return strfind(str, '%s') and specPrefix .. str or str
+end
+
 function TOOLTIP:UpdateFactionLine(lineData)
     if self:IsForbidden() then
         return
@@ -45,11 +50,19 @@ function TOOLTIP:UpdateFactionLine(lineData)
         return
     end
 
+    local unit = TOOLTIP.GetUnit(self)
+    local unitClass = unit and UnitIsPlayer(unit) and UnitClass(unit)
+    local unitCreature = unit and UnitCreatureType(unit)
+
     local linetext = lineData.leftText
     if linetext == _G.PVP then
         return true
     elseif FACTION_COLORS[linetext] then
         lineData.leftText = format(FACTION_COLORS[linetext], linetext)
+    elseif unitClass and strfind(linetext, unitClass) then
+        lineData.leftText = gsub(linetext, '(.-)%S+$', replaceSpecInfo)
+    elseif unitCreature and linetext == unitCreature then
+        return true
     end
 end
 
@@ -79,10 +92,10 @@ function TOOLTIP:OnTooltipCleared()
     self.tipUpdate = 1
     self.tipUnit = nil
 
-    _G.GameTooltip_ClearMoney(self)
-    _G.GameTooltip_ClearStatusBars(self)
-    _G.GameTooltip_ClearProgressBars(self)
-    _G.GameTooltip_ClearWidgetSet(self)
+    GameTooltip_ClearMoney(self)
+    GameTooltip_ClearStatusBars(self)
+    GameTooltip_ClearProgressBars(self)
+    GameTooltip_ClearWidgetSet(self)
 
     if self.StatusBar then
         self.StatusBar:ClearWatch()
@@ -104,17 +117,30 @@ function TOOLTIP:RefreshLines()
     end
 end
 
+local function shouldHideInCombat()
+	local index = C.DB.Tooltip.HideInCombat
+	if index == 1 then
+		return true
+	elseif index == 2 then
+		return IsAltKeyDown()
+	elseif index == 3 then
+		return IsShiftKeyDown()
+	elseif index == 4 then
+		return IsControlKeyDown()
+	elseif index == 5 then
+		return false
+	end
+end
+
 function TOOLTIP:OnTooltipSetUnit()
-    if self:IsForbidden() or self ~= _G.GameTooltip then
+    if self:IsForbidden() or self ~= GameTooltip then
         return
     end
 
-    if C.DB.Tooltip.HideInCombat and InCombatLockdown() and not C_PetBattles.IsInBattle() then
-        if not IsShiftKeyDown() then
-            self:Hide()
-        end
-        return
-    end
+    if (not shouldHideInCombat()) and InCombatLockdown() then
+		self:Hide()
+		return
+	end
 
     local unit, guid = TOOLTIP.GetUnit(self)
     if not unit or not UnitExists(unit) then
@@ -130,7 +156,7 @@ function TOOLTIP:OnTooltipSetUnit()
         unitFullName = name .. '-' .. (realm or C.MY_REALM)
         local pvpName = UnitPVPName(unit)
         local relationship = UnitRealmRelationship(unit)
-        if not C.DB.Tooltip.HideTitle and pvpName then
+        if not C.DB.Tooltip.HideTitle and pvpName and pvpName ~= '' then
             name = pvpName
         end
         if realm and realm ~= '' then
@@ -143,7 +169,9 @@ function TOOLTIP:OnTooltipSetUnit()
             end
         end
 
-        local status = (UnitIsAFK(unit) and _G.AFK) or (UnitIsDND(unit) and _G.DND) or (not UnitIsConnected(unit) and _G.PLAYER_OFFLINE)
+        local status = (UnitIsAFK(unit) and _G.AFK)
+            or (UnitIsDND(unit) and _G.DND)
+            or (not UnitIsConnected(unit) and _G.PLAYER_OFFLINE)
         if status then
             status = format(' |cffffcc00[%s]|r', status)
         end
@@ -202,12 +230,27 @@ function TOOLTIP:OnTooltipSetUnit()
 
         local diff = _G.GetCreatureDifficultyColor(level)
         local classify = UnitClassification(unit)
-        local textLevel = format('%s%s%s|r', F:RgbToHex(diff), boss or format('%d', level), classification[classify] or '')
+        local textLevel =
+            format('%s%s%s|r', F:RgbToHex(diff), boss or format('%d', level), classification[classify] or '')
         local tiptextLevel = TOOLTIP.GetLevelLine(self)
         if tiptextLevel then
+            local reaction = UnitReaction(unit, 'player')
+            local standingText = not isPlayer
+                    and reaction
+                    and hexColor .. _G['FACTION_STANDING_LABEL' .. reaction] .. '|r '
+                or ''
             local pvpFlag = isPlayer and UnitIsPVP(unit) and format(' |cffff0000%s|r', _G.PVP) or ''
-            local unitClass = isPlayer and format('%s %s', UnitRace(unit) or '', hexColor .. (UnitClass(unit) or '') .. '|r') or UnitCreatureType(unit) or ''
-            tiptextLevel:SetFormattedText('%s%s %s %s', textLevel, pvpFlag, unitClass, (not alive and '|cffCCCCCC' .. _G.DEAD .. '|r' or ''))
+            local unitClass = isPlayer
+                    and format('%s %s', UnitRace(unit) or '', hexColor .. (UnitClass(unit) or '') .. '|r')
+                or UnitCreatureType(unit)
+                or ''
+            tiptextLevel:SetFormattedText(
+                '%s%s %s %s',
+                textLevel,
+                pvpFlag,
+                standingText .. unitClass,
+                (not alive and '|cffCCCCCC' .. _G.DEAD .. '|r' or '')
+            )
         end
     end
 
@@ -216,23 +259,24 @@ function TOOLTIP:OnTooltipSetUnit()
         if tarRicon and tarRicon > 8 then
             tarRicon = nil
         end
-        local tar = format('%s%s', (tarRicon and _G.ICON_LIST[tarRicon] .. '10|t') or '', TOOLTIP:GetTarget(unit .. 'target'))
+        local tar =
+            format('%s%s', (tarRicon and _G.ICON_LIST[tarRicon] .. '10|t') or '', TOOLTIP:GetTarget(unit .. 'target'))
         self:AddLine(C.INFO_COLOR .. _G.TARGET .. ':|r ' .. tar)
     end
 
     if not isPlayer and IsAltKeyDown() then
         local npcID = F:GetNpcId(guid)
         if npcID then
-            local reaction = UnitReaction(unit, 'player')
-            local standingText = reaction and hexColor .. _G['FACTION_STANDING_LABEL' .. reaction]
-            self:AddLine(format(npcIDstring, standingText or '', npcID))
+            self:AddLine(format(npcIDstring, 'NpcID:', npcID))
         end
     end
 
-    TOOLTIP.InspectUnitSpecAndLevel(self, unit)
-    TOOLTIP.AddMythicPlusScore(self, unit)
+    if isPlayer then
+        TOOLTIP.InspectUnitItemLevel(self, unit)
+        TOOLTIP.AddMythicPlusScore(self, unit)
+        TOOLTIP.AddCovenantInfo()
+    end
     TOOLTIP.ScanTargets(self, unit)
-    TOOLTIP.AddCovenantInfo()
 
     -- Ignore note
     local ignoreNote = unitFullName and _G.ANDROMEDA_ADB['IgnoreNotesList'][unitFullName]
@@ -254,7 +298,8 @@ function TOOLTIP:GameTooltip_OnUpdate(elapsed)
     self.tipUpdate = 0
 end
 
-function TOOLTIP:RefreshStatusBar(value)
+--function TOOLTIP:RefreshStatusBar(value)
+function TOOLTIP:RefreshStatusBar()
     if not self.text then
         local outline = _G.ANDROMEDA_ADB.FontOutline
         self.text = F.CreateFS(self, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
@@ -271,8 +316,8 @@ end
 
 function TOOLTIP:ReskinStatusBar()
     self.StatusBar:ClearAllPoints()
-    self.StatusBar:SetPoint('BOTTOMLEFT', _G.GameTooltip, 'TOPLEFT', 1, -4)
-    self.StatusBar:SetPoint('BOTTOMRIGHT', _G.GameTooltip, 'TOPRIGHT', -1, -4)
+    self.StatusBar:SetPoint('BOTTOMLEFT', GameTooltip, 'TOPLEFT', 1, -4)
+    self.StatusBar:SetPoint('BOTTOMRIGHT', GameTooltip, 'TOPRIGHT', -1, -4)
     self.StatusBar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
     self.StatusBar:SetHeight(3)
     F.CreateBDFrame(self.StatusBar)
@@ -332,7 +377,11 @@ function TOOLTIP:ScanTargets(unit)
 
     for i = 1, GetNumGroupMembers() do
         local member = (IsInRaid() and 'raid' .. i or 'party' .. i)
-        if UnitIsUnit(unit, member .. 'target') and not UnitIsUnit('player', member) and not UnitIsDeadOrGhost(member) then
+        if
+            UnitIsUnit(unit, member .. 'target')
+            and not UnitIsUnit('player', member)
+            and not UnitIsDeadOrGhost(member)
+        then
             local color = F:RgbToHex(F:UnitColor(member))
             local name = color .. UnitName(member) .. '|r'
             tinsert(targetTable, name)
@@ -340,7 +389,13 @@ function TOOLTIP:ScanTargets(unit)
     end
 
     if #targetTable > 0 then
-        _G.GameTooltip:AddLine(L['TargetedBy'] .. ': ' .. C.INFO_COLOR .. '(' .. #targetTable .. ')|r ' .. table.concat(targetTable, ', '), nil, nil, nil, 1)
+        GameTooltip:AddLine(
+            L['TargetedBy'] .. ': ' .. C.INFO_COLOR .. '(' .. #targetTable .. ')|r ' .. table.concat(targetTable, ', '),
+            nil,
+            nil,
+            nil,
+            1
+        )
     end
 end
 
@@ -366,9 +421,9 @@ function TOOLTIP:SetUnitAura(unit, index, filter)
 end
 
 function TOOLTIP:MountSource()
-    hooksecurefunc(_G.GameTooltip, 'SetUnitAura', TOOLTIP.SetUnitAura)
-    hooksecurefunc(_G.GameTooltip, 'SetUnitBuff', TOOLTIP.SetUnitAura)
-    hooksecurefunc(_G.GameTooltip, 'SetUnitDebuff', TOOLTIP.SetUnitAura)
+    hooksecurefunc(GameTooltip, 'SetUnitAura', TOOLTIP.SetUnitAura)
+    hooksecurefunc(GameTooltip, 'SetUnitBuff', TOOLTIP.SetUnitAura)
+    hooksecurefunc(GameTooltip, 'SetUnitDebuff', TOOLTIP.SetUnitAura)
 end
 
 -- Add mythic plus score
@@ -389,7 +444,7 @@ function TOOLTIP:AddMythicPlusScore(unit)
     local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary(unit)
     local score = summary and summary.currentSeasonScore
     if score and score > 0 then
-        _G.GameTooltip:AddLine(format('%s:|r %s', C.INFO_COLOR .. _G.DUNGEON_SCORE, TOOLTIP.GetDungeonScore(score)))
+        GameTooltip:AddLine(format('%s:|r %s', C.INFO_COLOR .. _G.DUNGEON_SCORE, TOOLTIP.GetDungeonScore(score)))
     end
 end
 
@@ -419,7 +474,14 @@ function TOOLTIP:GameTooltip_SetDefaultAnchor(parent)
         self:SetOwner(parent, 'ANCHOR_CURSOR_RIGHT')
     else
         if not mover then
-            mover = F.Mover(self, L['Tooltip'], 'GameTooltip', { 'BOTTOMRIGHT', _G.UIParent, 'BOTTOMRIGHT', -C.UI_GAP, 260 }, 240, 120)
+            mover = F.Mover(
+                self,
+                L['Tooltip'],
+                'GameTooltip',
+                { 'BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -C.UI_GAP, 260 },
+                240,
+                120
+            )
         end
         self:SetOwner(parent, 'ANCHOR_NONE')
         self:ClearAllPoints()
@@ -429,7 +491,7 @@ end
 
 function TOOLTIP:ResetUnit(btn)
     if (btn == 'LSHIFT' or btn == 'LALT') and UnitExists('mouseover') then
-        _G.GameTooltip:RefreshData()
+        GameTooltip:RefreshData()
     end
 end
 
@@ -439,7 +501,7 @@ function TOOLTIP:OnLogin()
     end
 
     _G.TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, TOOLTIP.OnTooltipSetUnit)
-    hooksecurefunc(_G.GameTooltip.StatusBar, 'SetValue', TOOLTIP.RefreshStatusBar)
+    hooksecurefunc(GameTooltip.StatusBar, 'SetValue', TOOLTIP.RefreshStatusBar)
     _G.TooltipDataProcessor.AddLinePreCall(Enum.TooltipDataLineType.None, TOOLTIP.UpdateFactionLine)
     _G.TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, TOOLTIP.FixRecipeItemNameWidth)
 
@@ -447,9 +509,9 @@ function TOOLTIP:OnLogin()
     hooksecurefunc('GameTooltip_ShowProgressBar', TOOLTIP.GameTooltip_ShowProgressBar)
     hooksecurefunc('GameTooltip_SetDefaultAnchor', TOOLTIP.GameTooltip_SetDefaultAnchor)
 
-    _G.GameTooltip:HookScript('OnTooltipCleared', TOOLTIP.OnTooltipCleared)
-    _G.GameTooltip:HookScript('OnUpdate', TOOLTIP.GameTooltip_OnUpdate)
-    _G.GameTooltip.FadeOut = FadeOut
+    GameTooltip:HookScript('OnTooltipCleared', TOOLTIP.OnTooltipCleared)
+    GameTooltip:HookScript('OnUpdate', TOOLTIP.GameTooltip_OnUpdate)
+    GameTooltip.FadeOut = FadeOut
 
     TOOLTIP:ReskinTipIcon()
     TOOLTIP:SetupFonts()

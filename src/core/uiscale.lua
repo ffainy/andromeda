@@ -16,7 +16,7 @@ function F:SetupUIScale(init)
         -- #TODO: hide UIScale options
 
         if not InCombatLockdown() then
-            _G.UIParent:SetScale(scale)
+            UIParent:SetScale(scale)
         end
     end
 end

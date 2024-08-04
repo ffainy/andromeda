@@ -25,12 +25,12 @@ function IN:IgnoreButton_OnEnter()
     local name = getButtonName(self)
     local savedNote = _G.ANDROMEDA_ADB['IgnoreNotesList'][name]
     if savedNote then
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_NONE')
-        _G.GameTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 35, 0)
-        _G.GameTooltip:ClearLines()
-        _G.GameTooltip:AddLine(name)
-        _G.GameTooltip:AddLine(format(noteStr, savedNote), 1, 1, 1, 1)
-        _G.GameTooltip:Show()
+        GameTooltip:SetOwner(self, 'ANCHOR_NONE')
+        GameTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 35, 0)
+        GameTooltip:ClearLines()
+        GameTooltip:AddLine(name)
+        GameTooltip:AddLine(format(noteStr, savedNote), 1, 1, 1, 1)
+        GameTooltip:Show()
     end
 end
 

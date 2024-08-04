@@ -1,7 +1,7 @@
 <Bindings>
 
     <Binding category='BINDING_HEADER_ANDROMEDA' name='Open GUI'>
-        ANDROMEDA[1].ToggleConsole()
+        ANDROMEDA[1].ToggleGUI()
     </Binding>
     <Binding category='BINDING_HEADER_ANDROMEDA' name='Inspect Target Unit'>
         InspectUnit('target')

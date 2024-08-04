@@ -105,7 +105,7 @@ function NAMEPLATE.UpdateTotemIcon(self, event, unit)
             local totemData = totemNpcIDs[npcID]
             local spellID, duration = unpack(totemData)
 
-            local tex = GetSpellTexture(spellID)
+            local tex = C_Spell.GetSpellTexture(spellID)
 
             iconFrame.icon:SetTexture(tex)
             local startTime = totemStartTimes[guid]

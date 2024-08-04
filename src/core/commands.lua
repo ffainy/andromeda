@@ -13,7 +13,7 @@ F:RegisterSlashCommand('/and', function(msg)
     elseif strmatch(str, 'unlock') or strmatch(str, 'layout') then
         F:MoverConsole()
     elseif strmatch(str, 'gui') or strmatch(str, 'config') then
-        F.ToggleConsole()
+        F.ToggleGUI()
     elseif strmatch(str, 'help') or strmatch(str, 'cheatsheet') then
         GUI:ToggleCheatSheet()
     elseif strmatch(str, 'logo') then
@@ -152,7 +152,7 @@ do
     end
 
     F:RegisterSlashCommand('/way', function(msg)
-        if IsAddOnLoaded('TomTom') then
+        if C_AddOns.IsAddOnLoaded('TomTom') then
             return
         end
         msg = gsub(msg, '(%d)[%.,] (%d)', '%1 %2')
@@ -168,6 +168,9 @@ do
 
                     if x and y then
                         print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ''))
+
+                        C_Map.SetUserWaypoint(_G.UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
+                        C_SuperTrack.SetSuperTrackedUserWaypoint(true)
                     end
                 end
             end
@@ -188,14 +191,14 @@ F:RegisterSlashCommand('/rl', function()
 end)
 
 F:RegisterSlashCommand('/fs', function()
-    _G.UIParentLoadAddOn('Blizzard_DebugTools')
+    UIParentLoadAddOn('Blizzard_DebugTools')
     _G.FrameStackTooltip_Toggle(false, true, true)
 end)
 
 -- Disable all addons except andromeda and debug tool
 F:RegisterSlashCommand('/debugmode', function()
-    for i = 1, GetNumAddOns() do
-        local name = GetAddOnInfo(i)
+    for i = 1, C_AddOns.GetNumAddOns() do
+        local name = C_AddOns.GetAddOnInfo(i)
         if name ~= C.ADDON_NAME and name ~= '!BaudErrorFrame' and name ~= 'REHack' and GetAddOnEnableState(C.MY_NAME, name) == 2 then
             DisableAddOn(name, C.MY_NAME)
         end
@@ -260,7 +263,7 @@ end)
 F:RegisterSlashCommand('/iteminfo', function(msg)
     local itemID = tonumber(msg)
     if itemID then
-        local name, link, rarity, level, minLevel, type, subType, _, _, _, _, classID, subClassID, bindType = GetItemInfo(itemID)
+        local name, link, rarity, level, minLevel, type, subType, _, _, _, _, classID, subClassID, bindType = C_Item.GetItemInfo(itemID)
         if name then
             F:Print(C.LINE_STRING)
             F:Print('Name ' .. C.INFO_COLOR .. name)
@@ -287,13 +290,13 @@ F:RegisterSlashCommand('/scaleinfo', function()
     F:Print('C.SCREEN_HEIGHT ' .. C.SCREEN_HEIGHT)
     F:Print('C.MULT ' .. C.MULT)
     F:Print('UIScale ' .. _G.ANDROMEDA_ADB.UIScale)
-    F:Print('UIParentScale ' .. _G.UIParent:GetScale())
+    F:Print('UIParentScale ' .. UIParent:GetScale())
     F:Print(C.LINE_STRING)
 end)
 
 -- DBM test
 F:RegisterSlashCommand('/dbmtest', function()
-    if IsAddOnLoaded('DBM-Core') then
+    if C_AddOns.IsAddOnLoaded('DBM-Core') then
         _G.DBM:DemoMode()
     else
         F:Print(C.RED_COLOR .. 'DBM is not loaded.')

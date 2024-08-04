@@ -10,21 +10,20 @@ tinsert(C.BlizzThemes, function()
     _G.PVEFrameTab1:ClearAllPoints()
     _G.PVEFrameTab1:SetPoint('TOPLEFT', _G.PVEFrame, 'BOTTOMLEFT', 10, 0)
 
-    _G.GroupFinderFrameGroupButton1.icon:SetTexture('Interface\\Icons\\INV_Helmet_08')
-    _G.GroupFinderFrameGroupButton2.icon:SetTexture('Interface\\Icons\\Icon_Scenarios')
-    _G.GroupFinderFrameGroupButton3.icon:SetTexture('Interface\\Icons\\inv_helmet_06')
-
-    for i = 1, 3 do
+    local iconSize = 60 - 2 * C.MULT
+    for i = 1, 4 do
         local bu = _G.GroupFinderFrame['groupButton' .. i]
 
-        bu.ring:Hide()
-        F.ReskinButton(bu)
-        bu.bg:SetColorTexture(r, g, b, 0.25)
-        bu.bg:SetInside(bu.__bg)
+        if bu then
+            bu.ring:Hide()
+            F.ReskinButton(bu, true)
+            bu.bg:SetColorTexture(r, g, b, 0.25)
+            bu.bg:SetInside(bu.__bg)
 
-        bu.icon:SetPoint('LEFT', bu, 'LEFT', 2, 0)
-        bu.icon:SetSize(bu:GetHeight() - 4, bu:GetHeight() - 4)
-        F.ReskinIcon(bu.icon)
+            bu.icon:SetPoint('LEFT', bu, 'LEFT')
+            bu.icon:SetSize(iconSize, iconSize)
+            F.ReskinIcon(bu.icon)
+        end
     end
 
     hooksecurefunc('GroupFinderFrame_SelectGroupButton', function(index)
@@ -49,6 +48,18 @@ tinsert(C.BlizzThemes, function()
                 tab:ClearAllPoints()
                 tab:SetPoint('TOPLEFT', _G['PVEFrameTab' .. (i - 1)], 'TOPRIGHT', -10, 0)
             end
+        end
+    end
+
+    if _G.ScenarioQueueFrame then
+        F.StripTextures(_G.ScenarioFinderFrame)
+        _G.ScenarioQueueFrameBackground:SetAlpha(0)
+
+        F.ReskinDropdown(_G.ScenarioQueueFrameTypeDropdown)
+        F.ReskinButton(_G.ScenarioQueueFrameFindGroupButton)
+        F.ReskinTrimScroll(_G.ScenarioQueueFrameRandomScrollFrame.ScrollBar)
+        if _G.ScenarioQueueFrameRandomScrollFrameScrollBar then
+            _G.ScenarioQueueFrameRandomScrollFrameScrollBar:SetAlpha(0)
         end
     end
 end)

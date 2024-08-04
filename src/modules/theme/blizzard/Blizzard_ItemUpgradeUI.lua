@@ -13,7 +13,7 @@ C.Themes['Blizzard_ItemUpgradeUI'] = function()
     local ItemUpgradeFrame = _G.ItemUpgradeFrame
     F.ReskinPortraitFrame(ItemUpgradeFrame)
 
-    hooksecurefunc(ItemUpgradeFrame, 'Update', function(self)
+    hooksecurefunc(ItemUpgradeFrame, 'UpdateUpgradeItemInfo', function(self)
         if self.upgradeInfo then
             self.UpgradeItemButton:SetPushedTexture(0)
         end

@@ -34,7 +34,7 @@ local function CreateTip(link)
     end
 
     local num = #tips + 1
-    local tip = CreateFrame('GameTooltip', 'ItemRefTooltip' .. num, _G.UIParent, 'GameTooltipTemplate')
+    local tip = CreateFrame('GameTooltip', 'ItemRefTooltip' .. num, UIParent, 'GameTooltipTemplate')
     if num == 2 then
         tip:SetPoint('LEFT', _G.ItemRefTooltip, 'RIGHT', 3, 0)
     else
@@ -80,7 +80,7 @@ end
 local function ShowTip(tip, link)
     _G.ShowUIPanel(tip)
     if not tip:IsShown() then
-        tip:SetOwner(_G.UIParent, 'ANCHOR_PRESERVE')
+        tip:SetOwner(UIParent, 'ANCHOR_PRESERVE')
     end
     TOOLTIP.MultiShown = true
     tip:SetHyperlink(link)

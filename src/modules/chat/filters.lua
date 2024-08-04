@@ -270,8 +270,8 @@ function CHAT:CheckLoot(_, msg, looter)
     local itemID, itemRarity
     itemID = msg:match('item:(%d+):')
 
-    if itemID and GetItemInfo(itemID) then
-        itemRarity = select(3, GetItemInfo(itemID))
+    if itemID and C_Item.GetItemInfo(itemID) then
+        itemRarity = select(3, C_Item.GetItemInfo(itemID))
         if itemRarity and (itemRarity < C.DB.Chat.GroupLootThreshold) and (looter ~= activeplayer) then
             return true
         else

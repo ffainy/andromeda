@@ -3,7 +3,7 @@
 # @project-hash@
 
 ## Interface: @toc-version-retail@
-## Author: fafaraway
+## Author: farfaraway
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\andromeda\assets\textures\logo\logo-chat.blp
 ## Title: |cff7269e5A|r|cff826fe2n|r|cff9076e0d|r|cff9d7dddr|r|cffaa84dao|r|cffb58bd7m|r|cffc192d4e|r|cffcb99d1d|r|cffd6a0cea|r|cffe0a8cbU|r|cffeaafc8I|r
@@ -12,11 +12,10 @@
 ## SavedVariablesPerCharacter: ANDROMEDA_CDB
 
 ## X-oUF: oUFembed
-## X-Website: https://github.com/fafaraway/andromeda
+## X-Website: https://github.com/ffainy/andromeda
 ## X-License: GPL-3.0
 ## X-Curse-Project-ID: 459524
-## X-WoWI-ID: 23258
-## X-Wago-ID: 0mNw8l6o
+## X-Support: TWW
 
 libraries\taintless.xml
 libraries\_loader.xml

@@ -6,9 +6,9 @@ local function reskinHelpTips(self)
             if frame.OkayButton then
                 F.ReskinButton(frame.OkayButton)
             end
-            if frame.CloseButton then
-                F.ReskinClose(frame.CloseButton)
-            end
+            -- if frame.CloseButton then
+            --     F.ReskinClose(frame.CloseButton)
+            -- end
 
             frame.styled = true
         end

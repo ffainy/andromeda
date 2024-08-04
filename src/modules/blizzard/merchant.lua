@@ -94,7 +94,7 @@ function BLIZZARD:RestyleElemennts()
 end
 
 function BLIZZARD:EnhancedMerchant()
-    if IsAddOnLoaded('ExtVendor') then
+    if C_AddOns.IsAddOnLoaded('ExtVendor') then
         return
     end
     if not C.DB.General.EnhancedMerchant then

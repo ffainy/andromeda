@@ -21,7 +21,7 @@ tinsert(C.BlizzThemes, function()
     weather.Icon:ClearAllPoints()
     weather.Icon:SetPoint('TOP', frame.TopVersusText, 'BOTTOM', 0, -15)
     F.ReskinIcon(weather.Icon, true)
-    weather.BackgroundArt:SetPoint('TOP', _G.UIParent)
+    weather.BackgroundArt:SetPoint('TOP', UIParent)
     weather.Duration:ClearAllPoints()
     weather.Duration:SetPoint('CENTER', weather.Icon, 1, 0)
 
@@ -198,8 +198,8 @@ tinsert(C.BlizzThemes, function()
     end
 
     -- Reskin Petbar
-    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'PetBattleBar', _G.UIParent, 'SecureHandlerStateTemplate')
-    bar:SetPoint('BOTTOM', _G.UIParent, 0, 28)
+    local bar = CreateFrame('Frame', C.ADDON_TITLE .. 'PetBattleBar', UIParent, 'SecureHandlerStateTemplate')
+    bar:SetPoint('BOTTOM', UIParent, 0, 28)
     bar:SetSize(310, 40)
     local visibleState = '[petbattle] show; hide'
     RegisterStateDriver(bar, 'visibility', visibleState)
@@ -309,9 +309,9 @@ tinsert(C.BlizzThemes, function()
         ['BOTTOMLEFT'] = { 0.5, 0 },
     }
     for anchor, v in pairs(anchors) do
-        local f = CreateFrame('Frame', nil, _G.UIParent)
+        local f = CreateFrame('Frame', nil, UIParent)
         f:SetSize(width, height)
-        f:SetPoint(anchor, _G.UIParent, 'BOTTOM', 0, 3)
+        f:SetPoint(anchor, UIParent, 'BOTTOM', 0, 3)
         f:SetFrameLevel(0)
         local tex = F.SetGradient(f, 'H', 0, 0, 0, v[1], v[2], width, height)
         tex:SetPoint('CENTER')

@@ -222,3 +222,16 @@ function MAP:AddOnIconCollector()
 
     CollectRubbish()
 end
+
+function MAP:SetupACF()
+    local frame = _G.AddonCompartmentFrame
+    if C.DB.Map.Collector then
+        F.HideObject(frame)
+    else
+        frame:ClearAllPoints()
+        frame:SetPoint('BOTTOMRIGHT', _G.Minimap, -26, 2)
+        frame:SetFrameLevel(999)
+        F.StripTextures(frame)
+        F.SetBD(frame)
+    end
+end

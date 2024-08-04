@@ -1,7 +1,7 @@
 local F, C = unpack(select(2, ...))
 local MAP = F:GetModule('Map')
 
-local shownMapCache, exploredCache, fileDataIDs = {}, {}, {}
+local shownMapCache, exploredCache, fileDataIDs, storedTex = {}, {}, {}, {}
 
 local function GetStringFromInfo(info)
     return format('W%dH%dX%dY%d', info.textureWidth, info.textureHeight, info.offsetX, info.offsetY)
@@ -23,6 +23,10 @@ end
 function MAP:MapData_RefreshOverlays(fullUpdate)
     wipe(shownMapCache)
     wipe(exploredCache)
+    for _, tex in pairs(storedTex) do
+        tex:SetVertexColor(1, 1, 1)
+    end
+    wipe(storedTex)
 
     local mapID = _G.WorldMapFrame.mapID
     if not mapID then

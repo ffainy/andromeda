@@ -107,10 +107,7 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
     searchBar.FavoritesSearchButton:SetSize(22, 22)
     F.ReskinEditbox(searchBar.SearchBox)
     F.ReskinButton(searchBar.SearchButton)
-
-    local filterButton = searchBar.FilterButton
-    F.ReskinFilterButton(filterButton)
-    F.ReskinFilterReset(filterButton.ClearFiltersButton)
+    F.ReskinFilterButton(searchBar.FilterDropdown)
 
     F.StripTextures(frame.BrowseOrders.CategoryList)
     F.ReskinTrimScroll(frame.BrowseOrders.CategoryList.ScrollBar)
@@ -137,8 +134,8 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
 
     -- Form
     F.ReskinButton(frame.Form.BackButton)
-    F.ReskinCheckbox(frame.Form.AllocateBestQualityCheckBox)
-    F.ReskinCheckbox(frame.Form.TrackRecipeCheckBox.Checkbox)
+    F.ReskinCheckbox(frame.Form.AllocateBestQualityCheckbox)
+    F.ReskinCheckbox(frame.Form.TrackRecipeCheckbox.Checkbox)
     frame.Form.RecipeHeader:Hide() -- needs review
     F.CreateBDFrame(frame.Form.RecipeHeader, 0.25)
     F.StripTextures(frame.Form.LeftPanelBackground)
@@ -156,8 +153,8 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
     F.ReskinEditbox(frame.Form.OrderRecipientTarget)
     frame.Form.OrderRecipientTarget.__bg:SetPoint('TOPLEFT', -8, -2)
     frame.Form.OrderRecipientTarget.__bg:SetPoint('BOTTOMRIGHT', 0, 2)
-    F.ReskinDropdown(frame.Form.OrderRecipientDropDown)
-    F.ReskinDropdown(frame.Form.MinimumQuality.DropDown)
+    F.ReskinDropdown(frame.Form.OrderRecipientDropdown)
+    F.ReskinDropdown(frame.Form.MinimumQuality.Dropdown)
 
     local paymentContainer = frame.Form.PaymentContainer
     F.StripTextures(paymentContainer.NoteEditBox)
@@ -167,7 +164,7 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
 
     reskinMoneyInput(paymentContainer.TipMoneyInputFrame.GoldBox)
     reskinMoneyInput(paymentContainer.TipMoneyInputFrame.SilverBox)
-    F.ReskinDropdown(paymentContainer.DurationDropDown)
+    F.ReskinDropdown(paymentContainer.DurationDropdown)
     F.ReskinButton(paymentContainer.ListOrderButton)
     F.ReskinButton(paymentContainer.CancelOrderButton)
 
@@ -189,23 +186,28 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
     current:ClearAllPoints()
     current:SetPoint('LEFT', frame, 'RIGHT', 10, 0)
 
+    local function resetButton(button)
+        button:SetNormalTexture(0)
+        button:SetPushedTexture(0)
+        local hl = button:GetHighlightTexture()
+        hl:SetColorTexture(1, 1, 1, 0.25)
+        hl:SetInside(button.bg)
+    end
+
     hooksecurefunc(frame.Form, 'UpdateReagentSlots', function(self)
         for slot in self.reagentSlotPool:EnumerateActive() do
             local button = slot.Button
             if button and not button.styled then
-                button:SetNormalTexture(0)
-                button:SetPushedTexture(0)
                 button.bg = F.ReskinIcon(button.Icon)
                 F.ReskinIconBorder(button.IconBorder, true)
-                local hl = button:GetHighlightTexture()
-                hl:SetColorTexture(1, 1, 1, 0.25)
-                hl:SetInside(button.bg)
                 if button.SlotBackground then
                     button.SlotBackground:Hide()
                 end
                 F.ReskinCheckbox(slot.Checkbox)
                 button.HighlightTexture:SetColorTexture(1, 0.8, 0, 0.5)
                 button.HighlightTexture:SetInside(button.bg)
+                resetButton(button)
+                hooksecurefunc(button, 'Update', resetButton)
 
                 button.styled = true
             end
@@ -223,6 +225,8 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
         reskinContainer(qualityDialog['Container' .. i])
     end
 
+    F.ReskinButton(frame.Form.OrderRecipientDisplay.SocialDropdown)
+
     -- Orders
     F.ReskinButton(frame.MyOrdersPage.RefreshButton)
     frame.MyOrdersPage.RefreshButton.__bg:SetInside(nil, 3, 3)
@@ -234,4 +238,9 @@ C.Themes['Blizzard_ProfessionsCustomerOrders'] = function()
     hooksecurefunc(frame.MyOrdersPage.OrderList.ScrollBox, 'Update', function(self)
         self:ForEachFrame(reskinOrderIcon)
     end)
+
+    -- Item flyout
+    if _G.OpenProfessionsItemFlyout then
+        hooksecurefunc('OpenProfessionsItemFlyout', F.ReskinProfessionsFlyout)
+    end
 end

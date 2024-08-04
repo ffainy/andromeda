@@ -10,6 +10,7 @@ function F:ReskinIconSelector()
     F.ReskinIcon(self.BorderBox.SelectedIconArea.SelectedIconButton.Icon)
     F.ReskinButton(self.BorderBox.OkayButton)
     F.ReskinButton(self.BorderBox.CancelButton)
+    F.ReskinDropdown(self.BorderBox.IconTypeDropdown)
     F.ReskinTrimScroll(self.IconSelector.ScrollBar)
 
     hooksecurefunc(self.IconSelector.ScrollBox, 'Update', function(self)
@@ -28,6 +29,16 @@ function F:ReskinIconSelector()
             end
         end
     end)
+end
+
+function F:ReskinModelControl()
+    for i = 1, 5 do
+        local button = select(i, self.ControlFrame:GetChildren())
+        if button.NormalTexture then
+            button.NormalTexture:SetAlpha(0)
+            button.PushedTexture:SetAlpha(0)
+        end
+    end
 end
 
 tinsert(C.BlizzThemes, function()
@@ -51,6 +62,7 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
+    F.ReskinModelControl(_G.CharacterModelScene)
     _G.CharacterModelScene:DisableDrawLayer('BACKGROUND')
     _G.CharacterModelScene:DisableDrawLayer('BORDER')
     _G.CharacterModelScene:DisableDrawLayer('OVERLAY')
@@ -74,7 +86,7 @@ tinsert(C.BlizzThemes, function()
         self.arrow:SetVertexColor(1, 1, 1)
     end
 
-    local function UpdateAzeriteItem(self)
+    local function updateAzeriteItem(self)
         if not self.styled then
             self.AzeriteTexture:SetAlpha(0)
             self.RankFrame.Texture:SetTexture('')
@@ -86,21 +98,21 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
-    local function UpdateAzeriteEmpoweredItem(self)
+    local function updateAzeriteEmpoweredItem(self)
         self.AzeriteTexture:SetAtlas('AzeriteIconFrame')
         self.AzeriteTexture:SetInside()
         self.AzeriteTexture:SetDrawLayer('BORDER', 1)
     end
 
-    local function UpdateHighlight(self)
+    local function updateHighlight(self)
         local highlight = self:GetHighlightTexture()
         highlight:SetColorTexture(1, 1, 1, 0.25)
         highlight:SetInside(self.bg)
     end
 
-    local function UpdateCosmetic(self)
+    local function updateCosmetic(self)
         local itemLink = GetInventoryItemLink('player', self:GetID())
-        self.IconOverlay:SetShown(itemLink and IsCosmeticItem(itemLink))
+        self.IconOverlay:SetShown(itemLink and C_Item.IsCosmeticItem(itemLink))
     end
 
     local slots = {
@@ -157,8 +169,8 @@ tinsert(C.BlizzThemes, function()
         popout:HookScript('OnEnter', clearPopout)
         popout:HookScript('OnLeave', colourPopout)
 
-        hooksecurefunc(slot, 'DisplayAsAzeriteItem', UpdateAzeriteItem)
-        hooksecurefunc(slot, 'DisplayAsAzeriteEmpoweredItem', UpdateAzeriteEmpoweredItem)
+        hooksecurefunc(slot, 'DisplayAsAzeriteItem', updateAzeriteItem)
+        hooksecurefunc(slot, 'DisplayAsAzeriteEmpoweredItem', updateAzeriteEmpoweredItem)
     end
 
     hooksecurefunc('PaperDollItemSlotButton_Update', function(button)
@@ -167,8 +179,8 @@ tinsert(C.BlizzThemes, function()
             button.icon:SetShown(GetInventoryItemTexture('player', button:GetID()) ~= nil)
             colourPopout(button.popoutButton)
         end
-        UpdateCosmetic(button)
-        UpdateHighlight(button)
+        updateCosmetic(button)
+        updateHighlight(button)
     end)
 
     -- [[ Stats pane ]]
@@ -261,90 +273,132 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- Reputation Frame
-    _G.ReputationDetailFrame:SetPoint('TOPLEFT', _G.ReputationFrame, 'TOPRIGHT', 3, -28)
+    local oldAtlas = {
+        ['Options_ListExpand_Right'] = 1,
+        ['Options_ListExpand_Right_Expanded'] = 1,
+    }
+    local function updateCollapse(texture, atlas)
+        if (not atlas) or oldAtlas[atlas] then
+            if not texture.__owner then
+                texture.__owner = texture:GetParent()
+            end
+            if texture.__owner:IsCollapsed() then
+                texture:SetAtlas('Soulbinds_Collection_CategoryHeader_Expand')
+            else
+                texture:SetAtlas('Soulbinds_Collection_CategoryHeader_Collapse')
+            end
+        end
+    end
+
+    local function updateToggleCollapse(button)
+        button:SetNormalTexture(0)
+        button.__texture:DoCollapse(button:GetHeader():IsCollapsed())
+    end
 
     local function updateReputationBars(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
-            local container = child and child.Container
-            if container and not container.styled then
-                F.StripTextures(container)
-                if container.ExpandOrCollapseButton then
-                    F.ReskinCollapse(container.ExpandOrCollapseButton)
-                    container.ExpandOrCollapseButton.__texture:DoCollapse(child.isCollapsed)
+            if child and not child.styled then
+                if child.Right then
+                    F.StripTextures(child)
+                    hooksecurefunc(child.Right, 'SetAtlas', updateCollapse)
+                    hooksecurefunc(child.HighlightRight, 'SetAtlas', updateCollapse)
+                    updateCollapse(child.Right)
+                    updateCollapse(child.HighlightRight)
+                    F.CreateBDFrame(child, 0.25):SetInside(nil, 2, 2)
                 end
-                if container.ReputationBar then
-                    F.StripTextures(container.ReputationBar)
-                    container.ReputationBar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
-                    F.CreateBDFrame(container.ReputationBar, 0.25)
+                local repbar = child.Content and child.Content.ReputationBar
+                if repbar then
+                    F.StripTextures(repbar)
+                    repbar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
+                    F.CreateBDFrame(repbar, 0.25)
+                end
+                if child.ToggleCollapseButton then
+                    child.ToggleCollapseButton:GetPushedTexture():SetAlpha(0)
+                    F.ReskinCollapse(child.ToggleCollapseButton, true)
+                    updateToggleCollapse(child.ToggleCollapseButton)
+                    hooksecurefunc(child.ToggleCollapseButton, 'RefreshIcon', updateToggleCollapse)
                 end
 
-                container.styled = true
+                child.styled = true
             end
         end
     end
     hooksecurefunc(_G.ReputationFrame.ScrollBox, 'Update', updateReputationBars)
 
     F.ReskinTrimScroll(_G.ReputationFrame.ScrollBar)
-    F.StripTextures(_G.ReputationDetailFrame)
-    F.SetBD(_G.ReputationDetailFrame)
-    F.ReskinClose(_G.ReputationDetailCloseButton)
-    F.ReskinCheckbox(_G.ReputationDetailInactiveCheckBox)
-    F.ReskinCheckbox(_G.ReputationDetailMainScreenCheckBox)
-    F.ReskinButton(_G.ReputationDetailViewRenownButton)
+    F.ReskinDropdown(_G.ReputationFrame.filterDropdown)
 
-    local atWarCheck = _G.ReputationDetailAtWarCheckBox
-    F.ReskinCheckbox(atWarCheck)
-    local atWarCheckTex = atWarCheck:GetCheckedTexture()
-    atWarCheckTex:ClearAllPoints()
-    atWarCheckTex:SetSize(26, 26)
-    atWarCheckTex:SetPoint('CENTER')
+    local detailFrame = _G.ReputationFrame.ReputationDetailFrame
+    F.StripTextures(detailFrame)
+    F.SetBD(detailFrame)
+    F.ReskinClose(detailFrame.CloseButton)
+    F.ReskinCheckbox(detailFrame.AtWarCheckbox)
+    F.ReskinCheckbox(detailFrame.MakeInactiveCheckbox)
+    F.ReskinCheckbox(detailFrame.WatchFactionCheckbox)
+    F.ReskinButton(detailFrame.ViewRenownButton)
 
     -- Token frame
-    if _G.TokenFramePopup.CloseButton then -- needs review, blizz typo
+    if _G.TokenFramePopup.CloseButton then -- blizz typo by parentKey "CloseButton" into "$parent.CloseButton"
         F.ReskinClose(_G.TokenFramePopup.CloseButton)
+    else
+        F.ReskinClose((select(5, _G.TokenFramePopup:GetChildren())))
     end
-    F.ReskinCheckbox(_G.TokenFramePopup.InactiveCheckBox)
-    F.ReskinCheckbox(_G.TokenFramePopup.BackpackCheckBox)
+
+    F.ReskinButton(_G.TokenFramePopup.CurrencyTransferToggleButton)
+    F.ReskinCheckbox(_G.TokenFramePopup.InactiveCheckbox)
+    F.ReskinCheckbox(_G.TokenFramePopup.BackpackCheckbox)
+
+    F.ReskinArrow(_G.TokenFrame.CurrencyTransferLogToggleButton, 'right')
+    F.ReskinPortraitFrame(_G.CurrencyTransferLog)
+    F.ReskinTrimScroll(_G.CurrencyTransferLog.ScrollBar)
+
+    local function handleCurrencyIcon(button)
+        local icon = button.CurrencyIcon
+        if icon then
+            F.ReskinIcon(icon)
+        end
+    end
+    hooksecurefunc(_G.CurrencyTransferLog.ScrollBox, 'Update', function(self)
+        self:ForEachFrame(handleCurrencyIcon)
+    end)
+
+    F.ReskinPortraitFrame(_G.CurrencyTransferMenu)
+    F.CreateBDFrame(_G.CurrencyTransferMenu.SourceSelector, 0.25)
+    _G.CurrencyTransferMenu.SourceSelector.SourceLabel:SetWidth(56)
+    F.ReskinDropdown(_G.CurrencyTransferMenu.SourceSelector.Dropdown)
+    F.ReskinEditbox(_G.CurrencyTransferMenu.AmountSelector.InputBox)
+    F.CreateBDFrame(_G.CurrencyTransferMenu.AmountSelector, 0.25)
+    F.ReskinIcon(_G.CurrencyTransferMenu.SourceBalancePreview.BalanceInfo.CurrencyIcon)
+    F.ReskinIcon(_G.CurrencyTransferMenu.PlayerBalancePreview.BalanceInfo.CurrencyIcon)
+    F.ReskinButton(_G.CurrencyTransferMenu.ConfirmButton)
+    F.ReskinButton(_G.CurrencyTransferMenu.CancelButton)
+
     F.ReskinTrimScroll(_G.TokenFrame.ScrollBar)
 
     hooksecurefunc(_G.TokenFrame.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
-            if child.Highlight and not child.styled then
-                if not child.styled then
-                    child.CategoryLeft:SetAlpha(0)
-                    child.CategoryRight:SetAlpha(0)
-                    child.CategoryMiddle:SetAlpha(0)
-
-                    child.Highlight:SetInside()
-                    child.Highlight.SetPoint = nop
-                    child.Highlight:SetColorTexture(1, 1, 1, 0.25)
-                    child.Highlight.SetTexture = nop
-
-                    child.bg = F.ReskinIcon(child.Icon)
-
-                    if child.ExpandIcon then
-                        child.expBg = F.CreateBDFrame(child.ExpandIcon, 0, true)
-                        child.expBg:SetInside(child.ExpandIcon, 3, 3)
-                    end
-
-                    if child.Check then
-                        child.Check:SetAtlas('checkmark-minimal')
-                    end
-
-                    child.styled = true
+            if child and not child.styled then
+                if child.Right then
+                    F.StripTextures(child)
+                    hooksecurefunc(child.Right, 'SetAtlas', updateCollapse)
+                    hooksecurefunc(child.HighlightRight, 'SetAtlas', updateCollapse)
+                    updateCollapse(child.Right)
+                    updateCollapse(child.HighlightRight)
+                    F.CreateBDFrame(child, 0.25):SetInside(nil, 2, 2)
+                end
+                local icon = child.Content and child.Content.CurrencyIcon
+                if icon then
+                    F.ReskinIcon(icon)
+                end
+                if child.ToggleCollapseButton then
+                    F.ReskinCollapse(child.ToggleCollapseButton, true)
+                    updateToggleCollapse(child.ToggleCollapseButton)
+                    hooksecurefunc(child.ToggleCollapseButton, 'RefreshIcon', updateToggleCollapse)
                 end
 
                 child.styled = true
-            end
-
-            if child.isHeader then
-                child.bg:Hide()
-                child.expBg:Show()
-            else
-                child.bg:Show()
-                child.expBg:Hide()
             end
         end
     end)

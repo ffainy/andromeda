@@ -11,7 +11,7 @@ function TEST:OnLogin()
     --     edgeFile = C.Assets.Textures.Backdrop,
     --     edgeSize = 5,
     -- }
-    -- local f = CreateFrame('Frame', nil, _G.UIParent, 'BackdropTemplate')
+    -- local f = CreateFrame('Frame', nil, UIParent, 'BackdropTemplate')
     -- f:SetPoint('CENTER')
     -- f:SetSize(300, 600)
     -- f:SetBackdrop(backDrop)

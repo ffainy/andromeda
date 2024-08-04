@@ -36,10 +36,6 @@ C.Themes['Blizzard_GuildControlUI'] = function()
     _G.GuildControlUIRankSettingsFrameBankBg:SetAlpha(0)
     _G.GuildControlUITopBg:Hide()
     _G.GuildControlUIHbar:Hide()
-    if not C.IS_NEW_PATCH_10_1 then
-        _G.GuildControlUIRankBankFrameInsetScrollFrameTop:SetAlpha(0)
-        _G.GuildControlUIRankBankFrameInsetScrollFrameBottom:SetAlpha(0)
-    end
 
     -- Guild ranks
     F:RegisterEvent('GUILD_RANKS_UPDATE', updateGuildRanks)
@@ -93,13 +89,9 @@ C.Themes['Blizzard_GuildControlUI'] = function()
 
     F.ReskinButton(_G.GuildControlUIRankOrderFrameNewButton)
     F.ReskinClose(_G.GuildControlUICloseButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.GuildControlUIRankBankFrameInsetScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.GuildControlUIRankBankFrameInsetScrollFrameScrollBar)
-    end
-    F.ReskinDropdown(_G.GuildControlUINavigationDropDown)
-    F.ReskinDropdown(_G.GuildControlUIRankSettingsFrameRankDropDown)
-    F.ReskinDropdown(_G.GuildControlUIRankBankFrameRankDropDown)
+    F.ReskinTrimScroll(_G.GuildControlUIRankBankFrameInsetScrollFrame.ScrollBar)
+    F.ReskinDropdown(_G.GuildControlUINavigationDropdown)
+    F.ReskinDropdown(_G.GuildControlUIRankSettingsFrameRankDropdown)
+    F.ReskinDropdown(_G.GuildControlUIRankBankFrameRankDropdown)
     F.ReskinEditbox(_G.GuildControlUIRankSettingsFrameGoldBox, 20)
 end

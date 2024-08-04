@@ -47,7 +47,7 @@ function TOOLTIP:ReskinTooltip()
     if data then
         local link = data.guid and C_Item.GetItemLinkByGUID(data.guid) or data.hyperlink
         if link then
-            local quality = select(3, GetItemInfo(link))
+            local quality = select(3, C_Item.GetItemInfo(link))
             local color = C.QualityColors[quality or 1]
             if color then
                 self.bg:SetBackdropBorderColor(color.r, color.g, color.b)
@@ -85,24 +85,24 @@ function TOOLTIP:SetupFonts()
     local textSize = 14
     local headerSize = 16
 
-    reskinFont(_G.GameTooltipHeaderText, C.Assets.Fonts.Bold, headerSize)
-    reskinFont(_G.GameTooltipText, C.Assets.Fonts.Regular, textSize)
-    reskinFont(_G.GameTooltipTextSmall, C.Assets.Fonts.Regular, textSize)
+    reskinFont(GameTooltipHeaderText, C.Assets.Fonts.Bold, headerSize)
+    reskinFont(GameTooltipText, C.Assets.Fonts.Regular, textSize)
+    reskinFont(GameTooltipTextSmall, C.Assets.Fonts.Regular, textSize)
 
-    if not _G.GameTooltip.hasMoney then
-        _G.SetTooltipMoney(_G.GameTooltip, 1, nil, '', '')
-        _G.SetTooltipMoney(_G.GameTooltip, 1, nil, '', '')
-        _G.GameTooltip_ClearMoney(_G.GameTooltip)
+    if not GameTooltip.hasMoney then
+        _G.SetTooltipMoney(GameTooltip, 1, nil, '', '')
+        _G.SetTooltipMoney(GameTooltip, 1, nil, '', '')
+        GameTooltip_ClearMoney(GameTooltip)
     end
 
-    if _G.GameTooltip.hasMoney then
-        for i = 1, _G.GameTooltip.numMoneyFrames do
+    if GameTooltip.hasMoney then
+        for i = 1, GameTooltip.numMoneyFrames do
             reskinFont(_G['GameTooltipMoneyFrame' .. i .. 'PrefixText'], C.Assets.Fonts.Regular, textSize)
             reskinFont(_G['GameTooltipMoneyFrame' .. i .. 'SuffixText'], C.Assets.Fonts.Regular, textSize)
         end
     end
 
-    for _, tt in ipairs(_G.GameTooltip.shoppingTooltips) do
+    for _, tt in ipairs(GameTooltip.shoppingTooltips) do
         for i = 1, tt:GetNumRegions() do
             local region = select(i, tt:GetRegions())
             if region:IsObjectType('FontString') then
@@ -134,7 +134,7 @@ TOOLTIP:RegisterTooltips(C.ADDON_NAME, function()
         _G.EmoteMenu,
         _G.LanguageMenu,
         _G.VoiceMacroMenu,
-        _G.GameTooltip,
+        GameTooltip,
         _G.EmbeddedItemTooltip,
         _G.ItemRefTooltip,
         _G.ItemRefShoppingTooltip1,
@@ -257,7 +257,7 @@ TOOLTIP:RegisterTooltips(C.ADDON_NAME, function()
         end
     end)
 
-    if IsAddOnLoaded('BattlePetBreedID') then
+    if C_AddOns.IsAddOnLoaded('BattlePetBreedID') then
         hooksecurefunc('BPBID_SetBreedTooltip', function(parent)
             if parent == _G.FloatingBattlePetTooltip then
                 TOOLTIP.ReskinTooltip(_G.BPBID_BreedTooltip2)
@@ -282,7 +282,7 @@ end)
 
 TOOLTIP:RegisterTooltips('Blizzard_DebugTools', function()
     TOOLTIP.ReskinTooltip(_G.FrameStackTooltip)
-    _G.FrameStackTooltip:SetScale(_G.UIParent:GetScale())
+    _G.FrameStackTooltip:SetScale(UIParent:GetScale())
 end)
 
 TOOLTIP:RegisterTooltips('Blizzard_EventTrace', function()
@@ -331,14 +331,9 @@ TOOLTIP:RegisterTooltips('Blizzard_EncounterJournal', function()
     _G.EncounterJournalTooltip.Item2.IconBorder:SetAlpha(0)
 end)
 
-TOOLTIP:RegisterTooltips('Blizzard_Calendar', function()
-    _G.CalendarContextMenu:HookScript('OnShow', TOOLTIP.ReskinTooltip)
-    _G.CalendarInviteStatusContextMenu:HookScript('OnShow', TOOLTIP.ReskinTooltip)
-end)
-
 TOOLTIP:RegisterTooltips('Blizzard_PerksProgram', function()
     if _G.PerksProgramTooltip then
         TOOLTIP.ReskinTooltip(_G.PerksProgramTooltip)
-        _G.PerksProgramTooltip:SetScale(_G.UIParent:GetScale())
+        _G.PerksProgramTooltip:SetScale(UIParent:GetScale())
     end
 end)

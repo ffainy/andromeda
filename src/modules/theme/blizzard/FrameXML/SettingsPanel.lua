@@ -62,7 +62,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(frame.Container.SettingsList.Header.DefaultsButton)
     F.ReskinTrimScroll(frame.Container.SettingsList.ScrollBar)
 
-    local function ReskinDropdownArrow(button, direction)
+    local function reskinDropdownArrow(button, direction)
         button.NormalTexture:SetAlpha(0)
         button.PushedTexture:SetAlpha(0)
         button:GetHighlightTexture():SetAlpha(0)
@@ -81,18 +81,24 @@ tinsert(C.BlizzThemes, function()
         button:HookScript('OnLeave', F.Texture_OnLeave)
     end
 
-    local function ReskinOptionDropDown(option)
+    local function reskinOptionDropDown(option)
         local button = option.Button
         F.ReskinButton(button)
         button.__bg:SetInside(button, 6, 6)
         button.NormalTexture:SetAlpha(0)
         button.HighlightTexture:SetAlpha(0)
 
-        ReskinDropdownArrow(option.DecrementButton, 'left')
-        ReskinDropdownArrow(option.IncrementButton, 'right')
+        reskinDropdownArrow(option.DecrementButton, 'left')
+        reskinDropdownArrow(option.IncrementButton, 'right')
     end
 
-    local function UpdateKeybindButtons(self)
+    local function reskinDropdown(option)
+        F.ReskinButton(option.Dropdown)
+        F.ReskinButton(option.DecrementButton)
+        F.ReskinButton(option.IncrementButton)
+    end
+
+    local function updateKeybindButtons(self)
         if not self.bindingsPool then
             return
         end
@@ -109,32 +115,34 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
-    local function UpdateHeaderExpand(self, expanded)
-        local atlas = expanded and 'Soulbinds_Collection_CategoryHeader_Collapse' or 'Soulbinds_Collection_CategoryHeader_Expand'
+    local function updateHeaderExpand(self, expanded)
+        local atlas = expanded and 'Soulbinds_Collection_CategoryHeader_Collapse'
+            or 'Soulbinds_Collection_CategoryHeader_Expand'
         self.__texture:SetAtlas(atlas, true)
 
-        UpdateKeybindButtons(self)
+        updateKeybindButtons(self)
     end
 
     local function forceSaturation(self)
-        self.CheckBox:DesaturateHierarchy(1)
+        if self.Checkbox then
+            self.Checkbox:DesaturateHierarchy(1)
+        end
     end
 
-    local function ReskinControlsGroup(controls)
+    local function reskinControlsGroup(controls)
         for i = 1, controls:GetNumChildren() do
             local element = select(i, controls:GetChildren())
             if element.SliderWithSteppers then
                 F.ReskinStepperSlider(element.SliderWithSteppers)
             end
 
-            if element.DropDown then
-                ReskinOptionDropDown(element.DropDown)
+            if element.Control then
+                reskinDropdown(element.Control)
             end
 
-            if element.CheckBox then
-                F.ReskinCheckbox(element.CheckBox)
-                element.CheckBox.bg:SetInside(nil, 6, 6)
-
+            if element.Checkbox then
+                F.ReskinCheckbox(element.Checkbox)
+                element.Checkbox.bg:SetInside(nil, 6, 6)
                 hooksecurefunc(element, 'DesaturateHierarchy', forceSaturation)
             end
         end
@@ -158,21 +166,18 @@ tinsert(C.BlizzThemes, function()
                     hooksecurefunc(child, 'DesaturateHierarchy', forceSaturation)
                 end
 
-                if child.DropDown then
-                    ReskinOptionDropDown(child.DropDown)
+                if child.Checkbox then
+                    F.ReskinCheckbox(child.Checkbox)
+                    child.Checkbox.bg:SetInside(nil, 6, 6)
+                    hooksecurefunc(child, 'DesaturateHierarchy', forceSaturation)
                 end
 
                 if child.ColorBlindFilterDropDown then
-                    ReskinOptionDropDown(child.ColorBlindFilterDropDown)
+                    reskinOptionDropDown(child.ColorBlindFilterDropDown)
                 end
 
-                for j = 1, 13 do
-                    local control = child['Control' .. j]
-                    if control then
-                        if control.DropDown then
-                            ReskinOptionDropDown(control.DropDown)
-                        end
-                    end
+                if child.Control then
+                    reskinDropdown(child.Control)
                 end
 
                 if child.Button then
@@ -191,8 +196,8 @@ tinsert(C.BlizzThemes, function()
 
                         child.__texture = bg:CreateTexture(nil, 'OVERLAY')
                         child.__texture:SetPoint('RIGHT', -10, 0)
-                        UpdateHeaderExpand(child, false)
-                        hooksecurefunc(child, 'EvaluateVisibility', UpdateHeaderExpand)
+                        updateHeaderExpand(child, false)
+                        hooksecurefunc(child, 'EvaluateVisibility', updateHeaderExpand)
                     end
                 end
 
@@ -236,11 +241,11 @@ tinsert(C.BlizzThemes, function()
                 end
 
                 if child.BaseQualityControls then
-                    ReskinControlsGroup(child.BaseQualityControls)
+                    reskinControlsGroup(child.BaseQualityControls)
                 end
 
                 if child.RaidQualityControls then
-                    ReskinControlsGroup(child.RaidQualityControls)
+                    reskinControlsGroup(child.RaidQualityControls)
                 end
 
                 child.styled = true

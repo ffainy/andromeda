@@ -48,7 +48,7 @@ function GT:RaidTool_Visibility(frame)
 end
 
 function GT:RaidTool_Header()
-    local frame = CreateFrame('Button', nil, _G.UIParent)
+    local frame = CreateFrame('Button', nil, UIParent)
     frame:SetSize(120, 28)
     frame:SetFrameLevel(2)
     F.ReskinButton(frame)
@@ -92,7 +92,7 @@ end
 
 function GT:IsFrameOnTop(frame)
     local y = select(2, frame:GetCenter())
-    local screenHeight = _G.UIParent:GetTop()
+    local screenHeight = UIParent:GetTop()
     return y > screenHeight / 2
 end
 
@@ -117,11 +117,6 @@ function GT:GetRaidMaxGroup()
     end
 end
 
-local roleIcons = {
-    C.Assets.Textures.RoleTank,
-    C.Assets.Textures.RoleHealer,
-    C.Assets.Textures.RoleDamager,
-}
 local eventList = {
     'GROUP_ROSTER_UPDATE',
     'UPDATE_ACTIVE_BATTLEFIELD',
@@ -131,6 +126,7 @@ local eventList = {
 }
 function GT:RaidTool_RoleCount(parent)
     local outline = _G.ANDROMEDA_ADB.FontOutline
+    local roleIndex = { 'TANK', 'HEALER', 'DAMAGER' }
     local frame = CreateFrame('Frame', nil, parent)
     frame:SetAllPoints()
     local role = {}
@@ -138,8 +134,16 @@ function GT:RaidTool_RoleCount(parent)
         role[i] = frame:CreateTexture(nil, 'OVERLAY')
         role[i]:SetPoint('LEFT', 36 * i - 34, 0)
         role[i]:SetSize(28, 28)
-        role[i]:SetTexture(roleIcons[i])
-        role[i].text = F.CreateFS(frame, C.Assets.Fonts.Condensed, 11, outline or nil, '0', 'YELLOW', outline and 'NONE' or 'THICK')
+        F.ReskinSmallRole(role[i], roleIndex[i])
+        role[i].text = F.CreateFS(
+            frame,
+            C.Assets.Fonts.Condensed,
+            11,
+            outline or nil,
+            '0',
+            'YELLOW',
+            outline and 'NONE' or 'THICK'
+        )
         role[i].text:ClearAllPoints()
         role[i].text:SetPoint('LEFT', role[i], 'RIGHT', -4, 0)
     end
@@ -174,7 +178,10 @@ end
 function GT:RaidTool_UpdateRes(elapsed)
     self.elapsed = (self.elapsed or 0) + elapsed
     if self.elapsed > 0.1 then
-        local charges, _, started, duration = GetSpellCharges(20484)
+        local chargeInfo = C_Spell.GetSpellCharges(20484)
+        local charges = chargeInfo and chargeInfo.currentCharges
+        local started = chargeInfo and chargeInfo.cooldownStartTime
+        local duration = chargeInfo and chargeInfo.cooldownDuration
         if charges then
             local timer = duration - (GetTime() - started)
             if timer < 0 then
@@ -206,14 +213,25 @@ function GT:RaidTool_CombatRes(parent)
     local res = CreateFrame('Frame', nil, frame)
     res:SetSize(22, 22)
     res:SetPoint('LEFT', 5, 0)
-    F.PixelIcon(res, GetSpellTexture(20484))
+    F.PixelIcon(res, C_Spell.GetSpellTexture(20484))
     res.__owner = parent
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
     res.Count = F.CreateFS(res, C.Assets.Fonts.Regular, 14, outline or nil, '0', nil, outline and 'NONE' or 'THICK')
     res.Count:ClearAllPoints()
     res.Count:SetPoint('LEFT', res, 'RIGHT', 10, 0)
-    res.Timer = F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, '00:00', nil, outline and 'NONE' or 'THICK', 'RIGHT', -5, 0)
+    res.Timer = F.CreateFS(
+        frame,
+        C.Assets.Fonts.Regular,
+        14,
+        outline or nil,
+        '00:00',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'RIGHT',
+        -5,
+        0
+    )
     res:SetScript('OnUpdate', GT.RaidTool_UpdateRes)
 
     parent.resFrame = frame
@@ -230,8 +248,30 @@ function GT:RaidTool_ReadyCheck(parent)
     F.SetBD(frame)
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, _G.READY_CHECK, nil, outline and 'NONE' or 'THICK', 'TOP', 0, -8)
-    local rc = F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'TOP', 0, -28)
+    F.CreateFS(
+        frame,
+        C.Assets.Fonts.Regular,
+        14,
+        outline or nil,
+        _G.READY_CHECK,
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOP',
+        0,
+        -8
+    )
+    local rc = F.CreateFS(
+        frame,
+        C.Assets.Fonts.Regular,
+        14,
+        outline or nil,
+        '',
+        nil,
+        outline and 'NONE' or 'THICK',
+        'TOP',
+        0,
+        -28
+    )
 
     local count, total
     local function hideRCFrame()
@@ -288,7 +328,7 @@ function GT:RaidTool_Marker(parent)
     if not markerButton then
         for _, addon in next, { 'Blizzard_CUFProfiles', 'Blizzard_CompactRaidFrames' } do
             EnableAddOn(addon)
-            LoadAddOn(addon)
+            C_AddOns.LoadAddOn(addon)
         end
     end
     if markerButton then
@@ -315,12 +355,13 @@ end
 
 function GT:RaidTool_BuffChecker(parent)
     local frame = CreateFrame('Button', nil, parent)
-    frame:SetPoint('LEFT', parent, 'RIGHT', 4, 0)
+    frame:SetPoint('RIGHT', parent, 'LEFT', -3, 0)
     frame:SetSize(28, 28)
-    frame.tex = frame:CreateTexture(nil, 'ARTWORK')
-    frame.tex:SetAllPoints()
-    frame.tex:SetTexture('Interface\\TUTORIALFRAME\\UI-TutorialFrame-QuestCursor')
     F.ReskinButton(frame)
+
+    local icon = frame:CreateTexture(nil, 'ARTWORK')
+    icon:SetOutside(nil, 5, 5)
+    icon:SetAtlas('GM-icon-readyCheck')
 
     local BuffName = { L['Flask'], _G.POWER_TYPE_FOOD, _G.SPELL_STAT4_NAME, _G.RAID_BUFF_2, _G.RAID_BUFF_3, _G.RUNES }
     local NoBuff, numGroups, numPlayer = {}, 6, 0
@@ -373,13 +414,10 @@ function GT:RaidTool_BuffChecker(parent)
                     local HasBuff
                     local buffTable = buffsList[j]
                     for k = 1, #buffTable do
-                        local buffName = GetSpellInfo(buffTable[k])
-                        for index = 1, 32 do
-                            local currentBuff = UnitAura(name, index)
-                            if currentBuff and currentBuff == buffName then
-                                HasBuff = true
-                                break
-                            end
+                        local buffName = C_Spell.GetSpellName(buffTable[k])
+                        if buffName and C_UnitAuras.GetAuraDataBySpellName(name, buffName) then
+                            HasBuff = true
+                            break
                         end
                     end
                     if not HasBuff then
@@ -393,7 +431,14 @@ function GT:RaidTool_BuffChecker(parent)
             NoBuff[numGroups] = {}
         end
 
-        if #NoBuff[1] == 0 and #NoBuff[2] == 0 and #NoBuff[3] == 0 and #NoBuff[4] == 0 and #NoBuff[5] == 0 and #NoBuff[6] == 0 then
+        if
+            #NoBuff[1] == 0
+            and #NoBuff[2] == 0
+            and #NoBuff[3] == 0
+            and #NoBuff[4] == 0
+            and #NoBuff[5] == 0
+            and #NoBuff[6] == 0
+        then
             sendMsg(L['All Buffs Ready!'])
         else
             sendMsg(L['Raid Buff Checker:'])
@@ -409,17 +454,16 @@ function GT:RaidTool_BuffChecker(parent)
     local potionCheck = IsAddOnLoaded('MRT')
 
     frame:HookScript('OnEnter', function(self)
-        _G.GameTooltip:SetOwner(self, 'ANCHOR_BOTTOM', 0, -3)
-        _G.GameTooltip:ClearLines()
-        _G.GameTooltip:AddLine(L['Group Tool'])
-        _G.GameTooltip:AddLine(' ')
-        _G.GameTooltip:AddLine(C.MOUSE_LEFT_BUTTON .. _G.READY_CHECK, 0, 0.6, 1)
-        _G.GameTooltip:AddLine(C.MOUSE_MIDDLE_BUTTON .. L['Start/Cancel count down'], 0, 0.6, 1)
-        _G.GameTooltip:AddLine(C.MOUSE_RIGHT_BUTTON .. C.RED_COLOR .. '(Ctrl)|r ' .. L['Check Flask & Food'], 0, 0.6, 1)
+        GameTooltip:SetOwner(self, 'ANCHOR_BOTTOM', 0, -3)
+        GameTooltip:ClearLines()
+        GameTooltip:AddLine(L['Group Tool'])
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddDoubleLine(C.MOUSE_LEFT_BUTTON .. C.INFO_COLOR .. L['Check Status'], 0, 0.6, 1)
+
         if potionCheck then
-            _G.GameTooltip:AddLine(C.MOUSE_RIGHT_BUTTON .. C.RED_COLOR .. '(Alt)|r ' .. L['MRT Potion Check'], 0, 0.6, 1)
+            GameTooltip:AddDoubleLine(C.MOUSE_RIGHT_BUTTON .. C.INFO_COLOR .. L['MRT Potion Check'], 0, 0.6, 1)
         end
-        _G.GameTooltip:Show()
+        GameTooltip:Show()
     end)
     frame:HookScript('OnLeave', F.HideTooltip)
 
@@ -429,46 +473,75 @@ function GT:RaidTool_BuffChecker(parent)
     end)
 
     frame:HookScript('OnMouseDown', function(_, btn)
-        if btn == 'RightButton' then
-            if IsAltKeyDown() and potionCheck then
-                _G.SlashCmdList['mrtSlash']('potionchat')
-            elseif IsControlKeyDown() then
-                scanBuff()
-            end
-        elseif btn == 'LeftButton' then
+        if btn == 'LeftButton' then
+            scanBuff()
+        elseif potionCheck then
+            SlashCmdList['mrtSlash']('potionchat')
+        end
+    end)
+end
+
+function GT:RaidTool_CountDown(parent)
+    local frame = CreateFrame('Button', nil, parent)
+    frame:SetPoint('LEFT', parent, 'RIGHT', 3, 0)
+    frame:SetSize(28, 28)
+    F.ReskinButton(frame)
+
+    local icon = frame:CreateTexture(nil, 'ARTWORK')
+    icon:SetOutside(nil, 5, 5)
+    icon:SetAtlas('GM-icon-countdown')
+
+    frame:HookScript('OnEnter', function(self)
+        GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+        GameTooltip:ClearLines()
+        GameTooltip:AddLine(L['Raid Tool'], 0, 0.6, 1)
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddDoubleLine(C.MOUSE_LEFT_BUTTON .. C.INFO_COLOR .. _G.READY_CHECK)
+        GameTooltip:AddDoubleLine(C.MOUSE_RIGHT_BUTTON .. C.INFO_COLOR .. L['Start/Cancel count down'])
+        GameTooltip:Show()
+    end)
+    frame:HookScript('OnLeave', F.HideTooltip)
+
+    local reset = true
+    F:RegisterEvent('PLAYER_REGEN_ENABLED', function()
+        reset = true
+    end)
+
+    frame:HookScript('OnMouseDown', function(_, btn)
+        if btn == 'LeftButton' then
             if InCombatLockdown() then
-                _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
                 return
             end
             if IsInGroup() and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid())) then
                 DoReadyCheck()
             else
-                _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
             end
         else
             if IsInGroup() and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid())) then
                 if IsAddOnLoaded('DBM-Core') then
                     if reset then
-                        _G.SlashCmdList['DEADLYBOSSMODS']('pull ' .. C.DB.General.Countdown)
+                        SlashCmdList['DEADLYBOSSMODS']('pull ' .. C.DB['General']['RaidToolCountdown'])
                     else
-                        _G.SlashCmdList['DEADLYBOSSMODS']('pull 0')
+                        SlashCmdList['DEADLYBOSSMODS']('pull 0')
                     end
                     reset = not reset
                 elseif IsAddOnLoaded('BigWigs') then
-                    if not _G.SlashCmdList['BIGWIGSPULL'] then
+                    if not SlashCmdList['BIGWIGSPULL'] then
                         LoadAddOn('BigWigs_Plugins')
                     end
                     if reset then
-                        _G.SlashCmdList['BIGWIGSPULL'](C.DB.General.Countdown)
+                        SlashCmdList['BIGWIGSPULL'](C.DB['General']['RaidToolCountdown'])
                     else
-                        _G.SlashCmdList['BIGWIGSPULL']('0')
+                        SlashCmdList['BIGWIGSPULL']('0')
                     end
                     reset = not reset
                 else
-                    _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['You can not do it without DBM or BigWigs!'])
+                    UIErrorsFrame:AddMessage(C.RED_COLOR .. L['You can not do it without DBM or BigWigs!'])
                 end
             else
-                _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
             end
         end
     end)
@@ -527,7 +600,11 @@ function GT:RaidTool_CreateMenu(parent)
         {
             _G.ROLE_POLL,
             function()
-                if IsInGroup() and not HasLFGRestrictions() and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid())) then
+                if
+                    IsInGroup()
+                    and not HasLFGRestrictions()
+                    and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid()))
+                then
                     InitiateRolePoll()
                 else
                     _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
@@ -573,5 +650,6 @@ function GT:OnLogin()
     GT:RaidTool_Marker(frame)
     GT:RaidTool_BuffChecker(frame)
     GT:RaidTool_CreateMenu(frame)
+    GT:RaidTool_CountDown(frame)
     GT:RaidTool_Misc()
 end

@@ -1,7 +1,6 @@
 local F, C = unpack(select(2, ...))
 
 local function reskinHeader(header)
-    header.flashAnim.Play = nop
     for i = 4, 18 do
         select(i, header.button:GetRegions()):SetTexture('')
     end
@@ -10,7 +9,6 @@ local function reskinHeader(header)
     header.descriptionBGBottom:SetAlpha(0)
     header.description:SetTextColor(1, 1, 1)
     header.button.title:SetTextColor(1, 1, 1)
-    header.button.title.SetTextColor = nop
     header.button.expandedIcon:SetWidth(20) -- don't wrap the text
 end
 
@@ -35,11 +33,6 @@ local function reskinSectionHeader()
 
         index = index + 1
     end
-end
-
-local function reskinFilterToggle(button)
-    F.StripTextures(button)
-    F.ReskinButton(button)
 end
 
 C.Themes['Blizzard_EncounterJournal'] = function()
@@ -79,7 +72,7 @@ C.Themes['Blizzard_EncounterJournal'] = function()
 
     -- Instance select
     _G.EncounterJournalInstanceSelectBG:SetAlpha(0)
-    F.ReskinDropdown(EncounterJournal.instanceSelect.tierDropDown)
+    F.ReskinDropdown(EncounterJournal.instanceSelect.ExpansionDropdown)
     F.ReskinTrimScroll(EncounterJournal.instanceSelect.ScrollBar)
 
     hooksecurefunc(EncounterJournal.instanceSelect.ScrollBox, 'Update', function(self)
@@ -107,7 +100,12 @@ C.Themes['Blizzard_EncounterJournal'] = function()
 
     _G.EncounterJournalEncounterFrameInfoEncounterTitle:SetTextColor(1, 0.8, 0)
     _G.EncounterJournal.encounter.instance.LoreScrollingFont:SetTextColor(CreateColor(1, 1, 1))
-    _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChild.overviewDescription.Text:SetTextColor('P', 1, 1, 1)
+    _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChild.overviewDescription.Text:SetTextColor(
+        'P',
+        1,
+        1,
+        1
+    )
     _G.EncounterJournalEncounterFrameInfoDetailsScrollFrameScrollChildDescription:SetTextColor(1, 1, 1)
     _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildHeader:Hide()
     _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetFontObject('GameFontNormalLarge')
@@ -115,7 +113,12 @@ C.Themes['Blizzard_EncounterJournal'] = function()
     _G.EncounterJournalEncounterFrameInfoOverviewScrollFrameScrollChildTitle:SetTextColor(1, 0.8, 0)
 
     F.CreateBDFrame(_G.EncounterJournalEncounterFrameInfoModelFrame, 0.25)
-    _G.EncounterJournalEncounterFrameInfoCreatureButton1:SetPoint('TOPLEFT', _G.EncounterJournalEncounterFrameInfoModelFrame, 0, -35)
+    _G.EncounterJournalEncounterFrameInfoCreatureButton1:SetPoint(
+        'TOPLEFT',
+        _G.EncounterJournalEncounterFrameInfoModelFrame,
+        0,
+        -35
+    )
 
     hooksecurefunc(EncounterJournal.encounter.info.BossesScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
@@ -127,7 +130,6 @@ C.Themes['Blizzard_EncounterJournal'] = function()
                 hl:SetInside(child.__bg)
 
                 child.text:SetTextColor(1, 1, 1)
-                child.text.SetTextColor = nop
                 child.creature:SetPoint('TOPLEFT', 0, -4)
 
                 child.styled = true
@@ -188,16 +190,10 @@ C.Themes['Blizzard_EncounterJournal'] = function()
     bg:SetPoint('TOPLEFT', -3, 3)
     bg:SetPoint('BOTTOMRIGHT', showAllResults, 3, -3)
 
-    if C.IS_NEW_PATCH_10_1 then
-        for i = 1, _G.EncounterJournalSearchBox:GetNumChildren() do
-            local child = select(i, _G.EncounterJournalSearchBox:GetChildren())
-            if child.iconFrame then
-                F.StyleSearchButton(child)
-            end
-        end
-    else
-        for i = 1, 5 do
-            F.StyleSearchButton(_G.EncounterJournalSearchBox['sbutton' .. i])
+    for i = 1, _G.EncounterJournalSearchBox:GetNumChildren() do
+        local child = select(i, _G.EncounterJournalSearchBox:GetChildren())
+        if child.iconFrame then
+            F.StyleSearchButton(child)
         end
     end
     F.StyleSearchButton(showAllResults)
@@ -236,26 +232,19 @@ C.Themes['Blizzard_EncounterJournal'] = function()
     -- Various controls
     F.ReskinPortraitFrame(EncounterJournal)
     F.ReskinButton(_G.EncounterJournalEncounterFrameInfoResetButton)
+    if not C.IS_NEW_PATCH then
+        F.ReskinButton(_G.EncounterJournalEncounterFrameInfoResetButton)
+    end
     F.ReskinEditbox(_G.EncounterJournalSearchBox)
     F.ReskinTrimScroll(EncounterJournal.encounter.instance.LoreScrollBar)
     F.ReskinTrimScroll(EncounterJournal.encounter.info.BossesScrollBar)
     F.ReskinTrimScroll(EncounterJournal.encounter.info.LootContainer.ScrollBar)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(EncounterJournal.encounter.info.overviewScroll.ScrollBar)
-        F.ReskinTrimScroll(EncounterJournal.encounter.info.detailsScroll.ScrollBar)
-    else
-        F.ReskinScroll(EncounterJournal.encounter.info.overviewScroll.ScrollBar)
-        F.ReskinScroll(EncounterJournal.encounter.info.detailsScroll.ScrollBar)
-    end
+    F.ReskinTrimScroll(EncounterJournal.encounter.info.overviewScroll.ScrollBar)
+    F.ReskinTrimScroll(EncounterJournal.encounter.info.detailsScroll.ScrollBar)
 
-    local buttons = {
-        _G.EncounterJournalEncounterFrameInfoDifficulty,
-        _G.EncounterJournalEncounterFrameInfoFilterToggle,
-        _G.EncounterJournalEncounterFrameInfoSlotFilterToggle,
-    }
-    for _, button in pairs(buttons) do
-        reskinFilterToggle(button)
-    end
+    F.ReskinDropdown(EncounterJournal.encounter.info.LootContainer.filter)
+    F.ReskinDropdown(EncounterJournal.encounter.info.LootContainer.slotFilter)
+    F.ReskinDropdown(_G.EncounterJournalEncounterFrameInfoDifficulty)
 
     -- Suggest frame
     local suggestFrame = EncounterJournal.suggestFrame
@@ -348,8 +337,6 @@ C.Themes['Blizzard_EncounterJournal'] = function()
 
     local lootJournal = EncounterJournal.LootJournal
     F.StripTextures(lootJournal)
-    reskinFilterToggle(lootJournal.RuneforgePowerFilterDropDownButton)
-    reskinFilterToggle(lootJournal.ClassDropDownButton)
 
     local iconColor = C.QualityColors[Enum.ItemQuality.Legendary or 5] -- legendary color
     F.ReskinTrimScroll(lootJournal.ScrollBar)
@@ -378,7 +365,7 @@ C.Themes['Blizzard_EncounterJournal'] = function()
     -- ItemSetsFrame
     if EncounterJournal.LootJournalItems then
         F.StripTextures(EncounterJournal.LootJournalItems)
-        F.ReskinDropdown(EncounterJournal.LootJournalViewDropDown)
+        F.ReskinDropdown(EncounterJournal.LootJournalViewDropdown)
 
         local function reskinBar(bar)
             if not bar.styled then
@@ -400,24 +387,12 @@ C.Themes['Blizzard_EncounterJournal'] = function()
         end
 
         local itemSetsFrame = EncounterJournal.LootJournalItems.ItemSetsFrame
-        if C.IS_NEW_PATCH_10_1 then
-            F.ReskinTrimScroll(itemSetsFrame.ScrollBar)
+        F.ReskinTrimScroll(itemSetsFrame.ScrollBar)
 
-            hooksecurefunc(itemSetsFrame.ScrollBox, 'Update', function(self)
-                self:ForEachFrame(reskinBar)
-            end)
-        else
-            F.ReskinScroll(itemSetsFrame.scrollBar)
-
-            hooksecurefunc(itemSetsFrame, 'UpdateList', function(self)
-                local buttons = self.buttons
-
-                for i = 1, #buttons do
-                    reskinBar(buttons[i])
-                end
-            end)
-        end
-        reskinFilterToggle(itemSetsFrame.ClassButton)
+        hooksecurefunc(itemSetsFrame.ScrollBox, 'Update', function(self)
+            self:ForEachFrame(reskinBar)
+        end)
+        F.ReskinDropdown(itemSetsFrame.ClassDropdown)
     end
 
     -- Monthly activities
@@ -425,5 +400,27 @@ C.Themes['Blizzard_EncounterJournal'] = function()
     if frame then
         F.StripTextures(frame)
         F.ReskinTrimScroll(frame.ScrollBar)
+        if frame.ThemeContainer then
+            frame.ThemeContainer:SetAlpha(0)
+        end
+
+        local function replaceBlackColor(text, r, g, b)
+            if r == 0 and g == 0 and b == 0 then
+                text:SetTextColor(0.7, 0.7, 0.7)
+            end
+        end
+
+        local function handleText(button)
+            local container = button.TextContainer
+            if container and not container.styled then
+                hooksecurefunc(container.NameText, 'SetTextColor', replaceBlackColor)
+                hooksecurefunc(container.ConditionsText, 'SetTextColor', replaceBlackColor)
+                container.styled = true
+            end
+        end
+
+        hooksecurefunc(frame.ScrollBox, 'Update', function(self)
+            self:ForEachFrame(handleText)
+        end)
     end
 end

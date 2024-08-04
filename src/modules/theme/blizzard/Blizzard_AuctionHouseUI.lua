@@ -31,7 +31,7 @@ local function reskinSellPanel(frame)
         F.ReskinEditbox(frame.SecondaryPriceInput.MoneyInputFrame.GoldBox)
         F.ReskinEditbox(frame.SecondaryPriceInput.MoneyInputFrame.SilverBox)
     end
-    F.ReskinDropdown(frame.DurationDropDown.DropDown)
+    F.ReskinDropdown(frame.Duration.Dropdown)
     F.ReskinButton(frame.PostButton)
     if frame.BuyoutModeCheckButton then
         F.ReskinCheckbox(frame.BuyoutModeCheckButton)
@@ -172,8 +172,6 @@ C.Themes['Blizzard_AuctionHouseUI'] = function()
     local filterButton = searchBar.FilterButton
     F.ReskinFilterButton(filterButton)
     F.ReskinFilterReset(filterButton.ClearFiltersButton)
-    F.ReskinEditbox(filterButton.LevelRangeFrame.MinLevel)
-    F.ReskinEditbox(filterButton.LevelRangeFrame.MaxLevel)
 
     F.StripTextures(AuctionHouseFrame.CategoriesList)
     F.ReskinTrimScroll(AuctionHouseFrame.CategoriesList.ScrollBar)

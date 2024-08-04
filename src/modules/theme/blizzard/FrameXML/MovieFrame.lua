@@ -8,7 +8,7 @@ tinsert(C.BlizzThemes, function()
     -- Cinematic
 
     _G.CinematicFrameCloseDialog:HookScript('OnShow', function(self)
-        self:SetScale(_G.UIParent:GetScale())
+        self:SetScale(UIParent:GetScale())
     end)
 
     F.StripTextures(_G.CinematicFrameCloseDialog)
@@ -22,7 +22,7 @@ tinsert(C.BlizzThemes, function()
     local closeDialog = _G.MovieFrame.CloseDialog
 
     closeDialog:HookScript('OnShow', function(self)
-        self:SetScale(_G.UIParent:GetScale())
+        self:SetScale(UIParent:GetScale())
     end)
 
     F.StripTextures(closeDialog)

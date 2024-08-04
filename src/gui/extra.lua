@@ -130,8 +130,8 @@ local function createSpellBarWidget(parent, texture)
 end
 
 local function createSpellBar(parent, spellID, barTable, tableName, isNew)
-    local spellName = GetSpellInfo(spellID)
-    local texture = GetSpellTexture(spellID)
+    local spellName = C_Spell.GetSpellName(spellID)
+    local texture = C_Spell.GetSpellTexture(spellID)
 
     local bar = CreateFrame('Frame', nil, parent.child, 'BackdropTemplate')
     bar:SetSize(200, 28)
@@ -179,7 +179,7 @@ local function addButton_OnClick(self)
     local tableName = parent.tableName
     local spellID = tonumber(parent.editBox:GetText())
 
-    if not spellID or not GetSpellInfo(spellID) then
+    if not spellID or not C_Spell.GetSpellName(spellID) then
         _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
         return
     end
@@ -197,12 +197,12 @@ local function addButton_OnClick(self)
 end
 
 local function label_OnEnter(self)
-    _G.GameTooltip:ClearLines()
-    _G.GameTooltip:SetOwner(self:GetParent(), 'ANCHOR_RIGHT', 0, 3)
-    _G.GameTooltip:AddLine(self.text)
-    _G.GameTooltip:AddLine(' ')
-    _G.GameTooltip:AddLine(self.tip, 0.6, 0.8, 1, 1)
-    _G.GameTooltip:Show()
+    GameTooltip:ClearLines()
+    GameTooltip:SetOwner(self:GetParent(), 'ANCHOR_RIGHT', 0, 3)
+    GameTooltip:AddLine(self.text)
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddLine(self.tip, 0.6, 0.8, 1, 1)
+    GameTooltip:Show()
 end
 
 local function createLabel(parent, text, tip)
@@ -486,6 +486,7 @@ function GUI:SetupInventoryFilter(parent)
         [10] = { value = 'FilterLegendary', text = _G.LOOT_JOURNAL_LEGENDARIES },
         [11] = { value = 'FilterCollection', text = _G.COLLECTIONS },
         [12] = { value = 'FilterFavourite', text = _G.PREFERENCES },
+        [13] = { value = 'FilterAOE', text = _G.ITEM_ACCOUNTBOUND },
     }
 
     local offset = -10
@@ -934,7 +935,7 @@ function GUI:SetupNameplateAuraFilter(parent)
     }
 
     local function createBar(parent, index, spellID)
-        local name, _, texture = GetSpellInfo(spellID)
+        local name, texture = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
         local bar = CreateFrame('Frame', nil, parent, 'BackdropTemplate')
         bar:SetSize(200, 28)
         bar.bg = F.CreateBD(bar, 0.25)
@@ -984,7 +985,7 @@ function GUI:SetupNameplateAuraFilter(parent)
 
     local function addClick(parent, index)
         local spellID = tonumber(parent.box:GetText())
-        if not spellID or not GetSpellInfo(spellID) then
+        if not spellID or not C_Spell.GetSpellName(spellID) then
             _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
             return
         end
@@ -1424,8 +1425,8 @@ function GUI:SetupNameplateColorByDot(parent)
     local barTable = {}
 
     local function createBar(parent, spellID, isNew)
-        local spellName = GetSpellInfo(spellID)
-        local texture = GetSpellTexture(spellID)
+        local spellName = C_Spell.GetSpellName(spellID)
+        local texture = C_Spell.GetSpellTexture(spellID)
 
         local bar = CreateFrame('Frame', nil, parent, 'BackdropTemplate')
         bar:SetSize(200, 28)
@@ -1469,7 +1470,7 @@ function GUI:SetupNameplateColorByDot(parent)
         local parent = button.__owner
         local spellID = tonumber(parent.box:GetText())
 
-        if not spellID or not GetSpellInfo(spellID) then
+        if not spellID or not C_Spell.GetSpellName(spellID) then
             _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
             return
         end
@@ -2347,13 +2348,13 @@ do
         panel.barTable = {}
         panel.tableName = 'PartySpellsList'
 
-        local ARCANE_TORRENT = GetSpellInfo(25046)
+        local ARCANE_TORRENT = C_Spell.GetSpellName(25046)
         local function createBar(parent, spellID, duration)
-            local spellName = GetSpellInfo(spellID)
+            local spellName = C_Spell.GetSpellName(spellID)
             if spellName == ARCANE_TORRENT then
                 return
             end
-            local texture = GetSpellTexture(spellID)
+            local texture = C_Spell.GetSpellTexture(spellID)
 
             local bar = CreateFrame('Frame', nil, parent, 'BackdropTemplate')
             bar:SetSize(200, 30)
@@ -2402,7 +2403,7 @@ do
                 return
             end
 
-            if not GetSpellInfo(spellID) then
+            if not C_Spell.GetSpellName(spellID) then
                 _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
                 return
             end
@@ -2553,7 +2554,7 @@ do
                 return
             end
 
-            if spellID and not GetSpellInfo(spellID) then
+            if spellID and not C_Spell.GetSpellName(spellID) then
                 _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
                 return
             end
@@ -2600,10 +2601,10 @@ do
             if not spellID then
                 return
             end
-            _G.GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-            _G.GameTooltip:ClearLines()
-            _G.GameTooltip:SetSpellByID(spellID)
-            _G.GameTooltip:Show()
+            GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
+            GameTooltip:ClearLines()
+            GameTooltip:SetSpellByID(spellID)
+            GameTooltip:Show()
         end
 
         local function createBar(index, texture)
@@ -2662,7 +2663,7 @@ do
         end
 
         local function applyData(index, instName, spellID, priority)
-            local name, _, texture = GetSpellInfo(spellID)
+            local name, texture = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
             if not bars[index] then
                 bars[index] = createBar(index, texture)
             end
@@ -2773,7 +2774,7 @@ do
         }
 
         local function createBar(parent, spellID, anchor, r, g, b, showAll)
-            local name, _, texture = GetSpellInfo(spellID)
+            local name, texture = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
             local bar = CreateFrame('Frame', nil, parent, 'BackdropTemplate')
             bar:SetSize(200, 28)
             F.CreateBD(bar, 0.25)
@@ -2812,7 +2813,7 @@ do
         local function addClick(parent)
             local spellID = tonumber(panel.editBox:GetText())
 
-            if not spellID or not GetSpellInfo(spellID) then
+            if not spellID or not C_Spell.GetSpellName(spellID) then
                 _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Incorrect SpellID'])
                 return
             end
@@ -2834,10 +2835,10 @@ do
         end
 
         local function optionOnEnter(self)
-            _G.GameTooltip:SetOwner(self, 'ANCHOR_TOP')
-            _G.GameTooltip:ClearLines()
-            _G.GameTooltip:AddLine(L[decodeAnchor[self.text]], 1, 1, 1)
-            _G.GameTooltip:Show()
+            GameTooltip:SetOwner(self, 'ANCHOR_TOP')
+            GameTooltip:ClearLines()
+            GameTooltip:AddLine(L[decodeAnchor[self.text]], 1, 1, 1)
+            GameTooltip:Show()
         end
 
         local scrollArea = createScrollFrame(panel.bg, 200, 485)

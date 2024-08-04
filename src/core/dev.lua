@@ -59,7 +59,7 @@ function F:Dump(object, inspect)
         return
     end
 
-    local debugTools = IsAddOnLoaded('Blizzard_DebugTools')
+    local debugTools = C_AddOns.IsAddOnLoaded('Blizzard_DebugTools')
     if not debugTools then
         UIParentLoadAddOn('Blizzard_DebugTools')
     end

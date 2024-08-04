@@ -10,8 +10,8 @@ do
     local shadeTexture = shadeFrame:CreateTexture(nil, 'BACKGROUND', nil, -8)
 
     shadeFrame:SetFrameStrata('BACKGROUND')
-    shadeFrame:SetWidth(GetScreenWidth() * _G.UIParent:GetEffectiveScale())
-    shadeFrame:SetHeight(GetScreenHeight() * _G.UIParent:GetEffectiveScale())
+    shadeFrame:SetWidth(GetScreenWidth() * UIParent:GetEffectiveScale())
+    shadeFrame:SetHeight(GetScreenHeight() * UIParent:GetEffectiveScale())
     shadeTexture:SetAllPoints(shadeFrame)
     shadeFrame:SetPoint('CENTER', 0, 0)
 
@@ -19,14 +19,14 @@ do
     M.crosshairTextureNS = M.crosshairFrameNS:CreateTexture(nil, 'ARTWORK')
 
     M.crosshairFrameNS:SetWidth(1)
-    M.crosshairFrameNS:SetHeight(GetScreenHeight() * _G.UIParent:GetEffectiveScale())
+    M.crosshairFrameNS:SetHeight(GetScreenHeight() * UIParent:GetEffectiveScale())
     M.crosshairTextureNS:SetAllPoints(M.crosshairFrameNS)
     M.crosshairTextureNS:SetColorTexture(0, 0, 0, 1)
 
     M.crosshairFrameEW = CreateFrame('Frame')
     M.crosshairTextureEW = M.crosshairFrameEW:CreateTexture(nil, 'ARTWORK')
 
-    M.crosshairFrameEW:SetWidth(GetScreenWidth() * _G.UIParent:GetEffectiveScale())
+    M.crosshairFrameEW:SetWidth(GetScreenWidth() * UIParent:GetEffectiveScale())
     M.crosshairFrameEW:SetHeight(1)
     M.crosshairTextureEW:SetAllPoints(M.crosshairFrameEW)
     M.crosshairTextureEW:SetColorTexture(0, 0, 0, 1)
@@ -127,7 +127,7 @@ function F:Mover(text, value, anchor, width, height)
     local outline = _G.ANDROMEDA_ADB.FontOutline
     local key = 'UIAnchor'
 
-    local mover = CreateFrame('Frame', nil, _G.UIParent)
+    local mover = CreateFrame('Frame', nil, UIParent)
     mover:SetWidth(width or self:GetWidth())
     mover:SetHeight(height or self:GetHeight())
     mover.bg = F.SetBD(mover)
@@ -163,9 +163,9 @@ function F:Mover(text, value, anchor, width, height)
 end
 
 function M:CalculateMoverPoints(mover, trimX, trimY)
-    local screenWidth = F:Round(_G.UIParent:GetRight())
-    local screenHeight = F:Round(_G.UIParent:GetTop())
-    local screenCenter = F:Round(_G.UIParent:GetCenter(), nil)
+    local screenWidth = F:Round(UIParent:GetRight())
+    local screenHeight = F:Round(UIParent:GetTop())
+    local screenCenter = F:Round(UIParent:GetCenter(), nil)
     local x, y = mover:GetCenter()
 
     local LEFT = screenWidth / 3
@@ -217,7 +217,7 @@ function M:DoTrim(trimX, trimY)
         f.__x.__current = x
         f.__y.__current = y
         mover:ClearAllPoints()
-        mover:SetPoint(point, _G.UIParent, point, x, y)
+        mover:SetPoint(point, UIParent, point, x, y)
         C.DB[mover.__key][mover.__value] = { point, 'UIParent', point, x, y }
     end
 end
@@ -293,7 +293,7 @@ local function CreateConsole()
     end
 
     local outline = _G.ANDROMEDA_ADB.FontOutline
-    f = CreateFrame('Frame', nil, _G.UIParent, 'BackdropTemplate')
+    f = CreateFrame('Frame', nil, UIParent, 'BackdropTemplate')
     f:SetPoint('TOP', 0, -150)
     f:SetSize(260, 70)
     F.CreateBD(f)
@@ -571,11 +571,11 @@ function M:DisableBlizzardMover()
     _G.ObjectiveTrackerFrame.IsInDefaultPosition = nop
 end
 
-do
-    local function onClick()
+do--#FIXME
+    --[[ local function onClick()
         F:MoverConsole()
         HideUIPanel(_G.GameMenuFrame)
     end
 
-    _G.GameMenuButtonEditMode:SetScript('OnClick', onClick)
+    _G.GameMenuButtonEditMode:SetScript('OnClick', onClick) ]]
 end

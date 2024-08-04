@@ -22,9 +22,9 @@ function LOGO:Logo_CheckStatus(isInitialLogin)
 end
 
 function LOGO:Logo_Create()
-    local frame = CreateFrame('Frame', nil, _G.UIParent)
+    local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetSize(512, 512)
-    frame:SetPoint('CENTER', _G.UIParent, 'BOTTOM', -500, GetScreenHeight() * 0.618)
+    frame:SetPoint('CENTER', UIParent, 'BOTTOM', -500, GetScreenHeight() * 0.618)
     frame:SetFrameStrata('HIGH')
     frame:SetAlpha(0)
     frame:Hide()
@@ -114,10 +114,6 @@ end
 
 function LOGO:HandleTitle()
     -- Square logo texture
-    if not C.IS_NEW_PATCH_10_1 then
-        return
-    end
-
     hooksecurefunc('AddonList_InitButton', function(entry)
         if not entry.logoHooked then
             replaceIconString(entry.Title)

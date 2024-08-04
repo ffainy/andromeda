@@ -30,12 +30,14 @@ local function fixBg(anim) -- color reset for the first time game launched
     end
 end
 
-local function ReskinActivityFrame(frame, isObject)
+local function reskinActivityFrame(frame, isObject)
     if frame.Border then
         if isObject then
-            frame.Border:SetAlpha(0)
-            frame.SelectedTexture:SetAlpha(0)
-            frame.LockIcon:SetVertexColor(C.r, C.g, C.b)
+            if not C.IS_NEW_PATCH then
+                frame.Border:SetAlpha(0)
+                frame.SelectedTexture:SetAlpha(0)
+                frame.LockIcon:SetVertexColor(C.r, C.g, C.b)
+            end
             hooksecurefunc(frame, 'SetSelectionState', updateSelection)
             hooksecurefunc(frame.ItemFrame, 'SetDisplayedItem', reskinRewardIcon)
 
@@ -50,7 +52,7 @@ local function ReskinActivityFrame(frame, isObject)
         end
     end
 
-    if frame.Background then
+    if not C.IS_NEW_PATCH and frame.Background then
         frame.bg = F.CreateBDFrame(frame.Background, 1)
     end
 end
@@ -80,26 +82,31 @@ end
 C.Themes['Blizzard_WeeklyRewards'] = function()
     local WeeklyRewardsFrame = _G.WeeklyRewardsFrame
 
-    F.StripTextures(WeeklyRewardsFrame)
-    F.SetBD(WeeklyRewardsFrame)
+    local bg = F.SetBD(WeeklyRewardsFrame)
     F.ReskinClose(WeeklyRewardsFrame.CloseButton)
     F.StripTextures(WeeklyRewardsFrame.SelectRewardButton)
     F.ReskinButton(WeeklyRewardsFrame.SelectRewardButton)
-    WeeklyRewardsFrame.NineSlice:SetAlpha(0)
-    WeeklyRewardsFrame.BackgroundTile:SetAlpha(0)
+    if C.IS_NEW_PATCH then
+        WeeklyRewardsFrame.BorderShadow:SetInside(bg)
+        WeeklyRewardsFrame.BorderContainer:SetAlpha(0)
+    else
+        F.StripTextures(WeeklyRewardsFrame)
+        WeeklyRewardsFrame.NineSlice:SetAlpha(0)
+        WeeklyRewardsFrame.BackgroundTile:SetAlpha(0)
 
-    local headerFrame = WeeklyRewardsFrame.HeaderFrame
-    F.StripTextures(headerFrame)
-    -- F.CreateBDFrame(headerFrame, 0.25)
-    headerFrame:SetPoint('TOP', 1, -42)
-    headerFrame.Text:SetFontObject(_G.SystemFont_Huge1)
+        local headerFrame = WeeklyRewardsFrame.HeaderFrame
+        F.StripTextures(headerFrame)
+        headerFrame:SetPoint('TOP', 1, -42)
+        headerFrame.Text:SetFontObject(_G.SystemFont_Huge1)
+    end
 
-    ReskinActivityFrame(WeeklyRewardsFrame.RaidFrame)
-    ReskinActivityFrame(WeeklyRewardsFrame.MythicFrame)
-    ReskinActivityFrame(WeeklyRewardsFrame.PVPFrame)
+    reskinActivityFrame(WeeklyRewardsFrame.RaidFrame)
+    reskinActivityFrame(WeeklyRewardsFrame.MythicFrame)
+    reskinActivityFrame(WeeklyRewardsFrame.PVPFrame)
+    reskinActivityFrame(WeeklyRewardsFrame.WorldFrame)
 
     for _, frame in pairs(WeeklyRewardsFrame.Activities) do
-        ReskinActivityFrame(frame, true)
+        reskinActivityFrame(frame, true)
     end
 
     hooksecurefunc(WeeklyRewardsFrame, 'SelectReward', function(self)

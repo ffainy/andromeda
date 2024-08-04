@@ -51,9 +51,5 @@ C.Themes['Blizzard_ItemSocketingUI'] = function()
     _G.ItemSocketingFrame.BackgroundColor:SetAlpha(0)
     F.CreateBDFrame(_G.ItemSocketingScrollFrame, 0.25)
     F.ReskinButton(_G.ItemSocketingSocketButton)
-    if C.IS_NEW_PATCH_10_1 then
-        F.ReskinTrimScroll(_G.ItemSocketingScrollFrame.ScrollBar)
-    else
-        F.ReskinScroll(_G.ItemSocketingScrollFrameScrollBar)
-    end
+    F.ReskinTrimScroll(_G.ItemSocketingScrollFrame.ScrollBar)
 end
