@@ -5,8 +5,6 @@ max_line_length = false
 
 exclude_files = {
     '.luacheckrc',
-    '**/libraries/',
-    '**/locales/',
 }
 
 ignore = {
@@ -2471,6 +2469,7 @@ globals = {
     'C_AccountInfo',
     'C_AchievementInfo',
     'C_ActionBar',
+    'C_AddOns',
     'C_AdventureJournal',
     'C_AdventureMap',
     'C_AlliedRaces',
@@ -2482,6 +2481,7 @@ globals = {
     'C_AzeriteEmpoweredItem',
     'C_AzeriteEssence',
     'C_AzeriteItem',
+    'C_Bank',
     'C_BarberShop',
     'C_BattleNet',
     'C_BehavioralMessaging.',
@@ -2723,5 +2723,36 @@ globals = {
     'ChatFrame_SendTell',
     'HybridScrollFrame_Update',
     'StaticPopupSpecial_Show',
-    'AddFriendFrame_ShowEntry'
+    'AddFriendFrame_ShowEntry',
+    'LootHistoryDropDown_OnClick',
+    'GameTooltip_AddInstructionLine',
+    'GameTooltip_SetTitle',
+    'GameTooltip_AddNormalLine',
+    'ContainerFrameUtil_ConvertFilterFlagsToList',
+    'FlagsUtil',
+    'AuraUtil',
+    'AccountBankPanel',
+    'BankPanelTabSettingsMenuMixin',
+    'UIParent',
+    'GameTooltip',
+    'isAccountBank',
+    'GetNumWatchedTokens',
+    'StaticPopup_Visible',
+    'UIDropDownMenu_Initialize',
+    'SlashCmdList',
+    'UIErrorsFrame',
+    'PlayerSpellsUtil',
+    'C_Reputation_GetFactionParagonInfo',
+    'C_Reputation_IsFactionParagon',
+    'C_GossipInfo_GetFriendshipReputationRanks',
+    'C_GossipInfo_GetFriendshipReputation',
+    'C_Reputation_IsMajorFaction',
+    'GetMaterialTextColors',
+    'GameTooltip_ClearMoney',
+    'GameTooltip_ClearStatusBars',
+    'GameTooltip_ClearProgressBars',
+    'GameTooltip_ClearWidgetSet',
+    'BankFrame_ShowPanel',
+    'FCF_GetCurrentChatFrame',
+    'FCF_GetChatFrameByID'
 }
