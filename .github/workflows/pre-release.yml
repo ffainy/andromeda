@@ -43,11 +43,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           config_file: scripts/tag-changelog-config.js
 
+      - name: "Parse release name"
+        id: get-release-name
+        run: "echo ::set-output name=name::${RELEASE:-$TAG}"
+        env:
+          RELEASE: ${{ github.event.release.name }}
+          TAG: ${{ github.event.release.tag_name }}
+
       - name: 'Crosspost changelog to Discord'
         uses: kludge-cs/gitcord-release-changelogger@v3.0.0
         with:
           username: 'Rick-Bot'
           avatar-url: 'https://cdn.discordapp.com/attachments/751929844920614932/934170534755860560/rick.png'
-          release-name: '${{ github.event.repository.name }}: new test version has been released.'
-          release-body: ${{ steps.changelog.outputs.changelog }}
+          release-name: ${{ steps.get-release-name.outputs.name }}
+          release-body: ${{ github.event.release.body }}
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
