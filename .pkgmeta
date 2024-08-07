@@ -9,3 +9,4 @@ ignore:
   - docs
   - scripts
   - utils
+  - tests
