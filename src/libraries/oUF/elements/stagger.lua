@@ -34,11 +34,10 @@ if(select(2, UnitClass('player')) ~= 'MONK') then return end
 local _, ns = ...
 local oUF = ns.oUF
 
--- sourced from FrameXML/Constants.lua
+-- sourced from Blizzard_FrameXMLBase/Constants.lua
 local SPEC_MONK_BREWMASTER = SPEC_MONK_BREWMASTER or 1
 
--- sourced from FrameXML/MonkStaggerBar.lua
-local BREWMASTER_POWER_BAR_NAME = BREWMASTER_POWER_BAR_NAME or 'STAGGER'
+local BREWMASTER_POWER_BAR_NAME = 'STAGGER'
 
 -- percentages at which bar should change color
 local STAGGER_YELLOW_TRANSITION =  STAGGER_YELLOW_TRANSITION or 0.3
@@ -192,7 +191,7 @@ local function Enable(self, unit)
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 		end
 
-		if self.unitStyle == "player" then -- Andromeda: only disable MonkStaggerBar for oUF_Player
+		if self.unitStyle == "player" then -- AndromedaUI: only disable MonkStaggerBar for oUF_Player
 			MonkStaggerBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
 			MonkStaggerBar:UnregisterEvent('PLAYER_SPECIALIZATION_CHANGED')
 			MonkStaggerBar:UnregisterEvent('UNIT_DISPLAYPOWER')
