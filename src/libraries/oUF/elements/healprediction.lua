@@ -13,7 +13,6 @@ local function UpdateFillBar(totalWidth, totalHeight, previousTexture, bar, amou
 	bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", 0, 0)
 	bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", 0, 0)
 
-	local totalWidth, totalHeight = frame.Health:GetSize()
 	local barSize = (amount / maxHealth) * totalWidth
 	bar:SetWidth(barSize)
 	bar:Show()
