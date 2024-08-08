@@ -23,7 +23,7 @@ end
 
 function LOGO:Logo_Create()
     local frame = CreateFrame('Frame', nil, UIParent)
-    frame:SetSize(512, 512)
+    frame:SetSize(512, 256)
     frame:SetPoint('CENTER', UIParent, 'BOTTOM', -500, GetScreenHeight() * 0.618)
     frame:SetFrameStrata('HIGH')
     frame:SetAlpha(0)
@@ -42,6 +42,8 @@ function LOGO:Logo_Create()
     local timer3 = 0.2
 
     local anim = frame:CreateAnimationGroup()
+
+
 
     anim.move1 = anim:CreateAnimation('Translation')
     anim.move1:SetOffset(480, 0)
