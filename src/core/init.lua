@@ -11,11 +11,11 @@
 
 do
     -- binding header
-    _G.BINDING_HEADER_ANDROMEDA = C_AddOns.GetAddOnMetadata(..., 'Title')
+    BINDING_HEADER_ANDROMEDA = C_AddOns.GetAddOnMetadata(..., 'Title')
 end
 
 local addonName, engine = ...
-local aceAddon, aceAddonMinor = _G.LibStub('AceAddon-3.0')
+local aceAddon, aceAddonMinor = LibStub('AceAddon-3.0')
 
 engine[1] = aceAddon:NewAddon(addonName, 'AceEvent-3.0', 'AceHook-3.0', 'AceTimer-3.0')
 engine[2] = {}
@@ -65,7 +65,7 @@ do
         if type(major) == 'table' and type(minor) == 'number' then
             F.Libs[name], F.LibsMinor[name] = major, minor
         else -- in this case: `major` is the lib name and `minor` is the silent switch
-            F.Libs[name], F.LibsMinor[name] = _G.LibStub(major, minor)
+            F.Libs[name], F.LibsMinor[name] = LibStub(major, minor)
         end
     end
 
@@ -94,15 +94,15 @@ host:SetScript('OnEvent', function(_, event, ...)
     end
 end)
 
-function F:RegisterEvent(event, func, unit1, unit2)
+function F:RegisterEvent(event, func, unit)
     if event == 'CLEU' then
         event = 'COMBAT_LOG_EVENT_UNFILTERED'
     end
 
     if not events[event] then
         events[event] = {}
-        if unit1 then
-            host:RegisterUnitEvent(event, unit1, unit2)
+        if unit then
+            host:RegisterUnitEvent(event, unit)
         else
             host:RegisterEvent(event)
         end
