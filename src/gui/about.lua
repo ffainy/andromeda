@@ -5,9 +5,9 @@ GUI.urlsList = {
     curse = 'https://www.curseforge.com/wow/addons/andromeda',
     wago = 'https://addons.wago.io/addons/andromeda',
     wowi = 'https://www.wowinterface.com/downloads/info23258',
-    github = 'https://github.com/fafaraway/andromeda',
-    tracker = 'https://github.com/fafaraway/andromeda/issues',
-    discord = 'https://discord.io/AndromedaUI',
+    github = 'https://github.com/ffainy/andromeda',
+    tracker = 'https://github.com/ffainy/andromeda/issues',
+    discord = 'https://discord.gg/NPPUa46kCd',
     qq = '203621176',
 }
 

@@ -25,7 +25,7 @@ Accompany you through every challenging day in **Azeroth**.
 
 ## Feedback
 *  Report issues on [GitHub](https://github.com/ffainy/andromeda/issues)
-*  Join [Discord Channel](https://discord.gg/86wbfZXxn7)
+*  Join [Discord Channel](https://discord.gg/NPPUa46kCd)
 *  加入QQ群 [203621176](https://jq.qq.com/?_wv=1027&k=LStIpBBc)
 
 ## Download
