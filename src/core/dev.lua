@@ -54,7 +54,7 @@ function F:ThrowError(...)
 end
 
 function F:Dump(object, inspect)
-    if GetAddOnEnableState(C.MY_NAME, 'Blizzard_DebugTools') == 0 then
+    if C_AddOns.GetAddOnEnableState(C.MY_NAME, 'Blizzard_DebugTools') == 0 then
         F:Print('Blizzard_DebugTools is disabled.')
         return
     end
@@ -67,11 +67,11 @@ function F:Dump(object, inspect)
     if inspect then
         local tableType = type(object)
         if tableType == 'table' then
-            _G.DisplayTableInspectorWindow(object)
+            DisplayTableInspectorWindow(object)
         else
             F:Print('Failed: ', tostring(object), ' is type: ', tableType, '. Requires table object.')
         end
     else
-        _G.DevTools_Dump(object)
+        DevTools_Dump(object)
     end
 end
