@@ -89,6 +89,7 @@ function CT:OnLogin()
     if not C.DB.General.CursorTrail then
         return
     end
+    if C.IS_WW then return end --#FIXME
 
     AddTrail()
     AddGlow()
