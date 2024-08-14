@@ -46,7 +46,7 @@ local function postUpdatePower(power, unit, _, _, max)
 end
 
 local function checkSpell(spellId)
-    local _, noPower = IsUsableSpell(spellId)
+    local _, noPower = C_Spell.IsSpellUsable(spellId)
     if noPower then
         return false
     else

@@ -327,7 +327,7 @@ function GT:RaidTool_Marker(parent)
     local markerButton = _G.CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton
     if not markerButton then
         for _, addon in next, { 'Blizzard_CUFProfiles', 'Blizzard_CompactRaidFrames' } do
-            EnableAddOn(addon)
+            C_AddOns.EnableAddOn(addon)
             C_AddOns.LoadAddOn(addon)
         end
     end
@@ -451,7 +451,7 @@ function GT:RaidTool_BuffChecker(parent)
         end
     end
 
-    local potionCheck = IsAddOnLoaded('MRT')
+    local potionCheck = C_AddOns.IsAddOnLoaded('MRT')
 
     frame:HookScript('OnEnter', function(self)
         GameTooltip:SetOwner(self, 'ANCHOR_BOTTOM', 0, -3)
