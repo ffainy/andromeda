@@ -4,9 +4,9 @@ local oUF = F.Libs.oUF
 
 local function onEvent(_, isLogin, isReload)
     if isLogin or isReload then
-        F.HideObject(_G.BuffFrame)
-        F.HideObject(_G.DebuffFrame)
-        _G.BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
+        F.HideObject(BuffFrame)
+        F.HideObject(DebuffFrame)
+        BuffFrame.numHideableBuffs = 0 -- fix error when on editmode
     end
 end
 
@@ -114,15 +114,19 @@ function AURA:UpdateTimer(elapsed)
     end
 end
 
+function AURA:GetSpellStat(arg16, arg17, arg18)
+    if not arg16 then return end
+
+    return (arg16 > 0 and L['Versa']) or (arg17 > 0 and L['Mastery']) or (arg18 > 0 and L['Haste']) or L['Crit']
+end
+
 function AURA:UpdateAuras(button, index)
     local unit, filter = button.header:GetAttribute('unit'), button.filter
-    local name, texture, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
-    if not name then
-        return
-    end
+    local auraData = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+    if not auraData then return end
 
-    if duration > 0 and expirationTime then
-        local timeLeft = expirationTime - GetTime()
+    if auraData.duration > 0 and auraData.expirationTime then
+        local timeLeft = auraData.expirationTime - GetTime()
         if not button.timeLeft then
             button.nextUpdate = -1
             button.timeLeft = timeLeft
@@ -137,6 +141,7 @@ function AURA:UpdateAuras(button, index)
         button.timer:SetText('')
     end
 
+    local count = auraData.applications
     if count and count > 1 then
         button.count:SetText(count)
     else
@@ -144,20 +149,27 @@ function AURA:UpdateAuras(button, index)
     end
 
     if filter == 'HARMFUL' then
-        local color = oUF.colors.debuff[debuffType or 'none']
+        local color = oUF.colors.debuff[auraData.dispelName or 'none']
         button:SetBackdropBorderColor(color[1], color[2], color[3])
+
         if button.__shadow then
             button.__shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.25)
         end
     else
         button:SetBackdropBorderColor(0, 0, 0)
+
         if button.__shadow then
             button.__shadow:SetBackdropBorderColor(0, 0, 0, 0.25)
         end
     end
 
-    button.spellID = spellID
-    button.icon:SetTexture(texture)
+    -- Show spell stat for 'Soleahs Secret Technique'
+    if auraData.spellId == 368512 then
+        button.count:SetText(AURA:GetSpellStat(unpack(auraData.points)))
+    end
+
+    button.spellID = auraData.spellId
+    button.icon:SetTexture(auraData.icon)
     button.expiration = nil
 end
 
