@@ -1,32 +1,32 @@
 local F, C, L = unpack(select(2, ...))
 local EOT = F:RegisterModule('EnhancedObjectiveTracker')
-if C.IS_WW then return end --#FIXME
+
 local progressColors = {
     start = { r = 1.000, g = 0.647, b = 0.008 },
     complete = { r = 0.180, g = 0.835, b = 0.451 },
 }
 
-local function SetTextColorHook(text)
+local function setTextColorHook(text)
     if not text.Hooked then
         local SetTextColorOld = text.SetTextColor
         text.SetTextColor = function(self, r, g, b, a)
-            if r == _G.OBJECTIVE_TRACKER_COLOR['Header'].r and g == _G.OBJECTIVE_TRACKER_COLOR['Header'].g and b == _G.OBJECTIVE_TRACKER_COLOR['Header'].b then
+            if r == OBJECTIVE_TRACKER_COLOR['Header'].r and g == OBJECTIVE_TRACKER_COLOR['Header'].g and b == OBJECTIVE_TRACKER_COLOR['Header'].b then
                 r = 216 / 255
                 g = 197 / 255
                 b = 136 / 255
-            elseif r == _G.OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].r and g == _G.OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].g and b == _G.OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].b then
+            elseif r == OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].r and g == OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].g and b == OBJECTIVE_TRACKER_COLOR['HeaderHighlight'].b then
                 r = 216 / 255
                 g = 181 / 255
                 b = 136 / 255
             end
             SetTextColorOld(self, r, g, b, a)
         end
-        text:SetTextColor(_G.OBJECTIVE_TRACKER_COLOR['Header'].r, _G.OBJECTIVE_TRACKER_COLOR['Header'].g, _G.OBJECTIVE_TRACKER_COLOR['Header'].b, 1)
+        text:SetTextColor(OBJECTIVE_TRACKER_COLOR['Header'].r, OBJECTIVE_TRACKER_COLOR['Header'].g, OBJECTIVE_TRACKER_COLOR['Header'].b, 1)
         text.Hooked = true
     end
 end
 
-local function GetProgressColor(progress)
+local function getProgressColor(progress)
     local r = (progressColors.complete.r - progressColors.start.r) * progress + progressColors.start.r
     local g = (progressColors.complete.g - progressColors.start.g) * progress + progressColors.start.g
     local b = (progressColors.complete.r - progressColors.start.b) * progress + progressColors.start.b
@@ -40,12 +40,12 @@ local function GetProgressColor(progress)
 end
 
 function EOT:HandleHeaderText()
-    local frame = _G.ObjectiveTrackerFrame.MODULES
+    local frame = ObjectiveTrackerFrame.MODULES
     if not frame then
         return
     end
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = _G['ANDROMEDA_ADB']['FontOutline']
     for i = 1, #frame do
         local modules = frame[i]
         if modules and modules.Header and modules.Header.Text then
@@ -56,7 +56,7 @@ end
 
 function EOT:HandleTitleText(text)
     local font = C.Assets.Fonts.Bold
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = _G['ANDROMEDA_ADB']['FontOutline']
     F.SetFS(text, font, 14, outline or nil, nil, 'YELLOW', outline and 'NONE' or 'THICK')
 
     local height = text:GetStringHeight() + 2
@@ -64,14 +64,14 @@ function EOT:HandleTitleText(text)
         text:SetHeight(height)
     end
 
-    SetTextColorHook(text)
+    setTextColorHook(text)
 end
 
 function EOT:HandleInfoText(text)
     self:ColorfulProgression(text)
 
     local font = C.Assets.Fonts.Regular
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = _G['ANDROMEDA_ADB']['FontOutline']
     F.SetFS(text, font, 13, outline or nil, nil, nil, outline and 'NONE' or 'THICK')
     text:SetHeight(text:GetStringHeight())
 
@@ -84,8 +84,8 @@ function EOT:HandleInfoText(text)
 end
 
 function EOT:ScenarioObjectiveBlock_UpdateCriteria()
-    if _G.ScenarioObjectiveBlock then
-        local childs = { _G.ScenarioObjectiveBlock:GetChildren() }
+    if _G['ScenarioObjectiveBlock'] then
+        local childs = { _G['ScenarioObjectiveBlock']:GetChildren() }
         for _, child in pairs(childs) do
             if child.Text then
                 EOT:HandleInfoText(child.Text)
@@ -116,16 +116,16 @@ function EOT:ColorfulProgression(text)
 
     local progress = tonumber(current) / tonumber(required)
 
-    info = F:CreateColorString(current .. '/' .. required, GetProgressColor(progress))
+    info = F:CreateColorString(current .. '/' .. required, getProgressColor(progress))
     info = info .. ' ' .. details
 
     text:SetText(info)
 end
 
 do
-    local dash = _G.OBJECTIVE_TRACKER_DASH_WIDTH
+    local dash = OBJECTIVE_TRACKER_DASH_WIDTH
     function EOT:UpdateTextWidth()
-        _G.OBJECTIVE_TRACKER_DASH_WIDTH = dash
+        OBJECTIVE_TRACKER_DASH_WIDTH = dash
     end
 end
 
@@ -133,13 +133,13 @@ function EOT:RestyleObjectiveTrackerText()
     self:UpdateTextWidth()
 
     local trackerModules = {
-        _G.UI_WIDGET_TRACKER_MODULE,
-        _G.BONUS_OBJECTIVE_TRACKER_MODULE,
-        _G.WORLD_QUEST_TRACKER_MODULE,
-        _G.CAMPAIGN_QUEST_TRACKER_MODULE,
-        _G.QUEST_TRACKER_MODULE,
-        _G.ACHIEVEMENT_TRACKER_MODULE,
-        _G.MONTHLY_ACTIVITIES_TRACKER_MODULE,
+        _G['UI_WIDGET_TRACKER_MODULE'],
+        _G['BONUS_OBJECTIVE_TRACKER_MODULE'],
+        _G['WORLD_QUEST_TRACKER_MODULE'],
+        _G['CAMPAIGN_QUEST_TRACKER_MODULE'],
+        _G['QUEST_TRACKER_MODULE'],
+        _G['ACHIEVEMENT_TRACKER_MODULE'],
+        _G['MONTHLY_ACTIVITIES_TRACKER_MODULE'],
     }
 
     for _, module in pairs(trackerModules) do
@@ -162,29 +162,29 @@ function EOT:RestyleObjectiveTrackerText()
         end)
     end
 
-    hooksecurefunc('ObjectiveTracker_Update', EOT.HandleHeaderText)
-    hooksecurefunc(_G.SCENARIO_CONTENT_TRACKER_MODULE, 'UpdateCriteria', EOT.ScenarioObjectiveBlock_UpdateCriteria)
+    --hooksecurefunc('ObjectiveTrackerModule_Update', EOT.HandleHeaderText)
+    hooksecurefunc(_G['ScenarioObjectiveTracker'], 'UpdateCriteria', EOT.ScenarioObjectiveBlock_UpdateCriteria)
 
     F.Delay(1, function()
-        for _, child in pairs({ _G.ObjectiveTrackerBlocksFrame:GetChildren() }) do
+        for _, child in pairs({ _G['ObjectiveTrackerBlocksFrame']:GetChildren() }) do
             if child and child.HeaderText then
-                SetTextColorHook(child.HeaderText)
+                setTextColorHook(child.HeaderText)
             end
         end
     end)
 
-    ObjectiveTracker_Update()
+    --ObjectiveTracker_Update()
 end
 
 local headers = {
-    _G.SCENARIO_CONTENT_TRACKER_MODULE,
-    _G.BONUS_OBJECTIVE_TRACKER_MODULE,
-    _G.UI_WIDGET_TRACKER_MODULE,
-    _G.CAMPAIGN_QUEST_TRACKER_MODULE,
-    _G.QUEST_TRACKER_MODULE,
-    _G.ACHIEVEMENT_TRACKER_MODULE,
-    _G.WORLD_QUEST_TRACKER_MODULE,
-    _G.MONTHLY_ACTIVITIES_TRACKER_MODULE,
+    _G['SCENARIO_CONTENT_TRACKER_MODULE'],
+    _G['BONUS_OBJECTIVE_TRACKER_MODULE'],
+    _G['UI_WIDGET_TRACKER_MODULE'],
+    _G['CAMPAIGN_QUEST_TRACKER_MODULE'],
+    _G['QUEST_TRACKER_MODULE'],
+    _G['ACHIEVEMENT_TRACKER_MODULE'],
+    _G['WORLD_QUEST_TRACKER_MODULE'],
+    _G['MONTHLY_ACTIVITIES_TRACKER_MODULE'],
 }
 
 function EOT:AutoCollapse()
@@ -209,7 +209,7 @@ function EOT:AutoCollapse()
                         button:Click()
                     end
                 end
-                if _G.ObjectiveTrackerFrame.collapsed then
+                if ObjectiveTrackerFrame.collapsed then
                     ObjectiveTracker_Expand()
                 end
             end
@@ -223,7 +223,7 @@ function EOT:ObjectiveTrackerMover()
 
     F.Mover(frame, L['ObjectiveTracker'], 'ObjectiveTracker', { 'TOPRIGHT', UIParent, 'TOPRIGHT', -C.UI_GAP, -60 })
 
-    local tracker = _G.ObjectiveTrackerFrame
+    local tracker = ObjectiveTrackerFrame
     tracker:ClearAllPoints()
     tracker:SetPoint('TOPRIGHT', frame)
     tracker:SetHeight(C.SCREEN_HEIGHT / 1.5 * C.MULT)
@@ -248,14 +248,6 @@ end
 function EOT:OnLogin()
     EOT:ObjectiveTrackerMover()
     EOT:RestyleObjectiveTrackerText()
-
-    -- Kill reward animation when finished dungeon or bonus objectives
-    _G.ObjectiveTrackerScenarioRewardsFrame.Show = nop
-
-    hooksecurefunc('BonusObjectiveTracker_AnimateReward', function()
-        _G.ObjectiveTrackerBonusRewardsFrame:ClearAllPoints()
-        _G.ObjectiveTrackerBonusRewardsFrame:SetPoint('BOTTOM', UIParent, 'TOP', 0, 90)
-    end)
 
     -- Auto collapse Objective Tracker
     if C.DB.Quest.AutoCollapseTracker then

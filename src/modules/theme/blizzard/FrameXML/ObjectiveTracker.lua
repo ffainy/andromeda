@@ -62,7 +62,7 @@ local function reskinBarTemplate(bar)
     bar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
     bar:SetStatusBarColor(C.r, C.g, C.b)
     bar.bg = F.SetBD(bar)
-    F:SmoothBar(bar)
+    F:SetSmoothing(bar)
 end
 
 local function reskinBar(self, key)
