@@ -1,17 +1,24 @@
 local F, C = unpack(select(2, ...))
 
 local methods = {
-    SetOverlayIcon = nop,
-    SetOverlayIconVertexColor = nop,
-    SetOuterGlow = nop,
-    SetBinding = nop,
-    SetEquipState = nop,
-    SetActive = nop,
-    SetCooldownTextShown = nop,
-    SetIconTexCoord = nop,
-    SetCooldown = nop,
-    SetCount = nop,
-    SetUsable = nop,
+    SetIcon = nop,                -- (texture, aspect)
+    SetIconAtlas = nop,           -- (atlas, aspect)
+    SetIconTexCoord = nop,        -- (a,b,c,d, e,f,g,h)
+    SetIconVertexColor = nop,     -- (r,g,b)
+    SetUsable = nop,              -- (usable, _usableCharge, _cd, nomana, norange)
+    SetDominantColor = nop,       -- (r,g,b)
+    SetOverlayIcon = nop,         -- (texture, w, h, ...)
+    SetOverlayIconVertexColor = nop, -- (...)
+    SetCount = nop,               -- (count)
+    SetBinding = nop,             -- (binding)
+    SetCooldown = nop,            -- (remain, duration, usable)
+    SetCooldownTextShown = nop,   -- (cooldownShown, rechargeShown)
+    SetHighlighted = nop,         -- (highlight)
+    SetActive = nop,              -- (active)
+    SetOuterGlow = nop,           -- (shown)
+    SetEquipState = nop,          -- (isInContainer, isInInventory)
+    SetShortLabel = nop,          -- (text)
+    SetQualityOverlay = nop,      -- (qual)
 }
 
 function methods:SetIconVertexColor(r, g, b)
@@ -28,6 +35,10 @@ end
 
 function methods:SetHighlighted(highlight)
     self.highlight:SetShown(highlight)
+end
+
+function methods:SetActive(state)
+    self:SetAlpha(state and 0.2 or 1)
 end
 
 local function constructor(name, parent, size)
@@ -58,5 +69,9 @@ local function constructor(name, parent, size)
 end
 
 F:HookAddOn('OPie', function()
-    _G.OPie.UI:RegisterIndicatorConstructor(C.ADDON_TITLE, { name = C.ADDON_TITLE, apiLevel = 1, CreateIndicator = constructor })
+    _G['OPie'].UI:RegisterIndicatorConstructor(C.ADDON_TITLE, {
+        name = C.ADDON_TITLE,
+        apiLevel = 3,
+        CreateIndicator = constructor,
+    })
 end)
