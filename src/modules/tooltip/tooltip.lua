@@ -421,9 +421,10 @@ function TOOLTIP:SetUnitAura(unit, index, filter)
 end
 
 function TOOLTIP:MountSource()
-    hooksecurefunc(GameTooltip, 'SetUnitAura', TOOLTIP.SetUnitAura)
-    hooksecurefunc(GameTooltip, 'SetUnitBuff', TOOLTIP.SetUnitAura)
-    hooksecurefunc(GameTooltip, 'SetUnitDebuff', TOOLTIP.SetUnitAura)
+    ---#FIXME
+    -- hooksecurefunc(GameTooltip, 'SetUnitAura', TOOLTIP.SetUnitAura)
+    -- hooksecurefunc(GameTooltip, 'SetUnitBuff', TOOLTIP.SetUnitAura)
+    -- hooksecurefunc(GameTooltip, 'SetUnitDebuff', TOOLTIP.SetUnitAura)
 end
 
 -- Add mythic plus score
