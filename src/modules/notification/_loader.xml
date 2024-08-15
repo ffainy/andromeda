@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <Script file="notification.lua"/>
+    <Script file="core.lua"/>
     <Script file="bag.lua"/>
     <Script file="incompatible.lua"/>
     <Script file="instance.lua"/>
