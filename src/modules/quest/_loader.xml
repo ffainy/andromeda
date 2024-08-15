@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <Frame name='BetterWorldQuestPinTemplate' inherits='WorldMap_WorldQuestPinTemplate' mixin='BetterWorldQuestPinMixin' virtual='true'/>
+    <Frame name='BetterWorldQuestPinTemplate' inherits='POIButtonTemplate, LegendHighlightableMapPoiPinTemplate' mixin='BetterWorldQuestPinMixin' virtual='true'/>
 
     <Script file="quest.lua"/>
     <Script file="better-world-quests.lua"/>
