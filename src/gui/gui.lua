@@ -303,9 +303,12 @@ local function updateDropdownSelection(self)
 end
 
 local abPreStr = {
-    [1] = 'AAB:34:12:12:12:34:12:12:12:34:12:0:12:30:12:12:1:30:12:12:1:32:12:12:12:32:12:12:12:32:12:12:12:26:12:10:30:12:10:   0B33:0B70:  -278B33:278B33:  0R0:-33R0:  0B500:0B536:0B572:  0B112:-202B100',
-    [2] = 'AAB:34:12:12:12:34:12:12:12:34:12:12:12:30:12:12:1:30:12:12:1:32:12:10:10:32:12:10:12:32:12:12:12:26:12:10:30:12:10:  0B33:0B70:  0B106:278B33:    0R0:-33R0:  0B500:0B536:0B572:  0B148:-202B100',
-    [3] = 'AAB:34:12:12:12:34:12:12:12:34:12:12:6:34:12:12:6:30:12:12:1:32:12:10:10:32:12:10:12:32:12:12:12:26:12:10:30:12:10:  0B33:0B70:  -334B33:334B33:  334B33:0R0:  0B500:0B536:0B572:  0B112:-202B100',
+    [1] =
+    'AAB:34:12:12:12:34:12:12:12:34:12:0:12:30:12:12:1:30:12:12:1:32:12:12:12:32:12:12:12:32:12:12:12:26:12:10:30:12:10:   0B33:0B70:  -278B33:278B33:  0R0:-33R0:  0B500:0B536:0B572:  0B112:-202B100',
+    [2] =
+    'AAB:34:12:12:12:34:12:12:12:34:12:12:12:30:12:12:1:30:12:12:1:32:12:10:10:32:12:10:12:32:12:12:12:26:12:10:30:12:10:  0B33:0B70:  0B106:278B33:    0R0:-33R0:  0B500:0B536:0B572:  0B148:-202B100',
+    [3] =
+    'AAB:34:12:12:12:34:12:12:12:34:12:12:6:34:12:12:6:30:12:12:1:32:12:10:10:32:12:10:12:32:12:12:12:26:12:10:30:12:10:  0B33:0B70:  -334B33:334B33:  334B33:0R0:  0B500:0B536:0B572:  0B112:-202B100',
 }
 
 local function updateBarLayout(self)
@@ -622,39 +625,22 @@ function F.ToggleGUI(index)
     PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
-local function createGameMenuButton()
-    local bu =
-        CreateFrame('Button', 'GameMenuButtonAndromeda', _G.GameMenuFrame, 'GameMenuButtonTemplate, BackdropTemplate')
-    bu:SetText(C.COLORFUL_ADDON_TITLE)
-    bu:SetPoint('TOP', _G.GameMenuButtonAddons, 'BOTTOM', 0, -14)
-
-    _G.GameMenuButtonAndromeda:SetSize(200, 36)
-    _G.GameMenuButtonAndromeda:SetPoint('TOP', _G.GameMenuFrame, 0, -15)
-
-    bu:SetScript('OnClick', function()
-        if InCombatLockdown() then
-            _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
-            return
-        end
-        createGUI()
-        HideUIPanel(_G.GameMenuFrame)
-        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-    end)
-
-    if _G.ANDROMEDA_ADB.ReskinBlizz then
-        bu:DisableDrawLayer('BACKGROUND')
-        bu.bg = F.CreateBDFrame(bu, 0, true)
-        local hl = bu:GetHighlightTexture()
-        hl:SetColorTexture(C.r, C.g, C.b, 0.25)
-        hl:SetInside(bu.bg)
-        bu.bg:SetInside(nil, 3, 3)
+local function gameMenuButtonOnClick()
+    if InCombatLockdown() then
+        UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
+        return
     end
-
-    GUI.GameMenuButton = bu
+    createGUI()
+    HideUIPanel(GameMenuFrame)
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
+
+
 function GUI:OnLogin()
-    createGameMenuButton()
+    hooksecurefunc(GameMenuFrame, 'InitButtons', function(self)
+        self:AddButton(C.COLORFUL_ADDON_TITLE, gameMenuButtonOnClick)
+    end)
 
     GUI:CreateCheatSheet()
 
