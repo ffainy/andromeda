@@ -146,5 +146,5 @@ function ANNOUNCEMENT:OnLogin()
 
     ANNOUNCEMENT:AnnounceSpells()
     ANNOUNCEMENT:AnnounceReset()
-    ANNOUNCEMENT:AnnounceQuest()
+    ANNOUNCEMENT:QuestProgress()
 end

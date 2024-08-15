@@ -8,6 +8,7 @@ local CHAT = F:GetModule('Chat')
 local VIGNETTING = F:GetModule('Vignetting')
 local BLIZZARD = F:GetModule('Blizzard')
 local INFOBAR = F:GetModule('InfoBar')
+local ANNOUNCEMENT = F:GetModule('Announcement')
 local MAP = F:GetModule('Map')
 local oUF = F.Libs.oUF
 
@@ -395,6 +396,10 @@ end
 -- Announcement
 local function SetupAnnounceableSpells()
     GUI:SetupAnnounceableSpells(GUI.Page[7])
+end
+
+local function toggleQuestProgress()
+    ANNOUNCEMENT:QuestProgress()
 end
 
 -- Options
@@ -1580,8 +1585,11 @@ GUI.OptionsList = {
         {
             1,
             'Announcement',
-            'Quest',
+            'QuestProgress',
             L['Quest Progress'],
+            nil,
+            nil,
+            toggleQuestProgress,
         },
         {
             1,

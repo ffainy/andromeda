@@ -115,8 +115,8 @@ C.CharacterSettings = {
         Dispel = true,
         Stolen = true,
         Reflect = true,
-        Quest = false,
         Reset = true,
+        QuestProgress = true,
     },
     Aura = {
         Enable = true,
