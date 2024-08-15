@@ -55,7 +55,7 @@ end
 
 function F.IsItemHasGem(link)
     local text = ''
-    local stats = GetItemStats(link)
+    local stats = C_Item.GetItemStats(link)
 
     if stats then
         for stat, count in pairs(stats) do
@@ -105,12 +105,12 @@ end
 
 function CHAT:AddItemLevel()
     for _, event in pairs(events) do
-        _G.ChatFrame_AddMessageEventFilter(event, CHAT.UpdateItemLevel)
+        ChatFrame_AddMessageEventFilter(event, CHAT.UpdateItemLevel)
     end
 end
 
 -- icon for item/spell/achievement
-local function GetHyperlink(hyperlink, texture)
+local function getHyperlink(hyperlink, texture)
     if not texture then
         return hyperlink
     else
@@ -119,7 +119,7 @@ local function GetHyperlink(hyperlink, texture)
 end
 
 local cache = {}
-local function AddChatIcon(link, linkType, id)
+local function addChatIcon(link, linkType, id)
     if not link then
         return
     end
@@ -159,33 +159,33 @@ local function AddChatIcon(link, linkType, id)
         texture = info and info.icon
     end
 
-    cache[link] = GetHyperlink(link, texture)
+    cache[link] = getHyperlink(link, texture)
 
     return cache[link]
 end
 
-local function AddTradeIcon(link, id)
+local function addTradeIcon(link, id)
     if not link then
         return
     end
 
     if not cache[link] then
-        cache[link] = GetHyperlink(link, C_Spell.GetSpellTexture(id))
+        cache[link] = getHyperlink(link, C_Spell.GetSpellTexture(id))
     end
 
     return cache[link]
 end
 
 function CHAT:UpdateLinkIcon(_, msg, ...)
-    msg = gsub(msg, '(|c%x%x%x%x%x%x%x%x.-|H(%a+):(%d+).-|h.-|h.-|r)', AddChatIcon)
-    msg = gsub(msg, '(|c%x%x%x%x%x%x%x%x.-|Htrade:[^:]-:(%d+).-|h.-|h.-|r)', AddTradeIcon)
+    msg = gsub(msg, '(|c%x%x%x%x%x%x%x%x.-|H(%a+):(%d+).-|h.-|h.-|r)', addChatIcon)
+    msg = gsub(msg, '(|c%x%x%x%x%x%x%x%x.-|Htrade:[^:]-:(%d+).-|h.-|h.-|r)', addTradeIcon)
 
     return false, msg, ...
 end
 
 function CHAT:AddLinkIcon()
     for _, event in pairs(events) do
-        _G.ChatFrame_AddMessageEventFilter(event, CHAT.UpdateLinkIcon)
+        ChatFrame_AddMessageEventFilter(event, CHAT.UpdateLinkIcon)
     end
 end
 
