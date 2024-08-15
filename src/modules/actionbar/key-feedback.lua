@@ -2,51 +2,44 @@
 -- https://github.com/rgd87/NugKeyFeedback
 
 local F, C, L = unpack(select(2, ...))
--- local ACTIONBAR = F:GetModule('ActionBar')
+local AB = F:GetModule('ActionBar')
 
-local keyFeedback = CreateFrame('Frame', C.ADDON_TITLE .. 'KeyFeedback', UIParent)
-keyFeedback:SetScript('OnEvent', function(self, event, ...)
+AB.KeyFeedback = CreateFrame('Frame', 'KeyFeedback', UIParent)
+local kfb = AB.KeyFeedback
+kfb:SetScript('OnEvent', function(self, event, ...)
     return self[event](self, event, ...)
 end)
 
-keyFeedback:RegisterEvent('PLAYER_LOGIN')
-keyFeedback:RegisterEvent('PLAYER_LOGOUT')
+kfb:RegisterEvent('PLAYER_LOGIN')
+kfb:RegisterEvent('PLAYER_LOGOUT')
 
-local settings = {
+local configs = {
     point = 'CENTER',
     x = 0,
     y = 0,
     enableCastLine = true,
     enableCooldown = true,
-    enablePushEffect = true,
+    enablePushEffect = false,
     enableCast = true,
     enableCastFlash = true,
-    lineIconSize = 28,
+    lineIconSize = 30,
     mirrorSize = 32,
     lineDirection = 'LEFT',
-    forceUseActionHook = false,
+    forceUseActionHook = true,
 }
 
-
-local C_Spell_GetSpellInfo = C_Spell.GetSpellInfo
-keyFeedback.GetSpellInfo = function(spellId)
-    local info = C_Spell_GetSpellInfo(spellId)
+local getSpellInfo = function(spellId)
+    local info = C_Spell.GetSpellInfo(spellId)
     if info then
         return info.name, nil, info.iconID
     end
 end
-keyFeedback.GetSpellTexture = C_Spell.GetSpellTexture
 
-local GetSpellInfo = keyFeedback.GetSpellInfo
 
-function keyFeedback:PLAYER_LOGIN()
-    if not C.DB.Actionbar.KeyFeedback then
-        return
-    end
+function kfb:PLAYER_LOGIN(event)
+    if not C.DB.Actionbar.KeyFeedback then return end
 
-    self.db = settings
-
-    if self.db.forceUseActionHook then
+    if configs.forceUseActionHook then
         self.mirror = self:CreateFeedbackButton(true)
         self:HookUseAction()
     else
@@ -54,7 +47,7 @@ function keyFeedback:PLAYER_LOGIN()
         self:HookDefaultBindings()
     end
 
-    local GetActionSpellID = function(action)
+    local getActionSpellID = function(action)
         local actionType, id = GetActionInfo(action)
         if actionType == 'spell' then
             return id
@@ -65,16 +58,11 @@ function keyFeedback:PLAYER_LOGIN()
 
     self.mirror.UpdateAction = function(self, fullUpdate)
         local action = self.action
-        if not action then
-            return
-        end
+        if not action then return end
 
         local tex = GetActionTexture(action)
-        if not tex then
-            return
-        end
+        if not tex then return end
         self.icon:SetTexture(tex)
-        self.icon:SetTexCoord(unpack(C.TEX_COORD))
 
         if fullUpdate then
             self:UpdateCooldownOrCast()
@@ -83,42 +71,41 @@ function keyFeedback:PLAYER_LOGIN()
 
     self.mirror.UpdateCooldownOrCast = function(self)
         local action = self.action
-        if not action then
-            return
-        end
+        if not action then return end
 
+        local isCastingLastSpell = self.castSpellID == getActionSpellID(action)
         local cooldownStartTime, cooldownDuration, enable, modRate = GetActionCooldown(action)
 
         local cooldownFrame = self.cooldown
         local castDuration = self.castDuration or 0
 
-        if keyFeedback.db.enableCast and self.castSpellID and self.castSpellID == GetActionSpellID(action) and castDuration > cooldownDuration then
+        if configs.enableCast and self.castSpellID and self.castSpellID == getActionSpellID(action) and castDuration > cooldownDuration then
             cooldownFrame:SetDrawEdge(true)
             cooldownFrame:SetReverse(self.castInverted)
             CooldownFrame_Set(cooldownFrame, self.castStartTime, castDuration, true, true, 1)
-        elseif keyFeedback.db.enableCooldown then
+        elseif configs.enableCooldown then
             cooldownFrame:SetDrawEdge(false)
             cooldownFrame:SetReverse(false)
+            local charges, maxCharges, chargeStart, chargeDuration, chargeModRate = GetActionCharges(action)
             CooldownFrame_Set(cooldownFrame, cooldownStartTime, cooldownDuration, enable, false, modRate)
         else
             cooldownFrame:Hide()
         end
     end
 
-    self:SetSize(30, 30)
+    self:SetSize(32, 32)
 
-    local mover = F.Mover(self, L['SpellFeedback'], 'SpellFeedback', { 'CENTER', UIParent, 0, -300 }, settings.mirrorSize, settings.mirrorSize)
+    local mover = F.Mover(self, L['KeyFeedback'], 'KeyFeedback', { 'CENTER', UIParent, 0, -300 }, configs.mirrorSize,
+        configs.mirrorSize)
     self:ClearAllPoints()
     self:SetPoint('CENTER', mover)
 
     self:RefreshSettings()
 end
 
-function keyFeedback.UNIT_SPELLCAST_START(self, _, unit, _, spellID)
-    local _, _, _, startTime, endTime, _, castID, _ = UnitCastingInfo(unit)
-    if not startTime then
-        return
-    end -- With heavy lags it's nil sometimes
+function kfb.UNIT_SPELLCAST_START(self, event, unit, _castID, spellID)
+    local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
+    if not startTime then return end -- With heavy lags it's nil sometimes
     local mirror = self.mirror
     mirror.castInverted = false
     mirror.castID = castID
@@ -130,10 +117,9 @@ function keyFeedback.UNIT_SPELLCAST_START(self, _, unit, _, spellID)
     -- self:UpdateCastingInfo(name,texture,startTime,endTime)
 end
 
-keyFeedback.UNIT_SPELLCAST_DELAYED = keyFeedback.UNIT_SPELLCAST_START
-
-function keyFeedback.UNIT_SPELLCAST_CHANNEL_START(self, _, unit, _, spellID)
-    local _, _, _, startTime, endTime, _, castID, _ = UnitChannelInfo(unit)
+kfb.UNIT_SPELLCAST_DELAYED = kfb.UNIT_SPELLCAST_START
+function kfb.UNIT_SPELLCAST_CHANNEL_START(self, event, unit, _castID, spellID)
+    local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitChannelInfo(unit)
     local mirror = self.mirror
     mirror.castInverted = true
     mirror.castID = castID
@@ -145,37 +131,33 @@ function keyFeedback.UNIT_SPELLCAST_CHANNEL_START(self, _, unit, _, spellID)
     -- self:UpdateCastingInfo(name,texture,startTime,endTime)
 end
 
-keyFeedback.UNIT_SPELLCAST_CHANNEL_UPDATE = keyFeedback.UNIT_SPELLCAST_CHANNEL_START
-
-function keyFeedback.UNIT_SPELLCAST_STOP(self, _, _, _, _)
+kfb.UNIT_SPELLCAST_CHANNEL_UPDATE = kfb.UNIT_SPELLCAST_CHANNEL_START
+function kfb.UNIT_SPELLCAST_STOP(self, event, unit, castID, spellID)
     local mirror = self.mirror
     mirror.castSpellID = nil
     mirror.castDuration = nil
     mirror:UpdateCooldownOrCast()
 end
 
-function keyFeedback.UNIT_SPELLCAST_FAILED(self, event, unit, castID)
+function kfb.UNIT_SPELLCAST_FAILED(self, event, unit, castID)
     if self.mirror.castID == castID then
-        keyFeedback.UNIT_SPELLCAST_STOP(self, event, unit, nil)
+        kfb.UNIT_SPELLCAST_STOP(self, event, unit, nil)
     end
 end
 
-keyFeedback.UNIT_SPELLCAST_INTERRUPTED = keyFeedback.UNIT_SPELLCAST_STOP
-keyFeedback.UNIT_SPELLCAST_CHANNEL_STOP = keyFeedback.UNIT_SPELLCAST_STOP
+kfb.UNIT_SPELLCAST_INTERRUPTED = kfb.UNIT_SPELLCAST_STOP
+kfb.UNIT_SPELLCAST_CHANNEL_STOP = kfb.UNIT_SPELLCAST_STOP
 
-function keyFeedback:SPELL_UPDATE_COOLDOWN()
+
+function kfb:SPELL_UPDATE_COOLDOWN(event)
     self.mirror:UpdateAction(true)
 end
 
-local MirrorActionButtonDown = function(action)
-    if not HasAction(action) then
-        return
-    end
-    if C_PetBattles.IsInBattle() then
-        return
-    end
+local function mirrorActionButtonDown(action)
+    if not HasAction(action) then return end
+    if C_PetBattles.IsInBattle() then return end
 
-    local mirror = keyFeedback.mirror
+    local mirror = kfb.mirror
 
     if mirror.action ~= action then
         mirror.action = action
@@ -201,60 +183,56 @@ local MirrorActionButtonDown = function(action)
     end
 end
 
-local MirrorActionButtonUp = function()
-    local mirror = keyFeedback.mirror
+local function mirrorActionButtonUp(action)
+    local mirror = kfb.mirror
 
     if mirror:GetButtonState() == 'PUSHED' then
         mirror:SetButtonState('NORMAL')
     end
 end
 
-function keyFeedback:HookDefaultBindings()
-    local GetActionButtonForID = _G.GetActionButtonForID
+function kfb:HookDefaultBindings()
     hooksecurefunc('ActionButtonDown', function(id)
         local button = GetActionButtonForID(id)
         if button then
-            return MirrorActionButtonDown(button.action)
+            return mirrorActionButtonDown(button.action)
         end
     end)
-    hooksecurefunc('ActionButtonUp', MirrorActionButtonUp)
+    hooksecurefunc('ActionButtonUp', mirrorActionButtonUp)
     hooksecurefunc('MultiActionButtonDown', function(bar, id)
         local button = _G[bar .. 'Button' .. id]
-        return MirrorActionButtonDown(button.action)
+        return mirrorActionButtonDown(button.action)
     end)
-    hooksecurefunc('MultiActionButtonUp', MirrorActionButtonUp)
+    hooksecurefunc('MultiActionButtonUp', mirrorActionButtonUp)
 end
 
-function keyFeedback:HookUseAction()
+function kfb:HookUseAction()
     hooksecurefunc('UseAction', function(action)
-        return MirrorActionButtonDown(action)
+        return mirrorActionButtonDown(action)
     end)
 end
 
-function keyFeedback:UNIT_SPELLCAST_SUCCEEDED(_, _, _, spellID)
+function kfb:UNIT_SPELLCAST_SUCCEEDED(event, unit, lineID, spellID)
     if IsPlayerSpell(spellID) then
-        if spellID == 75 then
-            return
-        end -- Autoshot
+        if spellID == 75 then return end -- Autoshot
 
-        if self.db.enableCastLine then
-            local frame = self.iconPool:Acquire()
-            local texture = select(3, GetSpellInfo(spellID))
+        if configs.enableCastLine then
+            local frame, isNew = self.iconPool:Acquire()
+            local texture = select(3, getSpellInfo(spellID))
             frame.icon:SetTexture(texture)
-            frame.icon:SetTexCoord(unpack(C.TEX_COORD))
             frame:Show()
             frame.ag:Play()
         end
 
-        if self.db.enableCastFlash then
+        if configs.enableCastFlash then
             self.mirror.glow:Show()
             self.mirror.glow.blink:Play()
         end
     end
 end
 
-function keyFeedback:RefreshSettings()
-    local db = self.db
+function kfb:RefreshSettings()
+    local db = configs
     self.mirror:SetSize(db.mirrorSize, db.mirrorSize)
 
     self:RegisterUnitEvent('UNIT_SPELLCAST_SUCCEEDED', 'player')
@@ -299,36 +277,25 @@ function keyFeedback:RefreshSettings()
     end
 end
 
-local function MakeCompatibleAnimation(anim)
-    if anim:GetObjectType() == 'Scale' and anim.SetScaleFrom then
-        return anim
-    else
-        anim.SetScaleFrom = anim.SetFromScale
-        anim.SetScaleTo = anim.SetToScale
+function kfb:CreateFeedbackButton(autoKeyup)
+    local mirror = CreateFrame('Button', 'KeyFeedbackMirror', self, 'ActionButtonTemplate')
+    mirror:SetHeight(configs.mirrorSize)
+    mirror:SetWidth(configs.mirrorSize)
+
+    if mirror.SetNormalTexture then
+        mirror:SetNormalTexture(0)
     end
-    return anim
-end
-
-function keyFeedback:CreateFeedbackButton(autoKeyup)
-    local db = self.db
-
-    local mirror = CreateFrame('Button', C.ADDON_TITLE .. 'KeyFeedbackMirror', self, 'ActionButtonTemplate')
-    mirror:SetHeight(db.mirrorSize)
-    mirror:SetWidth(db.mirrorSize)
-    mirror.NormalTexture:ClearAllPoints()
-
-    local bg = F.CreateBDFrame(mirror)
-    bg:SetBackdropBorderColor(0, 0, 0)
-    F.CreateSD(bg)
-
     if mirror.SetPushedTexture then
         mirror:SetPushedTexture(0)
     end
 
     mirror.cooldown:SetEdgeTexture('Interface\\Cooldown\\edge')
-    mirror.cooldown:SetSwipeColor(0, 0, 0)
-    mirror.cooldown:SetHideCountdownNumbers(false)
-    mirror.cooldown:SetAllPoints(mirror)
+    mirror.cooldown:SetSwipeColor(0, 0, 0, 0)
+    mirror.cooldown:SetHideCountdownNumbers(true)
+
+    local bg = F.CreateBDFrame(mirror)
+    bg:SetBackdropBorderColor(0, 0, 0)
+    F.CreateSD(bg)
 
     mirror:Show()
     mirror._elapsed = 0
@@ -347,12 +314,6 @@ function keyFeedback:CreateFeedbackButton(autoKeyup)
     local ag = glow:CreateAnimationGroup()
     glow.blink = ag
 
-    -- local a1 = ag:CreateAnimation("Alpha")
-    -- a1:SetFromAlpha(0)
-    -- a1:SetToAlpha(1)
-    -- a1:SetDuration(0.14)
-    -- a1:SetOrder(1)
-
     local a2 = ag:CreateAnimation('Alpha')
     a2:SetFromAlpha(1)
     a2:SetToAlpha(0)
@@ -364,9 +325,9 @@ function keyFeedback:CreateFeedbackButton(autoKeyup)
         self:GetParent():Hide()
     end)
 
-    if db.enablePushEffect then
+    if configs.enablePushEffect then
         local pushedCircle = CreateFrame('Frame', nil, mirror)
-        local size = db.mirrorSize
+        local size = configs.mirrorSize
         pushedCircle:SetSize(size, size)
         pushedCircle:SetPoint('CENTER', 0, 0)
         local pctex = pushedCircle:CreateTexture(nil, 'OVERLAY')
@@ -379,7 +340,7 @@ function keyFeedback:CreateFeedbackButton(autoKeyup)
         local gag = pushedCircle:CreateAnimationGroup()
         pushedCircle.grow = gag
 
-        local ga1 = MakeCompatibleAnimation(gag:CreateAnimation('Scale'))
+        local ga1 = gag:CreateAnimation('Scale')
         ga1:SetScaleFrom(0.1, 0.1)
         ga1:SetScaleTo(1.3, 1.3)
         ga1:SetDuration(0.3)
@@ -450,32 +411,25 @@ function keyFeedback:CreateFeedbackButton(autoKeyup)
     return mirror
 end
 
-local PoolIconCreationFunc = function(pool)
-    local db = keyFeedback.db
-
+local function createPoolIcon(pool)
     local hdr = pool.parent
     local id = pool.idCounter
     pool.idCounter = pool.idCounter + 1
-    local f = CreateFrame('Button', C.ADDON_TITLE .. 'KeyFeedbackPoolIcon' .. id, hdr, 'ActionButtonTemplate')
+    local f = CreateFrame('Button', 'KeyFeedbackPoolIcon' .. id, hdr, 'ActionButtonTemplate')
 
     if f.SetNormalTexture then
         f:SetNormalTexture(0)
     end
 
-    local bg = F.CreateBDFrame(f)
-    bg:SetBackdropBorderColor(0, 0, 0)
-    F.CreateSD(bg)
-
     f:EnableMouse(false)
-    f:SetHeight(db.lineIconSize)
-    f:SetWidth(db.lineIconSize)
+    f:SetHeight(configs.lineIconSize)
+    f:SetWidth(configs.lineIconSize)
     f:SetPoint('BOTTOM', hdr, 'BOTTOM', 0, -0)
 
     local t = f.icon
     f:SetAlpha(0)
 
     t:SetTexture('Interface\\Icons\\Spell_Shadow_SacrificialShield')
-    t:SetTexCoord(unpack(C.TEX_COORD))
 
     local ag = f:CreateAnimationGroup()
     f.ag = ag
@@ -484,13 +438,14 @@ local PoolIconCreationFunc = function(pool)
     local translateX = -100
     local translateY = 0
 
-    local s1 = MakeCompatibleAnimation(ag:CreateAnimation('Scale'))
+
+    local s1 = ag:CreateAnimation('Scale')
     s1:SetScale(0.01, 1)
     s1:SetDuration(0)
     s1:SetOrigin(scaleOrigin, 0, 0)
     s1:SetOrder(1)
 
-    local s2 = MakeCompatibleAnimation(ag:CreateAnimation('Scale'))
+    local s2 = ag:CreateAnimation('Scale')
     s2:SetScale(100, 1)
     s2:SetDuration(0.5)
     s2:SetOrigin(scaleOrigin, 0, 0)
@@ -530,29 +485,27 @@ local PoolIconCreationFunc = function(pool)
     return f
 end
 
-local function PoolIconResetterFunc(pool, f)
-    local db = keyFeedback.db
-
-    f:SetHeight(db.lineIconSize)
-    f:SetWidth(db.lineIconSize)
+local function resetPoolIcon(pool, f)
+    f:SetHeight(configs.lineIconSize)
+    f:SetWidth(configs.lineIconSize)
 
     f.ag:Stop()
 
     local scaleOrigin, revOrigin, translateX, translateY
     -- local sx1, sx2, sy1, sy2
-    if db.lineDirection == 'RIGHT' then
+    if configs.lineDirection == 'RIGHT' then
         scaleOrigin = 'LEFT'
         revOrigin = 'RIGHT'
         -- sx1, sx2, sy1, sy2 = 0.01, 100, 1, 1
         translateX = 100
         translateY = 0
-    elseif db.lineDirection == 'TOP' then
+    elseif configs.lineDirection == 'TOP' then
         scaleOrigin = 'BOTTOM'
         revOrigin = 'TOP'
         -- sx1, sx2, sy1, sy2 = 1,1, 0.01, 100
         translateX = 0
         translateY = 100
-    elseif db.lineDirection == 'BOTTOM' then
+    elseif configs.lineDirection == 'BOTTOM' then
         scaleOrigin = 'TOP'
         revOrigin = 'BOTTOM'
         -- sx1, sx2, sy1, sy2 = 1,1, 0.01, 100
@@ -578,7 +531,8 @@ local function PoolIconResetterFunc(pool, f)
     f:SetPoint(scaleOrigin, parent, revOrigin, 0, 0)
 end
 
-local FramePool = {
+
+local framePool = {
     -- creationFunc = function(self)
     --     return self.parent:CreateMaskTexture()
     -- end,
@@ -626,22 +580,22 @@ local FramePool = {
         self.parent = parent
     end,
 }
-local function CreateFramePool(frameType, parent, frameTemplate)
-    local self = setmetatable({}, { __index = FramePool })
+local function createFramePool(frameType, parent, frameTemplate, resetterFunc, frameInitFunc)
+    local self = setmetatable({}, { __index = framePool })
     self:Init(parent)
     self.frameType = frameType
-    -- self.parent = parent;
+    -- self.parent = parent
     self.frameTemplate = frameTemplate
     return self
 end
 
-function keyFeedback:CreateLastSpellIconLine(parent)
-    local template = nil
-    local resetterFunc = PoolIconResetterFunc
-    local iconPool = CreateFramePool('Frame', parent, template, resetterFunc)
-    iconPool.creationFunc = PoolIconCreationFunc
-    iconPool.resetterFunc = PoolIconResetterFunc
-    iconPool.idCounter = 1
+function kfb:CreateLastSpellIconLine(parent)
+    local template        = nil
+    local resetterFunc    = resetPoolIcon
+    local iconPool        = createFramePool('Frame', parent, template, resetterFunc)
+    iconPool.creationFunc = createPoolIcon
+    iconPool.resetterFunc = resetPoolIcon
+    iconPool.idCounter    = 1
 
     return iconPool
 end
