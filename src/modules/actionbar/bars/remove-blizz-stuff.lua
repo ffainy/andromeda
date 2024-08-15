@@ -15,16 +15,21 @@ local scripts = {
 }
 
 local framesToHide = {
-    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight, MultiBar5, MultiBar6, MultiBar7,
+    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight,
+    MultiBar5, MultiBar6, MultiBar7,
     OverrideActionBar, PossessActionBar, PetActionBar,
+    BagsBar, MicroMenu,
 }
 
 local framesToDisable = {
-    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight, MultiBar5, MultiBar6, MultiBar7,
+    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight,
+    MultiBar5, MultiBar6, MultiBar7,
     PossessActionBar, PetActionBar,
     MicroButtonAndBagsBar, StatusTrackingBarManager, MainMenuBarVehicleLeaveButton,
     OverrideActionBar,
-    OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
+    OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar,
+    OverrideActionBarPitchFrame,
+    BagsBar, MicroMenu,
 }
 
 local function disableAllScripts(frame)
@@ -67,13 +72,13 @@ local function disableDefaultBarEvents() -- credit: Simpy
 
     -- shut down some events for things we dont use
     ActionBarController:UnregisterAllEvents()
-    ActionBarController:RegisterEvent('SETTINGS_LOADED')     -- this is needed for page controller to spawn properly
+    ActionBarController:RegisterEvent('SETTINGS_LOADED')        -- this is needed for page controller to spawn properly
     ActionBarController:RegisterEvent('UPDATE_EXTRA_ACTIONBAR') -- this is needed to let the ExtraActionBar show
     ActionBarActionEventsFrame:UnregisterAllEvents()
 
     -- used for ExtraActionButton and TotemBar (on wrath)
     ActionBarButtonEventsFrame:UnregisterAllEvents()
-    ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_SLOT_CHANGED') -- needed to let the ExtraActionButton show and Totems to swap
+    ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_SLOT_CHANGED')    -- needed to let the ExtraActionButton show and Totems to swap
     ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN') -- needed for cooldowns of them both
     hooksecurefunc(ActionBarButtonEventsFrame, 'RegisterFrame', buttonEventsRegisterFrame)
     buttonEventsRegisterFrame(ActionBarButtonEventsFrame)
