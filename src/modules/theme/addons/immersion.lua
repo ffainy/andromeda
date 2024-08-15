@@ -1,7 +1,7 @@
 local F, C = unpack(select(2, ...))
 local THEME = F:GetModule('Theme')
 
-local function UpdateItemBorder(self)
+local function updateItemBorder(self)
     if not self.bg then
         return
     end
@@ -14,7 +14,8 @@ local function UpdateItemBorder(self)
         local name, texture, numItems, quality = GetQuestCurrencyInfo(self.type, self:GetID())
         local currencyID = GetQuestCurrencyID(self.type, self:GetID())
         if name and texture and numItems and quality and currencyID then
-            local currencyQuality = select(4, _G.CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality))
+            local currencyQuality = select(4,
+                CurrencyContainerUtil.GetCurrencyContainerInfo(currencyID, numItems, name, texture, quality))
             local color = C.QualityColors[currencyQuality or 1]
             self.bg:SetBackdropBorderColor(color.r, color.g, color.b)
         end
@@ -23,7 +24,7 @@ local function UpdateItemBorder(self)
     end
 end
 
-local function ReskinItemButton(buttons)
+local function reskinItemButton(buttons)
     for i = 1, #buttons do
         local button = buttons[i]
         if button and not button.styled then
@@ -37,11 +38,11 @@ local function ReskinItemButton(buttons)
 
             button.styled = true
         end
-        UpdateItemBorder(button)
+        updateItemBorder(button)
     end
 end
 
-local function ReskinTitleButton(self, index)
+local function reskinTitleButton(self, index)
     local button = self.Buttons[index]
     if button and not button.styled then
         F.StripTextures(button)
@@ -58,11 +59,12 @@ local function ReskinTitleButton(self, index)
     end
 end
 
-local function ReskinReward(self)
+local function reskinReward(self)
     local rewardsFrame = self.TalkBox.Elements.Content.RewardsFrame
-    ReskinItemButton(rewardsFrame.Buttons)
+    reskinItemButton(rewardsFrame.Buttons)
 
-    if GetNumRewardSpells() > 0 then
+    local spellRewards = C_QuestInfoSystem.GetQuestRewardSpells(GetQuestID()) or {}
+    if #spellRewards > 0 then
         -- follower
         for reward in rewardsFrame.followerRewardPool:EnumerateActive() do
             local portrait = reward.PortraitFrame
@@ -103,11 +105,11 @@ local function ReskinReward(self)
     end
 end
 
-local function ReskinProgress(self)
-    ReskinItemButton(self.TalkBox.Elements.Progress.Buttons)
+local function reskinProgress(self)
+    reskinItemButton(self.TalkBox.Elements.Progress.Buttons)
 end
 
-local function ReskinTooltip(self)
+local function reskinTooltip(self)
     for tooltip in self.Inspector.tooltipFramePool:EnumerateActive() do
         if not tooltip.styled then
             tooltip:HideBackdrop()
@@ -122,14 +124,14 @@ local function ReskinTooltip(self)
     end
 end
 
-local function ReskinImmersion()
+local function reskinImmersion()
     if not _G.ANDROMEDA_ADB.ReskinImmersion then
         return
     end
 
     local cr, cg, cb = C.r, C.g, C.b
 
-    local talkBox = _G.ImmersionFrame.TalkBox
+    local talkBox = _G['ImmersionFrame'].TalkBox
     F.StripTextures(talkBox.PortraitFrame)
     F.StripTextures(talkBox.BackgroundFrame)
     F.StripTextures(talkBox.Hilite)
@@ -172,12 +174,12 @@ local function ReskinImmersion()
     indicator:ClearAllPoints()
     indicator:SetPoint('RIGHT', mainFrame.CloseButton, 'LEFT', -3, 0)
 
-    local titleButtons = _G.ImmersionFrame.TitleButtons
-    hooksecurefunc(titleButtons, 'GetButton', ReskinTitleButton)
+    local titleButtons = _G['ImmersionFrame'].TitleButtons
+    hooksecurefunc(titleButtons, 'GetButton', reskinTitleButton)
 
-    hooksecurefunc(_G.ImmersionFrame, 'AddQuestInfo', ReskinReward)
-    hooksecurefunc(_G.ImmersionFrame, 'QUEST_PROGRESS', ReskinProgress)
-    hooksecurefunc(_G.ImmersionFrame, 'ShowItems', ReskinTooltip)
+    hooksecurefunc(_G['ImmersionFrame'], 'AddQuestInfo', reskinReward)
+    hooksecurefunc(_G['ImmersionFrame'], 'QUEST_PROGRESS', reskinProgress)
+    hooksecurefunc(_G['ImmersionFrame'], 'ShowItems', reskinTooltip)
 end
 
-THEME:RegisterSkin('Immersion', ReskinImmersion)
+THEME:RegisterSkin('Immersion', reskinImmersion)
