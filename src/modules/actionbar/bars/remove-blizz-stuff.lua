@@ -15,66 +15,16 @@ local scripts = {
 }
 
 local framesToHide = {
-    _G.MainMenuBar,
-    _G.MultiBarBottomLeft,
-    _G.MultiBarBottomRight,
-    _G.MultiBarLeft,
-    _G.MultiBarRight,
-    _G.MultiBar5,
-    _G.MultiBar6,
-    _G.MultiBar7,
-    _G.OverrideActionBar,
-    _G.PossessActionBar,
-    _G.PetActionBar,
-    _G.MainMenuMicroButton,
-    _G.StoreMicroButton,
-    _G.CollectionsMicroButton,
-    _G.EJMicroButton,
-    _G.LFDMicroButton,
-    _G.GuildMicroButton,
-    _G.QuestLogMicroButton,
-    _G.AchievementMicroButton,
-    _G.TalentMicroButton,
-    _G.SpellbookMicroButton,
-    _G.CharacterMicroButton,
-    _G.ProfessionMicroButton,
-    _G.PlayerSpellsMicroButton,
-    _G.BagsBar,
-    _G.MicroButtonAndBagsBar,
+    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight, MultiBar5, MultiBar6, MultiBar7,
+    OverrideActionBar, PossessActionBar, PetActionBar,
 }
 
 local framesToDisable = {
-    _G.MainMenuBar,
-    _G.MultiBarBottomLeft,
-    _G.MultiBarBottomRight,
-    _G.MultiBarLeft,
-    _G.MultiBarRight,
-    _G.MultiBar5,
-    _G.MultiBar6,
-    _G.MultiBar7,
-    _G.PossessActionBar,
-    _G.PetActionBar,
-    _G.MicroButtonAndBagsBar,
-    _G.StatusTrackingBarManager,
-    _G.MainMenuBarVehicleLeaveButton,
-    _G.OverrideActionBar,
-    _G.OverrideActionBarExpBar,
-    _G.OverrideActionBarHealthBar,
-    _G.OverrideActionBarPowerBar,
-    _G.OverrideActionBarPitchFrame,
-    _G.MainMenuMicroButton,
-    _G.StoreMicroButton,
-    _G.CollectionsMicroButton,
-    _G.EJMicroButton,
-    _G.LFDMicroButton,
-    _G.GuildMicroButton,
-    _G.QuestLogMicroButton,
-    _G.AchievementMicroButton,
-    _G.TalentMicroButton,
-    _G.SpellbookMicroButton,
-    _G.CharacterMicroButton,
-    _G.BagsBar,
-    _G.MicroButtonAndBagsBar,
+    MainMenuBar, MultiBarBottomLeft, MultiBarBottomRight, MultiBarLeft, MultiBarRight, MultiBar5, MultiBar6, MultiBar7,
+    PossessActionBar, PetActionBar,
+    MicroButtonAndBagsBar, StatusTrackingBarManager, MainMenuBarVehicleLeaveButton,
+    OverrideActionBar,
+    OverrideActionBarExpBar, OverrideActionBarHealthBar, OverrideActionBarPowerBar, OverrideActionBarPitchFrame,
 }
 
 local function disableAllScripts(frame)
@@ -87,7 +37,7 @@ end
 
 local function updateTokenVisibility()
     TokenFrame_LoadUI()
-    _G.TokenFrame:Update()
+    TokenFrame:Update()
 end
 
 local function buttonEventsRegisterFrame(self, added)
@@ -109,36 +59,30 @@ end
 
 local function disableDefaultBarEvents() -- credit: Simpy
     -- MainMenuBar:ClearAllPoints taint during combat
-    _G.MainMenuBar.SetPositionForStatusBars = nop
+    MainMenuBar.SetPositionForStatusBars = nop
 
     -- Spellbook open in combat taint, only happens sometimes
-    _G.MultiActionBar_HideAllGrids = nop
-    _G.MultiActionBar_ShowAllGrids = nop
+    MultiActionBar_HideAllGrids = nop
+    MultiActionBar_ShowAllGrids = nop
 
     -- shut down some events for things we dont use
-    _G.ActionBarController:UnregisterAllEvents()
-    _G.ActionBarController:RegisterEvent('SETTINGS_LOADED') -- this is needed for page controller to spawn properly
-    _G.ActionBarController:RegisterEvent('UPDATE_EXTRA_ACTIONBAR') -- this is needed to let the ExtraActionBar show
-    _G.ActionBarActionEventsFrame:UnregisterAllEvents()
+    ActionBarController:UnregisterAllEvents()
+    ActionBarController:RegisterEvent('SETTINGS_LOADED')     -- this is needed for page controller to spawn properly
+    ActionBarController:RegisterEvent('UPDATE_EXTRA_ACTIONBAR') -- this is needed to let the ExtraActionBar show
+    ActionBarActionEventsFrame:UnregisterAllEvents()
 
     -- used for ExtraActionButton and TotemBar (on wrath)
-    _G.ActionBarButtonEventsFrame:UnregisterAllEvents()
-    _G.ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_SLOT_CHANGED') -- needed to let the ExtraActionButton show and Totems to swap
-    _G.ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN') -- needed for cooldowns of them both
-
-    hooksecurefunc(_G.ActionBarButtonEventsFrame, 'RegisterFrame', buttonEventsRegisterFrame)
-    buttonEventsRegisterFrame(_G.ActionBarButtonEventsFrame)
+    ActionBarButtonEventsFrame:UnregisterAllEvents()
+    ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_SLOT_CHANGED') -- needed to let the ExtraActionButton show and Totems to swap
+    ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN') -- needed for cooldowns of them both
+    hooksecurefunc(ActionBarButtonEventsFrame, 'RegisterFrame', buttonEventsRegisterFrame)
+    buttonEventsRegisterFrame(ActionBarButtonEventsFrame)
 
     -- fix keybind error, this actually just prevents reopen of the GameMenu
-    _G.SettingsPanel.TransitionBackOpeningPanel = _G.HideUIPanel
+    SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
 end
 
 function ACTIONBAR:RemoveBlizzStuff()
-    -- _G.MainMenuBar:SetMovable(true)
-    -- _G.MainMenuBar:SetUserPlaced(true)
-    -- _G.MainMenuBar.ignoreFramePositionManager = true
-    -- _G.MainMenuBar:SetAttribute('ignoreFramePositionManager', true)
-
     for _, frame in next, framesToHide do
         frame:SetParent(F.HiddenFrame)
     end
@@ -151,12 +95,12 @@ function ACTIONBAR:RemoveBlizzStuff()
     disableDefaultBarEvents()
 
     -- Fix maw block anchor
-    _G.MainMenuBarVehicleLeaveButton:RegisterEvent('PLAYER_ENTERING_WORLD')
+    MainMenuBarVehicleLeaveButton:RegisterEvent('PLAYER_ENTERING_WORLD')
 
     -- Update token panel
     --F:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility) -- needs review, taint the money transfer
 
     -- Hide blizzard expbar
-    _G.StatusTrackingBarManager:UnregisterAllEvents()
-    _G.StatusTrackingBarManager:Hide()
+    StatusTrackingBarManager:UnregisterAllEvents()
+    StatusTrackingBarManager:Hide()
 end

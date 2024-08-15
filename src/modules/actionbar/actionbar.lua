@@ -34,7 +34,7 @@ function ACTIONBAR:OnLogin()
     F:RegisterEvent('PET_BATTLE_OPENING_DONE', ACTIONBAR.ClearBindings)
 
     -- support AdiButtonAuras
-    if _G.AdiButtonAuras then
-        _G.AdiButtonAuras:RegisterLAB('LibActionButton-1.0')
+    if _G['AdiButtonAuras'] then
+        _G['AdiButtonAuras']:RegisterLAB('LibActionButton-1.0')
     end
 end
