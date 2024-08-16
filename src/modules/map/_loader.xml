@@ -6,5 +6,5 @@
     <Script file="menu.lua"/>
     <Script file="reveal.lua"/>
     <Script file="minimap.lua"/>
-    <Script file="progressbar.lua"/>
+    <Script file="expbar.lua"/>
 </Ui>
