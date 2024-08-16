@@ -1,14 +1,14 @@
 local F, C = unpack(select(2, ...))
-local CT = F:RegisterModule('CursorTrail')
+local MISC = F:GetModule('Misc')
 
 local pollingRate, numLines = 0.05, 15
 local lines = {}
 for i = 1, numLines do
     local line = UIParent:CreateLine()
-    line:SetThickness(_G.Lerp(5, 1, (i - 1) / numLines))
+    line:SetThickness(Lerp(5, 1, (i - 1) / numLines))
     line:SetColorTexture(1, 1, 1)
 
-    local startA, endA = _G.Lerp(1, 0, (i - 1) / numLines), _G.Lerp(1, 0, i / numLines)
+    local startA, endA = Lerp(1, 0, (i - 1) / numLines), Lerp(1, 0, i / numLines)
     line:SetGradient('HORIZONTAL', CreateColor(1, 1, 1, startA), CreateColor(1, 1, 1, endA))
 
     lines[i] = { line = line, x = 0, y = 0 }
@@ -24,8 +24,8 @@ local function GetLength(startX, startY, endX, endY)
     return sqrt((dx * dx) + (dy * dy))
 end
 
-local function UpdateTrail()
-    local startX, startY = _G.GetScaledCursorPosition()
+local function updateTrail()
+    local startX, startY = GetScaledCursorPosition()
 
     for i = 1, numLines do
         local info = lines[i]
@@ -44,8 +44,8 @@ local function UpdateTrail()
     end
 end
 
-local function AddTrail()
-    C_Timer.NewTicker(pollingRate, UpdateTrail)
+local function addTrail()
+    C_Timer.NewTicker(pollingRate, updateTrail)
 end
 
 local x = 0
@@ -72,7 +72,7 @@ local function UpdateGlow(self, elapsed)
     end
 end
 
-local function AddGlow()
+local function addGlow()
     local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetFrameStrata('TOOLTIP')
 
@@ -85,12 +85,11 @@ local function AddGlow()
     frame:SetScript('OnUpdate', UpdateGlow)
 end
 
-function CT:OnLogin()
+function MISC:CursorTrail()
     if not C.DB.General.CursorTrail then
         return
     end
-    if C.IS_WW then return end --#FIXME
 
-    AddTrail()
-    AddGlow()
+    addTrail()
+    addGlow()
 end

@@ -460,4 +460,5 @@ function M:OnLogin()
     M:WeeklyLottery()
     M:UpdateActionCamera()
     M:BlockStrangerInvite()
+    M:CursorTrail()
 end
