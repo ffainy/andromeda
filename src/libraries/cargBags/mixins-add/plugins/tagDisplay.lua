@@ -124,8 +124,8 @@ tagPool["space"] = function(self)
 end
 
 tagPool["item"] = function(self, item)
-	local bags = GetItemCount(item, nil)
-	local total = GetItemCount(item, true)
+	local bags = C_Item.GetItemCount(item, nil)
+	local total = C_Item.GetItemCount(item, true)
 	local bank = total-bags
 
 	if(total > 0) then
@@ -134,10 +134,9 @@ tagPool["item"] = function(self, item)
 end
 
 tagPool["currency"] = function(self, id)
-	local _, count, icon = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
-
-	if(count) then
-		return count .. createIcon(icon, self.iconValues)
+	local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(id)
+	if currencyInfo then
+		return currencyInfo.quantity..createIcon(currencyInfo.iconFileID, self.iconValues)
 	end
 end
 tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
