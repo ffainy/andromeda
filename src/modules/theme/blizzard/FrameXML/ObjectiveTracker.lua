@@ -9,14 +9,12 @@ local function reskinQuestIcon(button)
     end
 
     if not button.styled then
-        button:SetSize(24, 24)
         button:SetNormalTexture(0)
         button:SetPushedTexture(0)
         button:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
         local icon = button.icon or button.Icon
         if icon then
             button.bg = F.ReskinIcon(icon, true)
-            icon:SetInside()
         end
 
         button.styled = true
@@ -29,16 +27,6 @@ end
 
 local function reskinQuestIcons(_, block)
     reskinQuestIcon(block.ItemButton)
-    reskinQuestIcon(block.itemButton)
-    reskinQuestIcon(block.groupFinderButton)
-
-    local check = block.currentLine and block.currentLine.Check
-    if check and not check.styled then
-        check:SetAtlas('checkmark-minimal')
-        check:SetDesaturated(true)
-        check:SetVertexColor(0, 1, 0)
-        check.styled = true
-    end
 end
 
 local function reskinHeader(header)
@@ -170,7 +158,7 @@ end
 
 tinsert(C.BlizzThemes, function()
     -- Reskin Headers
-    local mainHeader = _G.ObjectiveTrackerFrame.Header
+    local mainHeader = ObjectiveTrackerFrame.Header
     F.StripTextures(mainHeader) -- main header looks simple this way
 
     -- Minimize Button
@@ -179,16 +167,16 @@ tinsert(C.BlizzThemes, function()
     mainMinimize.bg:SetBackdropBorderColor(1, 0.8, 0, 0.5)
 
     local trackers = {
-        _G.ScenarioObjectiveTracker,
-        _G.UIWidgetObjectiveTracker,
-        _G.CampaignQuestObjectiveTracker,
-        _G.QuestObjectiveTracker,
-        _G.AdventureObjectiveTracker,
-        _G.AchievementObjectiveTracker,
-        _G.MonthlyActivitiesObjectiveTracker,
-        _G.ProfessionsRecipeTracker,
-        _G.BonusObjectiveTracker,
-        _G.WorldQuestObjectiveTracker,
+        ScenarioObjectiveTracker,
+        UIWidgetObjectiveTracker,
+        CampaignQuestObjectiveTracker,
+        QuestObjectiveTracker,
+        AdventureObjectiveTracker,
+        AchievementObjectiveTracker,
+        MonthlyActivitiesObjectiveTracker,
+        ProfessionsRecipeTracker,
+        BonusObjectiveTracker,
+        WorldQuestObjectiveTracker,
     }
     for _, tracker in pairs(trackers) do
         reskinHeader(tracker.Header)
@@ -198,14 +186,14 @@ tinsert(C.BlizzThemes, function()
     end
 
     -- Handle blocks, untest
-    hooksecurefunc(_G.ScenarioObjectiveTracker.StageBlock, 'UpdateStageBlock', function(block)
+    hooksecurefunc(ScenarioObjectiveTracker.StageBlock, 'UpdateStageBlock', function(block)
         block.NormalBG:SetTexture('')
         if not block.bg then
             block.bg = F.SetBD(block.GlowTexture, nil, 4, -2, -4, 2)
         end
     end)
 
-    hooksecurefunc(_G.ScenarioObjectiveTracker.StageBlock, 'UpdateWidgetRegistration', function(self)
+    hooksecurefunc(ScenarioObjectiveTracker.StageBlock, 'UpdateWidgetRegistration', function(self)
         local widgetContainer = self.WidgetContainer
         if widgetContainer.widgetFrames then
             for _, widgetFrame in pairs(widgetContainer.widgetFrames) do
@@ -229,7 +217,7 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    hooksecurefunc(_G.ScenarioObjectiveTracker.ChallengeModeBlock, 'SetUpAffixes', function(self)
+    hooksecurefunc(ScenarioObjectiveTracker.ChallengeModeBlock, 'SetUpAffixes', function(self)
         for frame in self.affixPool:EnumerateActive() do
             frame.Border:SetTexture(nil)
             frame.Portrait:SetTexture(nil)
@@ -238,7 +226,7 @@ tinsert(C.BlizzThemes, function()
             end
 
             if frame.info then
-                frame.Portrait:SetTexture(_G.CHALLENGE_MODE_EXTRA_AFFIX_INFO[frame.info.key].texture)
+                frame.Portrait:SetTexture(CHALLENGE_MODE_EXTRA_AFFIX_INFO[frame.info.key].texture)
             elseif frame.affixID then
                 local _, _, filedataid = C_ChallengeMode.GetAffixInfo(frame.affixID)
                 frame.Portrait:SetTexture(filedataid)
@@ -246,7 +234,7 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    hooksecurefunc(_G.ScenarioObjectiveTracker.ChallengeModeBlock, 'Activate', function(block)
+    hooksecurefunc(ScenarioObjectiveTracker.ChallengeModeBlock, 'Activate', function(block)
         if not block.bg then
             block.TimerBG:Hide()
             block.TimerBGBack:Hide()
@@ -263,7 +251,7 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    hooksecurefunc(_G.ScenarioObjectiveTracker, 'UpdateSpellCooldowns', function(self)
+    hooksecurefunc(ScenarioObjectiveTracker, 'UpdateSpellCooldowns', function(self)
         for spellFrame in self.spellFramePool:EnumerateActive() do
             local spellButton = spellFrame.SpellButton
             if spellButton and not spellButton.styled then
@@ -280,5 +268,5 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- Maw buffs container
-    reskinMawBuffsContainer(_G.ScenarioObjectiveTracker.MawBuffsBlock.Container)
+    reskinMawBuffsContainer(ScenarioObjectiveTracker.MawBuffsBlock.Container)
 end)

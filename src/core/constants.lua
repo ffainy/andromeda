@@ -1,7 +1,6 @@
 local F, C, L = unpack(select(2, ...))
 
 do
-    C.IS_NEW_PATCH = select(4, GetBuildInfo()) >= 110002 -- 11.0.2
     C.IS_WW = select(4, GetBuildInfo()) >= 110000 -- 11.0.0
     C.MY_REALM = GetRealmName()
     C.MY_CLASS = select(2, UnitClass('player'))

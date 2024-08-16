@@ -427,11 +427,11 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     local r, g, b = C.r, C.g, C.b
 
     -- Tooltips
-    F.ReskinGarrisonTooltip(_G.GarrisonFollowerAbilityWithoutCountersTooltip)
-    F.ReskinGarrisonTooltip(_G.GarrisonFollowerMissionAbilityWithoutCountersTooltip)
+    F.ReskinGarrisonTooltip(GarrisonFollowerAbilityWithoutCountersTooltip)
+    F.ReskinGarrisonTooltip(GarrisonFollowerMissionAbilityWithoutCountersTooltip)
 
     -- Building frame
-    local GarrisonBuildingFrame = _G.GarrisonBuildingFrame
+    local GarrisonBuildingFrame = GarrisonBuildingFrame
     F.StripTextures(GarrisonBuildingFrame)
     F.SetBD(GarrisonBuildingFrame)
     F.ReskinClose(GarrisonBuildingFrame.CloseButton)
@@ -447,7 +447,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     buildingList:DisableDrawLayer('BORDER')
     reskinGarrMaterial(buildingList)
 
-    for i = 1, _G.GARRISON_NUM_BUILDING_SIZES do
+    for i = 1, GARRISON_NUM_BUILDING_SIZES do
         local tab = buildingList['Tab' .. i]
         tab:GetNormalTexture():SetAlpha(0)
 
@@ -465,7 +465,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     hooksecurefunc('GarrisonBuildingList_SelectTab', function(tab)
         local list = GarrisonBuildingFrame.BuildingList
 
-        for i = 1, _G.GARRISON_NUM_BUILDING_SIZES do
+        for i = 1, GARRISON_NUM_BUILDING_SIZES do
             local otherTab = list['Tab' .. i]
             if i ~= tab:GetID() then
                 otherTab.bg:SetBackdropColor(0, 0, 0, 0.25)
@@ -542,10 +542,10 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinButton(confirmation.SwitchButton)
 
     -- Capacitive display frame
-    local GarrisonCapacitiveDisplayFrame = _G.GarrisonCapacitiveDisplayFrame
-    _G.GarrisonCapacitiveDisplayFrameLeft:Hide()
-    _G.GarrisonCapacitiveDisplayFrameMiddle:Hide()
-    _G.GarrisonCapacitiveDisplayFrameRight:Hide()
+    local GarrisonCapacitiveDisplayFrame = GarrisonCapacitiveDisplayFrame
+    GarrisonCapacitiveDisplayFrameLeft:Hide()
+    GarrisonCapacitiveDisplayFrameMiddle:Hide()
+    GarrisonCapacitiveDisplayFrameRight:Hide()
     F.CreateBDFrame(GarrisonCapacitiveDisplayFrame.Count, 0.25)
     GarrisonCapacitiveDisplayFrame.Count:SetWidth(38)
     GarrisonCapacitiveDisplayFrame.Count:SetTextInsets(3, 0, 0, 0)
@@ -581,16 +581,16 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end)
 
     -- Landing page
-    local GarrisonLandingPage = _G.GarrisonLandingPage
+    local GarrisonLandingPage = GarrisonLandingPage
     F.StripTextures(GarrisonLandingPage)
     F.SetBD(GarrisonLandingPage)
     F.ReskinClose(GarrisonLandingPage.CloseButton)
-    F.ReskinTab(_G.GarrisonLandingPageTab1)
-    F.ReskinTab(_G.GarrisonLandingPageTab2)
-    F.ReskinTab(_G.GarrisonLandingPageTab3)
+    F.ReskinTab(GarrisonLandingPageTab1)
+    F.ReskinTab(GarrisonLandingPageTab2)
+    F.ReskinTab(GarrisonLandingPageTab3)
 
-    _G.GarrisonLandingPageTab1:ClearAllPoints()
-    _G.GarrisonLandingPageTab1:SetPoint('TOPLEFT', GarrisonLandingPage, 'BOTTOMLEFT', 70, 2)
+    GarrisonLandingPageTab1:ClearAllPoints()
+    GarrisonLandingPageTab1:SetPoint('TOPLEFT', GarrisonLandingPage, 'BOTTOMLEFT', 70, 2)
 
     -- Report
     local report = GarrisonLandingPage.Report
@@ -656,8 +656,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         F.ReskinEditbox(followerList.SearchBox)
         F.ReskinTrimScroll(followerList.ScrollBar)
 
-        reskinFollowerList(_G.GarrisonLandingPageFollowerList)
-        hooksecurefunc(_G.GarrisonLandingPageFollowerList, 'ShowFollower', updateFollowerAbilities)
+        reskinFollowerList(GarrisonLandingPageFollowerList)
+        hooksecurefunc(GarrisonLandingPageFollowerList, 'ShowFollower', updateFollowerAbilities)
     end
 
     -- Ship follower list
@@ -679,7 +679,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end
 
     -- Mission UI
-    local GarrisonMissionFrame = _G.GarrisonMissionFrame
+    local GarrisonMissionFrame = GarrisonMissionFrame
     reskinMissionFrame(GarrisonMissionFrame)
 
     hooksecurefunc('GarrisonMissonListTab_SetSelected', function(tab, isSelected)
@@ -738,7 +738,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'UpdateMissionParty', function(_, followers)
+    hooksecurefunc(GarrisonMission, 'UpdateMissionParty', function(_, followers)
         for followerIndex = 1, #followers do
             local followerFrame = followers[followerIndex]
             if followerFrame.info then
@@ -753,13 +753,13 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'RemoveFollowerFromMission', function(_, frame)
+    hooksecurefunc(GarrisonMission, 'RemoveFollowerFromMission', function(_, frame)
         if frame.PortraitFrame and frame.PortraitFrame.squareBG then
             frame.PortraitFrame.squareBG:Hide()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'SetEnemies', function(_, missionPage, enemies)
+    hooksecurefunc(GarrisonMission, 'SetEnemies', function(_, missionPage, enemies)
         for i = 1, #enemies do
             local frame = missionPage.Enemies[i]
             if frame:IsShown() and not frame.styled then
@@ -772,7 +772,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'UpdateMissionData', function(_, missionPage)
+    hooksecurefunc(GarrisonMission, 'UpdateMissionData', function(_, missionPage)
         local buffsFrame = missionPage.BuffsFrame
         if buffsFrame and buffsFrame:IsShown() then
             for i = 1, #buffsFrame.Buffs do
@@ -785,7 +785,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'MissionCompleteInitialize', function(self, missionList, index)
+    hooksecurefunc(GarrisonMission, 'MissionCompleteInitialize', function(self, missionList, index)
         local mission = missionList[index]
         if not mission then
             return
@@ -816,7 +816,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
     end)
 
-    hooksecurefunc(_G.GarrisonMission, 'ShowMission', function(self)
+    hooksecurefunc(GarrisonMission, 'ShowMission', function(self)
         local envIcon = self:GetMissionPage().Stage.MissionEnvIcon
         if envIcon.bg then
             envIcon.bg:SetShown(envIcon.Texture:GetTexture())
@@ -824,7 +824,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end)
 
     -- Recruiter frame
-    local GarrisonRecruiterFrame = _G.GarrisonRecruiterFrame
+    local GarrisonRecruiterFrame = GarrisonRecruiterFrame
     F.ReskinPortraitFrame(GarrisonRecruiterFrame)
 
     -- Pick
@@ -839,7 +839,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinButton(UnavailableFrame:GetChildren())
 
     -- Recruiter select frame
-    local GarrisonRecruitSelectFrame = _G.GarrisonRecruitSelectFrame
+    local GarrisonRecruitSelectFrame = GarrisonRecruitSelectFrame
     F.StripTextures(GarrisonRecruitSelectFrame)
     GarrisonRecruitSelectFrame.TitleText:Show()
     GarrisonRecruitSelectFrame.GarrCorners:Hide()
@@ -898,7 +898,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end)
 
     -- Monuments
-    local GarrisonMonumentFrame = _G.GarrisonMonumentFrame
+    local GarrisonMonumentFrame = GarrisonMonumentFrame
     GarrisonMonumentFrame.Background:Hide()
     F.SetBD(GarrisonMonumentFrame, nil, 6, -10, -6, 4)
 
@@ -911,15 +911,15 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     end
 
     -- Shipyard
-    local GarrisonShipyardFrame = _G.GarrisonShipyardFrame
+    local GarrisonShipyardFrame = GarrisonShipyardFrame
     F.StripTextures(GarrisonShipyardFrame)
     GarrisonShipyardFrame.BorderFrame.GarrCorners:Hide()
     GarrisonShipyardFrame.BackgroundTile:Hide()
     F.SetBD(GarrisonShipyardFrame)
-    F.ReskinEditbox(_G.GarrisonShipyardFrameFollowers.SearchBox)
+    F.ReskinEditbox(GarrisonShipyardFrameFollowers.SearchBox)
     F.ReskinTrimScroll(GarrisonShipyardFrame.FollowerList.ScrollBar)
-    F.StripTextures(_G.GarrisonShipyardFrameFollowers)
-    reskinGarrMaterial(_G.GarrisonShipyardFrameFollowers)
+    F.StripTextures(GarrisonShipyardFrameFollowers)
+    reskinGarrMaterial(GarrisonShipyardFrameFollowers)
 
     local shipyardTab = GarrisonShipyardFrame.FollowerTab
     shipyardTab:DisableDrawLayer('BORDER')
@@ -927,8 +927,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     reskinFollowerTab(shipyardTab)
 
     F.ReskinClose(GarrisonShipyardFrame.BorderFrame.CloseButton2)
-    F.ReskinTab(_G.GarrisonShipyardFrameTab1)
-    F.ReskinTab(_G.GarrisonShipyardFrameTab2)
+    F.ReskinTab(GarrisonShipyardFrameTab1)
+    F.ReskinTab(GarrisonShipyardFrameTab2)
 
     local shipyardMission = GarrisonShipyardFrame.MissionTab.MissionPage
     F.StripTextures(shipyardMission)
@@ -948,11 +948,11 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinButton(GarrisonShipyardFrame.MissionComplete.NextMissionButton)
 
     -- Orderhall UI
-    local OrderHallMissionFrame = _G.OrderHallMissionFrame
+    local OrderHallMissionFrame = OrderHallMissionFrame
     reskinMissionFrame(OrderHallMissionFrame)
 
     -- allies
-    local combatAlly = _G.OrderHallMissionFrameMissions.CombatAllyUI
+    local combatAlly = OrderHallMissionFrameMissions.CombatAllyUI
     F.ReskinButton(combatAlly.InProgress.Unassign)
     combatAlly:GetRegions():Hide()
     F.CreateBDFrame(combatAlly, 0.25)
@@ -969,7 +969,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         combatAlly.Available.AddFollowerButton.PortraitHighlight:SetAlpha(0)
     end)
 
-    hooksecurefunc(_G.OrderHallCombatAllyMixin, 'UnassignAlly', function(self)
+    hooksecurefunc(OrderHallCombatAllyMixin, 'UnassignAlly', function(self)
         if self.InProgress.PortraitFrame.squareBG then
             self.InProgress.PortraitFrame.squareBG:Hide()
         end
@@ -987,34 +987,34 @@ C.Themes['Blizzard_GarrisonUI'] = function()
     F.ReskinGarrisonPortrait(ZoneSupportMissionPage.Follower1.PortraitFrame)
 
     -- BFA Mission UI
-    local BFAMissionFrame = _G.BFAMissionFrame
+    local BFAMissionFrame = BFAMissionFrame
     reskinMissionFrame(BFAMissionFrame)
 
     -- Covenant Mission UI
-    local CovenantMissionFrame = _G.CovenantMissionFrame
+    local CovenantMissionFrame = CovenantMissionFrame
     reskinMissionFrame(CovenantMissionFrame)
     CovenantMissionFrame.RaisedBorder:SetAlpha(0)
-    F.StripTextures(_G.CovenantMissionFrameMissions, 0)
-    _G.CovenantMissionFrameMissions.RaisedFrameEdges:SetAlpha(0)
+    F.StripTextures(CovenantMissionFrameMissions, 0)
+    CovenantMissionFrameMissions.RaisedFrameEdges:SetAlpha(0)
 
     hooksecurefunc(CovenantMissionFrame, 'SetupTabs', function(self)
         self.MapTab:SetShown(not self.Tab2:IsShown())
     end)
 
-    _G.CombatLog:DisableDrawLayer('BACKGROUND')
-    _G.CombatLog.ElevatedFrame:SetAlpha(0)
-    F.StripTextures(_G.CombatLog.CombatLogMessageFrame)
-    F.CreateBDFrame(_G.CombatLog.CombatLogMessageFrame, 0.25)
+    CombatLog:DisableDrawLayer('BACKGROUND')
+    CombatLog.ElevatedFrame:SetAlpha(0)
+    F.StripTextures(CombatLog.CombatLogMessageFrame)
+    F.CreateBDFrame(CombatLog.CombatLogMessageFrame, 0.25)
 
-    F.ReskinButton(_G.HealFollowerButtonTemplate)
+    F.ReskinButton(HealFollowerButtonTemplate)
     local bg = F.CreateBDFrame(CovenantMissionFrame.FollowerTab, 0.25)
     bg:SetPoint('TOPLEFT', 3, 2)
     bg:SetPoint('BOTTOMRIGHT', -3, -10)
     F.StripTextures(CovenantMissionFrame.FollowerTab, 0)
     CovenantMissionFrame.FollowerTab.RaisedFrameEdges:SetAlpha(0)
     CovenantMissionFrame.FollowerTab.HealFollowerFrame.ButtonFrame:SetAlpha(0)
-    _G.CovenantMissionFrameFollowers.ElevatedFrame:SetAlpha(0)
-    F.ReskinButton(_G.CovenantMissionFrameFollowers.HealAllButton)
+    CovenantMissionFrameFollowers.ElevatedFrame:SetAlpha(0)
+    F.ReskinButton(CovenantMissionFrameFollowers.HealAllButton)
     F.ReskinIcon(CovenantMissionFrame.FollowerTab.HealFollowerFrame.CostFrame.CostIcon)
 
     CovenantMissionFrame.MissionTab.MissionPage.Board:HookScript('OnShow', reskinMissionBoards)
@@ -1054,7 +1054,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
 
         F:Delay(0.1, function()
-            local WarPlanFrame = _G.WarPlanFrame
+            local WarPlanFrame = _G['WarPlanFrame']
             if not WarPlanFrame then
                 return
             end
@@ -1085,7 +1085,8 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         local ANIMA_TEXTURE = 3528288
         local ANIMA_SPELLID = { [347555] = 3, [345706] = 5, [336327] = 35, [336456] = 250 }
         local function GetAnimaMultiplier(itemID)
-            local _, spellID = GetItemSpell(itemID)
+            if not itemID then return end
+            local _, spellID = C_Item.GetItemSpell(itemID)
             return ANIMA_SPELLID[spellID]
         end
         local function SetAnimaActualCount(self, text)
@@ -1183,7 +1184,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
         end
 
         local VPFollowers, VPTroops, VPBooks, numButtons = {}, {}, {}, 0
-        function _G.VPEX_OnUIObjectCreated(otype, widget, peek)
+        function VPEX_OnUIObjectCreated(otype, widget, peek)
             if widget:IsObjectType('Frame') then
                 if otype == 'MissionButton' then
                     F.ReskinButton(peek('ViewButton'))
@@ -1348,7 +1349,7 @@ end
 
 C.Themes['Blizzard_OrderHallUI'] = function()
     -- Talent Frame
-    local OrderHallTalentFrame = _G.OrderHallTalentFrame
+    local OrderHallTalentFrame = OrderHallTalentFrame
 
     F.ReskinPortraitFrame(OrderHallTalentFrame)
     F.ReskinButton(OrderHallTalentFrame.BackButton)

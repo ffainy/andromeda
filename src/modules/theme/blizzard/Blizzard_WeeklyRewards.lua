@@ -33,11 +33,6 @@ end
 local function reskinActivityFrame(frame, isObject)
     if frame.Border then
         if isObject then
-            if not C.IS_NEW_PATCH then
-                frame.Border:SetAlpha(0)
-                frame.SelectedTexture:SetAlpha(0)
-                frame.LockIcon:SetVertexColor(C.r, C.g, C.b)
-            end
             hooksecurefunc(frame, 'SetSelectionState', updateSelection)
             hooksecurefunc(frame.ItemFrame, 'SetDisplayedItem', reskinRewardIcon)
 
@@ -50,10 +45,6 @@ local function reskinActivityFrame(frame, isObject)
             frame.Border:SetSize(25, 137)
             frame.Border:SetPoint('LEFT', frame, 'RIGHT', 3, 0)
         end
-    end
-
-    if not C.IS_NEW_PATCH and frame.Background then
-        frame.bg = F.CreateBDFrame(frame.Background, 1)
     end
 end
 
@@ -80,25 +71,16 @@ local function reskinConfirmIcon(frame)
 end
 
 C.Themes['Blizzard_WeeklyRewards'] = function()
-    local WeeklyRewardsFrame = _G.WeeklyRewardsFrame
+    local WeeklyRewardsFrame = WeeklyRewardsFrame
 
     local bg = F.SetBD(WeeklyRewardsFrame)
     F.ReskinClose(WeeklyRewardsFrame.CloseButton)
     F.StripTextures(WeeklyRewardsFrame.SelectRewardButton)
     F.ReskinButton(WeeklyRewardsFrame.SelectRewardButton)
-    if C.IS_NEW_PATCH then
-        WeeklyRewardsFrame.BorderShadow:SetInside(bg)
-        WeeklyRewardsFrame.BorderContainer:SetAlpha(0)
-    else
-        F.StripTextures(WeeklyRewardsFrame)
-        WeeklyRewardsFrame.NineSlice:SetAlpha(0)
-        WeeklyRewardsFrame.BackgroundTile:SetAlpha(0)
 
-        local headerFrame = WeeklyRewardsFrame.HeaderFrame
-        F.StripTextures(headerFrame)
-        headerFrame:SetPoint('TOP', 1, -42)
-        headerFrame.Text:SetFontObject(_G.SystemFont_Huge1)
-    end
+    WeeklyRewardsFrame.BorderShadow:SetInside(bg)
+    WeeklyRewardsFrame.BorderContainer:SetAlpha(0)
+
 
     reskinActivityFrame(WeeklyRewardsFrame.RaidFrame)
     reskinActivityFrame(WeeklyRewardsFrame.MythicFrame)
@@ -114,7 +96,7 @@ C.Themes['Blizzard_WeeklyRewards'] = function()
         if confirmFrame then
             if not confirmFrame.styled then
                 reskinConfirmIcon(confirmFrame.ItemFrame)
-                _G.WeeklyRewardsFrameNameFrame:Hide()
+                WeeklyRewardsFrameNameFrame:Hide()
                 confirmFrame.styled = true
             end
 
@@ -130,4 +112,10 @@ C.Themes['Blizzard_WeeklyRewards'] = function()
     local rewardText = WeeklyRewardsFrame.ConcessionFrame.RewardsFrame.Text
     replaceIconString(rewardText)
     hooksecurefunc(rewardText, 'SetText', replaceIconString)
+
+    local dialog = WeeklyRewardExpirationWarningDialog
+    if dialog then
+        F.StripTextures(dialog)
+        F.SetBD(dialog)
+    end
 end

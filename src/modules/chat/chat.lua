@@ -612,7 +612,7 @@ function CHAT:SaveSlashCommandTypo()
     end
 end
 
--- Role icon
+-- Show role icon in chat
 local msgEvents = {
     CHAT_MSG_SAY = 1,
     CHAT_MSG_YELL = 1,
@@ -627,13 +627,13 @@ local msgEvents = {
     CHAT_MSG_RAID_WARNING = 1,
 }
 
-CHAT.roleIcons = {
-    TANK = F:TextureString(C.Assets.Textures.RoleTank, ':18:18'),
-    HEALER = F:TextureString(C.Assets.Textures.RoleHealer, ':18:18'),
-    DAMAGER = F:TextureString(C.Assets.Textures.RoleDamager, ':18:18'),
+local roleIcons = {
+    TANK = F:TextureString(C.Assets.Textures.RoleTank, ':14:14'),
+    HEALER = F:TextureString(C.Assets.Textures.RoleHealer, ':14:14'),
+    DAMAGER = F:TextureString(C.Assets.Textures.RoleDamager, ':14:14'),
 }
 
-local GetColoredName_orig = _G.GetColoredName
+local GetColoredName_orig = GetColoredName
 local function getColoredName(event, arg1, arg2, ...)
     local ret = GetColoredName_orig(event, arg1, arg2, ...)
 
@@ -645,7 +645,7 @@ local function getColoredName(event, arg1, arg2, ...)
         end
 
         if role and role ~= 'NONE' then
-            ret = CHAT.roleIcons[role] .. ' ' .. ret
+            ret = roleIcons[role] .. '' .. ret
         end
     end
 
@@ -657,7 +657,7 @@ function CHAT:AddRoleIcon()
         return
     end
 
-    _G.GetColoredName = getColoredName
+    GetColoredName = getColoredName
 end
 
 -- Disable pet battle tab

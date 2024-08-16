@@ -24,7 +24,7 @@ function TOOLTIP:HyperLink_SetPet(link)
     GameTooltip:SetOwner(self, 'ANCHOR_TOPRIGHT', -3, 5)
     GameTooltip:Show()
     local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(':', link)
-    _G.BattlePetToolTip_Show(
+    BattlePetToolTip_Show(
         tonumber(speciesID),
         tonumber(level),
         tonumber(breedQuality),
@@ -48,10 +48,10 @@ function TOOLTIP:HyperLink_SetJournal(link)
     local name, description, icon, idString
     if idType == '0' then
         name, description = EJ_GetInstanceInfo(id)
-        idString = _G.INSTANCE .. 'ID:'
+        idString = INSTANCE .. 'ID:'
     elseif idType == '1' then
         name, description = EJ_GetEncounterInfo(id)
-        idString = _G.BOSS .. 'ID:'
+        idString = BOSS .. 'ID:'
     elseif idType == '2' then
         local info = TOOLTIP:HyperLink_GetSectionInfo(id)
         name, description, icon = info.title, info.description, info.abilityIcon
@@ -95,7 +95,7 @@ function TOOLTIP:HyperLink_OnEnter(link, ...)
 end
 
 function TOOLTIP:HyperLink_OnLeave(_, ...)
-    _G.BattlePetTooltip:Hide()
+    BattlePetTooltip:Hide()
     GameTooltip:Hide()
     GameTooltip.__isHoverTip = nil
 
@@ -105,8 +105,8 @@ function TOOLTIP:HyperLink_OnLeave(_, ...)
 end
 
 local function hookMessageFrame()
-    _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkEnter', TOOLTIP.HyperLink_OnEnter)
-    _G.CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkLeave', TOOLTIP.HyperLink_OnLeave)
+    CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkEnter', TOOLTIP.HyperLink_OnEnter)
+    CommunitiesFrame.Chat.MessageFrame:SetScript('OnHyperlinkLeave', TOOLTIP.HyperLink_OnLeave)
 end
 
 local function hookCommunitiesFrame(event, addon)
@@ -118,7 +118,7 @@ local function hookCommunitiesFrame(event, addon)
 end
 
 function TOOLTIP:HyperLink()
-    for i = 1, _G.NUM_CHAT_WINDOWS do
+    for i = 1, NUM_CHAT_WINDOWS do
         local frame = _G['ChatFrame' .. i]
         orig1[frame] = frame:GetScript('OnHyperlinkEnter')
         frame:SetScript('OnHyperlinkEnter', TOOLTIP.HyperLink_OnEnter)

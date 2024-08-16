@@ -2,8 +2,8 @@ local F, C = unpack(select(2, ...))
 
 -- Fix Alertframe bg
 local function fixBg(frame)
-    local color = _G.ANDROMEDA_ADB.BackdropColor
-    local alpha = _G.ANDROMEDA_ADB.BackdropAlpha
+    local color = ANDROMEDA_ADB.BackdropColor
+    local alpha = ANDROMEDA_ADB.BackdropAlpha
     if frame:IsObjectType('AnimationGroup') then
         frame = frame:GetParent()
     end
@@ -16,8 +16,8 @@ local function fixBg(frame)
 end
 
 local function fixParentbg(anim)
-    local color = _G.ANDROMEDA_ADB.BackdropColor
-    local alpha = _G.ANDROMEDA_ADB.BackdropAlpha
+    local color = ANDROMEDA_ADB.BackdropColor
+    local alpha = ANDROMEDA_ADB.BackdropAlpha
     local frame = anim.__owner
     if frame.bg then
         frame.bg:SetBackdropColor(color.r, color.g, color.b, alpha)
@@ -53,11 +53,11 @@ tinsert(C.BlizzThemes, function()
     hooksecurefunc('AlertFrame_PauseOutAnimation', fixBg)
 
     local AlertTemplateFunc = {
-        [_G.AchievementAlertSystem] = function(frame)
+        [AchievementAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.Unlocked:SetTextColor(1, 0.8, 0)
-                frame.Unlocked:SetFontObject(_G.NumberFont_GameNormal)
+                frame.Unlocked:SetFontObject(NumberFont_GameNormal)
                 frame.GuildName:ClearAllPoints()
                 frame.GuildName:SetPoint('TOPLEFT', 50, -14)
                 frame.GuildName:SetPoint('TOPRIGHT', -50, -14)
@@ -79,14 +79,14 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.CriteriaAlertSystem] = function(frame)
+        [CriteriaAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', frame, 5, -7)
                 frame.bg:SetPoint('BOTTOMRIGHT', frame, 18, 10)
 
                 frame.Unlocked:SetTextColor(1, 0.8, 0)
-                frame.Unlocked:SetFontObject(_G.NumberFont_GameNormal)
+                frame.Unlocked:SetFontObject(NumberFont_GameNormal)
                 F.ReskinIcon(frame.Icon.Texture)
                 frame.Background:SetTexture('')
                 frame.Icon.Bling:SetTexture('')
@@ -96,7 +96,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.LootAlertSystem] = function(frame)
+        [LootAlertSystem] = function(frame)
             local lootItem = frame.lootItem
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
@@ -120,7 +120,7 @@ tinsert(C.BlizzThemes, function()
             lootItem.SpecIcon.bg:SetShown(lootItem.SpecIcon:IsShown() and lootItem.SpecIcon:GetTexture() ~= nil)
         end,
 
-        [_G.LootUpgradeAlertSystem] = function(frame)
+        [LootUpgradeAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 10, -14)
@@ -142,7 +142,7 @@ tinsert(C.BlizzThemes, function()
             frame.UpgradeQualityBorder:SetTexture('')
         end,
 
-        [_G.MoneyWonAlertSystem] = function(frame)
+        [MoneyWonAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetInside(frame, 7, 7)
@@ -153,7 +153,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.NewRecipeLearnedAlertSystem] = function(frame)
+        [NewRecipeLearnedAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 10, -5)
@@ -168,7 +168,7 @@ tinsert(C.BlizzThemes, function()
             frame.Icon:SetTexCoord(unpack(C.TEX_COORD))
         end,
 
-        [_G.WorldQuestCompleteAlertSystem] = function(frame)
+        [WorldQuestCompleteAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 4, -7)
@@ -177,11 +177,11 @@ tinsert(C.BlizzThemes, function()
                 F.ReskinIcon(frame.QuestTexture)
                 frame.shine:SetTexture('')
                 frame:DisableDrawLayer('BORDER')
-                frame.ToastText:SetFontObject(_G.NumberFont_GameNormal)
+                frame.ToastText:SetFontObject(NumberFont_GameNormal)
             end
         end,
 
-        [_G.GarrisonTalentAlertSystem] = function(frame)
+        [GarrisonTalentAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 10, -10)
@@ -194,7 +194,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.GarrisonFollowerAlertSystem] = function(frame)
+        [GarrisonFollowerAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 16, -3)
@@ -212,7 +212,7 @@ tinsert(C.BlizzThemes, function()
             frame.FollowerBG:SetTexture('')
         end,
 
-        [_G.GarrisonMissionAlertSystem] = function(frame)
+        [GarrisonMissionAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 8, -8)
@@ -250,7 +250,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.DigsiteCompleteAlertSystem] = function(frame)
+        [DigsiteCompleteAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetInside(frame, 8, 8)
@@ -261,7 +261,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.GuildChallengeAlertSystem] = function(frame)
+        [GuildChallengeAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 8, -13)
@@ -273,7 +273,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.DungeonCompletionAlertSystem] = function(frame)
+        [DungeonCompletionAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 3, -8)
@@ -287,7 +287,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.ScenarioAlertSystem] = function(frame)
+        [ScenarioAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetInside(frame, 5, 5)
@@ -300,7 +300,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.LegendaryItemAlertSystem] = function(frame)
+        [LegendaryItemAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 25, -22)
@@ -318,7 +318,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.NewPetAlertSystem] = function(frame)
+        [NewPetAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 12, -13)
@@ -331,7 +331,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.InvasionAlertSystem] = function(frame)
+        [InvasionAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetInside(frame, 5, 5)
@@ -342,7 +342,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.EntitlementDeliveredAlertSystem] = function(frame)
+        [EntitlementDeliveredAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetInside(frame, 12, 12)
@@ -353,7 +353,7 @@ tinsert(C.BlizzThemes, function()
             end
         end,
 
-        [_G.RafRewardDeliveredAlertSystem] = function(frame)
+        [RafRewardDeliveredAlertSystem] = function(frame)
             if not frame.bg then
                 frame.bg = F.SetBD(frame)
                 frame.bg:SetPoint('TOPLEFT', 24, -14)
@@ -365,21 +365,21 @@ tinsert(C.BlizzThemes, function()
         end,
     }
 
-    AlertTemplateFunc[_G.HonorAwardedAlertSystem] = AlertTemplateFunc[_G.MoneyWonAlertSystem]
-    AlertTemplateFunc[_G.MonthlyActivityAlertSystem] = AlertTemplateFunc[_G.CriteriaAlertSystem]
-    AlertTemplateFunc[_G.GarrisonBuildingAlertSystem] = AlertTemplateFunc[_G.GarrisonTalentAlertSystem]
-    AlertTemplateFunc[_G.SkillLineSpecsUnlockedAlertSystem] = AlertTemplateFunc[_G.NewRecipeLearnedAlertSystem]
+    AlertTemplateFunc[HonorAwardedAlertSystem] = AlertTemplateFunc[MoneyWonAlertSystem]
+    AlertTemplateFunc[MonthlyActivityAlertSystem] = AlertTemplateFunc[CriteriaAlertSystem]
+    AlertTemplateFunc[GarrisonBuildingAlertSystem] = AlertTemplateFunc[GarrisonTalentAlertSystem]
+    AlertTemplateFunc[SkillLineSpecsUnlockedAlertSystem] = AlertTemplateFunc[NewRecipeLearnedAlertSystem]
 
-    AlertTemplateFunc[_G.GarrisonShipMissionAlertSystem] = AlertTemplateFunc[_G.GarrisonMissionAlertSystem]
-    AlertTemplateFunc[_G.GarrisonShipFollowerAlertSystem] = AlertTemplateFunc[_G.GarrisonMissionAlertSystem]
-    AlertTemplateFunc[_G.GarrisonRandomMissionAlertSystem] = AlertTemplateFunc[_G.GarrisonMissionAlertSystem]
+    AlertTemplateFunc[GarrisonShipMissionAlertSystem] = AlertTemplateFunc[GarrisonMissionAlertSystem]
+    AlertTemplateFunc[GarrisonShipFollowerAlertSystem] = AlertTemplateFunc[GarrisonMissionAlertSystem]
+    AlertTemplateFunc[GarrisonRandomMissionAlertSystem] = AlertTemplateFunc[GarrisonMissionAlertSystem]
 
-    AlertTemplateFunc[_G.NewToyAlertSystem] = AlertTemplateFunc[_G.NewPetAlertSystem]
-    AlertTemplateFunc[_G.NewMountAlertSystem] = AlertTemplateFunc[_G.NewPetAlertSystem]
-    AlertTemplateFunc[_G.NewRuneforgePowerAlertSystem] = AlertTemplateFunc[_G.NewPetAlertSystem]
-    AlertTemplateFunc[_G.NewCosmeticAlertFrameSystem] = AlertTemplateFunc[_G.NewPetAlertSystem]
+    AlertTemplateFunc[NewToyAlertSystem] = AlertTemplateFunc[NewPetAlertSystem]
+    AlertTemplateFunc[NewMountAlertSystem] = AlertTemplateFunc[NewPetAlertSystem]
+    AlertTemplateFunc[NewRuneforgePowerAlertSystem] = AlertTemplateFunc[NewPetAlertSystem]
+    AlertTemplateFunc[NewCosmeticAlertFrameSystem] = AlertTemplateFunc[NewPetAlertSystem]
 
-    hooksecurefunc(_G.AlertFrame, 'AddAlertFrame', function(_, frame)
+    hooksecurefunc(AlertFrame, 'AddAlertFrame', function(_, frame)
         local func = AlertTemplateFunc[frame.queue]
         if func then
             func(frame)
@@ -440,13 +440,22 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- Event toast
-    hooksecurefunc(_G.EventToastManagerFrame, 'DisplayToast', function(self)
+    hooksecurefunc(EventToastManagerFrame, 'DisplayToast', function(self)
         local toast = self.currentDisplayingToast
-        local border = toast and toast.IconBorder
-        if border and not toast.bg then
-            toast.bg = F.ReskinIcon(toast.Icon)
-            border:SetTexture('')
-            F.ReskinIconBorder(border, true)
+        if not toast then return end
+
+        local icon = toast.Icon
+        local border = toast.IconBorder
+        if icon and not toast.bg then
+            toast.bg = F.ReskinIcon(icon)
+            if border then
+                border:SetTexture('')
+                F.ReskinIconBorder(border, true)
+            end
+        end
+
+        if toast.bg then
+            toast.bg:SetShown(icon and icon:IsShown())
         end
     end)
 end)

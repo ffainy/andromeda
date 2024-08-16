@@ -165,7 +165,7 @@ local function UpdateClassColor(self)
     g = ConvertColor(g)
     b = ConvertColor(b)
 
-    local frame = C.IS_NEW_PATCH and _G.ColorPickerFrame.Content.ColorPicker or _G.ColorPickerFrame
+    local frame = _G.ColorPickerFrame.Content.ColorPicker
 	frame:SetColorRGB(r, g, b)
 end
 

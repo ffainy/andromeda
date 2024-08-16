@@ -1,8 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local BLIZZARD = F:GetModule('Blizzard')
 
-local BOOKTYPE_PROFESSION = _G.BOOKTYPE_PROFESSION or 0
-
+local BOOKTYPE_PROFESSION = BOOKTYPE_PROFESSION or 0
 local RUNEFORGING_ID = 53428
 local PICK_LOCK = 1804
 local CHEF_HAT = 134020
@@ -39,7 +38,7 @@ function BLIZZARD:UpdateProfessions()
         if numSpells > 0 then
             for i = 1, numSpells do
                 local slotID = i + spelloffset
-                if not C_Spell.IsSpellPassive(slotID) then
+                if not C_SpellBook.IsSpellBookItemPassive(slotID, BOOKTYPE_PROFESSION) then
                     local spellID = C_SpellBook.GetSpellBookItemInfo(slotID, BOOKTYPE_PROFESSION).spellID
                     if i == 1 then
                         BLIZZARD:TradeTabs_Create(spellID)
@@ -74,7 +73,7 @@ function BLIZZARD:TradeTabs_Update()
 
         local start, duration
         if itemID then
-            start, duration = GetItemCooldown(itemID)
+            start, duration = C_Item.GetItemCooldown(itemID)
         else
             local cooldownInfo = C_Spell.GetSpellCooldown(spellID)
             start = cooldownInfo and cooldownInfo.startTime
@@ -115,7 +114,7 @@ function BLIZZARD:TradeTabs_Create(spellID, toyID, itemID)
         return
     end -- precaution
 
-    local tab = CreateFrame('CheckButton', nil, _G.ProfessionsFrame, 'SecureActionButtonTemplate')
+    local tab = CreateFrame('CheckButton', nil, ProfessionsFrame, 'SecureActionButtonTemplate')
     tab:SetSize(32, 32)
     tab.tooltip = name
     tab.spellID = spellID
@@ -151,13 +150,13 @@ function BLIZZARD:TradeTabs_FilterIcons()
     local buttonList = {
         [1] = {
             'Atlas:bags-greenarrow',
-            _G.TRADESKILL_FILTER_HAS_SKILL_UP,
+            TRADESKILL_FILTER_HAS_SKILL_UP,
             C_TradeSkillUI.GetOnlyShowSkillUpRecipes,
             C_TradeSkillUI.SetOnlyShowSkillUpRecipes,
         },
         [2] = {
             'Interface\\RAIDFRAME\\ReadyCheck-Ready',
-            _G.CRAFT_IS_MAKEABLE,
+            CRAFT_IS_MAKEABLE,
             C_TradeSkillUI.GetOnlyShowMakeableRecipes,
             C_TradeSkillUI.SetOnlyShowMakeableRecipes,
         },
@@ -176,11 +175,11 @@ function BLIZZARD:TradeTabs_FilterIcons()
 
     local buttons = {}
     for index, value in pairs(buttonList) do
-        local bu = CreateFrame('Button', nil, _G.ProfessionsFrame.CraftingPage.RecipeList, 'BackdropTemplate')
+        local bu = CreateFrame('Button', nil, ProfessionsFrame.CraftingPage.RecipeList, 'BackdropTemplate')
         bu:SetSize(22, 22)
         bu:SetPoint(
             'BOTTOMRIGHT',
-            _G.ProfessionsFrame.CraftingPage.RecipeList.FilterButton,
+            ProfessionsFrame.CraftingPage.RecipeList.FilterButton,
             'TOPRIGHT',
             -(index - 1) * 27,
             10
@@ -227,8 +226,8 @@ function BLIZZARD:TradeTabs()
         return
     end
 
-    if _G.ProfessionsFrame then
-        _G.ProfessionsFrame:HookScript('OnShow', BLIZZARD.TradeTabs_OnLoad)
+    if ProfessionsFrame then
+        ProfessionsFrame:HookScript('OnShow', BLIZZARD.TradeTabs_OnLoad)
     else
         F:RegisterEvent('ADDON_LOADED', function(_, addon)
             if addon == 'Blizzard_Professions' then

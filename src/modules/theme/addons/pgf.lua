@@ -10,17 +10,17 @@ function THEME:ReskinPGF()
         return
     end
 
-    local DungeonPanel = _G.PremadeGroupsFilterDungeonPanel
+    local DungeonPanel = _G['PremadeGroupsFilterDungeonPanel']
     if not DungeonPanel then
         return
     end
 
-    local ArenaPanel = _G.PremadeGroupsFilterArenaPanel
-    local RBGPanel = _G.PremadeGroupsFilterRBGPanel
-    local RaidPanel = _G.PremadeGroupsFilterRaidPanel
-    local MiniPanel = _G.PremadeGroupsFilterMiniPanel
-    local RolePanel = _G.PremadeGroupsFilterRolePanel
-    local PGFDialog = _G.PremadeGroupsFilterDialog
+    local ArenaPanel = _G['PremadeGroupsFilterArenaPanel']
+    local RBGPanel = _G['PremadeGroupsFilterRBGPanel']
+    local RaidPanel = _G['PremadeGroupsFilterRaidPanel']
+    local MiniPanel = _G['PremadeGroupsFilterMiniPanel']
+    local RolePanel = _G['PremadeGroupsFilterRolePanel']
+    local PGFDialog = _G['PremadeGroupsFilterDialog']
 
     local names = {
         'Difficulty',
@@ -36,6 +36,19 @@ function THEME:ReskinPGF()
         'MatchingId',
         'PvPRating',
     }
+
+    local function handleDropdown(drop)
+        F.StripTextures(drop)
+
+        local bg = F.CreateBDFrame(drop, 0, true)
+        bg:SetPoint('TOPLEFT', 16, -4)
+        bg:SetPoint('BOTTOMRIGHT', -18, 8)
+
+        local down = drop.Button
+        down:ClearAllPoints()
+        down:SetPoint('RIGHT', bg, -2, 0)
+        F.ReskinArrow(down, 'down')
+    end
 
     local function handleGroup(panel)
         for _, name in pairs(names) do
@@ -53,7 +66,7 @@ function THEME:ReskinPGF()
                     F.ReskinEditbox(frame.Max)
                 end
                 if frame.DropDown then
-                    F.ReskinDropdown(frame.DropDown)
+                    handleDropdown(frame.DropDown)
                 end
             end
         end
@@ -106,33 +119,16 @@ function THEME:ReskinPGF()
 
     hooksecurefunc(PGFDialog, 'ResetPosition', function(self)
         self:ClearAllPoints()
-        self:SetPoint('TOPLEFT', _G.PVEFrame, 'TOPRIGHT', 2, 0)
+        self:SetPoint('TOPLEFT', PVEFrame, 'TOPRIGHT', 2, 0)
     end)
 
-    --[[
-        local PGFDialog = _G.PremadeGroupsFilterDialog
-
-        local tipStyled
-        hooksecurefunc(PremadeGroupsFilter.Debug, "PopupMenu_Initialize", function()
-            if tipStyled then return end
-            for i = 1, PGFDialog:GetNumChildren() do
-                local child = select(i, PGFDialog:GetChildren())
-                if child and child.Shadow then
-                    TT.ReskinTooltip(child)
-                    tipStyled = true
-                    break
-                end
-            end
-        end)
-    --]]
-
-    local button = _G.UsePGFButton
+    local button = _G['UsePGFButton']
     if button then
         F.ReskinCheckbox(button)
         button.text:SetWidth(35)
     end
 
-    local popup = _G.PremadeGroupsFilterStaticPopup
+    local popup = _G['PremadeGroupsFilterStaticPopup']
     if popup then
         F.StripTextures(popup)
         F.SetBD(popup)

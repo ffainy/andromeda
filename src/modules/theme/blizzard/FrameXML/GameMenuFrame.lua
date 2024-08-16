@@ -5,7 +5,7 @@ tinsert(C.BlizzThemes, function()
         return
     end
 
-    local GameMenuFrame = _G.GameMenuFrame
+    local GameMenuFrame = _G['GameMenuFrame']
     F.StripTextures(GameMenuFrame.Header)
     GameMenuFrame.Header:ClearAllPoints()
     GameMenuFrame.Header:SetPoint('TOP', GameMenuFrame, 0, 7)

@@ -19,7 +19,7 @@ local function formatWaypoint(mapID, x, y)
 end
 
 function CHAT:UpdateChannelNames(text, ...)
-    if strfind(text, _G.INTERFACE_ACTION_BLOCKED) and not C.IS_DEVELOPER then
+    if strfind(text, INTERFACE_ACTION_BLOCKED) and not C.IS_DEVELOPER then
         return
     end
 
@@ -30,10 +30,10 @@ function CHAT:UpdateChannelNames(text, ...)
     end
 
     -- Dev logo
-    local unitName = strmatch(text, '|Hplayer:([^|:]+)')
-    if unitName and C.DevsList[unitName] then
-        text = gsub(text, '(|Hplayer.+)', '|T' .. C.Assets.Textures.LogoChat .. ':14:14|t %1')
-    end
+    -- local unitName = strmatch(text, '|Hplayer:([^|:]+)')
+    -- if unitName and C.DevsList[unitName] then
+    --     text = gsub(text, '(|Hplayer.+)', '|T' .. C.Assets.Textures.LogoChat .. ':14:14|t%1')
+    -- end
 
     -- Remove realm and bracket
     text = gsub(text, '|Hplayer:(.-)|h%[(.-)%]|h', formatPlayer)
@@ -54,7 +54,7 @@ function CHAT:UpdateChannelNames(text, ...)
 end
 
 function CHAT:ShortenChannelNames()
-    for i = 1, _G.NUM_CHAT_WINDOWS do
+    for i = 1, NUM_CHAT_WINDOWS do
         if i ~= 2 then
             local chatFrame = _G['ChatFrame' .. i]
             chatFrame.oldAddMsg = chatFrame.AddMessage
