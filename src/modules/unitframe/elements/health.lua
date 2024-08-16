@@ -74,7 +74,7 @@ function UNITFRAME.PostUpdateHealth(element, unit, cur, max)
     end
 
     local color
-    if UnitIsPlayer(unit) then
+    if UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
         local _, class = UnitClass(unit)
         color = self.colors.class[class]
     elseif UnitReaction(unit, 'player') then

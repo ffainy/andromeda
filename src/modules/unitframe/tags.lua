@@ -155,7 +155,7 @@ local _tags = {
             return F:RgbToHex(colors.tapped)
         elseif isDead then
             return F:RgbToHex(1, 0, 0)
-        elseif UnitIsPlayer(unit) then
+        elseif UnitIsPlayer(unit) or UnitInPartyIsAI(unit) then
             return F:RgbToHex(colors.class[class])
         elseif reaction then
             return F:RgbToHex(colors.reaction[reaction])
