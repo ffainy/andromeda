@@ -1,5 +1,5 @@
 local F, C, L = unpack(select(2, ...))
-local EOT = F:RegisterModule('EnhancedObjectiveTracker')
+local QUEST = F:GetModule('Quest')
 
 local progressColors = {
     start = { r = 1.000, g = 0.647, b = 0.008 },
@@ -21,7 +21,8 @@ local function setTextColorHook(text)
             end
             SetTextColorOld(self, r, g, b, a)
         end
-        text:SetTextColor(OBJECTIVE_TRACKER_COLOR['Header'].r, OBJECTIVE_TRACKER_COLOR['Header'].g, OBJECTIVE_TRACKER_COLOR['Header'].b, 1)
+        text:SetTextColor(OBJECTIVE_TRACKER_COLOR['Header'].r, OBJECTIVE_TRACKER_COLOR['Header'].g,
+            OBJECTIVE_TRACKER_COLOR['Header'].b, 1)
         text.Hooked = true
     end
 end
@@ -39,7 +40,7 @@ local function getProgressColor(progress)
     return { r = r, g = g, b = b }
 end
 
-function EOT:HandleHeaderText()
+function QUEST:HandleHeaderText()
     local frame = ObjectiveTrackerFrame.MODULES
     if not frame then
         return
@@ -49,12 +50,13 @@ function EOT:HandleHeaderText()
     for i = 1, #frame do
         local modules = frame[i]
         if modules and modules.Header and modules.Header.Text then
-            F.SetFS(modules.Header.Text, C.Assets.Fonts.Header, 15, outline or nil, nil, 'CLASS', outline and 'NONE' or 'THICK')
+            F.SetFS(modules.Header.Text, C.Assets.Fonts.Header, 15, outline or nil, nil, 'CLASS',
+                outline and 'NONE' or 'THICK')
         end
     end
 end
 
-function EOT:HandleTitleText(text)
+function QUEST:HandleTitleText(text)
     local font = C.Assets.Fonts.Bold
     local outline = _G['ANDROMEDA_ADB']['FontOutline']
     F.SetFS(text, font, 14, outline or nil, nil, 'YELLOW', outline and 'NONE' or 'THICK')
@@ -67,7 +69,7 @@ function EOT:HandleTitleText(text)
     setTextColorHook(text)
 end
 
-function EOT:HandleInfoText(text)
+function QUEST:HandleInfoText(text)
     self:ColorfulProgression(text)
 
     local font = C.Assets.Fonts.Regular
@@ -83,18 +85,18 @@ function EOT:HandleInfoText(text)
     text:SetPoint('TOPLEFT', dash, 'TOPLEFT', 0, 0)
 end
 
-function EOT:ScenarioObjectiveBlock_UpdateCriteria()
+function QUEST:ScenarioObjectiveBlock_UpdateCriteria()
     if _G['ScenarioObjectiveBlock'] then
         local childs = { _G['ScenarioObjectiveBlock']:GetChildren() }
         for _, child in pairs(childs) do
             if child.Text then
-                EOT:HandleInfoText(child.Text)
+                QUEST:HandleInfoText(child.Text)
             end
         end
     end
 end
 
-function EOT:ColorfulProgression(text)
+function QUEST:ColorfulProgression(text)
     if not text then
         return
     end
@@ -124,12 +126,12 @@ end
 
 do
     local dash = OBJECTIVE_TRACKER_DASH_WIDTH
-    function EOT:UpdateTextWidth()
+    function QUEST:UpdateTextWidth()
         OBJECTIVE_TRACKER_DASH_WIDTH = dash
     end
 end
 
-function EOT:RestyleObjectiveTrackerText()
+function QUEST:RestyleObjectiveTrackerText()
     self:UpdateTextWidth()
 
     local trackerModules = {
@@ -149,21 +151,21 @@ function EOT:RestyleObjectiveTrackerText()
             end
 
             if block.HeaderText then
-                EOT:HandleTitleText(block.HeaderText)
+                QUEST:HandleTitleText(block.HeaderText)
             end
 
             if block.currentLine then
                 if block.currentLine.objectiveKey == 0 then -- 世界任务标题
-                    EOT:HandleTitleText(block.currentLine.Text)
+                    QUEST:HandleTitleText(block.currentLine.Text)
                 else
-                    EOT:HandleInfoText(block.currentLine.Text)
+                    QUEST:HandleInfoText(block.currentLine.Text)
                 end
             end
         end)
     end
 
-    --hooksecurefunc('ObjectiveTrackerModule_Update', EOT.HandleHeaderText)
-    hooksecurefunc(_G['ScenarioObjectiveTracker'], 'UpdateCriteria', EOT.ScenarioObjectiveBlock_UpdateCriteria)
+    hooksecurefunc(ObjectiveTrackerModule_AddBlock, 'AddBlock', QUEST.HandleHeaderText)
+    hooksecurefunc('ScenarioObjectiveTracker', 'UpdateCriteria', QUEST.ScenarioObjectiveBlock_UpdateCriteria)
 
     F.Delay(1, function()
         for _, child in pairs({ _G['ObjectiveTrackerBlocksFrame']:GetChildren() }) do
@@ -176,81 +178,91 @@ function EOT:RestyleObjectiveTrackerText()
     --ObjectiveTracker_Update()
 end
 
+-- Auto collapse Objective Tracker
+
 local headers = {
-    _G['SCENARIO_CONTENT_TRACKER_MODULE'],
-    _G['BONUS_OBJECTIVE_TRACKER_MODULE'],
-    _G['UI_WIDGET_TRACKER_MODULE'],
-    _G['CAMPAIGN_QUEST_TRACKER_MODULE'],
-    _G['QUEST_TRACKER_MODULE'],
-    _G['ACHIEVEMENT_TRACKER_MODULE'],
-    _G['WORLD_QUEST_TRACKER_MODULE'],
-    _G['MONTHLY_ACTIVITIES_TRACKER_MODULE'],
+    _G['ScenarioObjectiveTracker'],
+    _G['BonusObjectiveTracker'],
+    _G['UIWidgetObjectiveTracker'],
+    _G['CampaignQuestObjectiveTracker'],
+    _G['QuestObjectiveTracker'],
+    _G['AdventureObjectiveTracker'],
+    _G['AchievementObjectiveTracker'],
+    _G['MonthlyActivitiesObjectiveTracker'],
+    _G['ProfessionsRecipeTracker'],
+    _G['WorldQuestObjectiveTracker'],
 }
 
-function EOT:AutoCollapse()
-    F:Delay(1, function()
-        local inInstance, instanceType = IsInInstance()
-        if inInstance then
-            if instanceType == 'party' or instanceType == 'scenario' then
+local function toggleTracker()
+    local inInstance, instanceType = IsInInstance()
+
+    if inInstance then
+        if instanceType == 'party' or instanceType == 'scenario' then
+            F:Delay(1, function()
                 for i = 3, #headers do
-                    local button = headers[i].Header.MinimizeButton
-                    if button and not headers[i].collapsed then
-                        button:Click()
-                    end
+                    headers[i]:SetCollapsed(true)
                 end
-            else
-                ObjectiveTracker_Collapse()
-            end
+            end)
         else
-            if not InCombatLockdown() then
-                for i = 3, #headers do
-                    local button = headers[i].Header.MinimizeButton
-                    if button and headers[i].collapsed then
-                        button:Click()
-                    end
-                end
-                if ObjectiveTrackerFrame.collapsed then
-                    ObjectiveTracker_Expand()
+            F:Delay(1, function()
+                ObjectiveTrackerFrame:SetCollapsed(true)
+            end)
+        end
+    else
+        if not InCombatLockdown() then
+            for i = 3, #headers do
+                if headers[i].isCollapsed then
+                    headers[i]:SetCollapsed(false)
                 end
             end
+            if ObjectiveTrackerFrame.isCollapsed then
+                ObjectiveTrackerFrame:SetCollapsed(false)
+            end
         end
-    end)
-end
-
-function EOT:ObjectiveTrackerMover()
-    local frame = CreateFrame('Frame', 'ObjectiveTrackerMover', UIParent)
-    frame:SetSize(240, 50)
-
-    F.Mover(frame, L['ObjectiveTracker'], 'ObjectiveTracker', { 'TOPRIGHT', UIParent, 'TOPRIGHT', -C.UI_GAP, -60 })
-
-    local tracker = ObjectiveTrackerFrame
-    tracker:ClearAllPoints()
-    tracker:SetPoint('TOPRIGHT', frame)
-    tracker:SetHeight(C.SCREEN_HEIGHT / 1.5 * C.MULT)
-    tracker:SetScale(1)
-    tracker:SetClampedToScreen(false)
-    tracker:SetMovable(true)
-
-    if tracker:IsMovable() then
-        tracker:SetUserPlaced(true)
     end
-
-    F:DisableEditMode(tracker)
-
-    hooksecurefunc(tracker, 'SetPoint', function(self, _, parent)
-        if parent ~= frame then
-            self:ClearAllPoints()
-            self:SetPoint('TOPRIGHT', frame)
-        end
-    end)
 end
 
-function EOT:OnLogin()
-    EOT:ObjectiveTrackerMover()
-    EOT:RestyleObjectiveTrackerText()
-
-    -- Auto collapse Objective Tracker
+function QUEST:TrackerAutoCollapse()
     if C.DB.Quest.AutoCollapseTracker then
-        F:RegisterEvent('PLAYER_ENTERING_WORLD', EOT.AutoCollapse)
+        F:RegisterEvent('PLAYER_ENTERING_WORLD', toggleTracker)
     end
 end
+
+-- Make tracker movable
+
+function QUEST:TrackerMover()
+    local anchor = CreateFrame('Frame', 'ObjectiveTrackerMover', UIParent)
+    anchor:SetSize(240, 50)
+
+    F.Mover(anchor, L['ObjectiveTracker'], 'ObjectiveTracker', { 'TOPRIGHT', UIParent, 'TOPRIGHT', -C.UI_GAP, -60 })
+
+    local ot = ObjectiveTrackerFrame
+    ot:ClearAllPoints()
+    ot:SetPoint('TOPRIGHT', anchor)
+    ot:SetScale(1)
+    ot:SetClampedToScreen(false)
+    ot:SetMovable(true)
+
+    if ot:IsMovable() then
+        ot:SetUserPlaced(true)
+    end
+
+    F:DisableEditMode(ot)
+
+    hooksecurefunc(ot, 'SetPoint', function(_, _, parent)
+        if parent ~= anchor then
+            ot:ClearAllPoints()
+            ot:SetPoint('TOPRIGHT', anchor)
+        end
+    end)
+
+    local height = C.SCREEN_HEIGHT / 1.5 * C.MULT
+    ot:SetHeight(height)
+    hooksecurefunc(ot, 'SetHeight', function(_, h)
+        if h ~= height then
+            ot:SetHeight(height)
+        end
+    end)
+end
+
+
