@@ -877,7 +877,7 @@ do
             local lvl = frame:GetFrameLevel()
 
             self.__bg = CreateFrame('Frame', nil, frame, 'BackdropTemplate')
-            self.__bg:SetInside(self, 2, 2)
+            self.__bg:SetOutside(self)
             self.__bg:SetFrameLevel(lvl == 0 and 0 or lvl - 1)
 
             F.CreateBD(self.__bg, a)
