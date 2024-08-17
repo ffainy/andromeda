@@ -625,6 +625,9 @@ function F.ToggleGUI(index)
     PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
+-- PlaySound(850) --IG_MAINMENU_OPEN
+-- PlaySound(854) --IG_MAINMENU_QUIT
+
 local function gameMenuButtonOnClick()
     if InCombatLockdown() then
         UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
@@ -635,12 +638,31 @@ local function gameMenuButtonOnClick()
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
+local function replaceEditModeButton()
+    for button in GameMenuFrame.buttonPool:EnumerateActive() do
+        local text = button:GetText()
+        if text and text == HUD_EDIT_MODE_MENU then
+            button:SetScript('OnClick', function()
+                PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+                F:MoverConsole()
+                HideUIPanel(GameMenuFrame)
+            end)
+        end
+    end
+end
+
+function GUI:CreateAndromedaButton()
+    hooksecurefunc(GameMenuFrame, 'InitButtons', function(self)
+        self:AddButton(C.COLORFUL_ADDON_TITLE, gameMenuButtonOnClick)
+
+        replaceEditModeButton()
+    end)
+end
+
 
 
 function GUI:OnLogin()
-    hooksecurefunc(GameMenuFrame, 'InitButtons', function(self)
-        self:AddButton(C.COLORFUL_ADDON_TITLE, gameMenuButtonOnClick)
-    end)
+    GUI:CreateAndromedaButton()
 
     GUI:CreateCheatSheet()
 
