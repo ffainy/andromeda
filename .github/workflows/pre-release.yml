@@ -46,8 +46,8 @@ jobs:
       - name: 'Crosspost changelog to Discord'
         uses: kludge-cs/gitcord-release-changelogger@v3.0.0
         with:
-          username: 'Rick-Bot'
-          avatar-url: 'https://cdn.discordapp.com/attachments/751929844920614932/934170534755860560/rick.png'
-          release-name: '${{ github.event.repository.name }}: new test build has been released.'
+          username: 'Rick'
+          avatar-url: 'https://i.imgur.com/O9CxavY.png'
+          release-name: '🔔 AndromedaUI: new test build has been released.'
           release-body: ${{ steps.changelog.outputs.changelog }}
           webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL }}
