@@ -23,17 +23,17 @@ F:RegisterSlashCommand('/and', function(msg)
         LOGO.logoFrame:Show()
     elseif strmatch(str, 'clickbinding') or strmatch(str, 'cb') then
         if InClickBindingMode() then
-            _G.ClickBindingFrame.SaveButton:Click()
+            ClickBindingFrame.SaveButton:Click()
         else
             ToggleClickBindingFrame()
         end
     elseif strmatch(str, 'keybinding') or strmatch(str, 'kb') then
-        _G.SlashCmdList['ANDROMEDA_KEY_BINDING']('')
+        SlashCmdList['ANDROMEDA_KEY_BINDING']('')
     elseif strmatch(str, 'ver') or strmatch(str, 'version') then
         F:Printf('version: %s', C.ADDON_VERSION)
     else
         GUI:ToggleCheatSheet()
-        -- PlaySoundFile(C.Assets.Sounds.PhubIntro, 'Master')
+        PlaySoundFile(C.Assets.Sounds.PhubIntro, 'Master')
     end
 end)
 
@@ -56,7 +56,7 @@ F:RegisterSlashCommand('/convert', function()
             C_PartyInfo.ConvertToRaid()
         end
     else
-        F:Print('|cffff2020' .. _G.ERR_NOT_IN_GROUP .. '|r')
+        F:Print('|cffff2020' .. ERR_NOT_IN_GROUP .. '|r')
     end
 end)
 
@@ -77,11 +77,7 @@ end)
 
 -- Teleport LFG instance
 F:RegisterSlashCommand('/tp', function()
-    if IsInInstance() then
-        LFGTeleport(true)
-    else
-        LFGTeleport()
-    end
+    LFGTeleport(IsInLFGDungeon())
 end)
 
 -- Take screenshot
@@ -123,7 +119,7 @@ end)
 -- Whisper current target
 hooksecurefunc('ChatEdit_OnSpacePressed', function(editBox)
     if editBox:GetText():sub(1, 3) == '/tt' and (UnitCanCooperate('player', 'target') or UnitIsUnit('player', 'target')) then
-        editBox:SetText(_G.SLASH_SMART_WHISPER1 .. ' ' .. GetUnitName('target', true):gsub(' ', '') .. ' ')
+        editBox:SetText(SLASH_SMART_WHISPER1 .. ' ' .. GetUnitName('target', true):gsub(' ', '') .. ' ')
         ChatEdit_ParseText(editBox, 0)
     end
 end)
@@ -169,7 +165,7 @@ do
                     if x and y then
                         print(format(pointString, mapID, x * 100, y * 100, mapName, x, y, z or ''))
 
-                        C_Map.SetUserWaypoint(_G.UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
+                        C_Map.SetUserWaypoint(UiMapPoint.CreateFromCoordinates(mapID, x / 100, y / 100))
                         C_SuperTrack.SetSuperTrackedUserWaypoint(true)
                     end
                 end
@@ -180,137 +176,9 @@ end
 
 -- Clear chat
 F:RegisterSlashCommand('/clear', function()
-    for i = 1, _G.NUM_CHAT_WINDOWS do
+    for i = 1, NUM_CHAT_WINDOWS do
         _G[format('ChatFrame%d', i)]:Clear()
     end
 end)
 
--- Dev tool
-F:RegisterSlashCommand('/rl', function()
-    ReloadUI()
-end)
 
-F:RegisterSlashCommand('/fs', function()
-    UIParentLoadAddOn('Blizzard_DebugTools')
-    _G.FrameStackTooltip_Toggle(false, true, true)
-end)
-
--- Disable all addons except andromeda and debug tool
-F:RegisterSlashCommand('/debugmode', function()
-    for i = 1, C_AddOns.GetNumAddOns() do
-        local name = C_AddOns.GetAddOnInfo(i)
-        if name ~= C.ADDON_NAME and name ~= '!BaudErrorFrame' and name ~= 'REHack' and GetAddOnEnableState(C.MY_NAME, name) == 2 then
-            DisableAddOn(name, C.MY_NAME)
-        end
-    end
-    _G.ReloadUI()
-end)
-
--- Print NPC ID
-local pattern = '%w+%-.-%-.-%-.-%-.-%-(.-)%-'
-local function GetNPCID(unit)
-    if unit and UnitExists(unit) then
-        local npcGUID = UnitGUID(unit)
-        return npcGUID and (tonumber(npcGUID:match(pattern)))
-    end
-end
-
-F:RegisterSlashCommand('/npcid', function()
-    local npcID = GetNPCID('target')
-    if npcID then
-        local str = 'NPC ID: ' .. npcID
-        F:Print(str)
-    end
-end)
-
--- Print quest info
-F:RegisterSlashCommand('/questid', function(msg)
-    local questID = tonumber(msg)
-    if questID then
-        local isCompleted = C_QuestLog.IsQuestFlaggedCompleted(questID)
-        local status = isCompleted and '|cff20ff20COMPLETE|r' or '|cffff2020NOT complete|r'
-        local str = 'Quest |cffe9c55d' .. questID .. '|r is ' .. status
-
-        F:Print(str)
-    end
-end)
-
--- Print map info
-F:RegisterSlashCommand('/mapid', function()
-    local mapID
-    if _G.WorldMapFrame:IsShown() then
-        mapID = _G.WorldMapFrame:GetMapID()
-    else
-        mapID = C_Map.GetBestMapForUnit('player')
-    end
-
-    F:Printf('Map ID: |cffe9c55d%s|r (%s)', mapID, C_Map.GetMapInfo(mapID).name)
-end)
-
--- Print instance info
-F:RegisterSlashCommand('/instinfo', function()
-    local name, instanceType, difficultyID, difficultyName, _, _, _, instanceMapID = GetInstanceInfo()
-    F:Print(C.LINE_STRING)
-    F:Print('Name ' .. C.INFO_COLOR .. name)
-    F:Print('instanceType ' .. C.INFO_COLOR .. instanceType)
-    F:Print('difficultyID ' .. C.INFO_COLOR .. difficultyID)
-    F:Print('difficultyName ' .. C.INFO_COLOR .. difficultyName)
-    F:Print('instanceMapID ' .. C.INFO_COLOR .. instanceMapID)
-    F:Print(C.LINE_STRING)
-end)
-
--- Print item info
-F:RegisterSlashCommand('/iteminfo', function(msg)
-    local itemID = tonumber(msg)
-    if itemID then
-        local name, link, rarity, level, minLevel, type, subType, _, _, _, _, classID, subClassID, bindType = C_Item.GetItemInfo(itemID)
-        if name then
-            F:Print(C.LINE_STRING)
-            F:Print('Name ' .. C.INFO_COLOR .. name)
-            F:Print('Link ' .. link)
-            F:Print('Rarity ' .. C.INFO_COLOR .. rarity)
-            F:Print('Level ' .. C.INFO_COLOR .. level)
-            F:Print('MinLevel ' .. C.INFO_COLOR .. minLevel)
-            F:Print('Type ' .. C.INFO_COLOR .. type)
-            F:Print('SubType ' .. C.INFO_COLOR .. subType)
-            F:Print('ClassID ' .. C.INFO_COLOR .. classID)
-            F:Print('SubClassID ' .. C.INFO_COLOR .. subClassID)
-            F:Print('BindType ' .. C.INFO_COLOR .. bindType)
-            F:Print(C.LINE_STRING)
-        else
-            F:Print('Item ' .. itemID .. ' |cffff2020NOT found|r')
-        end
-    end
-end)
-
--- Print item info
-F:RegisterSlashCommand('/scaleinfo', function()
-    F:Print(C.LINE_STRING)
-    F:Print('C.SCREEN_WIDTH ' .. C.SCREEN_WIDTH)
-    F:Print('C.SCREEN_HEIGHT ' .. C.SCREEN_HEIGHT)
-    F:Print('C.MULT ' .. C.MULT)
-    F:Print('UIScale ' .. _G.ANDROMEDA_ADB.UIScale)
-    F:Print('UIParentScale ' .. UIParent:GetScale())
-    F:Print(C.LINE_STRING)
-end)
-
--- DBM test
-F:RegisterSlashCommand('/dbmtest', function()
-    if C_AddOns.IsAddOnLoaded('DBM-Core') then
-        _G.DBM:DemoMode()
-    else
-        F:Print(C.RED_COLOR .. 'DBM is not loaded.')
-    end
-end)
-
---[[ do
-    local sortedKeys = {}
-    for k in pairs(tempTable) do
-        sortedKeys[#sortedKeys + 1] = k
-    end
-    sort(sortedKeys)
-    for i, k in ipairs(sortedKeys) do
-        local v = tempTable[k]
-        F:Print(k, v)
-    end
-end ]]
