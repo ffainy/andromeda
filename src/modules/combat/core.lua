@@ -127,4 +127,5 @@ function COMBAT:OnLogin()
     COMBAT:SmartTab()
     COMBAT:EasyFocus()
     COMBAT:EasyMark()
+    COMBAT:BuffReminder()
 end

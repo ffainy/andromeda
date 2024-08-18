@@ -1,5 +1,5 @@
 local F, C, L = unpack(select(2, ...))
-local BR = F:RegisterModule('BuffReminder')
+local COMBAT = F:GetModule('Combat')
 
 local buffsList = {
     ITEMS = {
@@ -155,7 +155,7 @@ local groups = buffsList[C.MY_CLASS]
 local iconSize = 36
 local frames, parentFrame = {}
 
-function BR:Reminder_Update(cfg)
+function COMBAT:Reminder_Update(cfg)
     local frame = cfg.frame
     local depend = cfg.depend
     local spec = cfg.spec
@@ -173,10 +173,10 @@ function BR:Reminder_Update(cfg)
         if inGroup and GetNumGroupMembers() < 2 then
             isGrouped = false
         end
-        if equip and not IsEquippedItem(itemID) then
+        if equip and not C_Item.IsEquippedItem(itemID) then
             isEquipped = false
         end
-        if GetItemCount(itemID) == 0 or not isEquipped or not isGrouped or GetItemCooldown(itemID) > 0 then
+        if C_Item.GetItemCount(itemID) == 0 or not isEquipped or not isGrouped or C_Item.GetItemCooldown(itemID) > 0 then
             frame:Hide()
             return
         end
@@ -194,7 +194,7 @@ function BR:Reminder_Update(cfg)
     if instance and inInst and (instType == 'scenario' or instType == 'party' or instType == 'raid') then
         isInInst = true
     end
-    if pvp and (instType == 'arena' or instType == 'pvp' or GetZonePVPInfo() == 'combat') then
+    if pvp and (instType == 'arena' or instType == 'pvp' or C_PvP.GetZonePVPInfo() == 'combat') then
         isInPVP = true
     end
     if not combat and not instance and not pvp then
@@ -231,7 +231,7 @@ function BR:Reminder_Update(cfg)
     end
 end
 
-function BR:Reminder_Create(cfg)
+function COMBAT:Reminder_Create(cfg)
     local outline = _G.ANDROMEDA_ADB.FontOutline
     local frame = CreateFrame('Frame', nil, parentFrame)
     frame:SetSize(iconSize, iconSize)
@@ -263,7 +263,7 @@ function BR:Reminder_Create(cfg)
     tinsert(frames, frame)
 end
 
-function BR:Reminder_UpdateAnchor()
+function COMBAT:Reminder_UpdateAnchor()
     local index = 0
     local offset = iconSize + 5
     for _, frame in next, frames do
@@ -275,17 +275,17 @@ function BR:Reminder_UpdateAnchor()
     parentFrame:SetWidth(offset * index)
 end
 
-function BR:Reminder_OnEvent()
+function COMBAT:Reminder_OnEvent()
     for _, cfg in pairs(groups) do
         if not cfg.frame then
-            BR:Reminder_Create(cfg)
+            COMBAT:Reminder_Create(cfg)
         end
-        BR:Reminder_Update(cfg)
+        COMBAT:Reminder_Update(cfg)
     end
-    BR:Reminder_UpdateAnchor()
+    COMBAT:Reminder_UpdateAnchor()
 end
 
-function BR:Reminder_AddItemGroup()
+function COMBAT:Reminder_AddItemGroup()
     for _, value in pairs(buffsList['ITEMS']) do
         if not value.disable and C_Item.GetItemCount(value.itemID) > 0 then
             if not value.texture then
@@ -299,8 +299,8 @@ function BR:Reminder_AddItemGroup()
     end
 end
 
-function BR:OnLogin()
-    BR:Reminder_AddItemGroup()
+function COMBAT:BuffReminder()
+    COMBAT:Reminder_AddItemGroup()
 
     if not groups or not next(groups) then
         return
@@ -314,26 +314,26 @@ function BR:OnLogin()
         end
         parentFrame:Show()
 
-        BR:Reminder_OnEvent()
-        F:RegisterEvent('UNIT_AURA', BR.Reminder_OnEvent, 'player')
-        F:RegisterEvent('UNIT_EXITED_VEHICLE', BR.Reminder_OnEvent)
-        F:RegisterEvent('UNIT_ENTERED_VEHICLE', BR.Reminder_OnEvent)
-        F:RegisterEvent('PLAYER_REGEN_ENABLED', BR.Reminder_OnEvent)
-        F:RegisterEvent('PLAYER_REGEN_DISABLED', BR.Reminder_OnEvent)
-        F:RegisterEvent('ZONE_CHANGED_NEW_AREA', BR.Reminder_OnEvent)
-        F:RegisterEvent('PLAYER_ENTERING_WORLD', BR.Reminder_OnEvent)
-        F:RegisterEvent('WEAPON_ENCHANT_CHANGED', BR.Reminder_OnEvent)
+        COMBAT:Reminder_OnEvent()
+        F:RegisterEvent('UNIT_AURA', COMBAT.Reminder_OnEvent, 'player')
+        F:RegisterEvent('UNIT_EXITED_VEHICLE', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('UNIT_ENTERED_VEHICLE', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('PLAYER_REGEN_ENABLED', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('PLAYER_REGEN_DISABLED', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('ZONE_CHANGED_NEW_AREA', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('PLAYER_ENTERING_WORLD', COMBAT.Reminder_OnEvent)
+        F:RegisterEvent('WEAPON_ENCHANT_CHANGED', COMBAT.Reminder_OnEvent)
     else
         if parentFrame then
             parentFrame:Hide()
-            F:UnregisterEvent('UNIT_AURA', BR.Reminder_OnEvent)
-            F:UnregisterEvent('UNIT_EXITED_VEHICLE', BR.Reminder_OnEvent)
-            F:UnregisterEvent('UNIT_ENTERED_VEHICLE', BR.Reminder_OnEvent)
-            F:UnregisterEvent('PLAYER_REGEN_ENABLED', BR.Reminder_OnEvent)
-            F:UnregisterEvent('PLAYER_REGEN_DISABLED', BR.Reminder_OnEvent)
-            F:UnregisterEvent('ZONE_CHANGED_NEW_AREA', BR.Reminder_OnEvent)
-            F:UnregisterEvent('PLAYER_ENTERING_WORLD', BR.Reminder_OnEvent)
-            F:UnregisterEvent('WEAPON_ENCHANT_CHANGED', BR.Reminder_OnEvent)
+            F:UnregisterEvent('UNIT_AURA', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('UNIT_EXITED_VEHICLE', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('UNIT_ENTERED_VEHICLE', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('PLAYER_REGEN_ENABLED', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('PLAYER_REGEN_DISABLED', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('ZONE_CHANGED_NEW_AREA', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('PLAYER_ENTERING_WORLD', COMBAT.Reminder_OnEvent)
+            F:UnregisterEvent('WEAPON_ENCHANT_CHANGED', COMBAT.Reminder_OnEvent)
         end
     end
 end
