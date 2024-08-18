@@ -1,43 +1,5 @@
 local F, C = unpack(select(2, ...))
 
-local function handleSpellButton(self)
-    local slot, slotType = SpellBook_GetSpellBookSlot(self)
-    local isPassive = C_Spell.IsSpellPassive(slot, _G.SpellBookFrame.bookType)
-    local name = self:GetName()
-    local highlightTexture = _G[name .. 'Highlight']
-    if isPassive then
-        highlightTexture:SetColorTexture(1, 1, 1, 0)
-    else
-        highlightTexture:SetColorTexture(1, 1, 1, 0.25)
-    end
-
-    local subSpellString = _G[name .. 'SubSpellName']
-    local isOffSpec = self.offSpecID ~= 0 and _G.SpellBookFrame.bookType == _G.BOOKTYPE_SPELL
-    subSpellString:SetTextColor(1, 1, 1)
-
-    if slotType == 'FUTURESPELL' then
-        local level = GetSpellAvailableLevel(slot, _G.SpellBookFrame.bookType)
-        if level and level > UnitLevel('player') then
-            self.SpellName:SetTextColor(0.7, 0.7, 0.7)
-            subSpellString:SetTextColor(0.7, 0.7, 0.7)
-        end
-    else
-        if slotType == 'SPELL' and isOffSpec then
-            subSpellString:SetTextColor(0.7, 0.7, 0.7)
-        end
-    end
-    self.RequiredLevelString:SetTextColor(0.7, 0.7, 0.7)
-
-    local ic = _G[name .. 'IconTexture']
-    if ic.bg then
-        ic.bg:SetShown(ic:IsShown())
-    end
-
-    if self.ClickBindingIconCover and self.ClickBindingIconCover:IsShown() then
-        self.SpellName:SetTextColor(0.7, 0.7, 0.7)
-    end
-end
-
 local function reskinTalentFrameDialog(dialog)
     F.StripTextures(dialog)
     F.SetBD(dialog)
@@ -57,7 +19,7 @@ local function reskinTalentFrameDialog(dialog)
 end
 
 C.Themes['Blizzard_PlayerSpells'] = function()
-    local frame = _G.PlayerSpellsFrame
+    local frame = PlayerSpellsFrame
 
     F.ReskinPortraitFrame(frame)
     F.ReskinButton(frame.TalentsFrame.ApplyButton)
@@ -100,19 +62,19 @@ C.Themes['Blizzard_PlayerSpells'] = function()
         end
     end)
 
-    local id = _G.ClassTalentLoadoutImportDialog
+    local id = ClassTalentLoadoutImportDialog
     if id then
         reskinTalentFrameDialog(id)
         F.StripTextures(id.ImportControl.InputContainer)
         F.CreateBDFrame(id.ImportControl.InputContainer, 0.25)
     end
 
-    local cd = _G.ClassTalentLoadoutCreateDialog
+    local cd = ClassTalentLoadoutCreateDialog
     if cd then
         reskinTalentFrameDialog(cd)
     end
 
-    local ed = _G.ClassTalentLoadoutEditDialog
+    local ed = ClassTalentLoadoutEditDialog
     if ed then
         reskinTalentFrameDialog(ed)
 
@@ -130,7 +92,7 @@ C.Themes['Blizzard_PlayerSpells'] = function()
         end
     end
 
-    local dialog = _G.HeroTalentsSelectionDialog
+    local dialog = HeroTalentsSelectionDialog
     if dialog then
         F.StripTextures(dialog)
         F.SetBD(dialog, 1)
@@ -147,7 +109,7 @@ C.Themes['Blizzard_PlayerSpells'] = function()
         end)
     end
 
-    local spellBook = _G.PlayerSpellsFrame.SpellBookFrame
+    local spellBook = PlayerSpellsFrame.SpellBookFrame
     if spellBook then
         spellBook.BookBGLeft:SetAlpha(0.5)
         spellBook.BookBGRight:SetAlpha(0.5)
