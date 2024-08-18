@@ -57,7 +57,7 @@ function CHAT:HyperlinkShowHook(link, _, button)
                 C_PartyInfo.InviteUnit(unit)
                 hide = true
             elseif IsControlKeyDown() then
-                GuildInvite(unit)
+                C_GuildInfo.Invite(unit)
                 hide = true
             end
         elseif type == 'BNplayer' then
@@ -71,20 +71,20 @@ function CHAT:HyperlinkShowHook(link, _, button)
             end
             local gameAccountInfo = accountInfo.gameAccountInfo
             local gameID = gameAccountInfo.gameAccountID
-            if gameID and _G.CanCooperateWithGameAccount(accountInfo) then
+            if gameID and CanCooperateWithGameAccount(accountInfo) then
                 if IsAltKeyDown() then
                     BNInviteFriend(gameID)
                     hide = true
                 elseif IsControlKeyDown() then
                     local charName = gameAccountInfo.characterName
                     local realmName = gameAccountInfo.realmName
-                    GuildInvite(charName .. '-' .. realmName)
+                    C_GuildInfo.Invite(charName .. '-' .. realmName)
                     hide = true
                 end
             end
         end
     elseif type == 'url' then
-        local eb = _G.LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName() .. 'EditBox']
+        local eb = LAST_ACTIVE_CHAT_EDIT_BOX or _G[self:GetName() .. 'EditBox']
         if eb then
             eb:Show()
             eb:SetText(value)
@@ -94,19 +94,19 @@ function CHAT:HyperlinkShowHook(link, _, button)
     end
 
     if hide then
-        _G.ChatEdit_ClearChat(_G.ChatFrame1.editBox)
+        ChatEdit_ClearChat(ChatFrame1.editBox)
     end
 end
 
 function CHAT.SetItemRefHook(link, _, button)
     if strsub(link, 1, 6) == 'player' and button == 'LeftButton' and IsModifiedClick('CHATLINK') then
         if
-            not _G.StaticPopup_Visible('ADD_IGNORE')
-            and not _G.StaticPopup_Visible('ADD_FRIEND')
-            and not _G.StaticPopup_Visible('ADD_GUILDMEMBER')
-            and not _G.StaticPopup_Visible('ADD_RAIDMEMBER')
-            and not _G.StaticPopup_Visible('CHANNEL_INVITE')
-            and not _G.ChatEdit_GetActiveWindow()
+            not StaticPopup_Visible('ADD_IGNORE')
+            and not StaticPopup_Visible('ADD_FRIEND')
+            and not StaticPopup_Visible('ADD_GUILDMEMBER')
+            and not StaticPopup_Visible('ADD_RAIDMEMBER')
+            and not StaticPopup_Visible('CHANNEL_INVITE')
+            and not ChatEdit_GetActiveWindow()
         then
             local namelink, fullname
             if strsub(link, 7, 8) == 'GM' then
@@ -126,14 +126,14 @@ function CHAT.SetItemRefHook(link, _, button)
                     name = fullname
                 end
 
-                if _G.MailFrame and _G.MailFrame:IsShown() then
-                    _G.MailFrameTab_OnClick(nil, 2)
-                    _G.SendMailNameEditBox:SetText(name)
-                    _G.SendMailNameEditBox:HighlightText()
+                if MailFrame and MailFrame:IsShown() then
+                    MailFrameTab_OnClick(nil, 2)
+                    SendMailNameEditBox:SetText(name)
+                    SendMailNameEditBox:HighlightText()
                 else
-                    local editBox = _G.ChatEdit_ChooseBoxForSend()
+                    local editBox = ChatEdit_ChooseBoxForSend()
                     local hasText = (editBox:GetText() ~= '')
-                    _G.ChatEdit_ActivateChat(editBox)
+                    ChatEdit_ActivateChat(editBox)
                     editBox:Insert(name)
                     if not hasText then
                         editBox:HighlightText()
@@ -145,7 +145,7 @@ function CHAT.SetItemRefHook(link, _, button)
 end
 
 function CHAT:UrlCopy()
-    for i = 1, _G.NUM_CHAT_WINDOWS do
+    for i = 1, NUM_CHAT_WINDOWS do
         if i ~= 2 then
             local chatFrame = _G['ChatFrame' .. i]
             chatFrame.am = chatFrame.AddMessage
@@ -153,8 +153,8 @@ function CHAT:UrlCopy()
         end
     end
 
-    local orig = _G.ItemRefTooltip.SetHyperlink
-    function _G.ItemRefTooltip:SetHyperlink(link, ...)
+    local orig = ItemRefTooltip.SetHyperlink
+    function ItemRefTooltip:SetHyperlink(link, ...)
         if link and strsub(link, 0, 3) == 'url' then
             return
         end
