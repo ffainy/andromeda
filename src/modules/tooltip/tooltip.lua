@@ -388,6 +388,7 @@ function TOOLTIP:ScanTargets(unit)
 end
 
 -- Add mount source
+---#TODO add gui option
 local mountsData = {}
 function TOOLTIP:AddMountInfo()
     local mountIDs = C_MountJournal.GetMountIDs()

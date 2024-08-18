@@ -23,7 +23,7 @@ function TOOLTIP:ReskinTooltip()
         self.bg:SetFrameLevel(self:GetFrameLevel())
 
         local color = _G.ANDROMEDA_ADB.BackdropColor
-        local alpha = C.DB.Tooltip.BackdropAlpha
+        local alpha = C.DB.Tooltip.BackdropAlpha ---#TODO add gui option
         self.bg:SetBackdropBorderColor(color.r, color.g, color.b, alpha)
         if self.bg.__shadow then
             self.bg.__shadow:SetBackdropBorderColor(0, 0, 0, 0.25)
