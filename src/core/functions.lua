@@ -88,7 +88,7 @@ do
             _G['SLASH_' .. name .. index] = str
         end
 
-        _G.SlashCmdList[name] = callback
+        SlashCmdList[name] = callback
     end
 
     -- Class Color
@@ -2466,16 +2466,15 @@ do
 
     do
         local groupRoleTex = {
-            TANK = 'groupfinder-icon-role-micro-tank',
-            HEALER = 'groupfinder-icon-role-micro-heal',
-            DAMAGER = 'groupfinder-icon-role-micro-dps',
-            DPS = 'groupfinder-icon-role-micro-dps',
+            TANK = C.Assets.Textures.RoleTank,
+            HEALER = C.Assets.Textures.RoleHealer,
+            DAMAGER = C.Assets.Textures.RoleDamager,
+            DPS = C.Assets.Textures.RoleDamager,
         }
 
         function F:ReskinSmallRole(role)
-            self:SetTexCoord(0, 1, 0, 1)
             self:SetSize(32, 32)
-            self:SetAtlas(groupRoleTex[role])
+            self:SetTexture(groupRoleTex[role])
         end
 
         function F:ReskinRole()

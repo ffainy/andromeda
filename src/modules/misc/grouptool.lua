@@ -1,5 +1,5 @@
 local F, C, L = unpack(select(2, ...))
-local GT = F:RegisterModule('GroupTool')
+local RT = F:RegisterModule('RaidTool')
 
 local buffsList = {
     [1] = {
@@ -39,7 +39,7 @@ local buffsList = {
     },
 }
 
-function GT:RaidTool_Visibility(frame)
+function RT:RaidTool_Visibility(frame)
     if IsInGroup() then
         frame:Show()
     else
@@ -47,16 +47,16 @@ function GT:RaidTool_Visibility(frame)
     end
 end
 
-function GT:RaidTool_Header()
+function RT:RaidTool_Header()
     local frame = CreateFrame('Button', nil, UIParent)
     frame:SetSize(120, 28)
     frame:SetFrameLevel(2)
     F.ReskinButton(frame)
     F.Mover(frame, L['GroupTool'], 'GroupTool', { 'TOP', 0, -30 })
 
-    GT:RaidTool_Visibility(frame)
+    RT:RaidTool_Visibility(frame)
     F:RegisterEvent('GROUP_ROSTER_UPDATE', function()
-        GT:RaidTool_Visibility(frame)
+        RT:RaidTool_Visibility(frame)
     end)
 
     frame:RegisterForClicks('AnyUp')
@@ -67,13 +67,13 @@ function GT:RaidTool_Header()
 
             if menu:IsShown() then
                 menu:ClearAllPoints()
-                if GT:IsFrameOnTop(self) then
+                if RT:IsFrameOnTop(self) then
                     menu:SetPoint('TOP', self, 'BOTTOM', 0, -3)
                 else
                     menu:SetPoint('BOTTOM', self, 'TOP', 0, 3)
                 end
 
-                self.buttons[2].text:SetText(IsInRaid() and _G.CONVERT_TO_PARTY or _G.CONVERT_TO_RAID)
+                self.buttons[2].text:SetText(IsInRaid() and CONVERT_TO_PARTY or CONVERT_TO_RAID)
             end
         end
     end)
@@ -90,13 +90,13 @@ function GT:RaidTool_Header()
     return frame
 end
 
-function GT:IsFrameOnTop(frame)
+function RT:IsFrameOnTop(frame)
     local y = select(2, frame:GetCenter())
     local screenHeight = UIParent:GetTop()
     return y > screenHeight / 2
 end
 
-function GT:GetRaidMaxGroup()
+function RT:GetRaidMaxGroup()
     local _, instType, difficulty = GetInstanceInfo()
     if (instType == 'party' or instType == 'scenario') and not IsInRaid() then
         return 1
@@ -124,8 +124,9 @@ local eventList = {
     'PLAYER_FLAGS_CHANGED',
     'PLAYER_ENTERING_WORLD',
 }
-function GT:RaidTool_RoleCount(parent)
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+
+function RT:RaidTool_RoleCount(parent)
+    local outline = ANDROMEDA_ADB.FontOutline
     local roleIndex = { 'TANK', 'HEALER', 'DAMAGER' }
     local frame = CreateFrame('Frame', nil, parent)
     frame:SetAllPoints()
@@ -133,19 +134,16 @@ function GT:RaidTool_RoleCount(parent)
     for i = 1, 3 do
         role[i] = frame:CreateTexture(nil, 'OVERLAY')
         role[i]:SetPoint('LEFT', 36 * i - 34, 0)
-        role[i]:SetSize(28, 28)
+        role[i]:SetSize(32, 32)
         F.ReskinSmallRole(role[i], roleIndex[i])
+
         role[i].text = F.CreateFS(
             frame,
-            C.Assets.Fonts.Condensed,
-            11,
-            outline or nil,
-            '0',
-            'YELLOW',
-            outline and 'NONE' or 'THICK'
+            C.Assets.Fonts.Condensed, 12, outline or nil,
+            '0', 'YELLOW', outline and 'NONE' or 'THICK'
         )
         role[i].text:ClearAllPoints()
-        role[i].text:SetPoint('LEFT', role[i], 'RIGHT', -4, 0)
+        role[i].text:SetPoint('CENTER', role[i], 'RIGHT', 2, 0)
     end
 
     local raidCounts = { totalTANK = 0, totalHEALER = 0, totalDAMAGER = 0 }
@@ -155,7 +153,7 @@ function GT:RaidTool_RoleCount(parent)
             raidCounts[k] = 0
         end
 
-        local maxgroup = GT:GetRaidMaxGroup()
+        local maxgroup = RT:GetRaidMaxGroup()
         for i = 1, GetNumGroupMembers() do
             local name, _, subgroup, _, _, _, _, online, isDead, _, _, assignedRole = GetRaidRosterInfo(i)
             if name and online and subgroup <= maxgroup and not isDead and assignedRole ~= 'NONE' then
@@ -175,7 +173,7 @@ function GT:RaidTool_RoleCount(parent)
     parent.roleFrame = frame
 end
 
-function GT:RaidTool_UpdateRes(elapsed)
+function RT:RaidTool_UpdateRes(elapsed)
     self.elapsed = (self.elapsed or 0) + elapsed
     if self.elapsed > 0.1 then
         local chargeInfo = C_Spell.GetSpellCharges(20484)
@@ -206,7 +204,7 @@ function GT:RaidTool_UpdateRes(elapsed)
     end
 end
 
-function GT:RaidTool_CombatRes(parent)
+function RT:RaidTool_CombatRes(parent)
     local frame = CreateFrame('Frame', nil, parent)
     frame:SetAllPoints()
     frame:SetAlpha(0)
@@ -216,28 +214,26 @@ function GT:RaidTool_CombatRes(parent)
     F.PixelIcon(res, C_Spell.GetSpellTexture(20484))
     res.__owner = parent
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    res.Count = F.CreateFS(res, C.Assets.Fonts.Regular, 14, outline or nil, '0', nil, outline and 'NONE' or 'THICK')
+    local outline = ANDROMEDA_ADB.FontOutline
+    res.Count = F.CreateFS(
+        res,
+        C.Assets.Fonts.Regular, 14, outline or nil, '0',
+        nil, outline and 'NONE' or 'THICK'
+    )
     res.Count:ClearAllPoints()
     res.Count:SetPoint('LEFT', res, 'RIGHT', 10, 0)
     res.Timer = F.CreateFS(
         frame,
-        C.Assets.Fonts.Regular,
-        14,
-        outline or nil,
-        '00:00',
-        nil,
-        outline and 'NONE' or 'THICK',
-        'RIGHT',
-        -5,
-        0
+        C.Assets.Fonts.Regular, 14, outline or nil,
+        '00:00', nil, outline and 'NONE' or 'THICK',
+        'RIGHT', -5, 0
     )
-    res:SetScript('OnUpdate', GT.RaidTool_UpdateRes)
+    res:SetScript('OnUpdate', RT.RaidTool_UpdateRes)
 
     parent.resFrame = frame
 end
 
-function GT:RaidTool_ReadyCheck(parent)
+function RT:RaidTool_ReadyCheck(parent)
     local frame = CreateFrame('Frame', nil, parent)
     frame:SetPoint('TOP', parent, 'BOTTOM', 0, -3)
     frame:SetSize(120, 50)
@@ -247,30 +243,18 @@ function GT:RaidTool_ReadyCheck(parent)
     end)
     F.SetBD(frame)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     F.CreateFS(
         frame,
-        C.Assets.Fonts.Regular,
-        14,
-        outline or nil,
-        _G.READY_CHECK,
-        nil,
-        outline and 'NONE' or 'THICK',
-        'TOP',
-        0,
-        -8
+        C.Assets.Fonts.Regular, 14, outline or nil,
+        READY_CHECK, nil, outline and 'NONE' or 'THICK',
+        'TOP', 0, -8
     )
     local rc = F.CreateFS(
         frame,
-        C.Assets.Fonts.Regular,
-        14,
-        outline or nil,
-        '',
-        nil,
-        outline and 'NONE' or 'THICK',
-        'TOP',
-        0,
-        -28
+        C.Assets.Fonts.Regular, 14, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK',
+        'TOP', 0, -28
     )
 
     local count, total
@@ -292,14 +276,14 @@ function GT:RaidTool_ReadyCheck(parent)
             count, total = 0, 0
 
             frame:ClearAllPoints()
-            if GT:IsFrameOnTop(parent) then
+            if RT:IsFrameOnTop(parent) then
                 frame:SetPoint('TOP', parent, 'BOTTOM', 0, -3)
             else
                 frame:SetPoint('BOTTOM', parent, 'TOP', 0, 3)
             end
             frame:Show()
 
-            local maxgroup = GT:GetRaidMaxGroup()
+            local maxgroup = RT:GetRaidMaxGroup()
             for i = 1, GetNumGroupMembers() do
                 local name, _, subgroup, _, _, _, _, online = GetRaidRosterInfo(i)
                 if name and online and subgroup <= maxgroup then
@@ -323,8 +307,8 @@ function GT:RaidTool_ReadyCheck(parent)
     F:RegisterEvent('READY_CHECK_FINISHED', updateReadyCheck)
 end
 
-function GT:RaidTool_Marker(parent)
-    local markerButton = _G.CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton
+function RT:RaidTool_Marker(parent)
+    local markerButton = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton
     if not markerButton then
         for _, addon in next, { 'Blizzard_CUFProfiles', 'Blizzard_CompactRaidFrames' } do
             C_AddOns.EnableAddOn(addon)
@@ -348,22 +332,22 @@ function GT:RaidTool_Marker(parent)
             if (IsInGroup() and not IsInRaid()) or UnitIsGroupLeader('player') or UnitIsGroupAssistant('player') then
                 return
             end
-            _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+            UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
         end)
     end
 end
 
-function GT:RaidTool_BuffChecker(parent)
+function RT:RaidTool_BuffChecker(parent)
     local frame = CreateFrame('Button', nil, parent)
-    frame:SetPoint('RIGHT', parent, 'LEFT', -3, 0)
+    frame:SetPoint('RIGHT', parent, 'LEFT', -5, 0)
     frame:SetSize(28, 28)
     F.ReskinButton(frame)
 
     local icon = frame:CreateTexture(nil, 'ARTWORK')
-    icon:SetOutside(nil, 5, 5)
+    icon:SetOutside()
     icon:SetAtlas('GM-icon-readyCheck')
 
-    local BuffName = { L['Flask'], _G.POWER_TYPE_FOOD, _G.SPELL_STAT4_NAME, _G.RAID_BUFF_2, _G.RAID_BUFF_3, _G.RUNES }
+    local BuffName = { L['Flask'], POWER_TYPE_FOOD, SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES }
     local NoBuff, numGroups, numPlayer = {}, 6, 0
     for i = 1, numGroups do
         NoBuff[i] = {}
@@ -382,7 +366,7 @@ function GT:RaidTool_BuffChecker(parent)
         local count = #NoBuff[i]
         if count > 0 then
             if count >= numPlayer then
-                sendMsg(L['Lack of'] .. BuffName[i] .. ': ' .. _G.ALL .. _G.PLAYER)
+                sendMsg(L['Lack of'] .. BuffName[i] .. ': ' .. ALL .. PLAYER)
             elseif count >= 5 and i > 2 then
                 sendMsg(L['Lack of'] .. BuffName[i] .. ': ' .. format(L['%s players'], count))
             else
@@ -405,7 +389,7 @@ function GT:RaidTool_BuffChecker(parent)
         end
         numPlayer = 0
 
-        local maxgroup = GT:GetRaidMaxGroup()
+        local maxgroup = RT:GetRaidMaxGroup()
         for i = 1, GetNumGroupMembers() do
             local name, _, subgroup, _, _, _, _, online, isDead = GetRaidRosterInfo(i)
             if name and online and subgroup <= maxgroup and not isDead then
@@ -481,14 +465,14 @@ function GT:RaidTool_BuffChecker(parent)
     end)
 end
 
-function GT:RaidTool_CountDown(parent)
+function RT:RaidTool_CountDown(parent)
     local frame = CreateFrame('Button', nil, parent)
-    frame:SetPoint('LEFT', parent, 'RIGHT', 3, 0)
+    frame:SetPoint('LEFT', parent, 'RIGHT', 5, 0)
     frame:SetSize(28, 28)
     F.ReskinButton(frame)
 
     local icon = frame:CreateTexture(nil, 'ARTWORK')
-    icon:SetOutside(nil, 5, 5)
+    icon:SetOutside()
     icon:SetAtlas('GM-icon-countdown')
 
     frame:HookScript('OnEnter', function(self)
@@ -496,7 +480,7 @@ function GT:RaidTool_CountDown(parent)
         GameTooltip:ClearLines()
         GameTooltip:AddLine(L['Raid Tool'], 0, 0.6, 1)
         GameTooltip:AddLine(' ')
-        GameTooltip:AddDoubleLine(C.MOUSE_LEFT_BUTTON .. C.INFO_COLOR .. _G.READY_CHECK)
+        GameTooltip:AddDoubleLine(C.MOUSE_LEFT_BUTTON .. C.INFO_COLOR .. READY_CHECK)
         GameTooltip:AddDoubleLine(C.MOUSE_RIGHT_BUTTON .. C.INFO_COLOR .. L['Start/Cancel count down'])
         GameTooltip:Show()
     end)
@@ -510,26 +494,26 @@ function GT:RaidTool_CountDown(parent)
     frame:HookScript('OnMouseDown', function(_, btn)
         if btn == 'LeftButton' then
             if InCombatLockdown() then
-                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
                 return
             end
             if IsInGroup() and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid())) then
                 DoReadyCheck()
             else
-                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
             end
         else
             if IsInGroup() and (UnitIsGroupLeader('player') or (UnitIsGroupAssistant('player') and IsInRaid())) then
-                if IsAddOnLoaded('DBM-Core') then
+                if C_AddOns.IsAddOnLoaded('DBM-Core') then
                     if reset then
                         SlashCmdList['DEADLYBOSSMODS']('pull ' .. C.DB['General']['RaidToolCountdown'])
                     else
                         SlashCmdList['DEADLYBOSSMODS']('pull 0')
                     end
                     reset = not reset
-                elseif IsAddOnLoaded('BigWigs') then
+                elseif C_AddOns.IsAddOnLoaded('BigWigs') then
                     if not SlashCmdList['BIGWIGSPULL'] then
-                        LoadAddOn('BigWigs_Plugins')
+                        C_AddOns.LoadAddOn('BigWigs_Plugins')
                     end
                     if reset then
                         SlashCmdList['BIGWIGSPULL'](C.DB['General']['RaidToolCountdown'])
@@ -541,13 +525,13 @@ function GT:RaidTool_CountDown(parent)
                     UIErrorsFrame:AddMessage(C.RED_COLOR .. L['You can not do it without DBM or BigWigs!'])
                 end
             else
-                UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
             end
         end
     end)
 end
 
-function GT:RaidTool_CreateMenu(parent)
+function RT:RaidTool_CreateMenu(parent)
     local frame = CreateFrame('Frame', nil, parent)
     frame:SetPoint('TOP', parent, 'BOTTOM', 0, -3)
     frame:SetSize(182, 70)
@@ -572,17 +556,17 @@ function GT:RaidTool_CreateMenu(parent)
 
     local buttons = {
         {
-            _G.TEAM_DISBAND,
+            TEAM_DISBAND,
             function()
                 if UnitIsGroupLeader('player') then
-                    _G.StaticPopup_Show('ANDROMEDA_DISBAND_GROUP')
+                    StaticPopup_Show('ANDROMEDA_DISBAND_GROUP')
                 else
-                    _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                    UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
                 end
             end,
         },
         {
-            _G.CONVERT_TO_RAID,
+            CONVERT_TO_RAID,
             function()
                 if UnitIsGroupLeader('player') and not HasLFGRestrictions() and GetNumGroupMembers() <= 5 then
                     if IsInRaid() then
@@ -593,12 +577,12 @@ function GT:RaidTool_CreateMenu(parent)
                     frame:Hide()
                     frame:SetScript('OnUpdate', nil)
                 else
-                    _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                    UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
                 end
             end,
         },
         {
-            _G.ROLE_POLL,
+            ROLE_POLL,
             function()
                 if
                     IsInGroup()
@@ -607,14 +591,14 @@ function GT:RaidTool_CreateMenu(parent)
                 then
                     InitiateRolePoll()
                 else
-                    _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_LEADER)
+                    UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_LEADER)
                 end
             end,
         },
         {
-            _G.RAID_CONTROL,
+            RAID_CONTROL,
             function()
-                _G.ToggleFriendsFrame(3)
+                ToggleFriendsFrame(3)
             end,
         },
     }
@@ -630,26 +614,26 @@ function GT:RaidTool_CreateMenu(parent)
     parent.buttons = bu
 end
 
-function GT:RaidTool_Misc()
+function RT:RaidTool_Misc()
     -- UIWidget reanchor
-    if not _G.UIWidgetTopCenterContainerFrame:IsMovable() then -- can be movable for some addons, eg BattleInfo
-        _G.UIWidgetTopCenterContainerFrame:ClearAllPoints()
-        _G.UIWidgetTopCenterContainerFrame:SetPoint('TOP', 0, -35)
+    if not UIWidgetTopCenterContainerFrame:IsMovable() then -- can be movable for some addons, eg BattleInfo
+        UIWidgetTopCenterContainerFrame:ClearAllPoints()
+        UIWidgetTopCenterContainerFrame:SetPoint('TOP', 0, -35)
     end
 end
 
-function GT:OnLogin()
+function RT:OnLogin()
     if not C.DB.General.GroupTool then
         return
     end
 
-    local frame = GT:RaidTool_Header()
-    GT:RaidTool_RoleCount(frame)
-    GT:RaidTool_CombatRes(frame)
-    GT:RaidTool_ReadyCheck(frame)
-    GT:RaidTool_Marker(frame)
-    GT:RaidTool_BuffChecker(frame)
-    GT:RaidTool_CreateMenu(frame)
-    GT:RaidTool_CountDown(frame)
-    GT:RaidTool_Misc()
+    local frame = RT:RaidTool_Header()
+    RT:RaidTool_RoleCount(frame)
+    RT:RaidTool_CombatRes(frame)
+    RT:RaidTool_ReadyCheck(frame)
+    RT:RaidTool_Marker(frame)
+    RT:RaidTool_BuffChecker(frame)
+    RT:RaidTool_CreateMenu(frame)
+    RT:RaidTool_CountDown(frame)
+    RT:RaidTool_Misc()
 end
