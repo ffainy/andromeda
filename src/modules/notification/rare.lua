@@ -41,7 +41,7 @@ local function onEvent(id)
             return
         end
 
-        F:CreateNotification(_G.GARRISON_MISSION_RARE, tex .. (info.name or ''), 'Interface\\ICONS\\INV_Misc_Map_01')
+        F:CreateNotification(GARRISON_MISSION_RARE, tex .. (info.name or ''), nil, 'Interface\\ICONS\\INV_Misc_Map_01')
 
         local nameStr
         local mapID = C_Map.GetBestMapForUnit('player')
@@ -72,7 +72,7 @@ local function checkInstanceType()
     NOTIFICATION.RareInstType = instanceType
 end
 
-function NOTIFICATION:RareNotify()
+function NOTIFICATION:RareFound()
     if C.DB.Notification.RareFound then
         checkInstanceType()
         F:RegisterEvent('PLAYER_ENTERING_WORLD', checkInstanceType)

@@ -471,11 +471,12 @@ C.CharacterSettings = {
     },
     Notification = {
         Enable = true,
-        BagFull = true,
+        BagsFull = true,
         NewMail = true,
         LowDurability = true,
         RareFound = true,
         ParagonChest = true,
+        InstanceUtility = true,
     },
     Chat = {
         Enable = true,

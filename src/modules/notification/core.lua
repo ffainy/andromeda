@@ -118,6 +118,8 @@ local function display(name, message, clickFunc, texture)
 
     if type(texture) == 'string' then
         NOTIFICATION.Icon:SetTexture(texture)
+    elseif type(texture) == 'number' then
+        NOTIFICATION.Icon:SetTexture(texture)
     else
         NOTIFICATION.Icon:SetTexture('Interface\\ICONS\\WoW_Store')
     end
@@ -228,11 +230,11 @@ function NOTIFICATION:OnLogin()
 
     handler:SetScript('OnEvent', onEvent)
 
-    self:NewMailNotify()
-    self:BagFullNotify()
-    self:VersionCheck()
-    self:RareNotify()
-    self:ParagonNotify()
-    self:InstanceNotify()
-    self:CheckIncompatible()
+    NOTIFICATION:NewMail()
+    NOTIFICATION:BagsFull()
+    NOTIFICATION:NewVersion()
+    NOTIFICATION:RareFound()
+    NOTIFICATION:ParagonNotify()
+    NOTIFICATION:InstanceUtility()
+    NOTIFICATION:Incompatible()
 end

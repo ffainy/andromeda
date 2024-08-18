@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local NOTIFICATION = F:GetModule('Notification')
 
-local IncompatibleAddOns = {
+local incompatibleAddOns = {
     ['BigFoot'] = true,
     ['!!!163UI!!!'] = true,
     ['Aurora'] = true,
@@ -11,11 +11,12 @@ local IncompatibleAddOns = {
     ['NDui'] = true,
 }
 
-local AddonDependency = {
+local addonDependency = {
     ['BigFoot'] = '!!!Libs',
 }
 
-local IncompatibleList = {}
+local incompatibleList = {}
+
 local function ConstructFrame()
     local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetPoint('TOP', 0, -200)
@@ -26,33 +27,25 @@ local function ConstructFrame()
     local outline = _G.ANDROMEDA_ADB.FontOutline
     F.CreateFS(
         frame,
-        C.Assets.Fonts.Bold,
-        18,
-        outline or nil,
-        L['Incompatible AddOns:'],
-        'RED',
+        C.Assets.Fonts.Bold, 18, outline or nil,
+        L['Incompatible AddOns:'], 'RED',
         outline and 'NONE' or 'THICK',
-        'TOPLEFT',
-        10,
-        -10
+        'TOPLEFT', 10, -10
     )
 
     local offset = 0
-    for _, addon in pairs(IncompatibleList) do
+    for _, addon in pairs(incompatibleList) do
         F.CreateFS(
             frame,
-            C.Assets.Fonts.Regular,
-            14,
-            outline or nil,
-            addon,
-            false,
+            C.Assets.Fonts.Regular, 14, outline or nil,
+            addon, false,
             outline and 'NONE' or 'THICK',
-            'TOPLEFT',
-            10,
-            -(50 + offset)
+            'TOPLEFT', 10, -(50 + offset)
         )
+
         offset = offset + 24
     end
+
     frame:SetSize(300, 100 + offset)
 
     local close = F.CreateButton(frame, 16, 16, true, C.Assets.Textures.Close)
@@ -65,24 +58,25 @@ local function ConstructFrame()
     disable:SetPoint('BOTTOM', 0, 10)
     disable.text:SetTextColor(1, 0.8, 0)
     disable:SetScript('OnClick', function()
-        for _, addon in pairs(IncompatibleList) do
+        for _, addon in pairs(incompatibleList) do
             C_AddOns.DisableAddOn(addon)
-            if AddonDependency[addon] then
-                C_AddOns.DisableAddOn(AddonDependency[addon])
+            if addonDependency[addon] then
+                C_AddOns.DisableAddOn(addonDependency[addon])
             end
         end
+
         ReloadUI()
     end)
 end
 
-function NOTIFICATION:CheckIncompatible()
-    for addon in pairs(IncompatibleAddOns) do
+function NOTIFICATION:Incompatible()
+    for addon in pairs(incompatibleAddOns) do
         if C_AddOns.IsAddOnLoaded(addon) then
-            tinsert(IncompatibleList, addon)
+            tinsert(incompatibleList, addon)
         end
     end
 
-    if #IncompatibleList > 0 then
+    if #incompatibleList > 0 then
         ConstructFrame()
     end
 end

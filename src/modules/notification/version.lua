@@ -82,7 +82,8 @@ function NOTIFICATION:VersionCheck_UpdateGroup()
     NOTIFICATION:VersionCheck_Send(CheckChannel())
 end
 
-function NOTIFICATION:VersionCheck()
+---#FIXME
+function NOTIFICATION:NewVersion()
     -- NOTIFICATION:VersionCheck_Init()
     -- C_ChatInfo.RegisterAddonMessagePrefix('AndromedaUIVersionCheck')
     -- F:RegisterEvent('CHAT_MSG_ADDON', NOTIFICATION.VersionCheck_Update)
