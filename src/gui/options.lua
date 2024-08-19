@@ -9,6 +9,7 @@ local VIGNETTING = F:GetModule('Vignetting')
 local BLIZZARD = F:GetModule('Blizzard')
 local INFOBAR = F:GetModule('InfoBar')
 local ANNOUNCEMENT = F:GetModule('Announcement')
+local COMBAT = F:GetModule('Combat')
 local MAP = F:GetModule('Map')
 local oUF = F.Libs.oUF
 
@@ -364,18 +365,18 @@ end
 -- Theme
 local function UpdateBackdropAlpha()
     for _, frame in pairs(C.Frames) do
-        frame:SetBackdropColor(0, 0, 0, _G.ANDROMEDA_ADB.BackdropAlpha)
+        frame:SetBackdropColor(0, 0, 0, ANDROMEDA_ADB.BackdropAlpha)
     end
 end
 
 -- Combat
 local function UpdateWorldTextScale()
-    SetCVar('WorldTextScale', _G.ANDROMEDA_ADB.WorldTextScale)
+    SetCVar('WorldTextScale', ANDROMEDA_ADB.WorldTextScale)
 end
 
 local function UpdateBlizzardFloatingCombatText()
-    local enable = _G.ANDROMEDA_ADB.FloatingCombatText
-    local oldStyle = _G.ANDROMEDA_ADB.FloatingCombatTextOldStyle
+    local enable = ANDROMEDA_ADB.FloatingCombatText
+    local oldStyle = ANDROMEDA_ADB.FloatingCombatTextOldStyle
 
     SetCVar('floatingCombatTextCombatDamage', enable and 1 or 0) -- 黄色伤害数字
     SetCVar('floatingCombatTextCombatHealing', enable and 1 or 0) -- 绿色治疗数字
@@ -391,6 +392,10 @@ end
 
 local function SetupSoundAlert()
     GUI:SetupSoundAlert(GUI.Page[6])
+end
+
+local function toggleCooldownPulse()
+    COMBAT:HandleCdpEvents()
 end
 
 -- Announcement
@@ -858,7 +863,7 @@ GUI.OptionsList = {
             L['Background Type'],
             nil,
             {
-                _G.DISABLE,
+                DISABLE,
                 L['Default'],
                 L['Black'],
             },
@@ -1123,14 +1128,14 @@ GUI.OptionsList = {
             L['Quality Threshold'],
             true,
             {
-                _G.ITEM_QUALITY1_DESC,
-                _G.ITEM_QUALITY2_DESC,
-                _G.ITEM_QUALITY3_DESC,
-                _G.ITEM_QUALITY4_DESC,
-                _G.ITEM_QUALITY5_DESC,
-                _G.ITEM_QUALITY6_DESC,
-                _G.ITEM_QUALITY7_DESC,
-                _G.SPELL_SCHOOLALL,
+                ITEM_QUALITY1_DESC,
+                ITEM_QUALITY2_DESC,
+                ITEM_QUALITY3_DESC,
+                ITEM_QUALITY4_DESC,
+                ITEM_QUALITY5_DESC,
+                ITEM_QUALITY6_DESC,
+                ITEM_QUALITY7_DESC,
+                SPELL_SCHOOLALL,
             },
         },
         {},
@@ -1490,8 +1495,8 @@ GUI.OptionsList = {
             L['Cooldown Pulse'],
             true,
             nil,
-            nil,
-            L['Track your spell cooldown using a pulse icon in the center of the screen.'],
+            toggleCooldownPulse,
+            L['Flashs ability icons when they are available to be used after cooldown.'],
         },
         {
             1,
@@ -1510,7 +1515,7 @@ GUI.OptionsList = {
             'EasyFocusKey',
             L['Easy Focus'],
             nil,
-            { 'CTRL', 'ALT', 'SHIFT', _G.DISABLE },
+            { 'CTRL', 'ALT', 'SHIFT', DISABLE },
             nil,
             L['Use the left mouse button to click on any unit while holding down the specified modifier key to quickly set it as focus.'],
         },
@@ -1520,7 +1525,7 @@ GUI.OptionsList = {
             'EasyMarkKey',
             L['Easy Mark'],
             true,
-            { 'CTRL', 'ALT', 'SHIFT', _G.DISABLE },
+            { 'CTRL', 'ALT', 'SHIFT', DISABLE },
             nil,
             L['Use the left mouse button to click on any unit while holding down the specified modifier key to quickly mark it.'],
         },
@@ -1630,7 +1635,7 @@ GUI.OptionsList = {
             'SortMode',
             L['Sort Mode'],
             true,
-            { L['Forward'], L['Backward'], _G.DISABLE },
+            { L['Forward'], L['Backward'], DISABLE },
             UpdateInventorySortOrder,
             L['If you have empty slots after sort, please disable inventory module, and turn off all bags filter in default ui containers.'],
         },
@@ -1792,7 +1797,7 @@ GUI.OptionsList = {
             'HideInCombat',
             L['Hide in Combat'],
             nil,
-            { _G.DISABLE, 'ALT', 'SHIFT', 'CTRL', _G.ALWAYS },
+            { DISABLE, 'ALT', 'SHIFT', 'CTRL', ALWAYS },
             nil,
             L['Select the way to hide GameTooltip in combat.|nGameTooltip only visible when you hold the modified key you selected.'],
         },
@@ -2279,7 +2284,7 @@ GUI.OptionsList = {
             'DebuffWatcherDispellType',
             L['Debuff Watcher'],
             nil,
-            { L['Filter: Dispellable'], L['Filter: Always'], _G.DISABLE },
+            { L['Filter: Dispellable'], L['Filter: Always'], DISABLE },
             UpdateRaidAurasOptions,
             L['Filter Display: Only show dispellable Magic and Enrage buffs that you can dispell.|nAlways Display: Always show dispellable Magic and Enrage buffs, whether you can dispel them or not.'],
         },
@@ -2471,11 +2476,11 @@ GUI.OptionsList = {
             L['Name Tag'],
             nil,
             {
-                _G.NAME,
-                _G.LEVEL .. ' ' .. _G.NAME,
-                L['Classification'] .. ' ' .. _G.LEVEL .. ' ' .. _G.NAME,
-                L['Classification'] .. ' ' .. _G.NAME,
-                _G.DISABLE,
+                NAME,
+                LEVEL .. ' ' .. NAME,
+                L['Classification'] .. ' ' .. LEVEL .. ' ' .. NAME,
+                L['Classification'] .. ' ' .. NAME,
+                DISABLE,
             },
             UpdateNamePlateTags,
             L['The classification tag supports three types: Rare, Elite and Boss. |nRare is white, Elite is yellow, and Boss is red.|nWhen the unit has the same level as you, the level tag will be hidden.'],
@@ -2493,7 +2498,7 @@ GUI.OptionsList = {
                 L['Current Percent'],
                 L['Loss Value'],
                 L['Loss Percent'],
-                _G.DISABLE,
+                DISABLE,
             },
             UpdateNamePlateTags,
             L['The percentage will be hidden when the health value is full.'],
@@ -2547,7 +2552,7 @@ GUI.OptionsList = {
             'DispellMode',
             L['Dispellable Buffs'],
             nil,
-            { L['Filter Display'], L['Always Display'], _G.DISABLE },
+            { L['Filter Display'], L['Always Display'], DISABLE },
             RefreshAllPlates,
             L['Filter Display: Only show dispellable Magic and Enrage buffs that you can dispell.|nAlways Display: Always show dispellable Magic and Enrage buffs, whether you can dispel them or not.'],
         },

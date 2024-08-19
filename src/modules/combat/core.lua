@@ -128,4 +128,5 @@ function COMBAT:OnLogin()
     COMBAT:EasyFocus()
     COMBAT:EasyMark()
     COMBAT:BuffReminder()
+    COMBAT:CooldownPulse()
 end
