@@ -180,7 +180,7 @@ F:RegisterEvent('PLAYER_LOGIN', function()
         end
     end
 
-    F.Modules = modules
+    engine.Modules = modules
 
     if F.InitCallback then
         F:InitCallback()
