@@ -24,23 +24,19 @@ local function GetNPCID()
     return F:GetNpcId(UnitGUID('npc'))
 end
 
-local function IsTrackingHidden()
-    for index = 1, C_Minimap.GetNumTrackingTypes() do
-        local name, _, active = C_Minimap.GetTrackingInfo(index)
-        if name == _G.MINIMAP_TRACKING_TRIVIAL_QUESTS then
-            return active
-        end
-    end
+local function IsAccountCompleted(questID)
+    return C_Minimap.IsFilteredOut(Enum.MinimapTrackingFilter.AccountCompletedQuests) and
+    C_QuestLog.IsQuestFlaggedCompletedOnAccount(questID)
 end
 
 local ignoreQuestNPC = {
-    [88570] = true, -- Fate-Twister Tiklal
-    [87391] = true, -- Fate-Twister Seress
+    [88570] = true,  -- Fate-Twister Tiklal
+    [87391] = true,  -- Fate-Twister Seress
     [111243] = true, -- Archmage Lan'dalock
     [108868] = true, -- Hunter's order hall
     [101462] = true, -- Reaves
-    [43929] = true, -- 4000
-    [14847] = true, -- DarkMoon
+    [43929] = true,  -- 4000
+    [14847] = true,  -- DarkMoon
     [119388] = true, -- 酋长哈顿
     [114719] = true, -- 商人塞林
     [121263] = true, -- 大技师罗姆尔
@@ -51,10 +47,10 @@ local ignoreQuestNPC = {
     [141584] = true, -- 祖尔温
     [142063] = true, -- 特兹兰
     [143388] = true, -- 德鲁扎
-    [98489] = true, -- 海难俘虏
+    [98489] = true,  -- 海难俘虏
     [135690] = true, -- 亡灵舰长
     [105387] = true, -- 安杜斯
-    [93538] = true, -- 达瑞妮斯
+    [93538] = true,  -- 达瑞妮斯
     [154534] = true, -- 大杂院阿畅
     [150987] = true, -- 肖恩·维克斯，斯坦索姆
     [150563] = true, -- 斯卡基特，麦卡贡订单日常
@@ -88,8 +84,8 @@ QuickQuest:Register('QUEST_GREETING', function()
     local available = GetNumAvailableQuests()
     if available > 0 then
         for index = 1, available do
-            local isTrivial = GetAvailableQuestInfo(index)
-            if not isTrivial or IsTrackingHidden() then
+            local isTrivial, _, _, _, questID = GetAvailableQuestInfo(index)
+            if not IsAccountCompleted(questID) and (not isTrivial or C_Minimap.IsTrackingHiddenQuests()) then
                 SelectAvailableQuest(index)
             end
         end
@@ -116,11 +112,11 @@ local ignoreGossipNPC = {
     [95200] = true,
     [95201] = true,
     -- Misc NPCs
-    [79740] = true, -- Warmaster Zog (Horde)
-    [79953] = true, -- Lieutenant Thorn (Alliance)
-    [84268] = true, -- Lieutenant Thorn (Alliance)
-    [84511] = true, -- Lieutenant Thorn (Alliance)
-    [84684] = true, -- Lieutenant Thorn (Alliance)
+    [79740] = true,  -- Warmaster Zog (Horde)
+    [79953] = true,  -- Lieutenant Thorn (Alliance)
+    [84268] = true,  -- Lieutenant Thorn (Alliance)
+    [84511] = true,  -- Lieutenant Thorn (Alliance)
+    [84684] = true,  -- Lieutenant Thorn (Alliance)
     [117871] = true, -- War Councilor Victoria (Class Challenges @ Broken Shore)
     [155101] = true, -- 元素精华融合器
     [155261] = true, -- 肖恩·维克斯，斯坦索姆
@@ -142,9 +138,9 @@ local ignoreGossipNPC = {
 }
 
 local autoSelectFirstOptionList = {
-    [97004] = true, -- "Red" Jack Findle, Rogue ClassHall
-    [96782] = true, -- Lucian Trias, Rogue ClassHall
-    [93188] = true, -- Mongar, Rogue ClassHall
+    [97004] = true,  -- "Red" Jack Findle, Rogue ClassHall
+    [96782] = true,  -- Lucian Trias, Rogue ClassHall
+    [93188] = true,  -- Mongar, Rogue ClassHall
     [107486] = true, -- 群星密探
     [167839] = true, -- 灵魂残渣，爬塔
 }
@@ -154,7 +150,7 @@ local ignoreInstances = {
     [1626] = true, -- 群星庭院
 }
 
-local QUEST_STRING = 'cFF0000FF.-' .. _G.TRANSMOG_SOURCE_2
+local QUEST_STRING = 'cFF0000FF.-' .. TRANSMOG_SOURCE_2
 
 QuickQuest:Register('GOSSIP_SHOW', function()
     local npcID = GetNPCID()
@@ -177,7 +173,8 @@ QuickQuest:Register('GOSSIP_SHOW', function()
     if available > 0 then
         for index, questInfo in ipairs(C_GossipInfo.GetAvailableQuests()) do
             local trivial = questInfo.isTrivial
-            if not trivial or IsTrackingHidden() or (trivial and npcID == 64337) then
+            local questID = questInfo.questID
+            if not IsAccountCompleted(questID) and (not trivial or C_Minimap.IsTrackingHiddenQuests() or (trivial and npcID == 64337)) then
                 C_GossipInfo.SelectAvailableQuest(questInfo.questID)
             end
         end
@@ -209,7 +206,7 @@ QuickQuest:Register('GOSSIP_SHOW', function()
     local questGossipID
     for i = 1, numOptions do
         local option = gossipInfoTable[i]
-        if option.name and (strfind(option.name, QUEST_STRING) or option.flags == _G.QuestLabelPrepend) then
+        if option.name and (strfind(option.name, QUEST_STRING) or option.flags == QuestLabelPrepend) then
             numQuestGossips = numQuestGossips + 1
             questGossipID = option.gossipOptionID
         end
@@ -238,7 +235,7 @@ QuickQuest:Register('QUEST_DETAIL', function()
         AcceptQuest()
     elseif QuestGetAutoAccept() then
         AcknowledgeAutoAcceptQuest()
-    elseif not C_QuestLog.IsQuestTrivial(GetQuestID()) or IsTrackingHidden() then
+    elseif not C_QuestLog.IsQuestTrivial(GetQuestID()) or C_Minimap.IsTrackingHiddenQuests() then
         if not C.IgnoreQuestNPC[GetNPCID()] then
             AcceptQuest()
         end
@@ -248,7 +245,7 @@ end)
 QuickQuest:Register('QUEST_ACCEPT_CONFIRM', AcceptQuest)
 
 QuickQuest:Register('QUEST_ACCEPTED', function()
-    if _G.QuestFrame:IsShown() and QuestGetAutoAccept() then
+    if QuestFrame:IsShown() and QuestGetAutoAccept() then
         CloseQuest()
     end
 end)
@@ -261,19 +258,19 @@ end)
 
 local itemBlacklist = {
     -- Inscription weapons
-    [31690] = 79343, -- Inscribed Tiger Staff
-    [31691] = 79340, -- Inscribed Crane Staff
-    [31692] = 79341, -- Inscribed Serpent Staff
+    [31690] = 79343,            -- Inscribed Tiger Staff
+    [31691] = 79340,            -- Inscribed Crane Staff
+    [31692] = 79341,            -- Inscribed Serpent Staff
     -- Darkmoon Faire artifacts
-    [29443] = 71635, -- Imbued Crystal
-    [29444] = 71636, -- Monstrous Egg
-    [29445] = 71637, -- Mysterious Grimoire
-    [29446] = 71638, -- Ornate Weapon
-    [29451] = 71715, -- A Treatise on Strategy
-    [29456] = 71951, -- Banner of the Fallen
-    [29457] = 71952, -- Captured Insignia
-    [29458] = 71953, -- Fallen Adventurer's Journal
-    [29464] = 71716, -- Soothsayer's Runes
+    [29443] = 71635,            -- Imbued Crystal
+    [29444] = 71636,            -- Monstrous Egg
+    [29445] = 71637,            -- Mysterious Grimoire
+    [29446] = 71638,            -- Ornate Weapon
+    [29451] = 71715,            -- A Treatise on Strategy
+    [29456] = 71951,            -- Banner of the Fallen
+    [29457] = 71952,            -- Captured Insignia
+    [29458] = 71953,            -- Fallen Adventurer's Journal
+    [29464] = 71716,            -- Soothsayer's Runes
     -- Tiller Gifts
     ['progress_79264'] = 79264, -- Ruby Shard
     ['progress_79265'] = 79265, -- Blue Feather
@@ -281,34 +278,34 @@ local itemBlacklist = {
     ['progress_79267'] = 79267, -- Lovely Apple
     ['progress_79268'] = 79268, -- Marsh Lily
     -- Garrison scouting missives
-    ['38180'] = 122424, -- Scouting Missive: Broken Precipice
-    ['38193'] = 122423, -- Scouting Missive: Broken Precipice
-    ['38182'] = 122418, -- Scouting Missive: Darktide Roost
-    ['38196'] = 122417, -- Scouting Missive: Darktide Roost
-    ['38179'] = 122400, -- Scouting Missive: Everbloom Wilds
-    ['38192'] = 122404, -- Scouting Missive: Everbloom Wilds
-    ['38194'] = 122420, -- Scouting Missive: Gorian Proving Grounds
-    ['38202'] = 122419, -- Scouting Missive: Gorian Proving Grounds
-    ['38178'] = 122402, -- Scouting Missive: Iron Siegeworks
-    ['38191'] = 122406, -- Scouting Missive: Iron Siegeworks
-    ['38184'] = 122413, -- Scouting Missive: Lost Veil Anzu
-    ['38198'] = 122414, -- Scouting Missive: Lost Veil Anzu
-    ['38177'] = 122403, -- Scouting Missive: Magnarok
-    ['38190'] = 122399, -- Scouting Missive: Magnarok
-    ['38181'] = 122421, -- Scouting Missive: Mok'gol Watchpost
-    ['38195'] = 122422, -- Scouting Missive: Mok'gol Watchpost
-    ['38185'] = 122411, -- Scouting Missive: Pillars of Fate
-    ['38199'] = 122409, -- Scouting Missive: Pillars of Fate
-    ['38187'] = 122412, -- Scouting Missive: Shattrath Harbor
-    ['38201'] = 122410, -- Scouting Missive: Shattrath Harbor
-    ['38186'] = 122408, -- Scouting Missive: Skettis
-    ['38200'] = 122407, -- Scouting Missive: Skettis
-    ['38183'] = 122416, -- Scouting Missive: Socrethar's Rise
-    ['38197'] = 122415, -- Scouting Missive: Socrethar's Rise
-    ['38176'] = 122405, -- Scouting Missive: Stonefury Cliffs
-    ['38189'] = 122401, -- Scouting Missive: Stonefury Cliffs
+    ['38180'] = 122424,         -- Scouting Missive: Broken Precipice
+    ['38193'] = 122423,         -- Scouting Missive: Broken Precipice
+    ['38182'] = 122418,         -- Scouting Missive: Darktide Roost
+    ['38196'] = 122417,         -- Scouting Missive: Darktide Roost
+    ['38179'] = 122400,         -- Scouting Missive: Everbloom Wilds
+    ['38192'] = 122404,         -- Scouting Missive: Everbloom Wilds
+    ['38194'] = 122420,         -- Scouting Missive: Gorian Proving Grounds
+    ['38202'] = 122419,         -- Scouting Missive: Gorian Proving Grounds
+    ['38178'] = 122402,         -- Scouting Missive: Iron Siegeworks
+    ['38191'] = 122406,         -- Scouting Missive: Iron Siegeworks
+    ['38184'] = 122413,         -- Scouting Missive: Lost Veil Anzu
+    ['38198'] = 122414,         -- Scouting Missive: Lost Veil Anzu
+    ['38177'] = 122403,         -- Scouting Missive: Magnarok
+    ['38190'] = 122399,         -- Scouting Missive: Magnarok
+    ['38181'] = 122421,         -- Scouting Missive: Mok'gol Watchpost
+    ['38195'] = 122422,         -- Scouting Missive: Mok'gol Watchpost
+    ['38185'] = 122411,         -- Scouting Missive: Pillars of Fate
+    ['38199'] = 122409,         -- Scouting Missive: Pillars of Fate
+    ['38187'] = 122412,         -- Scouting Missive: Shattrath Harbor
+    ['38201'] = 122410,         -- Scouting Missive: Shattrath Harbor
+    ['38186'] = 122408,         -- Scouting Missive: Skettis
+    ['38200'] = 122407,         -- Scouting Missive: Skettis
+    ['38183'] = 122416,         -- Scouting Missive: Socrethar's Rise
+    ['38197'] = 122415,         -- Scouting Missive: Socrethar's Rise
+    ['38176'] = 122405,         -- Scouting Missive: Stonefury Cliffs
+    ['38189'] = 122401,         -- Scouting Missive: Stonefury Cliffs
     -- Misc
-    [31664] = 88604, -- Nat's Fishing Journal
+    [31664] = 88604,            -- Nat's Fishing Journal
 }
 
 QuickQuest:Register('QUEST_PROGRESS', function()
@@ -389,7 +386,7 @@ QuickQuest:Register('QUEST_COMPLETE', function()
             end
         end
 
-        local button = bestIndex and _G.QuestInfoRewardsFrame.RewardButtons[bestIndex]
+        local button = bestIndex and QuestInfoRewardsFrame.RewardButtons[bestIndex]
         if button then
             QuestInfoItem_OnClick(button)
         end
@@ -449,8 +446,8 @@ local function UnitQuickQuestStatus(self)
             L['You no longer auto interact quests with current NPC. You can hold key ALT and click the name above to undo this.']
         )
 
-        local outline = _G.ANDROMEDA_ADB.FontOutline
-        F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, _G.IGNORED, nil, outline and 'NONE' or 'THICK')
+        local outline = ANDROMEDA_ADB.FontOutline
+        F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, IGNORED, nil, outline and 'NONE' or 'THICK')
             :SetTextColor(1, 0, 0)
 
         self.__ignore = frame
@@ -493,12 +490,12 @@ local function ToggleQuickQuestStatus(self)
     UpdateIgnoreList()
 end
 
-_G.QuestNpcNameFrame:HookScript('OnShow', UnitQuickQuestStatus)
-_G.QuestNpcNameFrame:HookScript('OnMouseDown', ToggleQuickQuestStatus)
+QuestNpcNameFrame:HookScript('OnShow', UnitQuickQuestStatus)
+QuestNpcNameFrame:HookScript('OnMouseDown', ToggleQuickQuestStatus)
 
-local frame = _G.GossipFrame.TitleContainer
+local frame = GossipFrame.TitleContainer
 if frame then
-    _G.GossipFrameCloseButton:SetFrameLevel(frame:GetFrameLevel() + 1) -- fix clicking on gossip close button
+    GossipFrameCloseButton:SetFrameLevel(frame:GetFrameLevel() + 1) -- fix clicking on gossip close button
     frame:HookScript('OnShow', UnitQuickQuestStatus)
     frame:HookScript('OnMouseDown', ToggleQuickQuestStatus)
 end
