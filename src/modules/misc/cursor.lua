@@ -1,6 +1,6 @@
 local F, C = unpack(select(2, ...))
 local MISC = F:GetModule('Misc')
-
+---#TODO remove this
 local pollingRate, numLines = 0.05, 15
 local lines = {}
 for i = 1, numLines do
@@ -14,7 +14,7 @@ for i = 1, numLines do
     lines[i] = { line = line, x = 0, y = 0 }
 end
 
-local function GetLength(startX, startY, endX, endY)
+local function getLength(startX, startY, endX, endY)
     local dx, dy = endX - startX, endY - startY
 
     if dx < 0 then
@@ -31,7 +31,7 @@ local function updateTrail()
         local info = lines[i]
 
         local endX, endY = info.x, info.y
-        if GetLength(startX, startY, endX, endY) < 0.1 then
+        if getLength(startX, startY, endX, endY) < 0.1 then
             info.line:Hide()
         else
             info.line:Show()
@@ -52,7 +52,7 @@ local x = 0
 local y = 0
 local speed = 0
 
-local function UpdateGlow(self, elapsed)
+local function updateGlow(self, elapsed)
     local dX = x
     local dY = y
     x, y = GetCursorPosition()
@@ -82,11 +82,11 @@ local function addGlow()
     texture:SetAlpha(0.5)
     frame.texture = texture
 
-    frame:SetScript('OnUpdate', UpdateGlow)
+    frame:SetScript('OnUpdate', updateGlow)
 end
 
 function MISC:CursorTrail()
-    if not C.DB.General.CursorTrail then
+    if not C.DB.General.FlashCursor then
         return
     end
 
