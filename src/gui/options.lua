@@ -402,6 +402,10 @@ local function toggleQuestProgress()
     ANNOUNCEMENT:QuestProgress()
 end
 
+local function toggleInstanceReset()
+    ANNOUNCEMENT:InstanceReset()
+end
+
 -- Options
 GUI.OptionsList = {
     [1] = { -- general
@@ -1546,13 +1550,13 @@ GUI.OptionsList = {
             4,
             'Announcement',
             'Channel',
-            _G.CHANNEL,
+            CHANNEL,
             true,
             {
-                _G.CHAT_MSG_PARTY .. '/' .. _G.CHAT_MSG_RAID,
-                _G.YELL,
-                _G.EMOTE,
-                _G.SAY,
+                CHAT_MSG_PARTY .. '/' .. CHAT_MSG_RAID,
+                YELL,
+                EMOTE,
+                SAY,
             },
         },
         {
@@ -1597,6 +1601,8 @@ GUI.OptionsList = {
             'Reset',
             L['Instance Reset'],
             true,
+            nil,
+            toggleInstanceReset,
         },
     },
     [8] = { -- inventory
