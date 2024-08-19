@@ -1,6 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <Script file="filter.lua"/>
     <Script file="core.lua"/>
-    <Script file="reset.lua"/>
-    <Script file="quest.lua"/>
+    <Script file="combat-resurrection.lua"/>
+    <Script file="dispel.lua"/>
+    <Script file="important-spell.lua"/>
+    <Script file="interrupt.lua"/>
+    <Script file="reset-instance.lua"/>
+    <Script file="quest-progress.lua"/>
+    <Script file="taunt.lua"/>
 </Ui>

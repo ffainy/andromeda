@@ -407,8 +407,8 @@ local function toggleQuestProgress()
     ANNOUNCEMENT:QuestProgress()
 end
 
-local function toggleInstanceReset()
-    ANNOUNCEMENT:InstanceReset()
+local function toggleResetInstance()
+    ANNOUNCEMENT:UpdateResetInstance()
 end
 
 -- Options
@@ -1539,23 +1539,19 @@ GUI.OptionsList = {
     [7] = { -- announcement
         {
             1,
-            'Announcement',
-            'Enable',
-            L['Enable Announcement'],
+            'Announcement', 'Enable', L['Enable Announcement'],
+            nil, nil, nil,
+            L['Announces some of your actions when inside a instance.'],
         },
         {
             1,
-            'Announcement',
-            'Spells',
-            L['Major Spells'],
-            nil,
-            SetupAnnounceableSpells,
+            'Announcement', 'ImportantSpells', L['Important Spells'],
+            nil, SetupAnnounceableSpells, nil,
+            L['Announces the important spells you cast. |nClick the gear icon on the right to customize the list of spells that need to be announced.']
         },
         {
             4,
-            'Announcement',
-            'Channel',
-            CHANNEL,
+            'Announcement', 'Channel', CHANNEL,
             true,
             {
                 CHAT_MSG_PARTY .. '/' .. CHAT_MSG_RAID,
@@ -1566,48 +1562,52 @@ GUI.OptionsList = {
         },
         {
             1,
-            'Announcement',
-            'Interrupt',
-            L['Interrupt'],
+            'Announcement', 'Interrupt', L['Interrupt'],
+            nil, nil, nil,
+            L['Announces when you successfully interrupt a spell.'],
         },
         {
             1,
-            'Announcement',
-            'Dispel',
-            L['Dispel'],
-            true,
+            'Announcement', 'Reflect', L['Spell Reflect'],
+            true, nil, nil,
+            L['Announces when you successfully reflect a spell. |nWarrior Only.'],
         },
         {
             1,
-            'Announcement',
-            'Stolen',
-            L['Steal'],
+            'Announcement', 'Dispel', L['Dispel'],
+            nil, nil,nil,
+            L['Announces when you successfully dispel a spell.'],
         },
         {
             1,
-            'Announcement',
-            'Reflect',
-            L['Reflect'],
-            true,
+            'Announcement', 'Steal', L['Spell Steal'],
+            true, nil, nil,
+            L['Announces when you successfully steal a spell. |nMage Only.'],
+        },
+        {
+            1,
+            'Announcement', 'Taunt', L['Taunt'],
+            nil, nil, nil,
+            L['Announces when you successfully taunt a enemy or taunt all enemies.'],
+        },
+        {
+            1,
+            'Announcement', 'CombatResurrection', L['Combat Resurrection'],
+            true, nil, nil,
+            L['Announces when you successfully resurrect a teammate in combat.'],
         },
         {},
         {
             1,
-            'Announcement',
-            'QuestProgress',
-            L['Quest Progress'],
-            nil,
-            nil,
-            toggleQuestProgress,
+            'Announcement', 'QuestProgress', L['Quest Progress'],
+            nil, nil, toggleQuestProgress,
+            L['Announces the progress of your quests.'],
         },
         {
             1,
-            'Announcement',
-            'Reset',
-            L['Instance Reset'],
-            true,
-            nil,
-            toggleInstanceReset,
+            'Announcement', 'ResetInstance', L['Reset Instance'],
+            true, nil, toggleResetInstance,
+            L['Announces when instance is reset.'],
         },
     },
     [8] = { -- inventory

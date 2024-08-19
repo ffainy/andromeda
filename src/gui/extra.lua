@@ -3150,7 +3150,7 @@ end
 -- Announcement
 do
     local function refreshAnnounceableSpells()
-        ANNOUNCEMENT:RefreshSpells()
+        ANNOUNCEMENT:RefreshImportantSpells()
     end
 
     function GUI:SetupAnnounceableSpells(parent)

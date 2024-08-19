@@ -110,12 +110,14 @@ C.CharacterSettings = {
     Announcement = {
         Enable = true,
         Channel = 4,
-        Spells = true,
+        ImportantSpells = true,
         Interrupt = true,
         Dispel = true,
-        Stolen = true,
+        Steal = true,
         Reflect = true,
-        Reset = true,
+        Taunt = true,
+        CombatResurrection = true,
+        ResetInstance = true,
         QuestProgress = true,
     },
     Aura = {

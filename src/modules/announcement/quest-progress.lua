@@ -1,14 +1,12 @@
 local F, C, L = unpack(select(2, ...))
-local ANNOUNCEMENT = F:GetModule('Announcement')
+local A = F:GetModule('Announcement')
 
-local debugMode = false
-
-local function GetQuestLinkOrName(questID)
+local function getQuestLinkOrName(questID)
     return GetQuestLink(questID) or C_QuestLog.GetTitleForQuestID(questID) or ''
 end
 
 local function acceptText(questID, daily)
-    local title = GetQuestLinkOrName(questID)
+    local title = getQuestLinkOrName(questID)
     if daily then
         return format('%s [%s]%s', L['Quest accept:'], DAILY, title)
     else
@@ -17,19 +15,7 @@ local function acceptText(questID, daily)
 end
 
 local function completeText(questID)
-    return format('%s %s', GetQuestLinkOrName(questID), QUEST_COMPLETE)
-end
-
-local function sendQuestMsg(msg)
-    if debugMode and C.IS_DEVELOPER then
-        print(msg)
-    elseif IsPartyLFG() then
-        SendChatMessage(msg, 'INSTANCE_CHAT')
-    elseif IsInRaid() then
-        SendChatMessage(msg, 'RAID')
-    elseif IsInGroup() then
-        SendChatMessage(msg, 'PARTY')
-    end
+    return format('%s %s', getQuestLinkOrName(questID), QUEST_COMPLETE)
 end
 
 local function getPattern(pattern)
@@ -49,17 +35,17 @@ local questMatches = {
     ['QuestFailed'] = getPattern(ERR_QUEST_FAILED_S),
 }
 
-function ANNOUNCEMENT:FindQuestProgress(_, msg)
+function A:FindQuestProgress(_, msg)
     for _, pattern in pairs(questMatches) do
         if strmatch(msg, pattern) then
             local _, _, _, cur, max = strfind(msg, '(.*)[:：]%s*([-%d]+)%s*/%s*([-%d]+)%s*$')
             cur, max = tonumber(cur), tonumber(max)
             if cur and max and max >= 10 then
                 if mod(cur, floor(max / 5)) == 0 then
-                    sendQuestMsg(msg)
+                    A:SendMessage(msg, A:GetChannel(true))
                 end
             else
-                sendQuestMsg(msg)
+                A:SendMessage(msg, A:GetChannel(true))
             end
             break
         end
@@ -67,7 +53,7 @@ function ANNOUNCEMENT:FindQuestProgress(_, msg)
 end
 
 local WQcache = {}
-function ANNOUNCEMENT:FindQuestAccept(questID)
+function A:FindQuestAccept(questID)
     if not questID then return end
     if C_QuestLog.IsWorldQuest(questID) and WQcache[questID] then return end
 
@@ -80,7 +66,7 @@ function ANNOUNCEMENT:FindQuestAccept(questID)
     if questLogIndex then
         local info = C_QuestLog.GetInfo(questLogIndex)
         if info then
-            sendQuestMsg(acceptText(questID, info.frequency == _G['LE_QUEST_FREQUENCY_DAILY']))
+            A:SendMessage(acceptText(questID, info.frequency == _G['LE_QUEST_FREQUENCY_DAILY']), A:GetChannel(true))
         end
     end
 end
@@ -88,14 +74,14 @@ end
 local completedQuest = {}
 local initComplete
 
-function ANNOUNCEMENT:FindQuestComplete()
+function A:FindQuestComplete()
     for i = 1, C_QuestLog.GetNumQuestLogEntries() do
         local questID = C_QuestLog.GetQuestIDForLogIndex(i)
         local isComplete = questID and C_QuestLog.IsComplete(questID)
         if type(questID) == 'number' then
             if isComplete and not completedQuest[questID] and not C_QuestLog.IsWorldQuest(questID) then
                 if initComplete then
-                    sendQuestMsg(completeText(questID))
+                    A:SendMessage(completeText(questID), A:GetChannel(true))
                 end
                 completedQuest[questID] = true
             end
@@ -105,26 +91,26 @@ function ANNOUNCEMENT:FindQuestComplete()
     initComplete = true
 end
 
-function ANNOUNCEMENT:FindWorldQuestComplete(questID)
+function A:FindWorldQuestComplete(questID)
     if C_QuestLog.IsWorldQuest(questID) then
         if questID and not completedQuest[questID] then
-            sendQuestMsg(completeText(questID))
+            A:SendMessage(completeText(questID), A:GetChannel(true))
             completedQuest[questID] = true
         end
     end
 end
 
-function ANNOUNCEMENT:QuestProgress()
+function A:QuestProgress()
     if C.DB.Announcement.QuestProgress then
-        F:RegisterEvent('QUEST_ACCEPTED', ANNOUNCEMENT.FindQuestAccept)
-        F:RegisterEvent('QUEST_LOG_UPDATE', ANNOUNCEMENT.FindQuestComplete)
-        F:RegisterEvent('QUEST_TURNED_IN', ANNOUNCEMENT.FindWorldQuestComplete)
-        F:RegisterEvent('UI_INFO_MESSAGE', ANNOUNCEMENT.FindQuestProgress)
+        F:RegisterEvent('QUEST_ACCEPTED', A.FindQuestAccept)
+        F:RegisterEvent('QUEST_LOG_UPDATE', A.FindQuestComplete)
+        F:RegisterEvent('QUEST_TURNED_IN', A.FindWorldQuestComplete)
+        F:RegisterEvent('UI_INFO_MESSAGE', A.FindQuestProgress)
     else
         wipe(completedQuest)
-        F:UnregisterEvent('QUEST_ACCEPTED', ANNOUNCEMENT.FindQuestAccept)
-        F:UnregisterEvent('QUEST_LOG_UPDATE', ANNOUNCEMENT.FindQuestComplete)
-        F:UnregisterEvent('QUEST_TURNED_IN', ANNOUNCEMENT.FindWorldQuestComplete)
-        F:UnregisterEvent('UI_INFO_MESSAGE', ANNOUNCEMENT.FindQuestProgress)
+        F:UnregisterEvent('QUEST_ACCEPTED', A.FindQuestAccept)
+        F:UnregisterEvent('QUEST_LOG_UPDATE', A.FindQuestComplete)
+        F:UnregisterEvent('QUEST_TURNED_IN', A.FindWorldQuestComplete)
+        F:UnregisterEvent('UI_INFO_MESSAGE', A.FindQuestProgress)
     end
 end

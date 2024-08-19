@@ -1,19 +1,83 @@
 local F, C = unpack(select(2, ...))
-local ANNOUNCEMENT = F:GetModule('Announcement')
+local A = F:GetModule('Announcement')
 
-local arrowStr = GetLocale() == 'zhCN' and '→' or '->'
+local cache = {}
+local sameMsgInterval = 1
 
-local function GetChannel(warning)
+function A:AddCache(text, channel)
+    cache[text .. '_@@@_' .. channel] = time()
+end
+
+function A:CheckBeforeSend(text, channel)
+    local key = text .. '_@@@_' .. channel
+
+    if cache[key] and time() < cache[key] + sameMsgInterval then
+        return false
+    end
+
+    cache[key] = time()
+    return true
+end
+
+function A:SendMessage(text, channel, raidWarning, whisperTarget)
+    -- Skip if the channel is NONE
+    if channel == 'NONE' then
+        return
+    end
+
+    -- Change channel if it is protected by Blizzard
+    if channel == 'YELL' or channel == 'SAY' then
+        if not IsInInstance() then
+            channel = 'SELF'
+        end
+    end
+
+    if channel == 'SELF' then
+        -- ChatFrame1:AddMessage(text)
+        F:Printf(text)
+        return
+    end
+
+    if channel == 'EMOTE' then
+        text = ': ' .. text
+    end
+
+    if channel == 'WHISPER' then
+        if whisperTarget then
+            SendChatMessage(text, channel, nil, whisperTarget)
+        end
+        return
+    end
+
+    if channel == 'RAID' and raidWarning and IsInRaid(LE_PARTY_CATEGORY_HOME) then
+        if UnitIsGroupLeader('player') or UnitIsGroupAssistant('player') or IsEveryoneAssistant() then
+            channel = 'RAID_WARNING'
+        end
+    end
+
+    if A:CheckBeforeSend(text, channel) then
+        SendChatMessage(text, channel)
+    end
+end
+
+function A:GetChannel(forceInGroup, warning)
+    if forceInGroup then
+        C.DB.Announcement.Channel = 1
+    end
+
     if C.DB.Announcement.Channel == 1 then
-        if IsInGroup(_G.LE_PARTY_CATEGORY_INSTANCE) then
+        if IsPartyLFG() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsInRaid(LE_PARTY_CATEGORY_INSTANCE) then
             return 'INSTANCE_CHAT'
-        elseif IsInRaid(_G.LE_PARTY_CATEGORY_HOME) then
-            if warning and (UnitIsGroupLeader('player') or UnitIsGroupAssistant('player') or IsEveryoneAssistant()) then
+        elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
+            if warning and (UnitIsGroupLeader('player')
+                    or UnitIsGroupAssistant('player')
+                    or IsEveryoneAssistant())
+            then
                 return 'RAID_WARNING'
             else
                 return 'RAID'
             end
-        elseif IsInGroup(_G.LE_PARTY_CATEGORY_HOME) then
+        elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
             return 'PARTY'
         end
     elseif C.DB.Announcement.Channel == 2 then
@@ -25,126 +89,70 @@ local function GetChannel(warning)
     end
 end
 
-ANNOUNCEMENT.AnnounceableSpellsList = {}
-function ANNOUNCEMENT:RefreshSpells()
-    wipe(ANNOUNCEMENT.AnnounceableSpellsList)
-
-    for spellID in pairs(C.AnnounceableSpellsList) do
-        local name = C_Spell.GetSpellName(spellID)
-        if name then
-            local modValue = _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID]
-            if modValue == nil then
-                ANNOUNCEMENT.AnnounceableSpellsList[spellID] = true
-            end
-        end
+function A:COMBAT_LOG_EVENT_UNFILTERED()
+    if not IsInInstance() or not IsInGroup() then
+        return
     end
 
-    for spellID, value in pairs(_G.ANDROMEDA_ADB['AnnounceableSpellsList']) do
-        if value then
-            ANNOUNCEMENT.AnnounceableSpellsList[spellID] = true
-        end
-    end
-end
-
-function ANNOUNCEMENT:OnEvent()
-    if not (IsInInstance() and IsInGroup() and GetNumGroupMembers() > 1) then
-        return true
-    end
-
-    local _, eventType, _, srcGUID, srcName, srcFlags, _, _, destName, _, _, spellID, _, _, extraSpellID =
+    local timestamp, event, _, srcGUID, srcName, _, _, destGUID, destName, _, _, spellId, _, _, extraSpellId =
         CombatLogGetCurrentEventInfo()
 
-    if not srcGUID or srcName == destName then
-        return
-    end
-
-    if destName then
-        destName = destName:gsub('%-[^|]+', '')
-    end
-
-    if eventType == 'SPELL_MISSED' and C.DB.Announcement.Reflect then
-        local id, _, _, missType = select(12, CombatLogGetCurrentEventInfo())
-        if missType == 'REFLECT' and destName == C.MY_NAME then
-            SendChatMessage(
-                format(_G.COMBAT_TEXT_REFLECT .. ' %s %s', arrowStr, GetSpellLink(id)),
-                GetChannel()
-            )
-        end
-    end
-
-    if srcName ~= C.MY_NAME and not C:IsMyPet(srcFlags) then
-        return
-    end
-
-    if eventType == 'SPELL_CAST_SUCCESS' then
-        if ANNOUNCEMENT.AnnounceableSpellsList[spellID] and C.DB.Announcement.Spells then
-            if destName == nil then
-                SendChatMessage(
-                    format(_G.ACTION_SPELL_CAST_SUCCESS .. ' %s', GetSpellLink(spellID)),
-                    GetChannel()
-                )
-            else
-                SendChatMessage(
-                    format(
-                        _G.ACTION_SPELL_CAST_SUCCESS .. ' %s %s %s',
-                        GetSpellLink(spellID),
-                        arrowStr,
-                        destName
-                    ),
-                    GetChannel()
-                )
-            end
-        end
-    elseif eventType == 'SPELL_INTERRUPT' and C.DB.Announcement.Interrupt then
-        SendChatMessage(
-            format(_G.ACTION_SPELL_INTERRUPT .. ' %s %s', arrowStr, GetSpellLink(extraSpellID)),
-            GetChannel()
-        )
-    elseif eventType == 'SPELL_DISPEL' and C.DB.Announcement.Dispel then
-        SendChatMessage(
-            format(_G.ACTION_SPELL_DISPEL .. ' %s %s', arrowStr, GetSpellLink(extraSpellID)),
-            GetChannel()
-        )
-    elseif eventType == 'SPELL_STOLEN' and C.DB.Announcement.Stolen then
-        SendChatMessage(
-            format(_G.ACTION_SPELL_STOLEN .. ' %s %s', arrowStr, GetSpellLink(extraSpellID)),
-            GetChannel()
-        )
+    if event == 'SPELL_CAST_SUCCESS' then
+        A:ImportantSpells(srcGUID, srcName, destName, spellId)
+        A:CombatResurrection(srcName, destName, spellId)
+    elseif event == 'SPELL_INTERRUPT' then
+        A:Interrupt(srcGUID, srcName, destName, spellId, extraSpellId)
+    elseif event == "SPELL_DISPEL" then
+        A:Dispel(srcGUID, srcName, destName, spellId, extraSpellId)
+    elseif event == "SPELL_STOLEN" then
+        A:Stolen(srcGUID, srcName, destName, spellId, extraSpellId)
+    elseif event == 'SPELL_MISSED' then
+        A:Reflect(srcGUID, srcName, destName)
+        A:Taunt(timestamp, event, srcGUID, srcName, destGUID, destName, spellId)
+    elseif event == 'SPELL_AURA_APPLIED' then
+        A:Taunt(timestamp, event, srcGUID, srcName, destGUID, destName, spellId)
     end
 end
 
-function ANNOUNCEMENT:AnnounceSpells()
-    F:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', ANNOUNCEMENT.OnEvent)
+function A:CHAT_MSG_SYSTEM(text)
+    A:ResetInstance(text)
 end
 
-function ANNOUNCEMENT:CheckAnnounceableSpells()
-    for spellID in pairs(C.AnnounceableSpellsList) do
-        local name = C_Spell.GetSpellName(spellID)
-        if name then
-            if _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] then
-                _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] = nil
-            end
-        else
-            F:Debug('CheckAnnounceableSpells: Invalid Spell ID ' .. spellID)
-        end
-    end
 
-    for spellID, value in pairs(_G.ANDROMEDA_ADB['AnnounceableSpellsList']) do
-        if value == false and C.AnnounceableSpellsList[spellID] == nil then
-            _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] = nil
-        end
+
+
+
+
+
+
+
+
+
+function A:UpdateResetInstance()
+    if C.DB.Announcement.ResetInstance then
+        F:RegisterEvent('CHAT_MSG_SYSTEM', A.CHAT_MSG_SYSTEM)
+    else
+        F:UnregisterEvent('CHAT_MSG_SYSTEM', A.CHAT_MSG_SYSTEM)
     end
 end
 
-function ANNOUNCEMENT:OnLogin()
+function A:OnLogin()
     if not C.DB.Announcement.Enable then
         return
     end
 
-    ANNOUNCEMENT:CheckAnnounceableSpells()
-    ANNOUNCEMENT:RefreshSpells()
+    A:CheckImportantSpells()
+    A:RefreshImportantSpells()
 
-    ANNOUNCEMENT:AnnounceSpells()
-    ANNOUNCEMENT:AnnounceReset()
-    ANNOUNCEMENT:QuestProgress()
+
+
+
+    F:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', A.COMBAT_LOG_EVENT_UNFILTERED)
+
+    A:UpdateResetInstance()
+
+
+
+
+    A:QuestProgress()
 end
