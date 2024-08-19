@@ -28,33 +28,33 @@ function BLIZZARD:OnLogin()
     -- BLIZZARD:EnhancedFriendsList()
     BLIZZARD:EnhancedPremade()
     BLIZZARD:EnhancedDressup()
-    BLIZZARD:ClickBindingTab()
 end
 
 function BLIZZARD:UpdateBossBanner()
     if C.DB.General.HideBossBanner then
-        _G.BossBanner:UnregisterEvent('ENCOUNTER_LOOT_RECEIVED')
+        BossBanner:UnregisterEvent('ENCOUNTER_LOOT_RECEIVED')
     else
-        _G.BossBanner:RegisterEvent('ENCOUNTER_LOOT_RECEIVED')
+        BossBanner:RegisterEvent('ENCOUNTER_LOOT_RECEIVED')
     end
 end
 
 function BLIZZARD:UpdateBossEmote()
     if C.DB.General.HideBossEmote then
-        _G.RaidBossEmoteFrame:UnregisterAllEvents()
+        RaidBossEmoteFrame:UnregisterAllEvents()
     else
-        _G.RaidBossEmoteFrame:RegisterEvent('RAID_BOSS_EMOTE')
-        _G.RaidBossEmoteFrame:RegisterEvent('RAID_BOSS_WHISPER')
-        _G.RaidBossEmoteFrame:RegisterEvent('CLEAR_BOSS_EMOTES')
+        RaidBossEmoteFrame:RegisterEvent('RAID_BOSS_EMOTE')
+        RaidBossEmoteFrame:RegisterEvent('RAID_BOSS_WHISPER')
+        RaidBossEmoteFrame:RegisterEvent('CLEAR_BOSS_EMOTES')
     end
 end
 
+-- reposition vehicle indicator ---#FIXME
 function BLIZZARD:VehicleIndicatorMover()
     local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'VehicleIndicatorMover', UIParent)
     frame:SetSize(100, 100)
-    F.Mover(frame, L['VehicleIndicator'], 'VehicleIndicator', { 'BOTTOMRIGHT', _G.Minimap, 'TOPRIGHT', 0, 0 })
+    F.Mover(frame, L['VehicleIndicator'], 'VehicleIndicator', { 'BOTTOMRIGHT', Minimap, 'TOPRIGHT', 0, 0 })
 
-    hooksecurefunc(_G.VehicleSeatIndicator, 'SetPoint', function(self, _, parent)
+    hooksecurefunc(VehicleSeatIndicator, 'SetPoint', function(self, _, parent)
         if parent ~= frame then
             self:ClearAllPoints()
             self:SetPoint('TOPLEFT', frame)
@@ -63,6 +63,7 @@ function BLIZZARD:VehicleIndicatorMover()
     end)
 end
 
+-- reposition durability frame
 function BLIZZARD:DurabilityFrameMover()
     local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'DurabilityFrameMover', UIParent)
     frame:SetSize(100, 100)
@@ -70,11 +71,11 @@ function BLIZZARD:DurabilityFrameMover()
         frame,
         L['DurabilityIndicator'],
         'DurabilityIndicator',
-        { 'TOPRIGHT', _G.ObjectiveTrackerFrame, 'TOPLEFT', -10, 0 }
+        { 'TOPRIGHT', ObjectiveTrackerFrame, 'TOPLEFT', -10, 0 }
     )
 
-    hooksecurefunc(_G.DurabilityFrame, 'SetPoint', function(self, _, parent)
-        if parent == 'MinimapCluster' or parent == _G.MinimapCluster then
+    hooksecurefunc(DurabilityFrame, 'SetPoint', function(self, _, parent)
+        if parent == 'MinimapCluster' or parent == MinimapCluster then
             self:ClearAllPoints()
             self:SetPoint('TOPLEFT', frame)
             self:SetScale(0.7)
@@ -82,8 +83,9 @@ function BLIZZARD:DurabilityFrameMover()
     end)
 end
 
+-- reposition ticket status frame
 function BLIZZARD:TicketStatusMover()
-    hooksecurefunc(_G.TicketStatusFrame, 'SetPoint', function(self, relF)
+    hooksecurefunc(TicketStatusFrame, 'SetPoint', function(self, relF)
         if relF == 'TOPRIGHT' then
             self:ClearAllPoints()
             self:SetPoint('TOP', UIParent, 'TOP', 0, -100)
@@ -91,12 +93,13 @@ function BLIZZARD:TicketStatusMover()
     end)
 end
 
+--reposition UI widget frame
 function BLIZZARD:UIWidgetFrameMover()
     local frame1 = CreateFrame('Frame', C.ADDON_TITLE .. 'UIWidgetMover', UIParent)
     frame1:SetSize(200, 50)
     F.Mover(frame1, L['UIWidgetFrame'], 'UIWidgetFrame', { 'TOP', 0, -80 })
 
-    hooksecurefunc(_G.UIWidgetBelowMinimapContainerFrame, 'SetPoint', function(self, _, parent)
+    hooksecurefunc(UIWidgetBelowMinimapContainerFrame, 'SetPoint', function(self, _, parent)
         if parent ~= frame1 then
             self:ClearAllPoints()
             self:SetPoint('CENTER', frame1)
@@ -107,45 +110,10 @@ function BLIZZARD:UIWidgetFrameMover()
     frame2:SetSize(260, 40)
     F.Mover(frame2, L['UIWidgetPowerBar'], 'UIWidgetPowerBar', { 'BOTTOM', UIParent, 'BOTTOM', 0, 150 })
 
-    hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, 'SetPoint', function(self, _, parent)
+    hooksecurefunc(UIWidgetPowerBarContainerFrame, 'SetPoint', function(self, _, parent)
         if parent ~= frame2 then
             self:ClearAllPoints()
             self:SetPoint('CENTER', frame2)
-        end
-    end)
-end
-
--- Add ClickBinding tab to SpellBookFrame
-function BLIZZARD:ClickBindingTab()
-    if C.IS_WW then return end --#FIXME
-    local cb = CreateFrame(
-        'CheckButton',
-        C.ADDON_TITLE .. 'ClickCastingTab',
-        _G.SpellBookSideTabsFrame,
-        'SpellBookSkillLineTabTemplate'
-    )
-    cb:SetNormalTexture('Interface\\Icons\\trade_engineering')
-    cb:Show()
-    cb.tooltip = L['Click Binding']
-
-    F.ReskinTab(cb)
-
-    cb:SetScript('OnShow', function()
-        local num = GetNumSpellTabs()
-        local lastTab = _G['SpellBookSkillLineTab' .. num]
-
-        cb:ClearAllPoints()
-        cb:SetPoint('TOPLEFT', lastTab, 'BOTTOMLEFT', 0, -30)
-
-        cb:SetChecked(InClickBindingMode())
-        cb:SetCheckedTexture(C.Assets.Textures.ButtonChecked)
-    end)
-
-    cb:SetScript('OnClick', function()
-        if InClickBindingMode() then
-            _G.ClickBindingFrame.SaveButton:Click()
-        else
-            ToggleClickBindingFrame()
         end
     end)
 end
@@ -177,12 +145,12 @@ do
         C_CVar.SetCVar('hideAdventureJournalAlerts', 1)
         -- C_CVar.RegisterCVar('hideHelptips', 1) -- this can actually block interaction with mission tables
 
-        local lastInfoFrame = C_CVar.GetCVarBitfield('closedInfoFrames', _G.NUM_LE_FRAME_TUTORIALS)
+        local lastInfoFrame = C_CVar.GetCVarBitfield('closedInfoFrames', NUM_LE_FRAME_TUTORIALS)
         if pendingChanges or not lastInfoFrame then
-            for i = 1, _G.NUM_LE_FRAME_TUTORIALS do
+            for i = 1, NUM_LE_FRAME_TUTORIALS do
                 C_CVar.SetCVarBitfield('closedInfoFrames', i, true)
             end
-            for i = 1, _G.NUM_LE_FRAME_TUTORIAL_ACCCOUNTS do
+            for i = 1, NUM_LE_FRAME_TUTORIAL_ACCCOUNTS do
                 C_CVar.SetCVarBitfield('closedInfoFramesAccountWide', i, true)
             end
         end
@@ -209,7 +177,7 @@ do
 end
 
 do
-    local distanceText = _G.SuperTrackedFrame.DistanceText
+    local distanceText = SuperTrackedFrame.DistanceText
     if not distanceText.__SetText then
         distanceText.__SetText = distanceText.SetText
         hooksecurefunc(distanceText, 'SetText', function(frame, text)
@@ -227,24 +195,24 @@ do
     local function OnEvent(event, addon)
         if event == 'ADDON_LOADED' and addon == 'Blizzard_Collections' then
             -- Fix undragable issue
-            local checkBox = _G.WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
+            local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
             checkBox.Label:ClearAllPoints()
             checkBox.Label:SetPoint('LEFT', checkBox, 'RIGHT', 2, 1)
             checkBox.Label:SetWidth(152)
 
-            _G.CollectionsJournal:HookScript('OnShow', function()
+            CollectionsJournal:HookScript('OnShow', function()
                 if not done then
                     if InCombatLockdown() then
                         F:RegisterEvent('PLAYER_REGEN_ENABLED', OnEvent)
                     else
-                        F.CreateMF(_G.CollectionsJournal)
+                        F.CreateMF(CollectionsJournal)
                     end
                     done = true
                 end
             end)
             F:UnregisterEvent(event, OnEvent)
         elseif event == 'PLAYER_REGEN_ENABLED' then
-            F.CreateMF(_G.CollectionsJournal)
+            F.CreateMF(CollectionsJournal)
             F:UnregisterEvent(event, OnEvent)
         end
     end
@@ -275,7 +243,7 @@ do
             end
             F:UnregisterEvent(event, OnEvent)
         elseif event == 'PLAYER_REGEN_ENABLED' then
-            if _G.RaidGroupButton1 and _G.RaidGroupButton1:GetAttribute('type') ~= 'target' then
+            if RaidGroupButton1 and RaidGroupButton1:GetAttribute('type') ~= 'target' then
                 FixRaidGroupButton()
                 F:UnregisterEvent(event, OnEvent)
             end
@@ -292,8 +260,8 @@ do
             return
         end
 
-        local _GuildNewsButton_OnEnter = _G.GuildNewsButton_OnEnter
-        function _G.GuildNewsButton_OnEnter(self)
+        local _GuildNewsButton_OnEnter = GuildNewsButton_OnEnter
+        function GuildNewsButton_OnEnter(self)
             if not (self.newsInfo and self.newsInfo.whatText) then
                 return
             end
@@ -308,8 +276,8 @@ end
 
 -- Fix blizz bug in addon list
 do
-    local _AddonTooltip_Update = _G.AddonTooltip_Update
-    function _G.AddonTooltip_Update(owner)
+    local _AddonTooltip_Update = AddonTooltip_Update
+    function AddonTooltip_Update(owner)
         if not owner then
             return
         end
@@ -317,17 +285,6 @@ do
             return
         end
         _AddonTooltip_Update(owner)
-    end
-end
-
--- Unregister talent event
-do
-    if _G.PlayerTalentFrame then
-        _G.PlayerTalentFrame:UnregisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-    else
-        hooksecurefunc('TalentFrame_LoadUI', function()
-            _G.PlayerTalentFrame:UnregisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
-        end)
     end
 end
 
@@ -350,6 +307,6 @@ do
 end
 
 -- Fix missing localization file
-if not _G.GuildControlUIRankSettingsFrameRosterLabel then
-    _G.GuildControlUIRankSettingsFrameRosterLabel = CreateFrame('Frame')
+if not GuildControlUIRankSettingsFrameRosterLabel then
+    GuildControlUIRankSettingsFrameRosterLabel = CreateFrame('Frame')
 end
