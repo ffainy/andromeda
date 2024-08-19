@@ -32,7 +32,7 @@ function ACTIONBAR:Bind_RegisterMacro()
         return
     end
 
-    hooksecurefunc(_G.MacroFrame.MacroSelector.ScrollBox, 'Update', function(self)
+    hooksecurefunc(MacroFrame.MacroSelector.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local button = select(i, self.ScrollTarget:GetChildren())
             if not button.bindHooked then
@@ -66,8 +66,8 @@ function ACTIONBAR:Bind_Create()
         GameTooltip:AddLine(frame.tipName or frame.name, 0.6, 0.8, 1)
 
         if #frame.bindings == 0 then
-            GameTooltip:AddLine(_G.NOT_BOUND, 1, 0, 0)
-            GameTooltip:AddLine(_G.PRESS_KEY_TO_BIND)
+            GameTooltip:AddLine(NOT_BOUND, 1, 0, 0)
+            GameTooltip:AddLine(PRESS_KEY_TO_BIND)
         else
             GameTooltip:AddDoubleLine(L['Index'], L['Key'], 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
             for i = 1, #frame.bindings do
@@ -102,11 +102,13 @@ function ACTIONBAR:Bind_Create()
 
     for i = 1, 12 do
         local button = _G['SpellButton' .. i]
-        button:HookScript('OnEnter', hookSpellButton)
+        if button then
+            button:HookScript('OnEnter', hookSpellButton)
+        end
     end
 
     if not C_AddOns.IsAddOnLoaded('Blizzard_MacroUI') then
-        hooksecurefunc('LoadAddOn', ACTIONBAR.Bind_RegisterMacro)
+        hooksecurefunc(C_AddOns, 'LoadAddOn', ACTIONBAR.Bind_RegisterMacro)
     else
         ACTIONBAR.Bind_RegisterMacro('Blizzard_MacroUI')
     end
@@ -128,12 +130,12 @@ function ACTIONBAR:Bind_Update(button, spellmacro)
 
     if spellmacro == 'SPELL' then
         frame.id = SpellBook_GetSpellBookSlot(button)
-        frame.name = C_SpellBook.GetSpellBookItemName(frame.id, _G.SpellBookFrame.bookType)
+        frame.name = C_SpellBook.GetSpellBookItemName(frame.id, SpellBookFrame.bookType)
         frame.bindings = { GetBindingKey(spellmacro .. ' ' .. frame.name) }
     elseif spellmacro == 'MACRO' then
         frame.id = button.selectionIndex or button:GetID()
-        if _G.MacroFrame.selectedTab == 2 then
-            frame.id = frame.id + _G.MAX_ACCOUNT_MACROS
+        if MacroFrame.selectedTab == 2 then
+            frame.id = frame.id + MAX_ACCOUNT_MACROS
         end
         frame.name = GetMacroInfo(frame.id)
         frame.bindings = { GetBindingKey(spellmacro .. ' ' .. frame.name) }
@@ -279,14 +281,14 @@ function ACTIONBAR:Bind_CreateDialog()
     frame:SetPoint('TOP', 0, -135)
     F.SetBD(frame)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     local font = C.Assets.Fonts.Bold
-    F.CreateFS(frame, font, 14, outline or nil, _G.QUICK_KEYBIND_MODE, false, outline and 'NONE' or 'THICK', 'TOP', 0, -10)
+    F.CreateFS(frame, font, 14, outline or nil, QUICK_KEYBIND_MODE, false, outline and 'NONE' or 'THICK', 'TOP', 0, -10)
 
-    local helpInfo = F.CreateHelpInfo(frame, '|n' .. _G.QUICK_KEYBIND_DESCRIPTION .. '|n|n' .. L['You can even keybind your spellbook spells or macros without placing them to your actionbars.'])
+    local helpInfo = F.CreateHelpInfo(frame, '|n' .. QUICK_KEYBIND_DESCRIPTION .. '|n|n' .. L['You can even keybind your spellbook spells or macros without placing them to your actionbars.'])
     helpInfo:SetPoint('TOPRIGHT', 2, -2)
 
-    local text = F.CreateFS(frame, font, 12, outline or nil, _G.CHARACTER_SPECIFIC_KEYBINDINGS, 'YELLOW', outline and 'NONE' or 'THICK', 'TOP', 0, -40)
+    local text = F.CreateFS(frame, font, 12, outline or nil, CHARACTER_SPECIFIC_KEYBINDINGS, 'YELLOW', outline and 'NONE' or 'THICK', 'TOP', 0, -40)
     local box = F.CreateCheckbox(frame)
     box:SetChecked(C.DB.Actionbar.BindType == 2)
     box:SetPoint('RIGHT', text, 'LEFT', -5, -0)
@@ -294,13 +296,13 @@ function ACTIONBAR:Bind_CreateDialog()
         C.DB.Actionbar.BindType = self:GetChecked() and 2 or 1
     end)
 
-    local button1 = F.CreateButton(frame, 120, 26, _G.APPLY, 12)
+    local button1 = F.CreateButton(frame, 120, 26, APPLY, 12)
     button1:SetPoint('BOTTOMLEFT', 25, 10)
     button1:SetScript('OnClick', function()
         ACTIONBAR:Bind_Deactivate(true)
     end)
 
-    local button2 = F.CreateButton(frame, 120, 26, _G.CANCEL, 12)
+    local button2 = F.CreateButton(frame, 120, 26, CANCEL, 12)
     button2:SetPoint('BOTTOMRIGHT', -25, 10)
     button2:SetScript('OnClick', function()
         ACTIONBAR:Bind_Deactivate()
@@ -309,13 +311,13 @@ function ACTIONBAR:Bind_CreateDialog()
     ACTIONBAR.keybindDialog = frame
 end
 
-_G.SlashCmdList['ANDROMEDA_KEY_BINDING'] = function(msg)
+SlashCmdList['ANDROMEDA_KEY_BINDING'] = function(msg)
     if msg ~= '' then
         return
     end -- don't mess up with this
 
     if InCombatLockdown() then
-        _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. _G.ERR_NOT_IN_COMBAT)
+        UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
         return
     end
 
@@ -323,4 +325,20 @@ _G.SlashCmdList['ANDROMEDA_KEY_BINDING'] = function(msg)
     ACTIONBAR:Bind_Activate()
     ACTIONBAR:Bind_CreateDialog()
 end
-_G.SLASH_ANDROMEDA_KEY_BINDING1 = '/bind'
+SLASH_ANDROMEDA_KEY_BINDING1 = '/bind'
+
+
+-- F:RegisterSlashCommand('/bind', function(msg)
+--     if msg ~= '' then
+--         return
+--     end -- don't mess up with this
+
+--     if InCombatLockdown() then
+--         UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
+--         return
+--     end
+
+--     ACTIONBAR:Bind_Create()
+--     ACTIONBAR:Bind_Activate()
+--     ACTIONBAR:Bind_CreateDialog()
+-- end)
