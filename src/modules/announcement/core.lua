@@ -79,6 +79,8 @@ function A:GetChannel(forceInGroup, warning)
             end
         elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
             return 'PARTY'
+        else
+            return 'NONE'
         end
     elseif C.DB.Announcement.Channel == 2 then
         return 'YELL'
