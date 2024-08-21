@@ -48,7 +48,7 @@ function BLIZZARD:UpdateBossEmote()
     end
 end
 
--- reposition vehicle indicator ---#FIXME
+-- reposition vehicle indicator
 function BLIZZARD:VehicleIndicatorMover()
     local frame = CreateFrame('Frame', C.ADDON_TITLE .. 'VehicleIndicatorMover', UIParent)
     frame:SetSize(100, 100)
@@ -58,7 +58,6 @@ function BLIZZARD:VehicleIndicatorMover()
         if parent ~= frame then
             self:ClearAllPoints()
             self:SetPoint('TOPLEFT', frame)
-            self:SetScale(0.7)
         end
     end)
 end
@@ -78,7 +77,6 @@ function BLIZZARD:DurabilityFrameMover()
         if parent == 'MinimapCluster' or parent == MinimapCluster then
             self:ClearAllPoints()
             self:SetPoint('TOPLEFT', frame)
-            self:SetScale(0.7)
         end
     end)
 end
