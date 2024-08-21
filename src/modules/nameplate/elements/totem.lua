@@ -7,13 +7,13 @@ local totemNpcIDs = {
     [60561] = { 51485, 20 }, -- Earthgrab
     [3527] = { 5394, 15 }, -- Healing Stream
     [6112] = { 8512, 120 }, -- Windfury
-    [97369] = { 192222, 15 }, -- Liquid Magma
+    [97369] = { 192222, 6 }, -- Liquid Magma
     [5913] = { 8143, 10 }, -- Tremor
     [5925] = { 204336, 3 }, -- Grounding
     [78001] = { 157153, 15 }, -- Cloudburst
     [53006] = { 98008, 6 }, -- Spirit Link
     [59764] = { 108280, 12 }, -- Healing Tide
-    [61245] = { 192058, 2 }, -- Static Charge
+    [61245] = { 192058, 2 }, -- Static Charge/Capacitor Totem
     [100943] = { 198838, 15 }, -- Earthen Wall
     [97285] = { 192077, 15 }, -- Wind Rush
     [105451] = { 204331, 15 }, -- Counterstrike
@@ -21,10 +21,22 @@ local totemNpcIDs = {
     [105427] = { 204330, 15 }, -- Skyfury
     [179867] = { 355580, 6 }, -- Static Field
     [166523] = { 324386, 30 }, -- Vesper Totem (Kyrian)
+
+    -- 10.0
+    [194117] = { 383017, 15 }, -- Stoneskin Totem
+    [194118] = { 383019, 60 }, -- Tranquil Air Totem
+    [5923] = { 383013, 6 }, -- Poison Cleansing Totem
+    [193620] = { 381930, 120 }, -- Mana Spring Totem
+
     -- Warrior
     [119052] = { 236320, 15 }, -- War Banner
-    --Priest
+
+    -- Priest
     [101398] = { 211522, 12 }, -- Psyfiend
+
+    -- Warlock
+    [179193] = { 353601, 15 }, -- Fel Obelisk
+    [107100] = { 201996, 20 }, -- Call Observer
 }
 
 local showDuration = true
