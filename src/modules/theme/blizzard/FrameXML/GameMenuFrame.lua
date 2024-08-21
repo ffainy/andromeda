@@ -44,13 +44,6 @@ tinsert(C.BlizzThemes, function()
 
         for button in self.buttonPool:EnumerateActive() do
             if not button.styled then
-                local outline = ANDROMEDA_ADB.FontOutline
-                local fstring = button:GetFontString()
-                fstring:SetFont(C.Assets.Fonts.Bold, 14, outline and 'OUTLINE' or nil)
-                fstring:SetShadowColor(0, 0, 0, outline and 0 or 1)
-                fstring:SetShadowOffset(2, -2)
-
-                button:SetSize(200, 30)
                 F.ReskinButton(button)
                 button.styled = true
             end
