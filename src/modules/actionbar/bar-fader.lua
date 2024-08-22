@@ -3,6 +3,9 @@
 local F, C = unpack(select(2, ...))
 local ACTIONBAR = F:GetModule('ActionBar')
 
+local lab = F.Libs.LibActionButton
+local handledbuttons = {}
+
 local barsList = {
     ['FadeBar1'] = C.ADDON_TITLE .. 'ActionBar1',
     ['FadeBar2'] = C.ADDON_TITLE .. 'ActionBar2',
@@ -76,11 +79,17 @@ local options = {
     },
 }
 
-local function disableCooldownBling()
-    for _, v in pairs(_G) do
-        if type(v) == 'table' and type(v.SetDrawBling) == 'function' then
-            v:SetDrawBling(false)
-        end
+local function fadeBlingTexture(cooldown, alpha)
+    if not cooldown then
+        return
+    end
+
+    cooldown:SetBlingTexture(alpha > 0.5 and [[Interface\Cooldown\star4]] or C.Assets.Textures.Blank)
+end
+
+local function fadeBlings(alpha)
+    for _, button in pairs(ACTIONBAR.buttons) do
+        fadeBlingTexture(button.cooldown, alpha)
     end
 end
 
@@ -95,34 +104,61 @@ local function delayFadeOut(frame, timeToFade, startAlpha, endAlpha)
     clearTimers(frame)
 
     if C.DB.Actionbar.Delay > 0 then
-        frame.delayTimer = F:ScheduleTimer(F.UIFrameFadeOut, C.DB.Actionbar.Delay, F, frame, timeToFade, startAlpha, endAlpha)
+        frame.delayTimer = F:ScheduleTimer(F.UIFrameFadeOut, C.DB.Actionbar.Delay, F, frame, timeToFade, startAlpha,
+            endAlpha)
     else
         F:UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
     end
 end
 
-function ACTIONBAR:Button_OnEnter()
+function ACTIONBAR:ButtonOnEnter()
     local parent = ACTIONBAR.fadeParent
 
     if not parent.mouseLock then
         clearTimers(parent)
         F:UIFrameFadeIn(parent, C.DB.Actionbar.FadeInDuration, parent:GetAlpha(), C.DB.Actionbar.FadeInAlpha)
+        fadeBlings(C.DB.Actionbar.FadeInAlpha)
     end
 end
 
-function ACTIONBAR:Button_OnLeave()
+function ACTIONBAR:ButtonOnLeave()
     local parent = ACTIONBAR.fadeParent
 
     if not parent.mouseLock then
         delayFadeOut(parent, C.DB.Actionbar.FadeOutDuration, parent:GetAlpha(), C.DB.Actionbar.FadeOutAlpha)
+        fadeBlings(C.DB.Actionbar.FadeOutAlpha)
     end
 end
 
-function ACTIONBAR:FadeParent_OnEvent(event)
+local function flyoutButtonAnchor(frame)
+    local parent = frame:GetParent()
+    local _, parentAnchorButton = parent:GetPoint()
+    if not handledbuttons[parentAnchorButton] then
+        return
+    end
+
+    return parentAnchorButton
+end
+
+function ACTIONBAR:FlyoutButtonOnEnter()
+    local anchor = flyoutButtonAnchor(self)
+    if anchor then
+        ACTIONBAR.ButtonOnEnter(anchor)
+    end
+end
+
+function ACTIONBAR:FlyoutButtonOnLeave()
+    local anchor = flyoutButtonAnchor(self)
+    if anchor then
+        ACTIONBAR.ButtonOnLeave(anchor)
+    end
+end
+
+function ACTIONBAR:FadeParentOnEvent(event)
     if
         (event == 'ACTIONBAR_SHOWGRID')
         or (C.DB.Actionbar.Instance and IsInInstance())
-        or (C.DB.Actionbar.Vehicle and ((HasVehicleActionBar() and UnitVehicleSkin('player') and UnitVehicleSkin('player') ~= '') or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= '')))
+        or (C.DB.Actionbar.Vehicle and UnitHasVehicleUI('player'))
         or (C.DB.Actionbar.Combat and UnitAffectingCombat('player'))
         or (C.DB.Actionbar.Target and (UnitExists('target') or UnitExists('focus')))
         or (C.DB.Actionbar.Casting and (UnitCastingInfo('player') or UnitChannelInfo('player')))
@@ -132,10 +168,12 @@ function ACTIONBAR:FadeParent_OnEvent(event)
 
         clearTimers(ACTIONBAR.fadeParent)
         F:UIFrameFadeIn(self, C.DB.Actionbar.FadeInDuration, self:GetAlpha(), C.DB.Actionbar.FadeInAlpha)
+        fadeBlings(C.DB.Actionbar.FadeInAlpha)
     else
         self.mouseLock = false
 
         delayFadeOut(self, C.DB.Actionbar.FadeOutDuration, self:GetAlpha(), C.DB.Actionbar.FadeOutAlpha)
+        fadeBlings(C.DB.Actionbar.FadeOutAlpha)
     end
 end
 
@@ -175,11 +213,31 @@ function ACTIONBAR:UpdateFaderState()
 
     if not ACTIONBAR.isHooked then
         for _, button in ipairs(ACTIONBAR.buttons) do
-            button:HookScript('OnEnter', ACTIONBAR.Button_OnEnter)
-            button:HookScript('OnLeave', ACTIONBAR.Button_OnLeave)
+            button:HookScript('OnEnter', ACTIONBAR.ButtonOnEnter)
+            button:HookScript('OnLeave', ACTIONBAR.ButtonOnLeave)
+
+            handledbuttons[button] = true
         end
+
         ACTIONBAR.isHooked = true
     end
+end
+
+function ACTIONBAR:SetupFlyoutButton(button)
+    button:HookScript('OnEnter', ACTIONBAR.FlyoutButtonOnEnter)
+    button:HookScript('OnLeave', ACTIONBAR.FlyoutButtonOnLeave)
+end
+
+function ACTIONBAR:LAB_FlyoutCreated(button)
+    ACTIONBAR:SetupFlyoutButton(button)
+end
+
+function ACTIONBAR:SetupLABFlyout()
+    for _, button in next, lab.FlyoutButtons do
+        ACTIONBAR:SetupFlyoutButton(button)
+    end
+
+    lab:RegisterCallback('OnFlyoutButtonCreated', ACTIONBAR.LAB_FlyoutCreated)
 end
 
 function ACTIONBAR:BarFader()
@@ -187,16 +245,18 @@ function ACTIONBAR:BarFader()
         return
     end
 
-    ACTIONBAR.fadeParent = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionbarFadeParent', UIParent, 'SecureHandlerStateTemplate')
+    ACTIONBAR.fadeParent = CreateFrame(
+        'Frame', C.ADDON_TITLE .. 'ActionbarFadeParent', UIParent,
+        'SecureHandlerStateTemplate'
+    )
     ACTIONBAR.fadeParent:SetAlpha(C.DB.Actionbar.FadeOutAlpha)
     ACTIONBAR.fadeParent:RegisterEvent('ACTIONBAR_SHOWGRID')
     ACTIONBAR.fadeParent:RegisterEvent('ACTIONBAR_HIDEGRID')
-    ACTIONBAR.fadeParent:SetScript('OnEvent', ACTIONBAR.FadeParent_OnEvent)
+    ACTIONBAR.fadeParent:SetScript('OnEvent', ACTIONBAR.FadeParentOnEvent)
 
     RegisterStateDriver(ACTIONBAR.fadeParent, 'visibility', '[petbattle] hide; show')
 
     ACTIONBAR:UpdateFaderSettings()
     ACTIONBAR:UpdateFaderState()
-
-    disableCooldownBling()
+    ACTIONBAR:SetupLABFlyout()
 end
