@@ -21,7 +21,7 @@ end
 
 local lastCDSend = 0
 function ACTIONBAR:SendCurrentSpell(thisTime, spellID)
-    local spellLink = GetSpellLink(spellID)
+    local spellLink = C_Spell.GetSpellLink(spellID)
     local chargeInfo = C_Spell.GetSpellCharges(spellID)
     local charges = chargeInfo and chargeInfo.currentCharges
     local maxCharges = chargeInfo and chargeInfo.maxCharges
@@ -50,7 +50,7 @@ function ACTIONBAR:SendCurrentSpell(thisTime, spellID)
 end
 
 function ACTIONBAR:SendCurrentItem(thisTime, itemID, itemLink, itemCount)
-    local start, duration = GetItemCooldown(itemID)
+    local start, duration = C_Item.GetItemCooldown(itemID)
     if start and duration > 0 then
         local remain = start + duration - thisTime
         sendMsg(format(L['%s cooldown remaining %s.'], itemLink .. ' x' .. itemCount, getRemainTime(remain)))
