@@ -2,8 +2,7 @@
 -- https://github.com/haste/Butsu
 
 local F, C, L = unpack(select(2, ...))
-local EL = F:RegisterModule('EnhancedLoot')
-local LCG = F.Libs.LibCustomGlow
+local BLIZZARD = F:GetModule('Blizzard')
 
 local lootFrame
 local iconSize = 32
@@ -19,7 +18,7 @@ local coinTextureIDs = {
     [133789] = true,
 }
 
-local function OnEnter(slot)
+local function onEnter(slot)
     local id = slot:GetID()
     if LootSlotHasItem(id) then
         GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
@@ -32,9 +31,9 @@ local function OnEnter(slot)
     slot.drop:SetVertexColor(1, 1, 0)
 end
 
-local function OnLeave(slot)
+local function onLeave(slot)
     if slot.quality and (slot.quality > 1) then
-        local color = _G.ITEM_QUALITY_COLORS[slot.quality]
+        local color = ITEM_QUALITY_COLORS[slot.quality]
         slot.drop:SetVertexColor(color.r, color.g, color.b)
     else
         slot.drop:Hide()
@@ -45,8 +44,8 @@ local function OnLeave(slot)
     ResetCursor()
 end
 
-local function OnClick(slot)
-    local frame = _G.LootFrame
+local function onClick(slot)
+    local frame = LootFrame
     frame.selectedQuality = slot.quality
     frame.selectedItemName = slot.name:GetText()
     frame.selectedTexture = slot.icon:GetTexture()
@@ -54,14 +53,14 @@ local function OnClick(slot)
     frame.selectedSlot = slot:GetID()
 
     if IsModifiedClick() then
-        _G.HandleModifiedItemClick(GetLootSlotLink(frame.selectedSlot))
+        HandleModifiedItemClick(GetLootSlotLink(frame.selectedSlot))
     else
         StaticPopup_Hide('CONFIRM_LOOT_DISTRIBUTION')
         LootSlot(frame.selectedSlot)
     end
 end
 
-local function OnShow(slot)
+local function onShow(slot)
     if GameTooltip:IsOwned(slot) then
         GameTooltip:SetOwner(slot, 'ANCHOR_RIGHT')
         GameTooltip:SetLootItem(slot:GetID())
@@ -70,65 +69,83 @@ local function OnShow(slot)
     end
 end
 
-local function CreateLootSlot(id)
+local function onHide()
+    StaticPopup_Hide('CONFIRM_LOOT_DISTRIBUTION')
+    CloseLoot()
+
+    if MasterLooterFrame then
+        MasterLooterFrame:Hide()
+    end
+end
+
+local function constructLootSlot(id)
     local size = (iconSize - 2)
 
-    local frame = CreateFrame('Button', C.ADDON_TITLE .. 'LootSlot' .. id, lootFrame)
-    frame:SetPoint('LEFT', 8, 0)
-    frame:SetPoint('RIGHT', -8, 0)
-    frame:SetHeight(size)
-    frame:SetID(id)
-    frame.bg = F.SetBD(frame)
+    local f = CreateFrame('Button', C.ADDON_TITLE .. 'LootSlot' .. id, lootFrame)
+    f:SetPoint('LEFT', 8, 0)
+    f:SetPoint('RIGHT', -8, 0)
+    f:SetHeight(size)
+    f:SetID(id)
+    f.bg = F.SetBD(f)
 
-    frame:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
-    frame:SetScript('OnEnter', OnEnter)
-    frame:SetScript('OnLeave', OnLeave)
-    frame:SetScript('OnClick', OnClick)
-    frame:SetScript('OnShow', OnShow)
+    f:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
+    f:SetScript('OnEnter', onEnter)
+    f:SetScript('OnLeave', onLeave)
+    f:SetScript('OnClick', onClick)
+    f:SetScript('OnShow', onShow)
 
-    local iconFrame = CreateFrame('Frame', nil, frame)
+    local iconFrame = CreateFrame('Frame', nil, f)
     iconFrame:SetSize(size, size)
-    iconFrame:SetPoint('RIGHT', frame, 'LEFT', -4, 0)
+    iconFrame:SetPoint('RIGHT', f, 'LEFT', -4, 0)
     iconFrame.bg = F.SetBD(iconFrame)
-    frame.iconFrame = iconFrame
+    f.iconFrame = iconFrame
 
     local icon = iconFrame:CreateTexture(nil, 'ARTWORK')
     icon:SetTexCoord(unpack(C.TEX_COORD))
     icon:SetInside(iconFrame)
-    frame.icon = icon
+    f.icon = icon
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
 
-    local count = F.CreateFS(iconFrame, C.Assets.Fonts.Bold, 12, outline or nil, nil, nil, outline and 'NONE' or 'THICK', 'TOP', 1, -2)
-    frame.count = count
+    local count = F.CreateFS(
+        iconFrame,
+        C.Assets.Fonts.Condensed, 12, outline or nil,
+        nil, nil, outline and 'NONE' or 'THICK',
+        'TOP', 1, -2
+    )
+    f.count = count
 
-    local name = F.CreateFS(frame, C.Assets.Fonts.Regular, 12, outline or nil, nil, nil, outline and 'NONE' or 'THICK')
-    name:SetPoint('RIGHT', frame)
+    local name = F.CreateFS(
+        f,
+        C.Assets.Fonts.Regular, 12, outline or nil,
+        nil, nil, outline and 'NONE' or 'THICK'
+    )
+    name:SetPoint('RIGHT', f)
     name:SetPoint('LEFT', icon, 'RIGHT', 8, 0)
     name:SetJustifyH('LEFT')
     name:SetNonSpaceWrap(true)
-    frame.name = name
+    f.name = name
 
-    local drop = frame:CreateTexture(nil, 'ARTWORK')
+    local drop = f:CreateTexture(nil, 'ARTWORK')
     drop:SetTexture('Interface\\QuestFrame\\UI-QuestLogTitleHighlight')
     drop:SetPoint('LEFT', icon, 'RIGHT', 0, 0)
-    drop:SetPoint('RIGHT', frame)
-    drop:SetAllPoints(frame)
+    drop:SetPoint('RIGHT', f)
+    drop:SetAllPoints(f)
     drop:SetAlpha(0.3)
-    frame.drop = drop
+    f.drop = drop
 
     local questTexture = iconFrame:CreateTexture(nil, 'OVERLAY')
     questTexture:SetInside()
-    questTexture:SetTexture(_G.TEXTURE_ITEM_QUEST_BANG)
+    questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
     questTexture:SetTexCoord(unpack(C.TEX_COORD))
-    frame.questTexture = questTexture
+    f.questTexture = questTexture
 
-    lootFrame.slots[id] = frame
+    lootFrame.slots[id] = f
 
-    return frame
+    return f
 end
 
-local function AnchorLootSlots(frame)
+local function anchorLootSlots(frame)
     local shownSlots = 0
 
     for _, slot in next, frame.slots do
@@ -142,7 +159,7 @@ local function AnchorLootSlots(frame)
     frame:SetHeight(max(shownSlots * iconSize + 16, 20))
 end
 
-function EL.LOOT_CLOSED()
+function BLIZZARD.LOOT_CLOSED()
     StaticPopup_Hide('LOOT_BIND')
     lootFrame:Hide()
 
@@ -151,7 +168,7 @@ function EL.LOOT_CLOSED()
     end
 end
 
-function EL.LOOT_OPENED(_, autoloot)
+function BLIZZARD.LOOT_OPENED(_, autoloot)
     lootFrame:Show()
 
     if not lootFrame:IsShown() then
@@ -163,7 +180,7 @@ function EL.LOOT_OPENED(_, autoloot)
     elseif not UnitIsFriend('player', 'target') and UnitIsDead('target') then
         lootFrame.title:SetText(UnitName('target'))
     else
-        lootFrame.title:SetText(_G.LOOT)
+        lootFrame.title:SetText(LOOT)
     end
 
     local x, y = GetCursorPosition()
@@ -180,16 +197,17 @@ function EL.LOOT_OPENED(_, autoloot)
 
     if numItems > 0 then
         for i = 1, numItems do
-            local slot = lootFrame.slots[i] or CreateLootSlot(i)
-            local lootIcon, lootName, lootQuantity, _, lootQuality, _, isQuestItem, questID, isActive = GetLootSlotInfo(i)
-            local color = _G.ITEM_QUALITY_COLORS[lootQuality or 0]
+            local slot = lootFrame.slots[i] or constructLootSlot(i)
+            local lootIcon, lootName, lootQuantity, _, lootQuality, _, isQuestItem, questID, isActive = GetLootSlotInfo(
+                i)
+            local color = ITEM_QUALITY_COLORS[lootQuality or 0]
 
             if coinTextureIDs[lootIcon] then
                 lootName = lootName:gsub('\n', ', ')
             end
 
             if lootIcon then
-                if GetLootSlotType(i) == _G.LOOT_SLOT_MONEY then
+                if GetLootSlotType(i) == LOOT_SLOT_MONEY then
                     lootName = lootName:gsub('\n', ', ')
                 end
 
@@ -253,8 +271,8 @@ function EL.LOOT_OPENED(_, autoloot)
             end
         end
     else
-        local slot = lootFrame.slots[1] or CreateLootSlot(1)
-        local color = _G.ITEM_QUALITY_COLORS[0]
+        local slot = lootFrame.slots[1] or constructLootSlot(1)
+        local color = ITEM_QUALITY_COLORS[0]
 
         slot.name:SetText(L['No Loot'])
         slot.name:SetTextColor(color.r, color.g, color.b)
@@ -268,12 +286,12 @@ function EL.LOOT_OPENED(_, autoloot)
         slot:Show()
     end
 
-    AnchorLootSlots(lootFrame)
+    anchorLootSlots(lootFrame)
 
     lootFrame:SetWidth(max(maxWidth + 60, lootFrame.title:GetStringWidth() + 5))
 end
 
-function EL.LOOT_SLOT_CLEARED(_, id)
+function BLIZZARD.LOOT_SLOT_CLEARED(_, id)
     if not lootFrame:IsShown() then
         return
     end
@@ -283,79 +301,80 @@ function EL.LOOT_SLOT_CLEARED(_, id)
         slot:Hide()
     end
 
-    AnchorLootSlots(lootFrame)
+    anchorLootSlots(lootFrame)
 end
 
-function EL.OPEN_MASTER_LOOT_LIST()
-    MasterLooterFrame_Show(_G.LootFrame.selectedLootButton)
+function BLIZZARD.OPEN_MASTER_LOOT_LIST()
+    MasterLooterFrame_Show(LootFrame.selectedLootButton)
 end
 
-function EL.UPDATE_MASTER_LOOT_LIST()
-    if _G.LootFrame.selectedLootButton then
+function BLIZZARD.UPDATE_MASTER_LOOT_LIST()
+    if LootFrame.selectedLootButton then
         MasterLooterFrame_UpdatePlayers()
     end
 end
 
-local function OnHide()
-    StaticPopup_Hide('CONFIRM_LOOT_DISTRIBUTION')
-    CloseLoot()
-
-    if _G.MasterLooterFrame then
-        _G.MasterLooterFrame:Hide()
-    end
-end
-
-do -- Faster auto loot
-    local tDelay = 0
-    local lootDelay = 0.3
-
-    function EL.LOOT_READY()
-        if GetCVarBool('autoLootDefault') ~= IsModifiedClick('AUTOLOOTTOGGLE') then
-            if (GetTime() - tDelay) >= lootDelay then
-                for i = GetNumLootItems(), 1, -1 do
-                    LootSlot(i)
-                end
-
-                tDelay = GetTime()
-            end
-        end
-    end
-end
-
-function EL:OnLogin()
-    if C.DB.General.FasterAutoLoot then
-        F:RegisterEvent('LOOT_READY', EL.LOOT_READY)
-    end
-
-    if not C.DB.General.EnhancedLoot then
-        return
-    end
-
+local function constructLootFrame()
     lootFrame = CreateFrame('Button', C.ADDON_TITLE .. 'LootFrame', UIParent)
     lootFrame:SetFrameStrata('HIGH')
     lootFrame:SetClampedToScreen(true)
     lootFrame:SetSize(slotWidth, slotHeight)
     lootFrame:SetClampedToScreen(true)
-    lootFrame:SetFrameStrata(_G.LootFrame:GetFrameStrata())
+    lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
     lootFrame:SetToplevel(true)
     lootFrame:Hide()
-    lootFrame:SetScript('OnHide', OnHide)
+    lootFrame:SetScript('OnHide', onHide)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    lootFrame.title = F.CreateFS(lootFrame, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
-    lootFrame.title:SetPoint('BOTTOMLEFT', lootFrame, 'TOPLEFT')
+    local outline = ANDROMEDA_ADB.FontOutline
+    lootFrame.title = F.CreateFS(
+        lootFrame, C.Assets.Fonts.Bold, 12, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK'
+    )
+    lootFrame.title:SetPoint('BOTTOM', lootFrame, 'TOP')
 
     lootFrame.slots = {}
 
-    _G.LootFrame:UnregisterAllEvents()
-    tinsert(_G.UISpecialFrames, C.ADDON_TITLE .. 'LootFrame')
+    LootFrame:UnregisterAllEvents()
+    tinsert(UISpecialFrames, C.ADDON_TITLE .. 'LootFrame')
+end
+
+function BLIZZARD:EnhancedLoot()
+    if not C.DB.General.EnhancedLoot then
+        return
+    end
+
+    constructLootFrame()
 
     -- fix blizzard setpoint connection
-    hooksecurefunc(_G.MasterLooterFrame, 'Hide', _G.MasterLooterFrame.ClearAllPoints)
+    hooksecurefunc(MasterLooterFrame, 'Hide', MasterLooterFrame.ClearAllPoints)
 
-    F:RegisterEvent('LOOT_OPENED', EL.LOOT_OPENED)
-    F:RegisterEvent('LOOT_SLOT_CLEARED', EL.LOOT_SLOT_CLEARED)
-    F:RegisterEvent('LOOT_CLOSED', EL.LOOT_CLOSED)
-    F:RegisterEvent('OPEN_MASTER_LOOT_LIST', EL.OPEN_MASTER_LOOT_LIST)
-    F:RegisterEvent('UPDATE_MASTER_LOOT_LIST', EL.UPDATE_MASTER_LOOT_LIST)
+    F:RegisterEvent('LOOT_OPENED', BLIZZARD.LOOT_OPENED)
+    F:RegisterEvent('LOOT_SLOT_CLEARED', BLIZZARD.LOOT_SLOT_CLEARED)
+    F:RegisterEvent('LOOT_CLOSED', BLIZZARD.LOOT_CLOSED)
+    F:RegisterEvent('OPEN_MASTER_LOOT_LIST', BLIZZARD.OPEN_MASTER_LOOT_LIST)
+    F:RegisterEvent('UPDATE_MASTER_LOOT_LIST', BLIZZARD.UPDATE_MASTER_LOOT_LIST)
+end
+
+-- Faster auto loot
+local tDelay = 0
+local lootDelay = 0.3
+
+function BLIZZARD.LOOT_READY()
+    if GetCVarBool('autoLootDefault') ~= IsModifiedClick('AUTOLOOTTOGGLE') then
+        if (GetTime() - tDelay) >= lootDelay then
+            for i = GetNumLootItems(), 1, -1 do
+                LootSlot(i)
+            end
+
+            tDelay = GetTime()
+        end
+    end
+end
+
+function BLIZZARD:FasterLoot()
+    if C.DB.General.FasterLoot then
+        F:RegisterEvent('LOOT_READY', BLIZZARD.LOOT_READY)
+    else
+        F:UnregisterEvent('LOOT_READY', BLIZZARD.LOOT_READY)
+    end
 end

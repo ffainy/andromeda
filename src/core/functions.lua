@@ -233,6 +233,16 @@ do
 
         return n
     end
+
+    --
+
+    function F.NameGenerator(name)
+        local index = 0
+        return function()
+            index = index + 1
+            return name .. index
+        end
+    end
 end
 
 -- Scan Tooltip
@@ -2472,8 +2482,12 @@ do
             DPS = C.Assets.Textures.RoleDamager,
         }
 
-        function F:ReskinSmallRole(role)
-            self:SetSize(32, 32)
+        function F:ReskinSmallRole(role, size)
+            if size then
+                self:SetSize(size, size)
+            else
+                self:SetSize(32, 32)
+            end
             self:SetTexture(groupRoleTex[role])
         end
 

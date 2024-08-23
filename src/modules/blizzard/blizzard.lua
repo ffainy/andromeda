@@ -29,6 +29,9 @@ function BLIZZARD:OnLogin()
     BLIZZARD:EnhancedPremade()
     BLIZZARD:EnhancedDressup()
     BLIZZARD:ReskinVigorBar()
+    BLIZZARD:EnhancedLootRoll()
+    BLIZZARD:EnhancedLoot()
+    BLIZZARD:FasterLoot()
 end
 
 function BLIZZARD:UpdateBossBanner()

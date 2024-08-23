@@ -352,6 +352,10 @@ local function SetupAuraSize()
     GUI:SetupAuraSize(GUI.Page[1])
 end
 
+local function toggleFasterLoot()
+    BLIZZARD:FasterLoot()
+end
+
 local function UpdateScreenSaver()
     F:GetModule('ScreenSaver'):UpdateScreenSaver()
 end
@@ -541,12 +545,32 @@ GUI.OptionsList = {
         {
             1,
             'General',
-            'EnhancedLoot',
-            L['Enhanced Loot'],
+            'EnhancedLootRoll',
+            L['Enhanced LootRoll'],
             true,
             nil,
             nil,
+            L['Enhance the default loot roll frame.'],
+        },
+        {
+            1,
+            'General',
+            'EnhancedLoot',
+            L['Enhanced Loot'],
+            nil,
+            nil,
+            nil,
             L['Enhance the default loot frame.'],
+        },
+        {
+            1,
+            'General',
+            'FasterLoot',
+            L['Faster Loot'],
+            true,
+            nil,
+            toggleFasterLoot,
+            L["You can't even see the loot frame. |nTakes effect when auto loot is turned on."],
         },
         {
             1,
