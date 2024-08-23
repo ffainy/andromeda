@@ -31,7 +31,7 @@ local function addLinesForItem(self)
     end
 
     local bagCount = C_Item.GetItemCount(link)
-    local bankCount = C_Item.GetItemCount(link, true) - bagCount
+    local bankCount = C_Item.GetItemCount(link, true, nil, true, true) - bagCount
     local itemStackCount = select(8, C_Item.GetItemInfo(link))
     local itemSellPrice = select(11, C_Item.GetItemInfo(link))
     local expacID = select(15, C_Item.GetItemInfo(link))
