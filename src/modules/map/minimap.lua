@@ -291,7 +291,7 @@ end
 function MAP:CreateDifficultyFlag()
     local frame = CreateFrame('Frame', nil, Minimap)
     frame:SetSize(64, 32)
-    frame:SetPoint('TOPLEFT', Minimap, 4, -Minimap.halfDiff - 4)
+    frame:SetPoint('TOPLEFT', Minimap, 0, -Minimap.halfDiff - 4)
     frame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
     local texture = frame:CreateTexture(nil, 'BACKGROUND')
     texture:SetAllPoints()
@@ -299,7 +299,7 @@ function MAP:CreateDifficultyFlag()
     texture:SetVertexColor(0, 0, 0)
 
     local outline = ANDROMEDA_ADB.FontOutline
-    local text = F.CreateFS(frame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+    local text = F.CreateFS(frame, C.Assets.Fonts.Condensed, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
     text:SetPoint('CENTER', frame)
     text:SetJustifyH('CENTER')
 
