@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local ACTIONBAR = F:GetModule('ActionBar')
 
-local num = _G.NUM_STANCE_SLOTS or 10
+local num = NUM_STANCE_SLOTS or 10
 
 function ACTIONBAR:UpdateStanceBar()
     if InCombatLockdown() then
@@ -37,7 +37,7 @@ function ACTIONBAR:UpdateStanceBar()
     local rows = ceil(num / perRow)
     frame:SetWidth(column * size + (column - 1) * margin + 2 * padding)
     frame:SetHeight(size * rows + (rows - 1) * margin + 2 * padding)
-    frame.mover:SetSize(size, size)
+    frame.mover:SetSize(size + 2 * padding, size + 2 * padding)
 end
 
 function ACTIONBAR:UpdateStance()
@@ -87,7 +87,7 @@ end
 
 function ACTIONBAR:StanceBarOnEvent()
     ACTIONBAR:UpdateStanceBar()
-    ACTIONBAR.UpdateStance(_G.StanceBar)
+    ACTIONBAR.UpdateStance(StanceBar)
 end
 
 function ACTIONBAR:CreateStanceBar()
@@ -103,9 +103,9 @@ function ACTIONBAR:CreateStanceBar()
     ACTIONBAR.movers[11] = frame.mover
 
     -- StanceBar
-    _G.StanceBar:SetParent(frame)
-    _G.StanceBar:EnableMouse(false)
-    _G.StanceBar:UnregisterAllEvents()
+    StanceBar:SetParent(frame)
+    StanceBar:EnableMouse(false)
+    StanceBar:UnregisterAllEvents()
 
     for i = 1, num do
         local button = _G['StanceButton' .. i]
