@@ -236,6 +236,10 @@ local function UpdateFader()
     UNITFRAME:UpdateFader()
 end
 
+local function toggleTargetSound()
+    UNITFRAME:CreateTargetSound()
+end
+
 -- Groupframe
 
 local function UpdatePartyHeader()
@@ -2011,6 +2015,16 @@ GUI.OptionsList = {
             SetupClassPower,
             UpdateClassPower,
             L['Show special resources of the class, such as Combo Points, Holy Power, Chi, Runes, etc.'],
+        },
+        {
+            1,
+            'Unitframe',
+            'TargetSound',
+            L['Target Sound'],
+            nil,
+            nil,
+            toggleTargetSound,
+            L['Plays a sound effecs when the target or focus changes.']
         },
         {},
         {

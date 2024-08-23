@@ -182,6 +182,7 @@ C.CharacterSettings = {
         InvertedHealthColor = { r = 0.1, g = 0.1, b = 0.1 },
         InvertedHealthAlpha = 0.8,
         AlternativePower = true,
+        TargetSound = true,
 
         ShowAuras = true,
         OnlyShowPlayer = true,
