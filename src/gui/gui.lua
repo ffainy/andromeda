@@ -691,6 +691,8 @@ do
         end
 
         GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 35)
+
+        replaceEditModeButton()
     end
 
     local function onClick()
@@ -720,7 +722,7 @@ do
         GameMenuFrame.MenuButtons = {}
 
         hooksecurefunc(GameMenuFrame, 'Layout', insertButton)
-        replaceEditModeButton()
+
     end
 end
 
