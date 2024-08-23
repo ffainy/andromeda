@@ -148,6 +148,10 @@ local function combatLockdown(event)
     end
 end
 
+function GUI:CheckCombatStatus()
+    F:RegisterEvent('PLAYER_REGEN_DISABLED', combatLockdown)
+end
+
 local function checkUIReload(name)
     if name and not strfind(name, '%*') then
         GUI.NeedUIReload = true
@@ -625,46 +629,87 @@ function F.ToggleGUI(index)
     PlaySound(_G.SOUNDKIT.IG_MAINMENU_OPTION)
 end
 
--- PlaySound(850) --IG_MAINMENU_OPEN
--- PlaySound(854) --IG_MAINMENU_QUIT
+-- insert my button into GameMenuFrame
+-- also resize the GameMenuFrame, since tww it's been ridiculously large
 
-local function gameMenuButtonOnClick()
-    if InCombatLockdown() then
-        UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
-        return
-    end
-    createGUI()
-    HideUIPanel(GameMenuFrame)
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-end
+do
+    -- PlaySound(850) --IG_MAINMENU_OPEN
+    -- PlaySound(854) --IG_MAINMENU_QUIT
 
-local function replaceEditModeButton()
-    for button in GameMenuFrame.buttonPool:EnumerateActive() do
-        local text = button:GetText()
-        if text and text == HUD_EDIT_MODE_MENU then
-            button:SetScript('OnClick', function()
-                PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-                F:MoverConsole()
-                HideUIPanel(GameMenuFrame)
-            end)
+    local StoreEnabled = C_StorePublic.IsEnabled
+    local gameMenuLastButtons = {
+        [GAMEMENU_OPTIONS] = 1,
+        [BLIZZARD_STORE] = 2,
+    }
+
+    local function replaceEditModeButton()
+        for button in GameMenuFrame.buttonPool:EnumerateActive() do
+            local text = button:GetText()
+            if text and text == HUD_EDIT_MODE_MENU then
+                button:SetScript('OnClick', function()
+                    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+                    F:MoverConsole()
+                    HideUIPanel(GameMenuFrame)
+                end)
+            end
         end
     end
-end
 
-function GUI:CreateAndromedaButton()
-    hooksecurefunc(GameMenuFrame, 'InitButtons', function(self)
-        self:AddButton(C.COLORFUL_ADDON_TITLE, gameMenuButtonOnClick)
+    local function insertButton()
+        GameMenuFrame.Header.Text:SetTextColor(C.r, C.g, C.b)
 
+        local anchorIndex = (StoreEnabled and StoreEnabled() and 2) or 1
+        for button in GameMenuFrame.buttonPool:EnumerateActive() do
+            local text = button:GetText()
+
+            GameMenuFrame.MenuButtons[text] = button -- export these
+
+            local lastIndex = gameMenuLastButtons[text]
+            if lastIndex == anchorIndex and GameMenuFrame.AndromedaUI then
+                GameMenuFrame.AndromedaUI:SetPoint('TOPLEFT', button, 'BOTTOMLEFT', 0, -10)
+            elseif not lastIndex then
+                local point, anchor, point2, x, y = button:GetPoint()
+                button:SetPoint(point, anchor, point2, x, y - 35)
+            end
+        end
+
+        GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + 35)
+    end
+
+    local function onClick()
+        if InCombatLockdown() then
+            UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
+            return
+        end
+        createGUI()
+        HideUIPanel(GameMenuFrame)
+        PlaySound(850)
+    end
+
+    function GUI:CreateAndromedaUIButton()
+        if GameMenuFrame.AndromedaUI then return end
+
+        local button = CreateFrame('Button',
+            C.ADDON_TITLE .. 'GameMenuButton', GameMenuFrame, 'MainMenuFrameButtonTemplate')
+        button:SetScript('OnClick', onClick)
+        button:SetSize(144, 21)
+        button:SetText(C.COLORFUL_ADDON_TITLE)
+        button:SetNormalFontObject('GameFontHighlight')
+        button:SetHighlightFontObject('GameFontHighlight')
+        button:SetDisabledFontObject('GameFontDisable')
+        F.ReskinButton(button)
+
+        GameMenuFrame.AndromedaUI = button
+        GameMenuFrame.MenuButtons = {}
+
+        hooksecurefunc(GameMenuFrame, 'Layout', insertButton)
         replaceEditModeButton()
-    end)
+    end
 end
-
 
 
 function GUI:OnLogin()
-    GUI:CreateAndromedaButton()
-
+    GUI:CreateAndromedaUIButton()
     GUI:CreateCheatSheet()
-
-    F:RegisterEvent('PLAYER_REGEN_DISABLED', combatLockdown)
+    GUI:CheckCombatStatus()
 end
