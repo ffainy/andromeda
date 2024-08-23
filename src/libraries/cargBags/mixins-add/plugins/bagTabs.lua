@@ -38,12 +38,16 @@ end
 
 local function UpdateTooltip(self, id)
 	local data = AccountBankPanel.purchasedBankTabData[id]
-	if not data then return end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-	GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
-	AddBankTabSettingsToTooltip(GameTooltip, data.depositFlags)
-	GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
+	if not data then
+		GameTooltip:AddLine(ns[3]["You need to disable addon and use default bankframe to purchase extra tabs."], 1, 0, 0, 1)
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip_SetTitle(GameTooltip, data.name, NORMAL_FONT_COLOR)
+		AddBankTabSettingsToTooltip(GameTooltip, data.depositFlags)
+		GameTooltip_AddInstructionLine(GameTooltip, BANK_TAB_TOOLTIP_CLICK_INSTRUCTION)
+	end
 	GameTooltip:Show()
 end
 
@@ -55,7 +59,7 @@ function BagTab:Create(bagID)
 	button:SetID(buttonNum)
 	button.bagId = buttonNum + BANK_TAB1 - 1
 
-	ANDROMEDA[1].PixelIcon(button, BagTab.bgTex, true)
+	ns[1].PixelIcon(button, BagTab.bgTex, true)
 	button:RegisterForDrag("LeftButton", "RightButton")
 	button:RegisterForClicks("AnyUp")
 	button:SetSize(37, 37)
@@ -135,7 +139,7 @@ function BagTab:OnClick(btn)
 
 	local data = AccountBankPanel.purchasedBankTabData[currentTabID]
 	if not data then
-		StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, {bankType = ACCOUNT_BANK_TYPE})
+		-- StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, {bankType = ACCOUNT_BANK_TYPE})
 	else
 		if btn == "LeftButton" then
 			local buttons = self.bar.buttons
