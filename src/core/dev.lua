@@ -159,43 +159,9 @@ end)
     end
 end ]]
 
-function F:Debug(object)
-    if type(object) == 'table' then
-        local cache = {}
-        local function printLoop(subject, indent)
-            if cache[tostring(subject)] then
-                print(indent .. '*' .. tostring(subject))
-            else
-                cache[tostring(subject)] = true
-                if type(subject) == 'table' then
-                    for pos, val in pairs(subject) do
-                        if type(val) == 'table' then
-                            print(indent .. '[' .. pos .. '] => ' .. tostring(subject) .. ' {')
-                            printLoop(val, indent .. strrep(' ', strlen(pos) + 8))
-                            print(indent .. strrep(' ', strlen(pos) + 6) .. '}')
-                        elseif type(val) == 'string' then
-                            print(indent .. '[' .. pos .. '] => "' .. val .. '"')
-                        else
-                            print(indent .. '[' .. pos .. '] => ' .. tostring(val))
-                        end
-                    end
-                else
-                    print(indent .. tostring(subject))
-                end
-            end
-        end
-        if type(object) == 'table' then
-            print(tostring(object) .. ' {')
-            printLoop(object, '  ')
-            print('}')
-        else
-            printLoop(object, '  ')
-        end
-        print()
-    elseif type(object) == 'string' then
-        print('|cffff2020[Debug]|r ' .. object)
-    else
-        print('(' .. type(object) .. ') ' .. tostring(object))
+function F:Debug(...)
+    if C.IS_DEVELOPER then
+        DEFAULT_CHAT_FRAME:AddMessage("|cffff2020[Debug]: |r " .. format(...))
     end
 end
 
