@@ -146,7 +146,7 @@ function UNITFRAME:CreateBackdrop(self, onKeyDown)
     self:HookScript('OnEnter', onEnter)
     self:HookScript('OnLeave', onLeave)
 
-    local bg = F.SetBD(self) ---#TODO add alpha to gui option
+    local bg = F.SetBD(self, 0.45)
     bg:SetBackdropBorderColor(0, 0, 0, 1)
     bg:SetFrameStrata('BACKGROUND')
 

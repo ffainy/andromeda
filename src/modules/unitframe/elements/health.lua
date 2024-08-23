@@ -16,15 +16,15 @@ local function updateHealthColorByIndex(health, index)
     health.colorReaction = (index == 2)
 
     if health.SetColorTapping then
-        health:SetColorTapping(index == 2)
+        health:SetColorTapping(index == 2 or index == 4)
     else
-        health.colorTapping = (index == 2)
+        health.colorTapping = (index == 2) or (index == 4)
     end
 
     if health.SetColorDisconnected then
-        health:SetColorDisconnected(index == 2)
+        health:SetColorDisconnected(index == 2 or index == 4)
     else
-        health.colorDisconnected = (index == 2)
+        health.colorDisconnected = (index == 2) or (index == 4)
     end
 
     health.colorSmooth = (index == 3)
