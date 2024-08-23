@@ -28,6 +28,7 @@ function BLIZZARD:OnLogin()
     -- BLIZZARD:EnhancedFriendsList()
     BLIZZARD:EnhancedPremade()
     BLIZZARD:EnhancedDressup()
+    BLIZZARD:ReskinVigorBar()
 end
 
 function BLIZZARD:UpdateBossBanner()
@@ -91,11 +92,11 @@ function BLIZZARD:TicketStatusMover()
     end)
 end
 
---reposition UI widget frame
+-- reposition UI widget frame
 function BLIZZARD:UIWidgetFrameMover()
     local frame1 = CreateFrame('Frame', C.ADDON_TITLE .. 'UIWidgetMover', UIParent)
     frame1:SetSize(200, 50)
-    F.Mover(frame1, L['UIWidgetFrame'], 'UIWidgetFrame', { 'TOP', 0, -80 })
+    F.Mover(frame1, L['UIWidgetFrame'], 'UIWidgetFrame', { 'TOP', 0, -100 })
 
     hooksecurefunc(UIWidgetBelowMinimapContainerFrame, 'SetPoint', function(self, _, parent)
         if parent ~= frame1 then
@@ -114,6 +115,115 @@ function BLIZZARD:UIWidgetFrameMover()
             self:SetPoint('CENTER', frame2)
         end
     end)
+end
+
+-- dragonfly vigor bar
+do
+    local vigorBar
+    local r, g, b = 0.3, 0.5, 1
+    local function setupBar()
+        vigorBar = CreateFrame('Frame', C.ADDON_TITLE .. 'VigorBar', UIParent)
+        vigorBar:SetSize(200, 12)
+
+        for i = 1, 6 do
+            vigorBar[i] = CreateFrame('StatusBar', 'Vigor' .. i, vigorBar)
+            vigorBar[i]:SetSize((200 - 15) / 6, 12)
+            F.SetBD(vigorBar[i], .65)
+
+            if i == 1 then
+                vigorBar[i]:SetPoint('TOPLEFT', vigorBar, 'TOPLEFT', 0, 0)
+            else
+                vigorBar[i]:SetPoint('TOPLEFT', vigorBar[i - 1], 'TOPRIGHT', 3, 0)
+            end
+            vigorBar[i]:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+            vigorBar[i]:SetMinMaxValues(0, 100)
+            vigorBar[i]:SetStatusBarColor(r, g, b)
+
+            vigorBar[i]:SetValue(0)
+        end
+
+        F.Mover(vigorBar, L['Dragonfly VigorBar'], 'VigorBar', { 'TOP', 0, -140 })
+
+        vigorBar:Hide()
+    end
+
+    local function reskinBar(widget)
+        if not widget:IsShown() then
+            return
+        end
+
+        local widgetInfo = C_UIWidgetManager.GetFillUpFramesWidgetVisualizationInfo(widget.widgetID)
+        if not widgetInfo then
+            return
+        end
+
+        vigorBar:Show()
+
+        local total = widgetInfo.numTotalFrames
+        for i = 1, total do
+            local value = 0
+            vigorBar[i]:SetStatusBarColor(r, g, b)
+            if widgetInfo.numFullFrames >= i then
+                value = widgetInfo.fillMax
+            elseif widgetInfo.numFullFrames + 1 == i then
+                value = widgetInfo.fillValue
+                vigorBar[i]:SetStatusBarColor(r * 0.6, g * 0.6, b * 0.6)
+            else
+                value = widgetInfo.fillMin
+            end
+            vigorBar[i]:SetValue(value)
+        end
+
+        if total < 6 and IsPlayerSpell(377922) then
+            total = 6
+        end -- sometimes it returns 5
+
+        if total < 6 then
+            for i = total + 1, 6 do
+                vigorBar[i]:Hide()
+                vigorBar[i]:SetValue(0)
+            end
+
+            local spacing = select(4, vigorBar[6]:GetPoint())
+            local w = vigorBar:GetWidth()
+            local s = 0
+
+            for i = 1, total do
+                vigorBar[i]:Show()
+                if i ~= total then
+                    vigorBar[i]:SetWidth(w / total - spacing)
+                    s = s + (w / total)
+                else
+                    vigorBar[i]:SetWidth(w - s)
+                end
+            end
+        end
+
+        widget:SetAlpha(0)
+
+        if not widget.hook then
+            hooksecurefunc(widget, 'Hide', function(self)
+                vigorBar:Hide()
+            end)
+            widget.hook = true
+        end
+    end
+
+    local function hookWidgets()
+        for _, widget in pairs(UIWidgetPowerBarContainerFrame.widgetFrames) do
+            if widget.widgetType == Enum.UIWidgetVisualizationType.FillUpFrames then
+                reskinBar(widget)
+            end
+        end
+    end
+
+    function BLIZZARD:ReskinVigorBar()
+        setupBar()
+
+        F:RegisterEvent('PLAYER_ENTERING_WORLD', hookWidgets)
+        F:RegisterEvent('UPDATE_ALL_UI_WIDGETS', hookWidgets)
+        F:RegisterEvent('UPDATE_UI_WIDGET', hookWidgets)
+    end
 end
 
 -- Kill blizz tutorial, real man dont need these crap
