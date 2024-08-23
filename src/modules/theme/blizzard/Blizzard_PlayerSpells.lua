@@ -54,6 +54,11 @@ C.Themes['Blizzard_PlayerSpells'] = function()
                     for button in specContentFrame.SpellButtonPool:EnumerateActive() do
                         button.Ring:Hide()
                         F.ReskinIcon(button.Icon)
+
+                        local texture = button.spellID and C_Spell.GetSpellTexture(button.spellID)
+                        if texture then
+                            button.Icon:SetTexture(texture)
+                        end
                     end
                 end
 

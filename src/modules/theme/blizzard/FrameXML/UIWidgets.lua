@@ -1,10 +1,30 @@
 local F, C = unpack(select(2, ...))
 
-local Type_StatusBar = _G.Enum.UIWidgetVisualizationType.StatusBar
-local Type_CaptureBar = _G.Enum.UIWidgetVisualizationType.CaptureBar
-local Type_SpellDisplay = _G.Enum.UIWidgetVisualizationType.SpellDisplay
-local Type_DoubleStatusBar = _G.Enum.UIWidgetVisualizationType.DoubleStatusBar
-local Type_ItemDisplay = _G.Enum.UIWidgetVisualizationType.ItemDisplay
+local Type_StatusBar = Enum.UIWidgetVisualizationType.StatusBar
+local Type_CaptureBar = Enum.UIWidgetVisualizationType.CaptureBar
+local Type_SpellDisplay = Enum.UIWidgetVisualizationType.SpellDisplay
+local Type_DoubleStatusBar = Enum.UIWidgetVisualizationType.DoubleStatusBar
+local Type_ItemDisplay = Enum.UIWidgetVisualizationType.ItemDisplay
+
+local atlasColors = {
+    ['UI-Frame-Bar-Fill-Blue'] = { 0.2, 0.6, 1 },
+    ['UI-Frame-Bar-Fill-Red'] = { 0.9, 0.2, 0.2 },
+    ['UI-Frame-Bar-Fill-Yellow'] = { 1, 0.6, 0 },
+    ['objectivewidget-bar-fill-left'] = { 0.2, 0.6, 1 },
+    ['objectivewidget-bar-fill-right'] = { 0.9, 0.2, 0.2 },
+    ['EmberCourtScenario-Tracker-barfill'] = { 0.9, 0.2, 0.2 },
+}
+
+local function replaceWidgetBarTexture(self, atlas)
+    if self:IsForbidden() then
+        return
+    end
+
+    if atlasColors[atlas] then
+        self:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+        self:SetStatusBarColor(unpack(atlasColors[atlas]))
+    end
+end
 
 local function resetLabelColor(text, _, _, _, _, force)
     if not force then
@@ -13,6 +33,10 @@ local function resetLabelColor(text, _, _, _, _, force)
 end
 
 local function reskinWidgetStatusBar(bar)
+    if not bar or bar:IsForbidden() then
+        return
+    end
+
     if bar and not bar.styled then
         if bar.BG then
             bar.BG:SetAlpha(0)
@@ -56,18 +80,27 @@ local function reskinWidgetStatusBar(bar)
 
         if bar.Label then
             bar.Label:SetPoint('CENTER')
-            bar.Label:SetFontObject(_G.Game12Font)
+            bar.Label:SetFontObject(Game12Font)
             resetLabelColor(bar.Label)
             hooksecurefunc(bar.Label, 'SetTextColor', resetLabelColor)
         end
 
         F.SetBD(bar)
 
+        if bar.GetStatusBarTexture then
+            replaceWidgetBarTexture(bar, bar:GetStatusBarTexture())
+            hooksecurefunc(bar, 'SetStatusBarTexture', replaceWidgetBarTexture)
+        end
+
         bar.styled = true
     end
 end
 
 local function reskinDoubleStatusBarWidget(self)
+    if self:IsForbidden() then
+        return
+    end
+
     if not self.styled then
         reskinWidgetStatusBar(self.LeftBar)
         reskinWidgetStatusBar(self.RightBar)
@@ -77,6 +110,10 @@ local function reskinDoubleStatusBarWidget(self)
 end
 
 local function reskinPVPCaptureBar(self)
+    if self:IsForbidden() then
+        return
+    end
+
     self.LeftBar:SetTexture(C.Assets.Textures.StatusbarNormal)
     self.NeutralBar:SetTexture(C.Assets.Textures.StatusbarNormal)
     self.RightBar:SetTexture(C.Assets.Textures.StatusbarNormal)
@@ -100,11 +137,16 @@ local function reskinPVPCaptureBar(self)
 end
 
 local function reskinSpellDisplayWidget(spell)
+    if not spell or spell:IsForbidden() then
+        return
+    end
+
     if not spell.bg then
         spell.Border:SetAlpha(0)
         spell.DebuffBorder:SetAlpha(0)
         spell.bg = F.ReskinIcon(spell.Icon)
     end
+
     spell.IconMask:Hide()
 end
 
@@ -127,6 +169,7 @@ local function reskinWidgetItemDisplay(item)
         item.bg = F.ReskinIcon(item.Icon)
         F.ReskinIconBorder(item.IconBorder, true)
     end
+
     item.IconMask:Hide()
 end
 
@@ -152,10 +195,10 @@ local function reskinWidgetGroups(self)
 end
 
 tinsert(C.BlizzThemes, function()
-    hooksecurefunc(_G.UIWidgetTopCenterContainerFrame, 'UpdateWidgetLayout', reskinWidgetGroups)
-    reskinWidgetGroups(_G.UIWidgetTopCenterContainerFrame)
+    hooksecurefunc(UIWidgetTopCenterContainerFrame, 'UpdateWidgetLayout', reskinWidgetGroups)
+    reskinWidgetGroups(UIWidgetTopCenterContainerFrame)
 
-    hooksecurefunc(_G.UIWidgetBelowMinimapContainerFrame, 'UpdateWidgetLayout', function(self)
+    hooksecurefunc(UIWidgetBelowMinimapContainerFrame, 'UpdateWidgetLayout', function(self)
         if not self.widgetFrames then
             return
         end
@@ -169,19 +212,19 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    hooksecurefunc(_G.UIWidgetPowerBarContainerFrame, 'UpdateWidgetLayout', reskinPowerBarWidget)
-    reskinPowerBarWidget(_G.UIWidgetPowerBarContainerFrame)
+    hooksecurefunc(UIWidgetPowerBarContainerFrame, 'UpdateWidgetLayout', reskinPowerBarWidget)
+    reskinPowerBarWidget(UIWidgetPowerBarContainerFrame)
 
-    hooksecurefunc(_G.ObjectiveTrackerUIWidgetContainer, 'UpdateWidgetLayout', reskinPowerBarWidget)
-    reskinPowerBarWidget(_G.ObjectiveTrackerUIWidgetContainer)
+    hooksecurefunc(ObjectiveTrackerUIWidgetContainer, 'UpdateWidgetLayout', reskinPowerBarWidget)
+    reskinPowerBarWidget(ObjectiveTrackerUIWidgetContainer)
 
     -- if font outline enabled in tooltip, fix text shows in two lines on Torghast info
-    hooksecurefunc(_G.UIWidgetTemplateTextWithStateMixin, 'Setup', function(self)
+    hooksecurefunc(UIWidgetTemplateTextWithStateMixin, 'Setup', function(self)
         self.Text:SetWidth(self.Text:GetStringWidth() + 2)
     end)
 
     -- needs review, might remove this in the future
-    hooksecurefunc(_G.UIWidgetTemplateStatusBarMixin, 'Setup', function(self)
+    hooksecurefunc(UIWidgetTemplateStatusBarMixin, 'Setup', function(self)
         if self:IsForbidden() then
             return
         end
@@ -189,5 +232,5 @@ tinsert(C.BlizzThemes, function()
         reskinWidgetStatusBar(self.Bar)
     end)
 
-    F.ReskinButton(_G.UIWidgetCenterDisplayFrame.CloseButton)
+    F.ReskinButton(UIWidgetCenterDisplayFrame.CloseButton)
 end)

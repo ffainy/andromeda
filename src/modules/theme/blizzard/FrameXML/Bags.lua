@@ -67,10 +67,10 @@ local function updateContainer(frame)
     local name = frame:GetName()
 
     if id == 0 then
-        _G.BagItemSearchBox:ClearAllPoints()
-        _G.BagItemSearchBox:SetPoint('TOPLEFT', frame, 'TOPLEFT', 50, -35)
-        _G.BagItemAutoSortButton:ClearAllPoints()
-        _G.BagItemAutoSortButton:SetPoint('TOPRIGHT', frame, 'TOPRIGHT', -9, -31)
+        BagItemSearchBox:ClearAllPoints()
+        BagItemSearchBox:SetPoint('TOPLEFT', frame, 'TOPLEFT', 50, -35)
+        BagItemAutoSortButton:ClearAllPoints()
+        BagItemAutoSortButton:SetPoint('TOPRIGHT', frame, 'TOPRIGHT', -9, -31)
     end
 
     for i = 1, frame.size do
@@ -113,7 +113,7 @@ local function handleBankTab(tab)
 end
 
 tinsert(C.BlizzThemes, function()
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    if not ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
@@ -157,10 +157,10 @@ tinsert(C.BlizzThemes, function()
         hooksecurefunc(frame, 'UpdateItemSlots', handleBagSlots)
     end
 
-    F.StripTextures(_G.BackpackTokenFrame)
-    F.CreateBDFrame(_G.BackpackTokenFrame, 0.25)
+    F.StripTextures(BackpackTokenFrame)
+    F.CreateBDFrame(BackpackTokenFrame, 0.25)
 
-    hooksecurefunc(_G.BackpackTokenFrame, 'Update', function(self)
+    hooksecurefunc(BackpackTokenFrame, 'Update', function(self)
         local tokens = self.Tokens
         if next(tokens) then
             for i = 1, #tokens do
@@ -173,41 +173,42 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    F.ReskinEditbox(_G.BagItemSearchBox)
-    reskinSortButton(_G.BagItemAutoSortButton)
+    F.ReskinEditbox(BagItemSearchBox)
+    reskinSortButton(BagItemAutoSortButton)
 
     -- Combined bags
-    F.ReskinPortraitFrame(_G.ContainerFrameCombinedBags)
-    createBagIcon(_G.ContainerFrameCombinedBags, 1)
-    _G.ContainerFrameCombinedBags.PortraitButton.Highlight:SetTexture('')
-    hooksecurefunc(_G.ContainerFrameCombinedBags, 'UpdateItemSlots', handleBagSlots)
+    F.ReskinPortraitFrame(ContainerFrameCombinedBags)
+    createBagIcon(ContainerFrameCombinedBags, 1)
+    ContainerFrameCombinedBags.PortraitButton.Highlight:SetTexture('')
+    hooksecurefunc(ContainerFrameCombinedBags, 'UpdateItemSlots', handleBagSlots)
 
     -- [[ Bank ]]
 
-    _G.BankSlotsFrame:DisableDrawLayer('BORDER')
-    _G.BankFrameMoneyFrameBorder:Hide()
-    _G.BankSlotsFrame.NineSlice:SetAlpha(0)
+    BankSlotsFrame:DisableDrawLayer('BORDER')
+    BankFrameMoneyFrameBorder:Hide()
+    BankSlotsFrame.NineSlice:SetAlpha(0)
+    BankSlotsFrame.EdgeShadows:Hide()
 
     -- "item slots" and "bag slots" text
-    select(9, _G.BankSlotsFrame:GetRegions()):SetDrawLayer('OVERLAY')
-    select(10, _G.BankSlotsFrame:GetRegions()):SetDrawLayer('OVERLAY')
+    select(9, BankSlotsFrame:GetRegions()):SetDrawLayer('OVERLAY')
+    select(10, BankSlotsFrame:GetRegions()):SetDrawLayer('OVERLAY')
 
-    F.ReskinPortraitFrame(_G.BankFrame)
-    F.ReskinButton(_G.BankFramePurchaseButton)
-    F.ReskinTab(_G.BankFrameTab1)
-    F.ReskinTab(_G.BankFrameTab2)
-    F.ReskinTab(_G.BankFrameTab3)
-    F.ReskinEditbox(_G.BankItemSearchBox)
+    F.ReskinPortraitFrame(BankFrame)
+    F.ReskinButton(BankFramePurchaseButton)
+    F.ReskinTab(BankFrameTab1)
+    F.ReskinTab(BankFrameTab2)
+    F.ReskinTab(BankFrameTab3)
+    F.ReskinEditbox(BankItemSearchBox)
 
     for i = 1, 28 do
         reskinBagSlot(_G['BankFrameItem' .. i])
     end
 
     for i = 1, 7 do
-        reskinBagSlot(_G.BankSlotsFrame['Bag' .. i])
+        reskinBagSlot(BankSlotsFrame['Bag' .. i])
     end
 
-    reskinSortButton(_G.BankItemAutoSortButton)
+    reskinSortButton(BankItemAutoSortButton)
 
     hooksecurefunc('BankFrameItemButton_Update', function(button)
         if not button.isBag and button.IconQuestTexture:IsShown() then
@@ -217,20 +218,21 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Reagent bank ]]
 
-    _G.ReagentBankFrame:DisableDrawLayer('BACKGROUND')
-    _G.ReagentBankFrame:DisableDrawLayer('BORDER')
-    _G.ReagentBankFrame:DisableDrawLayer('ARTWORK')
-    _G.ReagentBankFrame.NineSlice:SetAlpha(0)
+    ReagentBankFrame:DisableDrawLayer('BACKGROUND')
+    ReagentBankFrame:DisableDrawLayer('BORDER')
+    ReagentBankFrame:DisableDrawLayer('ARTWORK')
+    ReagentBankFrame.NineSlice:SetAlpha(0)
+    ReagentBankFrame.EdgeShadows:Hide()
 
-    F.ReskinButton(_G.ReagentBankFrame.DespositButton)
-    F.ReskinButton(_G.ReagentBankFrameUnlockInfoPurchaseButton)
+    F.ReskinButton(ReagentBankFrame.DespositButton)
+    F.ReskinButton(ReagentBankFrameUnlockInfoPurchaseButton)
 
     -- make button more visible
-    F.StripTextures(_G.ReagentBankFrameUnlockInfo)
-    _G.ReagentBankFrameUnlockInfoBlackBG:SetColorTexture(0.1, 0.1, 0.1)
+    F.StripTextures(ReagentBankFrameUnlockInfo)
+    ReagentBankFrameUnlockInfoBlackBG:SetColorTexture(0.1, 0.1, 0.1)
 
     local reagentButtonsStyled = false
-    _G.ReagentBankFrame:HookScript('OnShow', function()
+    ReagentBankFrame:HookScript('OnShow', function()
         if not reagentButtonsStyled then
             for i = 1, 98 do
                 local button = _G['ReagentBankFrameItem' .. i]
@@ -242,7 +244,7 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- [[ Account bank ]]
-    local AccountBankPanel = _G.AccountBankPanel
+    local AccountBankPanel = AccountBankPanel
     AccountBankPanel.NineSlice:SetAlpha(0)
     AccountBankPanel.EdgeShadows:Hide()
     F.ReskinButton(AccountBankPanel.ItemDepositFrame.DepositButton)
