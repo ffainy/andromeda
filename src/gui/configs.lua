@@ -681,6 +681,7 @@ C.AccountSettings = {
     ReskinOpie = true,
     ReskinPremadeGroupsFilter = true,
     ReskinREHack = true,
+    ReskinlsToasts = true,
     NumberFormat = 1,
     FontOutline = false,
     WorldTextScale = 1,

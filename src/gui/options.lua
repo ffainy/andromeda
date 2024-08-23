@@ -2991,6 +2991,13 @@ GUI.OptionsList = {
             'ReskinREHack',
             L['Reskin REHack'],
         },
+        {
+            1,
+            'ACCOUNT',
+            'ReskinlsToasts',
+            L['Reskin lsToasts'],
+            true,
+        },
     },
     [15] = {},
     [16] = {},

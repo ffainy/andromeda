@@ -3,6 +3,7 @@
     <Script file="dbm.lua"/>
     <Script file="details.lua"/>
     <Script file="immersion.lua"/>
+    <Script file="lstoasts.lua"/>
     <Script file="mrt.lua"/>
     <Script file="opie.lua"/>
     <Script file="pgf.lua"/>
