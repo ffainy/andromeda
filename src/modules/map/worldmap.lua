@@ -32,7 +32,7 @@ function MAP:GetPlayerMapPos(mapID)
 end
 
 function MAP:GetCursorCoords()
-    local WorldMapFrame = _G.WorldMapFrame
+    local WorldMapFrame = WorldMapFrame
     if not WorldMapFrame.ScrollContainer:IsMouseOver() then
         return
     end
@@ -60,13 +60,13 @@ function MAP:UpdateCoords(elapsed)
         end
 
         if not currentMapID then
-            playerCoords:SetText(CoordsFormat(_G.PLAYER, true))
+            playerCoords:SetText(CoordsFormat(PLAYER, true))
         else
             local x, y = MAP:GetPlayerMapPos(currentMapID)
             if not x or (x == 0 and y == 0) then
-                playerCoords:SetText(CoordsFormat(_G.PLAYER, true))
+                playerCoords:SetText(CoordsFormat(PLAYER, true))
             else
-                playerCoords:SetFormattedText(CoordsFormat(_G.PLAYER), 100 * x, 100 * y)
+                playerCoords:SetFormattedText(CoordsFormat(PLAYER), 100 * x, 100 * y)
             end
         end
 
@@ -87,12 +87,18 @@ function MAP:AddCoords()
         return
     end
 
-    local WorldMapFrame = _G.WorldMapFrame
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    playerCoords = F.CreateFS(WorldMapFrame.BorderFrame.TitleContainer, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
-    playerCoords:SetPoint('TOPLEFT', 10, -6)
-    cursorCoords = F.CreateFS(WorldMapFrame.BorderFrame.TitleContainer, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
-    cursorCoords:SetPoint('TOPLEFT', 120, -6)
+    local WorldMapFrame = WorldMapFrame
+    local outline = ANDROMEDA_ADB.FontOutline
+    playerCoords = F.CreateFS(
+        WorldMapFrame.BorderFrame, C.Assets.Fonts.Bold, 12, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK',
+        { 'BOTTOMLEFT', 150, 10 }
+    )
+    cursorCoords = F.CreateFS(
+        WorldMapFrame.BorderFrame, C.Assets.Fonts.Bold, 12, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK',
+        { 'LEFT', playerCoords, 'RIGHT', 20, 0 }
+    )
 
     F.HideObject(WorldMapFrame.BorderFrame.Tutorial)
 
@@ -117,21 +123,21 @@ function MAP:UpdateMapAnchor()
 end
 
 function MAP:WorldMapScale()
-    local WorldMapFrame = _G.WorldMapFrame
+    local WorldMapFrame = WorldMapFrame
 
     F.CreateMF(WorldMapFrame, nil, true)
     hooksecurefunc(WorldMapFrame, 'SynchronizeDisplayState', self.UpdateMapAnchor)
 end
 
 function MAP:SetupWorldMap()
-    local WorldMapFrame = _G.WorldMapFrame
+    local WorldMapFrame = WorldMapFrame
     -- Remove from frame manager
     WorldMapFrame:ClearAllPoints()
     WorldMapFrame:SetPoint('CENTER') -- init anchor
     WorldMapFrame:SetAttribute('UIPanelLayout-area', nil)
     WorldMapFrame:SetAttribute('UIPanelLayout-enabled', false)
     WorldMapFrame:SetAttribute('UIPanelLayout-allowOtherPanels', true)
-    tinsert(_G.UISpecialFrames, 'WorldMapFrame')
+    tinsert(UISpecialFrames, 'WorldMapFrame')
 
     -- Hide stuff
     WorldMapFrame.BlackoutFrame:SetAlpha(0)
