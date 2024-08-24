@@ -1,110 +1,179 @@
 local F, C, L = unpack(select(2, ...))
-local MM = F:RegisterModule('GameMenu')
+local MISC = F:GetModule('Misc')
 
 local buttonsList = {}
 local menuList = {
     {
-        _G.CHARACTER_BUTTON,
+        CHARACTER_BUTTON,
         C.Assets.Textures.MenuBarPlayer,
         function()
-            securecall(_G.ToggleFrame, _G.CharacterFrame)
+            if not CharacterFrame:IsShown() then
+                ShowUIPanel(CharacterFrame)
+                CharacterFrameTab2:Click()
+                CharacterFrameTab1:Click()
+            else
+                HideUIPanel(CharacterFrame)
+            end
         end,
     },
 
     {
-        _G.SPELLBOOK_ABILITIES_BUTTON,
+        PROFESSIONS_BUTTON,
         C.Assets.Textures.MenuBarSpellbook,
         function()
-            securecall(_G.ToggleFrame, _G.SpellBookFrame)
+            if InCombatLockdown() then
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
+                return
+            end
+            ToggleProfessionsBook()
         end,
     },
     {
-        _G.TALENTS_BUTTON,
+        PLAYERSPELLS_BUTTON,
         C.Assets.Textures.MenuBarTalent,
         function()
-            ToggleTalentFrame()
+            if not PlayerSpellsFrame:IsShown() then
+                ShowUIPanel(PlayerSpellsFrame)
+            else
+                HideUIPanel(PlayerSpellsFrame)
+            end
         end,
     },
     {
-        _G.SOCIAL_BUTTON,
+        SOCIAL_BUTTON,
         C.Assets.Textures.MenuBarFriend,
         function()
-            ToggleFriendsFrame()
+            if not FriendsFrame:IsShown() then
+                ShowUIPanel(FriendsFrame)
+            else
+                HideUIPanel(FriendsFrame)
+            end
         end,
     },
     {
-        _G.GUILD,
+        COMMUNITIES_FRAME_TITLE,
         C.Assets.Textures.MenuBarGuild,
         function()
-            ToggleGuildFrame()
+            if not CommunitiesFrame then
+                C_AddOns.LoadAddOn('Blizzard_Communities')
+            end
+            if not CommunitiesFrame:IsShown() then
+                ShowUIPanel(CommunitiesFrame)
+            else
+                HideUIPanel(CommunitiesFrame)
+            end
         end,
     },
     {
-        _G.ACHIEVEMENT_BUTTON,
+        ACHIEVEMENT_BUTTON,
         C.Assets.Textures.MenuBarAchievement,
         function()
-            ToggleAchievementFrame()
+            if not AchievementFrame then
+                C_AddOns.LoadAddOn('Blizzard_AchievementUI')
+            end
+            if not AchievementFrame:IsShown() then
+                ShowUIPanel(AchievementFrame)
+            else
+                HideUIPanel(AchievementFrame)
+            end
         end,
     },
     {
-        _G.COLLECTIONS,
+        COLLECTIONS,
         C.Assets.Textures.MenuBarCollection,
         function()
-            ToggleCollectionsJournal()
+            if not CollectionsJournal then
+                C_AddOns.LoadAddOn('Blizzard_Collections')
+            end
+            if not CollectionsJournal:IsShown() then
+                ShowUIPanel(CollectionsJournal)
+            else
+                HideUIPanel(CollectionsJournal)
+            end
         end,
     },
     {
-        _G.LFG_TITLE,
+        GROUP_FINDER,
         C.Assets.Textures.MenuBarLfg,
         function()
-            ToggleLFDParentFrame()
+            if not PVEFrame:IsShown() then
+                ShowUIPanel(PVEFrame)
+                PVEFrameTab1:Click()
+            else
+                HideUIPanel(PVEFrame)
+            end
         end,
     },
     {
-        _G.ENCOUNTER_JOURNAL,
+        ADVENTURE_JOURNAL,
         C.Assets.Textures.MenuBarEncounter,
         function()
-            ToggleEncounterJournal()
+            if not EncounterJournal then
+                C_AddOns.LoadAddOn('Blizzard_EncounterJournal')
+            end
+            if not EncounterJournal:IsShown() then
+                ShowUIPanel(EncounterJournal)
+            else
+                HideUIPanel(EncounterJournal)
+            end
         end,
     },
     {
         L['Calendar'],
         C.Assets.Textures.MenuBarCalendar,
         function()
-            ToggleCalendar()
+            if not CalendarFrame then
+                C_AddOns.LoadAddOn('Blizzard_Calendar')
+            end
+            if not CalendarFrame:IsShown() then
+                ShowUIPanel(CalendarFrame)
+            else
+                HideUIPanel(CalendarFrame)
+            end
         end,
     },
     {
-        _G.MAP_AND_QUEST_LOG,
+        MAP_AND_QUEST_LOG,
         C.Assets.Textures.MenuBarMap,
         function()
-            ToggleWorldMap()
+            if not WorldMapFrame:IsShown() then
+                ShowUIPanel(WorldMapFrame)
+            else
+                HideUIPanel(WorldMapFrame)
+            end
         end,
     },
     {
-        _G.BAGSLOT,
+        BAGSLOT,
         C.Assets.Textures.MenuBarBag,
         function()
             ToggleAllBags()
         end,
     },
     {
-        _G.BLIZZARD_STORE,
+        BLIZZARD_STORE,
         C.Assets.Textures.MenuBarStore,
         function()
-            ToggleStoreUI()
+            if not StoreFrame then
+                C_AddOns.LoadAddOn('Blizzard_StoreUI')
+            end
+            securecall(ToggleStoreUI)
         end,
     },
     {
-        _G.GAMEMENU_SUPPORT,
+        GM_EMAIL_NAME,
         C.Assets.Textures.MenuBarHelp,
         function()
-            ToggleHelpFrame()
+            if not HelpFrame:IsShown() then
+                ShowUIPanel(HelpFrame)
+            else
+                HideUIPanel(HelpFrame)
+            end
         end,
     },
 }
 
-local function CreateButtonTexture(icon, texture)
+local function createButtonTexture(icon, texture)
     icon:SetAllPoints()
     icon:SetTexture(texture)
     if C.DB.General.GameMenuClassColor then
@@ -126,7 +195,7 @@ local function OnClick(self)
     self.func()
 end
 
-function MM:Constructor(bar, data)
+local function setupButton(bar, data)
     local tip, texture, func = unpack(data)
 
     local bu = CreateFrame('Button', nil, bar)
@@ -139,7 +208,7 @@ function MM:Constructor(bar, data)
     bu.texture = texture
     bu.func = func
 
-    CreateButtonTexture(bu.icon, texture)
+    createButtonTexture(bu.icon, texture)
 
     F.AddTooltip(bu, 'ANCHOR_RIGHT', tip)
 
@@ -148,7 +217,7 @@ function MM:Constructor(bar, data)
     bu:HookScript('OnClick', OnClick)
 end
 
-function MM:OnLogin()
+function MISC:MicroMenu()
     if not C.DB.General.GameMenu then
         return
     end
@@ -173,7 +242,7 @@ function MM:OnLogin()
     end
 
     for _, info in pairs(menuList) do
-        MM:Constructor(bar, info)
+        setupButton(bar, info)
     end
 
     for i = 1, #buttonsList do

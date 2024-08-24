@@ -342,4 +342,5 @@ function M:OnLogin()
     M:UpdateActionCamera()
     M:BlockStrangerInvite()
     M:CursorTrail()
+    M:MicroMenu()
 end
