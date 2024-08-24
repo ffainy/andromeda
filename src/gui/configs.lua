@@ -455,8 +455,8 @@ C.CharacterSettings = {
         WhoPings = true,
         ProgressBar = true,
         Collector = true,
-        Volume = true,
-        Menu = true,
+        VolumeControl = true,
+        ClickMenu = true,
     },
     Infobar = {
         Enable = true,

@@ -535,17 +535,43 @@ end
 
 -- Sound Volume
 
-local function GetCurrentVolume()
+local function getCurrentVolume()
     return F:Round(GetCVar('Sound_MasterVolume') * 100)
 end
 
-local function GetVolumeColor(cur)
+local function getVolumeColor(cur)
     local r, g, b = oUF:RGBColorGradient(cur, 100, 1, 1, 1, 1, 0.8, 0, 1, 0, 0)
     return r, g, b
 end
 
-function MAP:SoundVolume()
-    if not C.DB.Map.Volume then
+local function onMouseWheel(self, zoom)
+    if IsAltKeyDown() and MAP.VolumeText then
+        local value = getCurrentVolume()
+        local mult = IsControlKeyDown() and 100 or 5
+        value = value + zoom * mult
+        if value > 100 then
+            value = 100
+        end
+        if value < 0 then
+            value = 0
+        end
+
+        SetCVar('Sound_MasterVolume', tostring(value / 100))
+        MAP.VolumeText:SetText(value)
+        MAP.VolumeText:SetTextColor(getVolumeColor(value))
+        MAP.VolumeAnim:Stop()
+        MAP.VolumeAnim:Play()
+    else
+        if zoom > 0 then
+            Minimap_ZoomIn()
+        else
+            Minimap_ZoomOut()
+        end
+    end
+end
+
+function MAP:VolumeControl()
+    if not C.DB.Map.VolumeControl then
         return
     end
 
@@ -554,7 +580,10 @@ function MAP:SoundVolume()
     f:SetFrameLevel(999)
 
     local outline = ANDROMEDA_ADB.FontOutline
-    local text = F.CreateFS(f, C.Assets.Fonts.Heavy, 48, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+    local text = F.CreateFS(
+        f, C.Assets.Fonts.Heavy, 48, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK'
+    )
 
     local anim = f:CreateAnimationGroup()
     anim:SetScript('OnPlay', function()
@@ -572,66 +601,11 @@ function MAP:SoundVolume()
 
     MAP.VolumeText = text
     MAP.VolumeAnim = anim
-end
 
--- Mouse Func
-
-local function OnMouseWheel(self, zoom)
-    if IsAltKeyDown() and MAP.VolumeText then
-        local value = GetCurrentVolume()
-        local mult = IsControlKeyDown() and 100 or 5
-        value = value + zoom * mult
-        if value > 100 then
-            value = 100
-        end
-        if value < 0 then
-            value = 0
-        end
-
-        SetCVar('Sound_MasterVolume', tostring(value / 100))
-        MAP.VolumeText:SetText(value)
-        MAP.VolumeText:SetTextColor(GetVolumeColor(value))
-        MAP.VolumeAnim:Stop()
-        MAP.VolumeAnim:Play()
-    else
-        if zoom > 0 then
-            Minimap_ZoomIn()
-        else
-            Minimap_ZoomOut()
-        end
-    end
-end
-
-local function OnMouseUp(self, btn)
-    if not C.DB.Map.Menu then
-        return
-    end
-
-    if btn == 'MiddleButton' then
-        if InCombatLockdown() then
-            UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
-            return
-        end
-        EasyMenu(MAP.MenuList, F.EasyMenu, 'cursor', 0, 0, 'MENU', 3)
-    elseif btn == 'RightButton' then
-        local button = MinimapCluster.Tracking.Button
-        if button then
-            button:OpenMenu()
-            if button.menu then
-                button.menu:ClearAllPoints()
-                button.menu:SetPoint('CENTER', self, -100, 100)
-            end
-        end
-    else
-        Minimap:OnClick()
-    end
-end
-
-function MAP:MouseFunc()
     Minimap:EnableMouseWheel(true)
-    Minimap:SetScript('OnMouseWheel', OnMouseWheel)
-    Minimap:SetScript('OnMouseUp', OnMouseUp)
+    Minimap:SetScript('OnMouseWheel', onMouseWheel)
 end
+
 
 -- Help Tip
 
@@ -672,8 +646,8 @@ function MAP:SetupMinimap()
     MAP:AddOnIconCollector()
     MAP:SetupACF()
     MAP:WhoPings()
-    MAP:SoundVolume()
-    MAP:MouseFunc()
+    MAP:VolumeControl()
+    MAP:ClickMenu()
     MAP:CreateHelpTip()
     MAP:UpdateMinimapFader()
     MAP:CreateExpBar()

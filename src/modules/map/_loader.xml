@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="worldmap.lua"/>
+    <Script file="clickmenu.lua"/>
     <Script file="collector.lua"/>
     <Script file="data.lua"/>
     <Script file="fader.lua"/>
-    <Script file="menu.lua"/>
     <Script file="reveal.lua"/>
     <Script file="minimap.lua"/>
     <Script file="expbar.lua"/>
