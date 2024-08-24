@@ -11,7 +11,12 @@ local function updateItemBorder(self)
         local color = C.QualityColors[quality or 1]
         self.bg:SetBackdropBorderColor(color.r, color.g, color.b)
     elseif self.objectType == 'currency' then
-        local name, texture, numItems, quality = GetQuestCurrencyInfo(self.type, self:GetID())
+        local info = C_QuestOffer.GetQuestRequiredCurrencyInfo(self.type, self:GetID())
+        local name = info and info.name
+        local texture = info and info.texture
+        local numItems = info and info.numItems
+        local quality = info and info.quality
+
         local currencyID = GetQuestCurrencyID(self.type, self:GetID())
         if name and texture and numItems and quality and currencyID then
             local currencyQuality = select(4,
