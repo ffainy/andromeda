@@ -2,9 +2,9 @@ name: release
 
 on:
   push:
-    tags:
-      - '*.*.*'
-      - '!*.*.*-*'
+    tags-ignore:
+      - '**alpha**'
+      - '**beta**'
 
 jobs:
   build:
