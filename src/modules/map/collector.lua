@@ -19,31 +19,33 @@ local buttonBlackList = {
 local ignoredButtons = {
     ['GatherMatePin'] = true,
     ['HandyNotes.-Pin'] = true,
+    ['TTMinimapButton'] = true,
 }
 
 local isGoodLookingIcon = {
     ['Narci_MinimapButton'] = true,
 }
 
-local function UpdateCollectorTip(bu)
+local function updateCollectorTip(bu)
     bu.text = C.MOUSE_RIGHT_BUTTON
         .. L['Auto Hide']
         .. ': '
-        .. (_G.ANDROMEDA_ADB['MinimapAddOnCollector'] and '|cff55ff55' .. _G.VIDEO_OPTIONS_ENABLED or '|cffff5555' .. _G.VIDEO_OPTIONS_DISABLED)
+        ..
+        (ANDROMEDA_ADB['MinimapAddOnCollector'] and '|cff55ff55' .. VIDEO_OPTIONS_ENABLED or '|cffff5555' .. VIDEO_OPTIONS_DISABLED)
 end
 
-local function HideCollectorTray()
-    _G.Minimap.AddOnCollectorTray:Hide()
+local function hideCollectorTray()
+    Minimap.AddOnCollectorTray:Hide()
 end
 
-local function ClickFunc(force)
-    if force == 1 or _G.ANDROMEDA_ADB['MinimapAddOnCollector'] then
-        F:UIFrameFadeOut(_G.Minimap.AddOnCollectorTray, 0.5, 1, 0)
-        F:Delay(0.5, HideCollectorTray)
+local function clickFunc(force)
+    if force == 1 or ANDROMEDA_ADB['MinimapAddOnCollector'] then
+        F:UIFrameFadeOut(Minimap.AddOnCollectorTray, 0.5, 1, 0)
+        F:Delay(0.5, hideCollectorTray)
     end
 end
 
-local function IsButtonIgnored(name)
+local function isButtonIgnored(name)
     for addonName in pairs(ignoredButtons) do
         if strmatch(name, addonName) then
             return true
@@ -60,7 +62,7 @@ local removedTextures = {
     [136467] = true,
 }
 
-local function RestyleAddOnIcon(child, name)
+local function reskinAddOnIcon(child, name)
     for j = 1, child:GetNumRegions() do
         local region = select(j, child:GetRegions())
         if region:IsObjectType('Texture') then
@@ -86,10 +88,10 @@ local function RestyleAddOnIcon(child, name)
     tinsert(buttons, child)
 end
 
-local function KillAddOnIcon()
+local function killAddOnIcon()
     for _, child in pairs(buttons) do
         if not child.styled then
-            child:SetParent(_G.Minimap.AddOnCollectorTray)
+            child:SetParent(Minimap.AddOnCollectorTray)
             if child:HasScript('OnDragStop') then
                 child:SetScript('OnDragStop', nil)
             end
@@ -97,7 +99,7 @@ local function KillAddOnIcon()
                 child:SetScript('OnDragStart', nil)
             end
             if child:HasScript('OnClick') then
-                child:HookScript('OnClick', ClickFunc)
+                child:HookScript('OnClick', clickFunc)
             end
 
             if child:IsObjectType('Button') then
@@ -115,7 +117,11 @@ local function KillAddOnIcon()
                 child:SetScript('OnMouseDown', nil)
                 child:SetScript('OnMouseUp', nil)
             elseif name == 'BagSync_MinimapButton' then
-                child:HookScript('OnMouseUp', ClickFunc)
+                child:HookScript('OnMouseUp', clickFunc)
+            elseif name == 'WIM3MinimapButton' then
+                child.SetParent = nop
+                child:SetFrameStrata('DIALOG')
+                child.SetFrameStrata = nop
             end
 
             child.styled = true
@@ -123,15 +129,15 @@ local function KillAddOnIcon()
     end
 end
 
-local function CollectRubbish()
-    local numChildren = _G.Minimap:GetNumChildren()
+local function collectRubbish()
+    local numChildren = Minimap:GetNumChildren()
     if numChildren ~= numMinimapChildren then
         for i = 1, numChildren do
-            local child = select(i, _G.Minimap:GetChildren())
+            local child = select(i, Minimap:GetChildren())
             local name = child and child.GetName and child:GetName()
             if name and not child.isExamed and not buttonBlackList[name] then
-                if (child:IsObjectType('Button') or strmatch(strupper(name), 'BUTTON')) and not IsButtonIgnored(name) then
-                    RestyleAddOnIcon(child, name)
+                if (child:IsObjectType('Button') or strmatch(strupper(name), 'BUTTON')) and not isButtonIgnored(name) then
+                    reskinAddOnIcon(child, name)
                 end
                 child.isExamed = true
             end
@@ -140,16 +146,16 @@ local function CollectRubbish()
         numMinimapChildren = numChildren
     end
 
-    KillAddOnIcon()
+    killAddOnIcon()
 
     currentIndex = currentIndex + 1
     if currentIndex < timeThreshold then
-        F:Delay(pendingTime, CollectRubbish)
+        F:Delay(pendingTime, collectRubbish)
     end
 end
 
 local shownButtons = {}
-local function SortRubbish()
+local function sortRubbish()
     if #buttons == 0 then
         return
     end
@@ -164,12 +170,12 @@ local function SortRubbish()
     local numShown = #shownButtons
     local row = numShown == 0 and 1 or F:Round((numShown + rowMult) / iconsPerRow)
     local newHeight = row * 24
-    _G.Minimap.AddOnCollectorTray:SetHeight(newHeight)
+    Minimap.AddOnCollectorTray:SetHeight(newHeight)
 
     for index, button in pairs(shownButtons) do
         button:ClearAllPoints()
         if index == 1 then
-            button:SetPoint('BOTTOMRIGHT', _G.Minimap.AddOnCollectorTray, -3, 3)
+            button:SetPoint('BOTTOMRIGHT', Minimap.AddOnCollectorTray, -3, 3)
         elseif row > 1 and mod(index, row) == 1 or row == 1 then
             button:SetPoint('RIGHT', shownButtons[index - row], 'LEFT', -3, 0)
         else
@@ -178,17 +184,17 @@ local function SortRubbish()
     end
 end
 
-local function Button_OnClick(self, btn)
+local function buttonOnClick(self, btn)
     if btn == 'RightButton' then
-        _G.ANDROMEDA_ADB['MinimapAddOnCollector'] = not _G.ANDROMEDA_ADB['MinimapAddOnCollector']
-        UpdateCollectorTip(_G.Minimap.AddOnCollector)
-        _G.Minimap.AddOnCollector:GetScript('OnEnter')(_G.Minimap.AddOnCollector)
+        ANDROMEDA_ADB['MinimapAddOnCollector'] = not ANDROMEDA_ADB['MinimapAddOnCollector']
+        updateCollectorTip(Minimap.AddOnCollector)
+        Minimap.AddOnCollector:GetScript('OnEnter')(Minimap.AddOnCollector)
     else
-        if _G.Minimap.AddOnCollectorTray:IsShown() then
-            ClickFunc(1)
+        if Minimap.AddOnCollectorTray:IsShown() then
+            clickFunc(1)
         else
-            SortRubbish()
-            F:UIFrameFadeIn(_G.Minimap.AddOnCollectorTray, 0.5, 0, 1)
+            sortRubbish()
+            F:UIFrameFadeIn(Minimap.AddOnCollectorTray, 0.5, 0, 1)
         end
     end
 end
@@ -198,38 +204,38 @@ function MAP:AddOnIconCollector()
         return
     end
 
-    local bu = CreateFrame('Button', C.ADDON_TITLE .. 'MinimapAddOnIconCollector', _G.Minimap)
+    local bu = CreateFrame('Button', C.ADDON_TITLE .. 'MinimapAddOnIconCollector', Minimap)
     bu:SetSize(20, 20)
-    bu:SetPoint('TOPRIGHT', -4, -_G.Minimap.halfDiff - 8)
+    bu:SetPoint('TOPRIGHT', -4, -Minimap.halfDiff - 8)
     bu:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
     bu.Icon = bu:CreateTexture(nil, 'ARTWORK')
     bu.Icon:SetAllPoints()
     bu.Icon:SetTexture(C.Assets.Textures.MinimapTray)
     bu:SetHighlightTexture(C.Assets.Textures.MinimapTray)
     F.AddTooltip(bu, 'ANCHOR_LEFT', C.INFO_COLOR .. L['AddOns Icon Collector'])
-    UpdateCollectorTip(bu)
-    _G.Minimap.AddOnCollector = bu
+    updateCollectorTip(bu)
+    Minimap.AddOnCollector = bu
 
-    local tray = CreateFrame('Frame', C.ADDON_TITLE .. 'MinimapAddOnIconCollectorTray', _G.Minimap)
-    tray:SetPoint('BOTTOMRIGHT', _G.Minimap, 'TOPRIGHT', 0, -_G.Minimap.halfDiff)
-    tray:SetSize(_G.Minimap:GetWidth(), 24)
+    local tray = CreateFrame('Frame', C.ADDON_TITLE .. 'MinimapAddOnIconCollectorTray', Minimap)
+    tray:SetPoint('BOTTOMRIGHT', Minimap, 'TOPRIGHT', 0, -Minimap.halfDiff)
+    tray:SetSize(Minimap:GetWidth(), 24)
     tray:Hide()
-    _G.Minimap.AddOnCollectorTray = tray
+    Minimap.AddOnCollectorTray = tray
 
-    F:SplitList(ignoredButtons, _G.ANDROMEDA_ADB['IgnoredAddOns'])
+    F:SplitList(ignoredButtons, ANDROMEDA_ADB['IgnoredAddOns'])
 
-    bu:SetScript('OnClick', Button_OnClick)
+    bu:SetScript('OnClick', buttonOnClick)
 
-    CollectRubbish()
+    collectRubbish()
 end
 
 function MAP:SetupACF()
-    local frame = _G.AddonCompartmentFrame
+    local frame = AddonCompartmentFrame
     if C.DB.Map.Collector then
         F.HideObject(frame)
     else
         frame:ClearAllPoints()
-        frame:SetPoint('BOTTOMRIGHT', _G.Minimap, -26, 2)
+        frame:SetPoint('BOTTOMRIGHT', Minimap, -26, 2)
         frame:SetFrameLevel(999)
         F.StripTextures(frame)
         F.SetBD(frame)
