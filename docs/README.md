@@ -30,6 +30,7 @@ Accompany you through every challenging day in **Azeroth**.
 
 ## Download
 *  [CurseForge](https://www.curseforge.com/wow/addons/andromeda)
+*  [WowInterface](https://www.wowinterface.com/downloads/info23258)
 
 ## Usage
 ```
