@@ -178,9 +178,9 @@ function ACTIONBAR:UpdateButtonConfig(i)
         button:UpdateConfig(self.buttonConfig)
 
         if C.DB['Actionbar']['ClassColor'] then
-            button.__bg:SetBackdropColor(C.r, C.g, C.b, 0.25)
+            button.__bg:SetBackdropColor(C.r, C.g, C.b, 0.45)
         else
-            button.__bg:SetBackdropColor(0.2, 0.2, 0.2, 0.25)
+            button.__bg:SetBackdropColor(0, 0, 0, 0.45)
         end
     end
 end

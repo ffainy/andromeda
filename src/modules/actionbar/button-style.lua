@@ -1,8 +1,8 @@
 local F, C = unpack(select(2, ...))
 local ACTIONBAR = F:GetModule('ActionBar')
 
-local keyButton = gsub(_G.KEY_BUTTON4, '%d', '')
-local keyNumpad = gsub(_G.KEY_NUMPAD1, '%d', '')
+local keyButton = gsub(KEY_BUTTON4, '%d', '')
+local keyNumpad = gsub(KEY_NUMPAD1, '%d', '')
 
 local replaces = {
     { '(' .. keyButton .. ')', 'M' },
@@ -10,10 +10,10 @@ local replaces = {
     { '(a%-)', 'a' },
     { '(c%-)', 'c' },
     { '(s%-)', 's' },
-    { _G.KEY_BUTTON3, 'M3' },
-    { _G.KEY_MOUSEWHEELUP, 'MU' },
-    { _G.KEY_MOUSEWHEELDOWN, 'MD' },
-    { _G.KEY_SPACE, 'Sp' },
+    { KEY_BUTTON3, 'M3' },
+    { KEY_MOUSEWHEELUP, 'MU' },
+    { KEY_MOUSEWHEELDOWN, 'MD' },
+    { KEY_SPACE, 'Sp' },
     { 'CAPSLOCK', 'CL' },
     { 'Capslock', 'CL' },
     { 'BUTTON', 'M' },
@@ -32,7 +32,7 @@ function ACTIONBAR:UpdateHotkey()
         return
     end
 
-    if text == _G.RANGE_INDICATOR then
+    if text == RANGE_INDICATOR then
         text = ''
     else
         for _, value in pairs(replaces) do
@@ -119,7 +119,7 @@ function ACTIONBAR:HandleButton(btn)
         if not icon.__lockdown then
             icon:SetTexCoord(unpack(C.TEX_COORD))
         end
-        btn.__bg = F.SetBD(icon, 0.25)
+        btn.__bg = F.SetBD(icon, 0.45)
     end
 
     if cooldown then
@@ -161,7 +161,7 @@ function ACTIONBAR:RestyleButtons()
     end
 
     -- petbar buttons
-    for i = 1, _G.NUM_PET_ACTION_SLOTS do
+    for i = 1, NUM_PET_ACTION_SLOTS do
         ACTIONBAR:HandleButton(_G['PetActionButton' .. i])
     end
 
@@ -174,10 +174,10 @@ function ACTIONBAR:RestyleButtons()
     ACTIONBAR:HandleButton(_G[C.ADDON_TITLE .. 'LeaveVehicleButton'])
 
     -- extra action button
-    ACTIONBAR:HandleButton(_G.ExtraActionButton1)
+    ACTIONBAR:HandleButton(ExtraActionButton1)
 
     --spell flyout
-    _G.SpellFlyout.Background:SetAlpha(0)
+    SpellFlyout.Background:SetAlpha(0)
     local numFlyouts = 1
     local function checkForFlyoutButtons()
         local button = _G['SpellFlyoutButton' .. numFlyouts]
@@ -188,6 +188,6 @@ function ACTIONBAR:RestyleButtons()
         end
     end
 
-    _G.SpellFlyout:HookScript('OnShow', checkForFlyoutButtons)
-    _G.SpellFlyout:HookScript('OnHide', checkForFlyoutButtons)
+    SpellFlyout:HookScript('OnShow', checkForFlyoutButtons)
+    SpellFlyout:HookScript('OnHide', checkForFlyoutButtons)
 end
