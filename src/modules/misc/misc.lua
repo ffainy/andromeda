@@ -344,4 +344,5 @@ function M:OnLogin()
     M:CursorTrail()
     M:MicroMenu()
     M:ProposalTimerBar()
+    M:Camera()
 end

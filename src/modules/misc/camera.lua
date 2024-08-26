@@ -3,7 +3,7 @@
 -- https://www.wowinterface.com/downloads/info20483-FasterCamera.html
 
 local F, C = unpack(select(2, ...))
-local EC = F:RegisterModule('EnhancedCamera')
+local MISC = F:GetModule('Misc')
 
 local db = {
     increment = 4,
@@ -29,7 +29,7 @@ local oldZoomOut = CameraZoomOut
 local newZoomIn = CameraZoomIn
 local newZoomOut = CameraZoomOut
 
-function EC:UpdateCameraZooming()
+function MISC:UpdateCameraZooming()
     if C.DB.General.FasterZooming then
         function CameraZoomIn(v)
             update(newZoomIn, v)
@@ -57,12 +57,12 @@ local function onEvent(_, _, addon)
     end
 end
 
-function EC:OnLogin()
+function MISC:Camera()
     if C_AddOns.IsAddOnLoaded('DynamicCam') then
         return
     end
 
-    EC:UpdateCameraZooming()
+    MISC:UpdateCameraZooming()
 
     if C.DB.General.FasterZooming then
         F:RegisterEvent('ADDON_LOADED', onEvent)

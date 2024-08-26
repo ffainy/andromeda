@@ -11,6 +11,7 @@ local INFOBAR = F:GetModule('InfoBar')
 local ANNOUNCEMENT = F:GetModule('Announcement')
 local COMBAT = F:GetModule('Combat')
 local MAP = F:GetModule('Map')
+local MISC = F:GetModule('Misc')
 local oUF = F.Libs.oUF
 
 -- Inventory
@@ -333,11 +334,11 @@ local function SetupCustomClassColor()
 end
 
 local function UpdateActionCamera()
-    F:GetModule('Misc'):UpdateActionCamera()
+    MISC:UpdateActionCamera()
 end
 
 local function UpdateCameraZooming()
-    F:GetModule('EnhancedCamera'):UpdateCameraZooming()
+    MISC:UpdateCameraZooming()
 end
 
 local function UpdateBossBanner()
@@ -361,7 +362,7 @@ local function UpdateScreenSaver()
 end
 
 local function MuteAnnoyingSounds()
-    F:GetModule('Misc'):MuteAnnoyingSounds()
+    MISC:MuteAnnoyingSounds()
 end
 
 -- Infobar
