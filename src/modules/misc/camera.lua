@@ -58,6 +58,10 @@ local function onEvent(_, _, addon)
 end
 
 function EC:OnLogin()
+    if C_AddOns.IsAddOnLoaded('DynamicCam') then
+        return
+    end
+
     EC:UpdateCameraZooming()
 
     if C.DB.General.FasterZooming then
