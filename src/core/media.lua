@@ -42,9 +42,7 @@ C.Assets = {
         ButtonPushed          = C.ASSET_PATH .. 'textures\\button\\button-pushed',
         ButtonChecked         = C.ASSET_PATH .. 'textures\\button\\button-checked',
         ButtonHighlight       = C.ASSET_PATH .. 'textures\\button\\button-highlight',
-        ButtonCircleHighlight = C.ASSET_PATH .. 'textures\\button\\button-circle-highlight',
-        ButtonCircleBorder    = C.ASSET_PATH .. 'textures\\button\\button-circle-border',
-        ButtonCircleMask      = C.ASSET_PATH .. 'textures\\button\\button-circle-mask',
+
         MenuBarAchievement    = C.ASSET_PATH .. 'textures\\menu\\menu-achievement',
         MenuBarBag            = C.ASSET_PATH .. 'textures\\menu\\menu-bag',
         MenuBarCalendar       = C.ASSET_PATH .. 'textures\\menu\\menu-calendar',
@@ -95,6 +93,12 @@ C.Assets = {
         ClientCrash4          = C.ASSET_PATH .. 'textures\\client\\client-crash4',
         --ClientCLNT            = BNet_GetClientTexture(_G.BNET_CLIENT_CLNT),
         --ClientArcade          = BNet_GetClientTexture(_G.BNET_CLIENT_ARCADE),
+
+        opie                  = {
+            highlight = C.ASSET_PATH .. 'textures\\opie\\highlight',
+            border    = C.ASSET_PATH .. 'textures\\opie\\border',
+            mask      = C.ASSET_PATH .. 'textures\\opie\\mask',
+        }
     },
     Sounds = {
         Intro            = C.ASSET_PATH .. 'sounds\\intro.ogg',
