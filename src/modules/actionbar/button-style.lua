@@ -119,7 +119,7 @@ function ACTIONBAR:HandleButton(btn)
         if not icon.__lockdown then
             icon:SetTexCoord(unpack(C.TEX_COORD))
         end
-        btn.__bg = F.SetBD(icon, 0.45)
+        btn.__bg = F.SetBD(icon, ANDROMEDA_ADB.BackdropAlpha)
     end
 
     if cooldown then

@@ -177,10 +177,12 @@ function ACTIONBAR:UpdateButtonConfig(i)
         -- button:SetAttribute('*unit2', 'player')
         button:UpdateConfig(self.buttonConfig)
 
+        local color = ANDROMEDA_ADB.BackdropColor
+        local backdropAlpha = ANDROMEDA_ADB.BackdropAlpha
         if C.DB['Actionbar']['ClassColor'] then
-            button.__bg:SetBackdropColor(C.r, C.g, C.b, 0.45)
+            button.__bg:SetBackdropColor(C.r, C.g, C.b, backdropAlpha)
         else
-            button.__bg:SetBackdropColor(0, 0, 0, 0.45)
+            button.__bg:SetBackdropColor(color.r, color.g, color.b, backdropAlpha)
         end
     end
 end
