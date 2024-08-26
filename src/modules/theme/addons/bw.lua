@@ -1,7 +1,7 @@
 local F, C = unpack(select(2, ...))
 local THEME = F:GetModule('Theme')
 
-local function RemoveStyle(bar)
+local function removeStyle(bar)
     bar.candyBarBackdrop:Hide()
     local height = bar:Get('bigwigs:restoreheight')
     if height then
@@ -23,7 +23,7 @@ local function RemoveStyle(bar)
     bar.candyBarLabel:SetPoint('BOTTOMRIGHT', bar.candyBarBar, 'BOTTOMRIGHT', -2, 0)
 end
 
-local function ReskinBar(bar)
+local function reskinBar(bar)
     local height = bar:GetHeight()
     bar:Set('bigwigs:restoreheight', height)
     bar:SetHeight(height / 2)
@@ -72,8 +72,8 @@ local styleData = {
     GetSpacing = function(bar)
         return bar:GetHeight() + 5
     end,
-    ApplyStyle = ReskinBar,
-    BarStopped = RemoveStyle,
+    ApplyStyle = reskinBar,
+    BarStopped = removeStyle,
     fontSizeNormal = 13,
     fontSizeEmphasized = 14,
     fontOutline = 'OUTLINE',
@@ -83,11 +83,11 @@ local styleData = {
 }
 
 function THEME:RegisterBigWigsStyle()
-    if not _G.ANDROMEDA_ADB.ReskinBigWigs then
+    if not ANDROMEDA_ADB.ReskinBigWigs then
         return
     end
 
-    local BigWigsAPI = _G.BigWigsAPI
+    local BigWigsAPI = _G['BigWigsAPI']
 
     if not BigWigsAPI then
         return
@@ -109,11 +109,11 @@ function THEME:RegisterBigWigsStyle()
 end
 
 function THEME:RestyleBigWigsQueueTimer()
-    if not _G.ANDROMEDA_ADB.ReskinBigWigs then
+    if not ANDROMEDA_ADB.ReskinBigWigs then
         return
     end
 
-    local BigWigsLoader = _G.BigWigsLoader
+    local BigWigsLoader = _G['BigWigsLoader']
 
     if BigWigsLoader and BigWigsLoader.RegisterMessage then
         BigWigsLoader.RegisterMessage(C.ADDON_TITLE, 'BigWigs_FrameCreated', function(_, frame, name)
@@ -122,6 +122,7 @@ function THEME:RestyleBigWigsQueueTimer()
                 F.SetBD(frame)
 
                 frame:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+                frame:SetStatusBarColor(C.r, C.g, C.b)
                 frame:ClearAllPoints()
                 frame:SetPoint('BOTTOMLEFT', '$parent', 'BOTTOMLEFT')
                 frame:SetPoint('BOTTOMRIGHT', '$parent', 'BOTTOMRIGHT')

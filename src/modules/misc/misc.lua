@@ -343,4 +343,5 @@ function M:OnLogin()
     M:BlockStrangerInvite()
     M:CursorTrail()
     M:MicroMenu()
+    M:ProposalTimerBar()
 end

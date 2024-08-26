@@ -1,53 +1,54 @@
 local F, C = unpack(select(2, ...))
-local PT = F:RegisterModule('ProposalTimer')
+local MISC = F:GetModule('Misc')
 
-_G.LFGDungeonReadyDialog.nextUpdate = 0
-_G.PVPReadyDialog.nextUpdate = 0
+LFGDungeonReadyDialog.nextUpdate = 0
+PVPReadyDialog.nextUpdate = 0
 
-local function CreateTimerBar()
-    local LFGTimer = CreateFrame('Frame', nil, _G.LFGDungeonReadyDialog)
-    LFGTimer:SetPoint('BOTTOMLEFT')
-    LFGTimer:SetPoint('BOTTOMRIGHT')
-    LFGTimer:SetHeight(3)
+local function consturctBars()
+    local lfgBar = CreateFrame('Frame', nil, LFGDungeonReadyDialog)
+    lfgBar:SetPoint('BOTTOMLEFT')
+    lfgBar:SetPoint('BOTTOMRIGHT')
+    lfgBar:SetHeight(3)
 
-    LFGTimer.bar = CreateFrame('StatusBar', nil, LFGTimer)
-    LFGTimer.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
-    LFGTimer.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
-    LFGTimer.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
-    LFGTimer.bar:SetFrameLevel(_G.LFGDungeonReadyDialog:GetFrameLevel() + 1)
-    LFGTimer.bar:SetStatusBarColor(C.r, C.g, C.b)
+    lfgBar.bar = CreateFrame('StatusBar', nil, lfgBar)
+    lfgBar.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+    lfgBar.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
+    lfgBar.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
+    lfgBar.bar:SetFrameLevel(LFGDungeonReadyDialog:GetFrameLevel() + 1)
+    lfgBar.bar:SetStatusBarColor(C.r, C.g, C.b)
 
-    PT.LFGTimer = LFGTimer
+    MISC.LfgTimerBar = lfgBar
 
-    local PVPTimer = CreateFrame('Frame', nil, _G.PVPReadyDialog)
-    PVPTimer:SetPoint('BOTTOMLEFT')
-    PVPTimer:SetPoint('BOTTOMRIGHT')
-    PVPTimer:SetHeight(3)
+    local pvpBar = CreateFrame('Frame', nil, PVPReadyDialog)
+    pvpBar:SetPoint('BOTTOMLEFT')
+    pvpBar:SetPoint('BOTTOMRIGHT')
+    pvpBar:SetHeight(3)
 
-    PVPTimer.bar = CreateFrame('StatusBar', nil, PVPTimer)
-    PVPTimer.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
-    PVPTimer.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
-    PVPTimer.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
-    PVPTimer.bar:SetFrameLevel(_G.PVPReadyDialog:GetFrameLevel() + 1)
-    PVPTimer.bar:SetStatusBarColor(C.r, C.g, C.b)
+    pvpBar.bar = CreateFrame('StatusBar', nil, pvpBar)
+    pvpBar.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+    pvpBar.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
+    pvpBar.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
+    pvpBar.bar:SetFrameLevel(PVPReadyDialog:GetFrameLevel() + 1)
+    pvpBar.bar:SetStatusBarColor(C.r, C.g, C.b)
 
-    PT.PVPTimer = PVPTimer
+    MISC.PvpTimerBar = pvpBar
 end
 
-local function UpdateLFGTimer()
-    local LFGTimer = PT.LFGTimer
-    local obj = _G.LFGDungeonReadyDialog
+local function updateLfgTimer()
+    local lfgBar = MISC.LfgTimerBar
+    local obj = LFGDungeonReadyDialog
     local oldTime = GetTime()
     local flag = 0
     local duration = 40
     local interval = 0.1
     obj:SetScript('OnUpdate', function(self, elapsed)
+        lfgBar.bar:SetStatusBarColor(C.r, C.g, C.b)
         obj.nextUpdate = obj.nextUpdate + elapsed
         if obj.nextUpdate > interval then
             local newTime = GetTime()
             if (newTime - oldTime) < duration then
-                local width = LFGTimer:GetWidth() * (newTime - oldTime) / duration
-                LFGTimer.bar:SetPoint('BOTTOMRIGHT', LFGTimer, 0 - width, 0)
+                local width = lfgBar:GetWidth() * (newTime - oldTime) / duration
+                lfgBar.bar:SetPoint('BOTTOMRIGHT', lfgBar, 0 - width, 0)
                 flag = flag + 1
                 if flag >= 10 then
                     flag = 0
@@ -55,14 +56,15 @@ local function UpdateLFGTimer()
             else
                 obj:SetScript('OnUpdate', nil)
             end
+
             obj.nextUpdate = 0
         end
     end)
 end
 
-local function UpdatePVPTimer()
-    local PVPTimer = PT.PVPTimer
-    local obj = _G.PVPReadyDialog
+local function updatePvpTimer()
+    local pvpBar = MISC.PvpTimerBar
+    local obj = PVPReadyDialog
     local oldTime = GetTime()
     local flag = 0
     local duration = 90
@@ -72,8 +74,8 @@ local function UpdatePVPTimer()
         if obj.nextUpdate > interval then
             local newTime = GetTime()
             if (newTime - oldTime) < duration then
-                local width = PVPTimer:GetWidth() * (newTime - oldTime) / duration
-                PVPTimer.bar:SetPoint('BOTTOMRIGHT', PVPTimer, 0 - width, 0)
+                local width = pvpBar:GetWidth() * (newTime - oldTime) / duration
+                pvpBar.bar:SetPoint('BOTTOMRIGHT', pvpBar, 0 - width, 0)
                 flag = flag + 1
                 if flag >= 10 then
                     flag = 0
@@ -81,25 +83,26 @@ local function UpdatePVPTimer()
             else
                 obj:SetScript('OnUpdate', nil)
             end
+
             obj.nextUpdate = 0
         end
     end)
 end
 
-local function LFG_OnEvent()
-    if _G.LFGDungeonReadyDialog:IsShown() then
-        UpdateLFGTimer()
+local function lfgOnEvent()
+    if LFGDungeonReadyDialog:IsShown() then
+        updateLfgTimer()
     end
 end
 
-local function PVP_OnEvent()
-    if _G.PVPReadyDialog:IsShown() then
-        UpdatePVPTimer()
+local function pvpOnEvent()
+    if PVPReadyDialog:IsShown() then
+        updatePvpTimer()
     end
 end
 
-function PT:OnLogin()
-    if _G.BigWigsLoader then
+function MISC:ProposalTimerBar()
+    if C_AddOns.IsAddOnLoaded('BigWigs') then
         return
     end
 
@@ -107,11 +110,37 @@ function PT:OnLogin()
         return
     end
 
-    CreateTimerBar()
+    local lfgBar = CreateFrame('Frame', nil, LFGDungeonReadyDialog)
+    lfgBar:SetPoint('BOTTOMLEFT')
+    lfgBar:SetPoint('BOTTOMRIGHT')
+    lfgBar:SetHeight(3)
 
-    PT.LFGTimer:RegisterEvent('LFG_PROPOSAL_SHOW')
-    PT.LFGTimer:SetScript('OnEvent', LFG_OnEvent)
+    lfgBar.bar = CreateFrame('StatusBar', nil, lfgBar)
+    lfgBar.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+    lfgBar.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
+    lfgBar.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
+    lfgBar.bar:SetFrameLevel(LFGDungeonReadyDialog:GetFrameLevel() + 1)
+    lfgBar.bar:SetStatusBarColor(C.r, C.g, C.b)
 
-    PT.PVPTimer:RegisterEvent('UPDATE_BATTLEFIELD_STATUS')
-    PT.PVPTimer:SetScript('OnEvent', PVP_OnEvent)
+    MISC.LfgTimerBar = lfgBar
+
+    local pvpBar = CreateFrame('Frame', nil, PVPReadyDialog)
+    pvpBar:SetPoint('BOTTOMLEFT')
+    pvpBar:SetPoint('BOTTOMRIGHT')
+    pvpBar:SetHeight(3)
+
+    pvpBar.bar = CreateFrame('StatusBar', nil, pvpBar)
+    pvpBar.bar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
+    pvpBar.bar:SetPoint('TOPLEFT', C.MULT, -C.MULT)
+    pvpBar.bar:SetPoint('BOTTOMLEFT', -C.MULT, C.MULT)
+    pvpBar.bar:SetFrameLevel(PVPReadyDialog:GetFrameLevel() + 1)
+    pvpBar.bar:SetStatusBarColor(C.r, C.g, C.b)
+
+    MISC.PvpTimerBar = pvpBar
+
+    MISC.LfgTimerBar:RegisterEvent('LFG_PROPOSAL_SHOW')
+    MISC.LfgTimerBar:SetScript('OnEvent', lfgOnEvent)
+
+    MISC.PvpTimerBar:RegisterEvent('UPDATE_BATTLEFIELD_STATUS')
+    MISC.PvpTimerBar:SetScript('OnEvent', pvpOnEvent)
 end
