@@ -7,5 +7,6 @@
     <Script file="helper.lua"/>
     <Script file="objective-tracker.lua"/>
     <Script file="quick-quest.lua"/>
+    <Script file="super-track.lua"/>
     <Script file="wowhead-link.lua"/>
 </Ui>
