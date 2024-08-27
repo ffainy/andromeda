@@ -24,7 +24,7 @@ local function isUsefulAtlas(info)
     end
 end
 
-local function onEvent(id)
+local function onEvent(_, id)
     if id and not cache[id] then
         local info = C_VignetteInfo.GetVignetteInfo(id)
         if not info or not isUsefulAtlas(info) or isIgnoredIDs[info.vignetteID] then
