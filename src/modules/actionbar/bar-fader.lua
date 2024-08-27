@@ -158,7 +158,7 @@ function ACTIONBAR:FadeParentOnEvent(event)
     if
         (event == 'ACTIONBAR_SHOWGRID')
         or (C.DB.Actionbar.Instance and IsInInstance())
-        or (C.DB.Actionbar.Vehicle and UnitHasVehicleUI('player'))
+        or (C.DB.Actionbar.Vehicle and ((HasVehicleActionBar() and UnitVehicleSkin('player') and UnitVehicleSkin('player') ~= '') or (HasOverrideActionBar() and GetOverrideBarSkin() and GetOverrideBarSkin() ~= '')))
         or (C.DB.Actionbar.Combat and UnitAffectingCombat('player'))
         or (C.DB.Actionbar.Target and (UnitExists('target') or UnitExists('focus')))
         or (C.DB.Actionbar.Casting and (UnitCastingInfo('player') or UnitChannelInfo('player')))
