@@ -6,7 +6,7 @@ local function Update(self)
     local cooldownInfo = C_Spell.GetSpellCooldown(61304)
     local start = cooldownInfo and cooldownInfo.startTime
     local duration = cooldownInfo and cooldownInfo.duration
-    if start > 0 and duration > 0 then
+    if start > 0 and duration and duration > 0 then
         if self.duration ~= duration then
             self:SetMinMaxValues(0, duration)
             self.duration = duration
