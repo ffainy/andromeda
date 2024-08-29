@@ -945,7 +945,7 @@ do
             end
 
             local color = _G.ANDROMEDA_ADB.ShadowColor
-            local shadowAlpha = _G.ANDROMEDA_ADB.ShadowAlpha
+            local shadowAlpha = _G.ANDROMEDA_ADB.ShadowAlpha --#TODO add gui option
             self.__shadow:SetBackdropBorderColor(color.r, color.g, color.b, alpha or shadowAlpha)
         end
     end
