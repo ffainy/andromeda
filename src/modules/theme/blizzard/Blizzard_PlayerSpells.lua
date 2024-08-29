@@ -21,15 +21,20 @@ end
 C.Themes['Blizzard_PlayerSpells'] = function()
     local frame = PlayerSpellsFrame
 
+    frame.SpellBookFrame.HelpPlateButton:Hide()
+
     F.ReskinPortraitFrame(frame)
     F.ReskinButton(frame.TalentsFrame.ApplyButton)
     F.ReskinDropdown(frame.TalentsFrame.LoadSystem.Dropdown)
     F.ReskinButton(frame.TalentsFrame.InspectCopyButton)
     F.ReskinMinMax(frame.MaximizeMinimizeButton)
 
-    frame.TalentsFrame.BlackBG:SetAlpha(0.5)
-    frame.TalentsFrame.Background:SetAlpha(0.5)
-    frame.TalentsFrame.BottomBar:SetAlpha(0.5)
+    frame.SpecFrame.BlackBG:SetAlpha(0)
+    frame.SpecFrame.Background:SetAlpha(0)
+
+    frame.TalentsFrame.BlackBG:SetAlpha(0)
+    frame.TalentsFrame.Background:SetAlpha(0)
+    frame.TalentsFrame.BottomBar:SetAlpha(0)
 
     F.ReskinEditbox(frame.TalentsFrame.SearchBox)
     frame.TalentsFrame.SearchBox.__bg:SetPoint('TOPLEFT', -4, -5)
@@ -116,10 +121,11 @@ C.Themes['Blizzard_PlayerSpells'] = function()
 
     local spellBook = PlayerSpellsFrame.SpellBookFrame
     if spellBook then
-        spellBook.BookBGLeft:SetAlpha(0.5)
-        spellBook.BookBGRight:SetAlpha(0.5)
-        spellBook.BookBGHalved:SetAlpha(0.5)
-        spellBook.Bookmark:SetAlpha(0.5)
+        spellBook.TopBar:Hide()
+        spellBook.BookBGLeft:SetAlpha(0)
+        spellBook.BookBGRight:SetAlpha(0)
+        spellBook.BookBGHalved:SetAlpha(0)
+        spellBook.Bookmark:SetAlpha(0)
         spellBook.BookCornerFlipbook:Hide()
 
         for i = 1, 3 do

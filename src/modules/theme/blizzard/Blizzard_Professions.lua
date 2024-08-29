@@ -201,16 +201,17 @@ end
 local function reskinRankBar(rankBar)
     rankBar.Border:Hide()
     rankBar.Background:Hide()
-    rankBar.Rank.Text:SetFontObject(_G.Game12Font)
+    rankBar.Rank.Text:SetFontObject(Game12Font)
     F.CreateBDFrame(rankBar.Fill, 1)
     F.ReskinArrow(rankBar.ExpansionDropdownButton, 'down')
 end
 
 C.Themes['Blizzard_Professions'] = function()
-    local frame = _G.ProfessionsFrame
+    local frame = ProfessionsFrame
     local craftingPage = frame.CraftingPage
 
     F.ReskinPortraitFrame(frame)
+    frame.CraftingPage.TutorialButton:SetAlpha(0)
     craftingPage.TutorialButton.Ring:Hide()
     F.ReskinButton(craftingPage.CreateButton)
     F.ReskinButton(craftingPage.CreateAllButton)
@@ -320,7 +321,7 @@ C.Themes['Blizzard_Professions'] = function()
     reskinOutputLog(craftingPage.CraftingOutputLog)
 
     -- Item flyout
-    if _G.OpenProfessionsItemFlyout then
+    if OpenProfessionsItemFlyout then
         hooksecurefunc('OpenProfessionsItemFlyout', F.ReskinProfessionsFlyout)
     end
 
@@ -393,6 +394,7 @@ C.Themes['Blizzard_Professions'] = function()
     F.ReskinButton(orderInfo.ReleaseOrderButton)
     F.StripTextures(orderInfo.NoteBox)
     F.CreateBDFrame(orderInfo.NoteBox, 0.25)
+    F.ReskinButton(orderInfo.SocialDropdown)
 
     local orderDetails = orderView.OrderDetails
     F.StripTextures(orderDetails)
@@ -423,7 +425,7 @@ C.Themes['Blizzard_Professions'] = function()
     end
 
     -- InspectRecipeFrame
-    local inspectFrame = _G.InspectRecipeFrame
+    local inspectFrame = InspectRecipeFrame
     if inspectFrame then
         F.ReskinPortraitFrame(inspectFrame)
 

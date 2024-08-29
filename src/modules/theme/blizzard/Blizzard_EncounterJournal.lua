@@ -37,7 +37,6 @@ end
 
 C.Themes['Blizzard_EncounterJournal'] = function()
     local r, g, b = C.r, C.g, C.b
-    local EncounterJournal = EncounterJournal
 
     -- Tabs
     for i = 1, 5 do
@@ -387,6 +386,7 @@ C.Themes['Blizzard_EncounterJournal'] = function()
 
     -- Monthly activities
     local frame = EncounterJournalMonthlyActivitiesFrame
+    frame.HelpButton:Hide()
     if frame then
         F.StripTextures(frame)
         F.ReskinTrimScroll(frame.ScrollBar)

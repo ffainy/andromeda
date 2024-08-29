@@ -22,7 +22,9 @@ local function handleSkillButton(button)
 end
 
 C.Themes['Blizzard_ProfessionsBook'] = function()
-    F.ReskinPortraitFrame(_G.ProfessionsBookFrame)
+    F.ReskinPortraitFrame(ProfessionsBookFrame)
+
+    ProfessionsBookFrameTutorialButton:Hide()
 
     -- Professions
 
@@ -42,7 +44,7 @@ C.Themes['Blizzard_ProfessionsBook'] = function()
 
         F.StripTextures(bu.statusBar)
         bu.statusBar:SetHeight(10)
-        bu.statusBar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
+        bu.statusBar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
         bu.statusBar:GetStatusBarTexture():SetGradient('VERTICAL', CreateColor(0, 0.6, 0, 1), CreateColor(0, 0.8, 0, 1))
         bu.statusBar.rankText:SetPoint('CENTER')
         F.CreateBDFrame(bu.statusBar, 0.25)
@@ -80,7 +82,7 @@ C.Themes['Blizzard_ProfessionsBook'] = function()
         end
     end)
 
-    F.CreateBDFrame(_G.SecondaryProfession1, 0.25)
-    F.CreateBDFrame(_G.SecondaryProfession2, 0.25)
-    F.CreateBDFrame(_G.SecondaryProfession3, 0.25)
+    F.CreateBDFrame(SecondaryProfession1, 0.25)
+    F.CreateBDFrame(SecondaryProfession2, 0.25)
+    F.CreateBDFrame(SecondaryProfession3, 0.25)
 end

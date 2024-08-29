@@ -3,16 +3,16 @@ local F, C = unpack(select(2, ...))
 tinsert(C.BlizzThemes, function()
     local r, g, b = C.r, C.g, C.b
 
-    _G.PVEFrameLeftInset:SetAlpha(0)
-    _G.PVEFrameBlueBg:SetAlpha(0)
-    _G.PVEFrame.shadows:SetAlpha(0)
+    PVEFrameLeftInset:SetAlpha(0)
+    PVEFrameBlueBg:SetAlpha(0)
+    PVEFrame.shadows:SetAlpha(0)
 
-    _G.PVEFrameTab1:ClearAllPoints()
-    _G.PVEFrameTab1:SetPoint('TOPLEFT', _G.PVEFrame, 'BOTTOMLEFT', 10, 0)
+    PVEFrameTab1:ClearAllPoints()
+    PVEFrameTab1:SetPoint('TOPLEFT', PVEFrame, 'BOTTOMLEFT', 10, 0)
 
     local iconSize = 60 - 2 * C.MULT
     for i = 1, 4 do
-        local bu = _G.GroupFinderFrame['groupButton' .. i]
+        local bu = GroupFinderFrame['groupButton' .. i]
 
         if bu then
             bu.ring:Hide()
@@ -28,7 +28,7 @@ tinsert(C.BlizzThemes, function()
 
     hooksecurefunc('GroupFinderFrame_SelectGroupButton', function(index)
         for i = 1, 3 do
-            local button = _G.GroupFinderFrame['groupButton' .. i]
+            local button = GroupFinderFrame['groupButton' .. i]
             if i == index then
                 button.bg:Show()
             else
@@ -37,9 +37,9 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    F.ReskinPortraitFrame(_G.PVEFrame)
+    F.ReskinPortraitFrame(PVEFrame)
 
-    for i = 1, 3 do
+    for i = 1, 4 do
         local tab = _G['PVEFrameTab' .. i]
         if tab then
             F.ReskinTab(tab)
@@ -51,15 +51,12 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
-    if _G.ScenarioQueueFrame then
-        F.StripTextures(_G.ScenarioFinderFrame)
-        _G.ScenarioQueueFrameBackground:SetAlpha(0)
+    if ScenarioQueueFrame then
+        F.StripTextures(ScenarioFinderFrame)
+        ScenarioQueueFrameBackground:SetAlpha(0)
 
-        F.ReskinDropdown(_G.ScenarioQueueFrameTypeDropdown)
-        F.ReskinButton(_G.ScenarioQueueFrameFindGroupButton)
-        F.ReskinTrimScroll(_G.ScenarioQueueFrameRandomScrollFrame.ScrollBar)
-        if _G.ScenarioQueueFrameRandomScrollFrameScrollBar then
-            _G.ScenarioQueueFrameRandomScrollFrameScrollBar:SetAlpha(0)
-        end
+        F.ReskinDropdown(ScenarioQueueFrameTypeDropdown)
+        F.ReskinButton(ScenarioQueueFrameFindGroupButton)
+        F.ReskinTrimScroll(ScenarioQueueFrameRandomScrollFrame.ScrollBar)
     end
 end)

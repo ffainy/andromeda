@@ -26,7 +26,7 @@ local function reskinFrameButton(self)
             else
                 child.dragButton.ActiveTexture:SetTexture('')
                 child.dragButton.levelBG:SetAlpha(0)
-                child.dragButton.level:SetFontObject(_G.GameFontNormal)
+                child.dragButton.level:SetFontObject(GameFontNormal)
                 child.dragButton.level:SetTextColor(1, 1, 1)
                 child.dragButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
                 child.dragButton:GetHighlightTexture():SetAllPoints(icon)
@@ -39,8 +39,6 @@ end
 
 C.Themes['Blizzard_Collections'] = function()
     local r, g, b = C.r, C.g, C.b
-
-    local CollectionsJournal = _G.CollectionsJournal
 
     -- [[ General ]]
 
@@ -56,9 +54,6 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- [[ Mounts and pets ]]
 
-    local PetJournal = _G.PetJournal
-    local MountJournal = _G.MountJournal
-
     MountJournal.LeftInset:Hide()
     MountJournal.RightInset:Hide()
     MountJournal.MountDisplay.YesMountsTex:SetAlpha(0)
@@ -68,7 +63,8 @@ C.Themes['Blizzard_Collections'] = function()
     PetJournal.RightInset:Hide()
     PetJournal.PetCardInset:Hide()
     PetJournal.loadoutBorder:Hide()
-    _G.PetJournalTutorialButton.Ring:Hide()
+    PetJournalTutorialButton.Ring:Hide()
+    PetJournalTutorialButton:Hide()
 
     F.StripTextures(MountJournal.MountCount)
     F.CreateBDFrame(MountJournal.MountCount, 0.25)
@@ -79,9 +75,9 @@ C.Themes['Blizzard_Collections'] = function()
     F.ReskinIcon(MountJournal.MountDisplay.InfoButton.Icon)
     F.ReskinModelControl(MountJournal.MountDisplay.ModelScene)
 
-    F.ReskinButton(_G.MountJournalMountButton)
-    F.ReskinButton(_G.PetJournalSummonButton)
-    F.ReskinButton(_G.PetJournalFindBattle)
+    F.ReskinButton(MountJournalMountButton)
+    F.ReskinButton(PetJournalSummonButton)
+    F.ReskinButton(PetJournalFindBattle)
     F.ReskinTrimScroll(MountJournal.ScrollBar)
 
     hooksecurefunc(MountJournal.ScrollBox, 'Update', reskinFrameButton)
@@ -142,8 +138,8 @@ C.Themes['Blizzard_Collections'] = function()
         end
     end)
 
-    F.ReskinEditbox(_G.MountJournalSearchBox)
-    F.ReskinEditbox(_G.PetJournalSearchBox)
+    F.ReskinEditbox(MountJournalSearchBox)
+    F.ReskinEditbox(PetJournalSearchBox)
 
     F.ReskinFilterButton(PetJournal.FilterDropdown)
     F.ReskinFilterButton(MountJournal.FilterDropdown)
@@ -157,7 +153,7 @@ C.Themes['Blizzard_Collections'] = function()
     bg:SetPoint('TOPLEFT', 3, 0)
     bg:SetPoint('BOTTOMRIGHT', -24, 2)
 
-    _G.PetJournalTutorialButton:SetPoint('TOPLEFT', PetJournal, 'TOPLEFT', -14, 14)
+    PetJournalTutorialButton:SetPoint('TOPLEFT', PetJournal, 'TOPLEFT', -14, 14)
 
     local function reskinToolButton(button)
         local border = _G[button:GetName() .. 'Border']
@@ -169,21 +165,21 @@ C.Themes['Blizzard_Collections'] = function()
         F.ReskinIcon(button.texture)
     end
 
-    reskinToolButton(_G.PetJournalHealPetButton)
+    reskinToolButton(PetJournalHealPetButton)
 
-    _G.PetJournalLoadoutBorderSlotHeaderText:SetParent(PetJournal)
-    _G.PetJournalLoadoutBorderSlotHeaderText:SetPoint('CENTER', _G.PetJournalLoadoutBorderTop, 'TOP', 0, 4)
+    PetJournalLoadoutBorderSlotHeaderText:SetParent(PetJournal)
+    PetJournalLoadoutBorderSlotHeaderText:SetPoint('CENTER', PetJournalLoadoutBorderTop, 'TOP', 0, 4)
 
-    reskinToolButton(_G.PetJournalSummonRandomFavoritePetButton)
+    reskinToolButton(PetJournalSummonRandomFavoritePetButton)
 
     -- Favourite mount button
 
-    reskinToolButton(_G.MountJournalSummonRandomFavoriteButton)
+    reskinToolButton(MountJournalSummonRandomFavoriteButton)
 
     local movedButton
     MountJournal:HookScript('OnShow', function()
         if not InCombatLockdown() and not movedButton then
-            _G.MountJournalSummonRandomFavoriteButton:SetPoint('TOPRIGHT', -10, -26)
+            MountJournalSummonRandomFavoriteButton:SetPoint('TOPRIGHT', -10, -26)
             movedButton = true
         end
     end)
@@ -206,16 +202,16 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- Pet card
 
-    local card = _G.PetJournalPetCard
+    local card = PetJournalPetCard
 
-    _G.PetJournalPetCardBG:Hide()
+    PetJournalPetCardBG:Hide()
     card.PetInfo.levelBG:SetAlpha(0)
     card.PetInfo.qualityBorder:SetAlpha(0)
     card.AbilitiesBG1:SetAlpha(0)
     card.AbilitiesBG2:SetAlpha(0)
     card.AbilitiesBG3:SetAlpha(0)
 
-    card.PetInfo.level:SetFontObject(_G.GameFontNormal)
+    card.PetInfo.level:SetFontObject(GameFontNormal)
     card.PetInfo.level:SetTextColor(1, 1, 1)
 
     card.PetInfo.icon.bg = F.ReskinIcon(card.PetInfo.icon)
@@ -229,10 +225,10 @@ C.Themes['Blizzard_Collections'] = function()
     card.xpBar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
     F.CreateBDFrame(card.xpBar, 0.25)
 
-    _G.PetJournalPetCardHealthFramehealthStatusBarLeft:Hide()
-    _G.PetJournalPetCardHealthFramehealthStatusBarRight:Hide()
-    _G.PetJournalPetCardHealthFramehealthStatusBarMiddle:Hide()
-    _G.PetJournalPetCardHealthFramehealthStatusBarBGMiddle:Hide()
+    PetJournalPetCardHealthFramehealthStatusBarLeft:Hide()
+    PetJournalPetCardHealthFramehealthStatusBarRight:Hide()
+    PetJournalPetCardHealthFramehealthStatusBarMiddle:Hide()
+    PetJournalPetCardHealthFramehealthStatusBarBGMiddle:Hide()
 
     card.HealthFrame.healthBar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
     F.CreateBDFrame(card.HealthFrame.healthBar, 0.25)
@@ -268,7 +264,7 @@ C.Themes['Blizzard_Collections'] = function()
         bu.helpFrame:GetRegions():Hide()
         bu.dragButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
 
-        bu.level:SetFontObject(_G.GameFontNormal)
+        bu.level:SetFontObject(GameFontNormal)
         bu.level:SetTextColor(1, 1, 1)
 
         bu.icon.bg = F.ReskinIcon(bu.icon)
@@ -332,7 +328,7 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- [[ Toy box ]]
 
-    local ToyBox = _G.ToyBox
+    local ToyBox = ToyBox
     local iconsFrame = ToyBox.iconsFrame
 
     F.StripTextures(iconsFrame)
@@ -396,11 +392,11 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- [[ Heirlooms ]]
 
-    local HeirloomsJournal = _G.HeirloomsJournal
+    local HeirloomsJournal = HeirloomsJournal
     local icons = HeirloomsJournal.iconsFrame
 
     F.StripTextures(icons)
-    F.ReskinEditbox(_G.HeirloomsJournalSearchBox)
+    F.ReskinEditbox(HeirloomsJournalSearchBox)
     F.ReskinDropdown(HeirloomsJournal.ClassDropdown)
     F.ReskinFilterButton(HeirloomsJournal.FilterDropdown)
     F.ReskinArrow(HeirloomsJournal.PagingFrame.PrevPageButton, 'left')
@@ -498,12 +494,12 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- [[ WardrobeCollectionFrame ]]
 
-    local WardrobeCollectionFrame = _G.WardrobeCollectionFrame
+    WardrobeCollectionFrame.InfoButton:SetAlpha(0)
     local ItemsCollectionFrame = WardrobeCollectionFrame.ItemsCollectionFrame
 
     F.StripTextures(ItemsCollectionFrame)
     F.ReskinFilterButton(WardrobeCollectionFrame.FilterButton)
-    F.ReskinEditbox(_G.WardrobeCollectionFrameSearchBox)
+    F.ReskinEditbox(WardrobeCollectionFrameSearchBox)
     F.ReskinDropdown(WardrobeCollectionFrame.ClassDropdown)
     F.ReskinDropdown(ItemsCollectionFrame.WeaponDropdown)
 
@@ -596,8 +592,8 @@ C.Themes['Blizzard_Collections'] = function()
 
     -- [[ Wardrobe ]]
 
-    local WardrobeFrame = _G.WardrobeFrame
-    local WardrobeTransmogFrame = _G.WardrobeTransmogFrame
+    local WardrobeFrame = WardrobeFrame
+    local WardrobeTransmogFrame = WardrobeTransmogFrame
 
     F.StripTextures(WardrobeTransmogFrame)
     F.ReskinPortraitFrame(WardrobeFrame)
@@ -644,31 +640,4 @@ C.Themes['Blizzard_Collections'] = function()
     -- Outfit Frame
     F.ReskinDropdown(WardrobeTransmogFrame.OutfitDropdown)
     F.ReskinButton(WardrobeTransmogFrame.OutfitDropdown.SaveButton)
-
-    -- HPetBattleAny
-    local reskinHPet
-    CollectionsJournal:HookScript('OnShow', function()
-        if not C_AddOns.IsAddOnLoaded('HPetBattleAny') then
-            return
-        end
-        if not reskinHPet then
-            if _G.HPetInitOpenButton then
-                F.ReskinButton(_G.HPetInitOpenButton)
-            end
-            if _G.HPetAllInfoButton then
-                F.StripTextures(_G.HPetAllInfoButton)
-                F.ReskinButton(_G.HPetAllInfoButton)
-            end
-
-            if _G.PetJournalBandageButton then
-                _G.PetJournalBandageButton:SetPushedTexture(0)
-                _G.PetJournalBandageButton:GetHighlightTexture():SetColorTexture(1, 1, 1, 0.25)
-                _G.PetJournalBandageButtonBorder:Hide()
-                _G.PetJournalBandageButton:SetPoint('TOPRIGHT', _G.PetJournalHealPetButton, 'TOPLEFT', -3, 0)
-                _G.PetJournalBandageButton:SetPoint('BOTTOMLEFT', _G.PetJournalHealPetButton, 'BOTTOMLEFT', -35, 0)
-                F.ReskinIcon(_G.PetJournalBandageButtonIcon)
-            end
-            reskinHPet = true
-        end
-    end)
 end

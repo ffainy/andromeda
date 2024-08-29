@@ -42,14 +42,14 @@ function F:ReskinModelControl()
 end
 
 tinsert(C.BlizzThemes, function()
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    if not ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
     local r, g, b = C.r, C.g, C.b
 
-    F.ReskinPortraitFrame(_G.CharacterFrame)
-    F.StripTextures(_G.CharacterFrameInsetRight)
+    F.ReskinPortraitFrame(CharacterFrame)
+    F.StripTextures(CharacterFrameInsetRight)
 
     for i = 1, 3 do
         local tab = _G['CharacterFrameTab' .. i]
@@ -62,10 +62,10 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
-    F.ReskinModelControl(_G.CharacterModelScene)
-    _G.CharacterModelScene:DisableDrawLayer('BACKGROUND')
-    _G.CharacterModelScene:DisableDrawLayer('BORDER')
-    _G.CharacterModelScene:DisableDrawLayer('OVERLAY')
+    F.ReskinModelControl(CharacterModelScene)
+    CharacterModelScene:DisableDrawLayer('BACKGROUND')
+    CharacterModelScene:DisableDrawLayer('BORDER')
+    CharacterModelScene:DisableDrawLayer('OVERLAY')
 
     -- [[ Item buttons ]]
 
@@ -185,7 +185,7 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Stats pane ]]
 
-    local pane = _G.CharacterStatsPane
+    local pane = CharacterStatsPane
     pane.ClassBackground:Hide()
     pane.ItemLevelFrame.Corruption:SetPoint('RIGHT', 22, -8)
 
@@ -201,11 +201,11 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Sidebar tabs ]]
 
-    if _G.PaperDollSidebarTabs.DecorRight then
-        _G.PaperDollSidebarTabs.DecorRight:Hide()
+    if PaperDollSidebarTabs.DecorRight then
+        PaperDollSidebarTabs.DecorRight:Hide()
     end
 
-    for i = 1, #_G.PAPERDOLL_SIDEBARS do
+    for i = 1, #PAPERDOLL_SIDEBARS do
         local tab = _G['PaperDollSidebarTab' .. i]
 
         if i == 1 then
@@ -230,11 +230,11 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Equipment manager ]]
 
-    F.ReskinButton(_G.PaperDollFrameEquipSet)
-    F.ReskinButton(_G.PaperDollFrameSaveSet)
-    F.ReskinTrimScroll(_G.PaperDollFrame.EquipmentManagerPane.ScrollBar)
+    F.ReskinButton(PaperDollFrameEquipSet)
+    F.ReskinButton(PaperDollFrameSaveSet)
+    F.ReskinTrimScroll(PaperDollFrame.EquipmentManagerPane.ScrollBar)
 
-    hooksecurefunc(_G.PaperDollFrame.EquipmentManagerPane.ScrollBox, 'Update', function(self)
+    hooksecurefunc(PaperDollFrame.EquipmentManagerPane.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
             if child.icon and not child.styled then
@@ -255,12 +255,12 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    F.ReskinIconSelector(_G.GearManagerPopupFrame)
+    F.ReskinIconSelector(GearManagerPopupFrame)
 
     -- Title Pane
-    F.ReskinTrimScroll(_G.PaperDollFrame.TitleManagerPane.ScrollBar)
+    F.ReskinTrimScroll(PaperDollFrame.TitleManagerPane.ScrollBar)
 
-    hooksecurefunc(_G.PaperDollFrame.TitleManagerPane.ScrollBox, 'Update', function(self)
+    hooksecurefunc(PaperDollFrame.TitleManagerPane.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
             if not child.styled then
@@ -310,7 +310,7 @@ tinsert(C.BlizzThemes, function()
                 local repbar = child.Content and child.Content.ReputationBar
                 if repbar then
                     F.StripTextures(repbar)
-                    repbar:SetStatusBarTexture(C.Assets.Textures.Backdrop)
+                    repbar:SetStatusBarTexture(C.Assets.Textures.StatusbarNormal)
                     F.CreateBDFrame(repbar, 0.25)
                 end
                 if child.ToggleCollapseButton then
@@ -324,12 +324,12 @@ tinsert(C.BlizzThemes, function()
             end
         end
     end
-    hooksecurefunc(_G.ReputationFrame.ScrollBox, 'Update', updateReputationBars)
+    hooksecurefunc(ReputationFrame.ScrollBox, 'Update', updateReputationBars)
 
-    F.ReskinTrimScroll(_G.ReputationFrame.ScrollBar)
-    F.ReskinDropdown(_G.ReputationFrame.filterDropdown)
+    F.ReskinTrimScroll(ReputationFrame.ScrollBar)
+    F.ReskinDropdown(ReputationFrame.filterDropdown)
 
-    local detailFrame = _G.ReputationFrame.ReputationDetailFrame
+    local detailFrame = ReputationFrame.ReputationDetailFrame
     F.StripTextures(detailFrame)
     F.SetBD(detailFrame)
     F.ReskinClose(detailFrame.CloseButton)
@@ -339,19 +339,19 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(detailFrame.ViewRenownButton)
 
     -- Token frame
-    if _G.TokenFramePopup.CloseButton then -- blizz typo by parentKey "CloseButton" into "$parent.CloseButton"
-        F.ReskinClose(_G.TokenFramePopup.CloseButton)
+    if TokenFramePopup.CloseButton then -- blizz typo by parentKey "CloseButton" into "$parent.CloseButton"
+        F.ReskinClose(TokenFramePopup.CloseButton)
     else
-        F.ReskinClose((select(5, _G.TokenFramePopup:GetChildren())))
+        F.ReskinClose((select(5, TokenFramePopup:GetChildren())))
     end
 
-    F.ReskinButton(_G.TokenFramePopup.CurrencyTransferToggleButton)
-    F.ReskinCheckbox(_G.TokenFramePopup.InactiveCheckbox)
-    F.ReskinCheckbox(_G.TokenFramePopup.BackpackCheckbox)
+    F.ReskinButton(TokenFramePopup.CurrencyTransferToggleButton)
+    F.ReskinCheckbox(TokenFramePopup.InactiveCheckbox)
+    F.ReskinCheckbox(TokenFramePopup.BackpackCheckbox)
 
-    F.ReskinArrow(_G.TokenFrame.CurrencyTransferLogToggleButton, 'right')
-    F.ReskinPortraitFrame(_G.CurrencyTransferLog)
-    F.ReskinTrimScroll(_G.CurrencyTransferLog.ScrollBar)
+    F.ReskinArrow(TokenFrame.CurrencyTransferLogToggleButton, 'right')
+    F.ReskinPortraitFrame(CurrencyTransferLog)
+    F.ReskinTrimScroll(CurrencyTransferLog.ScrollBar)
 
     local function handleCurrencyIcon(button)
         local icon = button.CurrencyIcon
@@ -359,24 +359,24 @@ tinsert(C.BlizzThemes, function()
             F.ReskinIcon(icon)
         end
     end
-    hooksecurefunc(_G.CurrencyTransferLog.ScrollBox, 'Update', function(self)
+    hooksecurefunc(CurrencyTransferLog.ScrollBox, 'Update', function(self)
         self:ForEachFrame(handleCurrencyIcon)
     end)
 
-    F.ReskinPortraitFrame(_G.CurrencyTransferMenu)
-    F.CreateBDFrame(_G.CurrencyTransferMenu.SourceSelector, 0.25)
-    _G.CurrencyTransferMenu.SourceSelector.SourceLabel:SetWidth(56)
-    F.ReskinDropdown(_G.CurrencyTransferMenu.SourceSelector.Dropdown)
-    F.ReskinEditbox(_G.CurrencyTransferMenu.AmountSelector.InputBox)
-    F.CreateBDFrame(_G.CurrencyTransferMenu.AmountSelector, 0.25)
-    F.ReskinIcon(_G.CurrencyTransferMenu.SourceBalancePreview.BalanceInfo.CurrencyIcon)
-    F.ReskinIcon(_G.CurrencyTransferMenu.PlayerBalancePreview.BalanceInfo.CurrencyIcon)
-    F.ReskinButton(_G.CurrencyTransferMenu.ConfirmButton)
-    F.ReskinButton(_G.CurrencyTransferMenu.CancelButton)
+    F.ReskinPortraitFrame(CurrencyTransferMenu)
+    F.CreateBDFrame(CurrencyTransferMenu.SourceSelector, 0.25)
+    CurrencyTransferMenu.SourceSelector.SourceLabel:SetWidth(56)
+    F.ReskinDropdown(CurrencyTransferMenu.SourceSelector.Dropdown)
+    F.ReskinEditbox(CurrencyTransferMenu.AmountSelector.InputBox)
+    F.CreateBDFrame(CurrencyTransferMenu.AmountSelector, 0.25)
+    F.ReskinIcon(CurrencyTransferMenu.SourceBalancePreview.BalanceInfo.CurrencyIcon)
+    F.ReskinIcon(CurrencyTransferMenu.PlayerBalancePreview.BalanceInfo.CurrencyIcon)
+    F.ReskinButton(CurrencyTransferMenu.ConfirmButton)
+    F.ReskinButton(CurrencyTransferMenu.CancelButton)
 
-    F.ReskinTrimScroll(_G.TokenFrame.ScrollBar)
+    F.ReskinTrimScroll(TokenFrame.ScrollBar)
 
-    hooksecurefunc(_G.TokenFrame.ScrollBox, 'Update', function(self)
+    hooksecurefunc(TokenFrame.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
             if child and not child.styled then
@@ -403,20 +403,20 @@ tinsert(C.BlizzThemes, function()
         end
     end)
 
-    F.StripTextures(_G.TokenFramePopup)
-    F.SetBD(_G.TokenFramePopup)
+    F.StripTextures(TokenFramePopup)
+    F.SetBD(TokenFramePopup)
 
     -- Quick Join
-    F.ReskinTrimScroll(_G.QuickJoinFrame.ScrollBar)
-    F.ReskinButton(_G.QuickJoinFrame.JoinQueueButton)
+    F.ReskinTrimScroll(QuickJoinFrame.ScrollBar)
+    F.ReskinButton(QuickJoinFrame.JoinQueueButton)
 
-    F.SetBD(_G.QuickJoinRoleSelectionFrame)
-    F.ReskinButton(_G.QuickJoinRoleSelectionFrame.AcceptButton)
-    F.ReskinButton(_G.QuickJoinRoleSelectionFrame.CancelButton)
-    F.ReskinClose(_G.QuickJoinRoleSelectionFrame.CloseButton)
-    F.StripTextures(_G.QuickJoinRoleSelectionFrame)
+    F.SetBD(QuickJoinRoleSelectionFrame)
+    F.ReskinButton(QuickJoinRoleSelectionFrame.AcceptButton)
+    F.ReskinButton(QuickJoinRoleSelectionFrame.CancelButton)
+    F.ReskinClose(QuickJoinRoleSelectionFrame.CloseButton)
+    F.StripTextures(QuickJoinRoleSelectionFrame)
 
-    F.ReskinRole(_G.QuickJoinRoleSelectionFrame.RoleButtonTank, 'TANK')
-    F.ReskinRole(_G.QuickJoinRoleSelectionFrame.RoleButtonHealer, 'HEALER')
-    F.ReskinRole(_G.QuickJoinRoleSelectionFrame.RoleButtonDPS, 'DPS')
+    F.ReskinRole(QuickJoinRoleSelectionFrame.RoleButtonTank, 'TANK')
+    F.ReskinRole(QuickJoinRoleSelectionFrame.RoleButtonHealer, 'HEALER')
+    F.ReskinRole(QuickJoinRoleSelectionFrame.RoleButtonDPS, 'DPS')
 end)

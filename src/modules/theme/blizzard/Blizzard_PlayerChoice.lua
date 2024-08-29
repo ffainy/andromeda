@@ -2,14 +2,14 @@ local F, C = unpack(select(2, ...))
 
 local Type_ItemDisplay = Enum.UIWidgetVisualizationType.ItemDisplay
 
-local function ReskinOptionText(text, r, g, b)
+local function reskinOptionText(text, r, g, b)
     if text then
         text:SetTextColor(r, g, b)
     end
 end
 
 -- Needs review, still buggy on blizz
-local function ReskinOptionButton(self)
+local function reskinOptionButton(self)
     if not self or self.__bg then
         return
     end
@@ -18,7 +18,7 @@ local function ReskinOptionButton(self)
     F.ReskinButton(self, true)
 end
 
-local function ReskinSpellWidget(spell)
+local function reskinSpellWidget(spell)
     if not spell.bg then
         spell.Border:SetAlpha(0)
         spell.bg = F.ReskinIcon(spell.Icon)
@@ -39,22 +39,23 @@ local uglyBackground = {
 }
 
 C.Themes['Blizzard_PlayerChoice'] = function()
-    hooksecurefunc(_G.PlayerChoiceFrame, 'TryShow', function(self)
+    hooksecurefunc(PlayerChoiceFrame, 'TryShow', function(self)
         self.Header:Hide()
 
         if not self.bg then
             self.BlackBackground:SetAlpha(0)
             self.Background:SetAlpha(0)
             self.NineSlice:SetAlpha(0)
+            self.BorderOverlay:SetAlpha(0)
             self.Title:DisableDrawLayer('BACKGROUND')
             self.Title.Text:SetTextColor(1, 0.8, 0)
-            self.Title.Text:SetFontObject(_G.SystemFont_Huge2)
+            self.Title.Text:SetFontObject(SystemFont_Huge2)
             F.CreateBDFrame(self.Title, 0.25)
             F.ReskinClose(self.CloseButton)
             self.bg = F.SetBD(self)
 
-            if _G.GenericPlayerChoiceToggleButton then
-                F.ReskinButton(_G.GenericPlayerChoiceToggleButton)
+            if GenericPlayerChoiceToggleButton then
+                F.ReskinButton(GenericPlayerChoiceToggleButton)
             end
         end
 
@@ -72,13 +73,13 @@ C.Themes['Blizzard_PlayerChoice'] = function()
         for optionFrame in self.optionPools:EnumerateActiveByTemplate(self.optionFrameTemplate) do
             local header = optionFrame.Header
             if header then
-                ReskinOptionText(header.Text, 1, 0.8, 0)
+                reskinOptionText(header.Text, 1, 0.8, 0)
                 if header.Contents then
-                    ReskinOptionText(header.Contents.Text, 49 / 255, 26 / 255, 9 / 255)
-                    header.Contents.Text:SetFontObject(_G.SystemFont_Med3)
+                    reskinOptionText(header.Contents.Text, 1, 1, 1)
+                    header.Contents.Text:SetFontObject(SystemFont_Med3)
                 end
             end
-            ReskinOptionText(optionFrame.OptionText, 1, 1, 1)
+            reskinOptionText(optionFrame.OptionText, 1, 1, 1)
             F.ReplaceIconString(optionFrame.OptionText.String)
 
             if optionFrame.Artwork and isIgnored then
@@ -100,7 +101,7 @@ C.Themes['Blizzard_PlayerChoice'] = function()
             local optionButtonsContainer = optionFrame.OptionButtonsContainer
             if optionButtonsContainer and optionButtonsContainer.buttonPool then
                 for button in optionButtonsContainer.buttonPool:EnumerateActive() do
-                    ReskinOptionButton(button)
+                    reskinOptionButton(button)
                 end
             end
 
@@ -109,7 +110,7 @@ C.Themes['Blizzard_PlayerChoice'] = function()
                 for rewardFrame in rewards.rewardsPool:EnumerateActive() do
                     local text = rewardFrame.Name or rewardFrame.Text -- .Text for PlayerChoiceBaseOptionReputationRewardTemplate
                     if text then
-                        ReskinOptionText(text, 0.9, 0.8, 0.5)
+                        reskinOptionText(text, 0.9, 0.8, 0.5)
                     end
 
                     if not rewardFrame.styled then
@@ -135,9 +136,9 @@ C.Themes['Blizzard_PlayerChoice'] = function()
             local widgetContainer = optionFrame.WidgetContainer
             if widgetContainer and widgetContainer.widgetFrames then
                 for _, widgetFrame in pairs(widgetContainer.widgetFrames) do
-                    ReskinOptionText(widgetFrame.Text, 1, 1, 1)
+                    reskinOptionText(widgetFrame.Text, 1, 1, 1)
                     if widgetFrame.Spell then
-                        ReskinSpellWidget(widgetFrame.Spell)
+                        reskinSpellWidget(widgetFrame.Spell)
                     end
 
                     if widgetFrame.widgetType == Type_ItemDisplay then

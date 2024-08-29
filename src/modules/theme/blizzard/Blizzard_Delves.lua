@@ -27,19 +27,19 @@ local function reskinOptionSlot(frame, skip)
 end
 
 C.Themes['Blizzard_DelvesCompanionConfiguration'] = function()
-    F.ReskinPortraitFrame(_G.DelvesCompanionConfigurationFrame)
-    F.ReskinButton(_G.DelvesCompanionConfigurationFrame.CompanionConfigShowAbilitiesButton)
+    F.ReskinPortraitFrame(DelvesCompanionConfigurationFrame)
+    F.ReskinButton(DelvesCompanionConfigurationFrame.CompanionConfigShowAbilitiesButton)
 
-    reskinOptionSlot(_G.DelvesCompanionConfigurationFrame.CompanionCombatRoleSlot, true)
-    reskinOptionSlot(_G.DelvesCompanionConfigurationFrame.CompanionUtilityTrinketSlot)
-    reskinOptionSlot(_G.DelvesCompanionConfigurationFrame.CompanionCombatTrinketSlot)
+    reskinOptionSlot(DelvesCompanionConfigurationFrame.CompanionCombatRoleSlot, true)
+    reskinOptionSlot(DelvesCompanionConfigurationFrame.CompanionUtilityTrinketSlot)
+    reskinOptionSlot(DelvesCompanionConfigurationFrame.CompanionCombatTrinketSlot)
 
-    F.ReskinPortraitFrame(_G.DelvesCompanionAbilityListFrame)
-    F.ReskinDropdown(_G.DelvesCompanionAbilityListFrame.DelvesCompanionRoleDropdown)
-    F.ReskinArrow(_G.DelvesCompanionAbilityListFrame.DelvesCompanionAbilityListPagingControls.PrevPageButton, 'left')
-    F.ReskinArrow(_G.DelvesCompanionAbilityListFrame.DelvesCompanionAbilityListPagingControls.NextPageButton, 'right')
+    F.ReskinPortraitFrame(DelvesCompanionAbilityListFrame)
+    F.ReskinDropdown(DelvesCompanionAbilityListFrame.DelvesCompanionRoleDropdown)
+    F.ReskinArrow(DelvesCompanionAbilityListFrame.DelvesCompanionAbilityListPagingControls.PrevPageButton, 'left')
+    F.ReskinArrow(DelvesCompanionAbilityListFrame.DelvesCompanionAbilityListPagingControls.NextPageButton, 'right')
 
-    hooksecurefunc(_G.DelvesCompanionAbilityListFrame, 'UpdatePaginatedButtonDisplay', function(self)
+    hooksecurefunc(DelvesCompanionAbilityListFrame, 'UpdatePaginatedButtonDisplay', function(self)
         for _, button in pairs(self.buttons) do
             if not button.styled then
                 if button.Icon then
@@ -53,24 +53,26 @@ C.Themes['Blizzard_DelvesCompanionConfiguration'] = function()
 end
 
 C.Themes['Blizzard_DelvesDashboardUI'] = function()
-    _G.DelvesDashboardFrame.DashboardBackground:SetAlpha(0)
-    F.ReskinButton(_G.DelvesDashboardFrame.ButtonPanelLayoutFrame.CompanionConfigButtonPanel.CompanionConfigButton)
+    DelvesDashboardFrame.DashboardBackground:SetAlpha(0)
+    F.ReskinButton(DelvesDashboardFrame.ButtonPanelLayoutFrame.CompanionConfigButtonPanel.CompanionConfigButton)
+end
+
+local function handleRewards(self)
+    for rewardFrame in self.rewardPool:EnumerateActive() do
+        if not rewardFrame.bg then
+            F.CreateBDFrame(rewardFrame, .25)
+            rewardFrame.NameFrame:SetAlpha(0)
+            rewardFrame.bg = F.ReskinIcon(rewardFrame.Icon)
+            F.ReskinIconBorder(rewardFrame.IconBorder, true)
+        end
+    end
 end
 
 C.Themes['Blizzard_DelvesDifficultyPicker'] = function()
-    F.ReskinPortraitFrame(_G.DelvesDifficultyPickerFrame)
-    F.ReskinDropdown(_G.DelvesDifficultyPickerFrame.Dropdown)
-    F.ReskinButton(_G.DelvesDifficultyPickerFrame.EnterDelveButton)
+    F.ReskinPortraitFrame(DelvesDifficultyPickerFrame)
+    F.ReskinDropdown(DelvesDifficultyPickerFrame.Dropdown)
+    F.ReskinButton(DelvesDifficultyPickerFrame.EnterDelveButton)
 
-    hooksecurefunc(_G.DelvesDifficultyPickerFrame.DelveRewardsContainerFrame, 'SetRewards', function(self)
-        for rewardFrame in self.rewardPool:EnumerateActive() do
-            if not rewardFrame.styled then
-                F.CreateBDFrame(rewardFrame, 0.25)
-                rewardFrame.NameFrame:SetAlpha(0)
-                rewardFrame.IconBorder:SetAlpha(0)
-                F.ReskinIcon(rewardFrame.Icon)
-                rewardFrame.styled = true
-            end
-        end
-    end)
+    DelvesDifficultyPickerFrame.DelveRewardsContainerFrame:HookScript('OnShow', handleRewards)
+    hooksecurefunc(DelvesDifficultyPickerFrame.DelveRewardsContainerFrame, 'SetRewards', handleRewards)
 end
