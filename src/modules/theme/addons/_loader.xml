@@ -8,5 +8,6 @@
     <Script file="opie.lua"/>
     <Script file="pgf.lua"/>
     <Script file="rehack.lua"/>
+    <Script file="sam.lua"/>
     <Script file="wa.lua"/>
 </Ui>

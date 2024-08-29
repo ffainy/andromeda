@@ -3037,6 +3037,12 @@ GUI.OptionsList = {
             L['Reskin lsToasts'],
             true,
         },
+        {
+            1,
+            'ACCOUNT',
+            'ReskinSimpleAddonManager',
+            L['Reskin SimpleAddonManager'],
+        },
     },
     [15] = {},
     [16] = {},
