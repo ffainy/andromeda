@@ -125,7 +125,7 @@ function INVENTORY:CreateMoneyFrame()
     moneyFrame:SetPoint('TOPLEFT', 6, 0)
     moneyFrame:SetSize(140, 26)
 
-    local tag = self:SpawnPlugin('TagDisplay', '[money] [currencies]', moneyFrame)
+    local tag = self:SpawnPlugin('TagDisplay', '[money]', moneyFrame)
     local outline = _G.ANDROMEDA_ADB.FontOutline
     F.SetFS(tag, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
     tag:SetPoint('TOPLEFT', 0, -4)
