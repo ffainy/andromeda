@@ -1,13 +1,6 @@
 local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
-local currShow = 2003 -- Dragon Isles Supplies 巨龙群岛补给
-local currPvE = {
-    ['Elemental Overflow'] = 2118, -- 元素涌流
-    ['Storm Sigil'] = 2122, -- 风暴徽记
-    ['Valor'] = 1191, -- 勇气点数
-    ['Timewarped Badge'] = 1166, -- 时空扭曲徽章
-}
 local currPvP = {
     ['Honor'] = 1792,
     ['Conquest'] = 1602,
@@ -29,13 +22,13 @@ local function addTitle(text)
 end
 
 local function onEvent(self)
-    local info = C_CurrencyInfo.GetCurrencyInfo(currShow)
+    local info = C_CurrencyInfo.GetCurrencyInfo(2815) -- 共鸣水晶 / Resonance Crystals
     self.text:SetText(format('%s: |cffdf5ed9%s|r', info.name, BreakUpLargeNumbers(info.quantity)))
 end
 
 local function onMouseUp(self, btn)
     if btn == 'LeftButton' then
-        securecall(_G.ToggleCharacter, 'TokenFrame')
+        securecall(ToggleCharacter, 'TokenFrame')
     end
 end
 
@@ -43,25 +36,45 @@ local function onEnter(self)
     local anchorTop = C.DB.Infobar.AnchorTop
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
-    GameTooltip:AddLine(_G.CURRENCY, 0.9, 0.8, 0.6)
+    GameTooltip:AddLine(CURRENCY, 0.9, 0.8, 0.6)
 
     title = false
-    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2912) -- Tier charges
+    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2912) -- 苏生觉醒 / Renascent Awakening
     if chargeInfo then
         addTitle('Tier Charges')
 
-        local iconTexture = ' |T' .. chargeInfo.iconFileID .. ':13:15:0:0:50:50:4:46:4:46|t'
-        GameTooltip:AddDoubleLine(chargeInfo.name, chargeInfo.quantity .. '/' .. chargeInfo.maxQuantity .. iconTexture, 1, 1, 1, 1, 1, 1)
+        GameTooltip:AddDoubleLine(
+            addIcon(chargeInfo.iconFileID) .. chargeInfo.name,
+            chargeInfo.quantity .. '/' .. chargeInfo.maxQuantity,
+            1, 1, 1, 1, 1, 1
+        )
     end
 
     title = false
-    for _, id in pairs(currPvE) do
-        addTitle('PvE')
+    for i = 1, 10 do
+        local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
+        if not currencyInfo then
+            break
+        end
 
-        local info = C_CurrencyInfo.GetCurrencyInfo(id)
-        local amount = format('|cff20ff20%s|r', BreakUpLargeNumbers(info.quantity))
+        if currencyInfo.name and currencyInfo.quantity then
+            addTitle('PvE')
 
-        GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
+            local total = C_CurrencyInfo.GetCurrencyInfo(currencyInfo.currencyTypesID).maxQuantity
+            if total > 0 then
+                GameTooltip:AddDoubleLine(
+                    addIcon(currencyInfo.iconFileID) .. currencyInfo.name,
+                    BreakUpLargeNumbers(currencyInfo.quantity) .. '/' .. BreakUpLargeNumbers(total),
+                    1, 1, 1, 1, 1, 1
+                )
+            else
+                GameTooltip:AddDoubleLine(
+                    addIcon(currencyInfo.iconFileID) .. currencyInfo.name,
+                    BreakUpLargeNumbers(currencyInfo.quantity),
+                    1, 1, 1, 1, 1, 1
+                )
+            end
+        end
     end
 
     title = false
@@ -69,9 +82,19 @@ local function onEnter(self)
         addTitle('PvP')
 
         local info = C_CurrencyInfo.GetCurrencyInfo(id)
-        local amount = format('|cff20ff20%s|r', BreakUpLargeNumbers(info.quantity))
-
-        GameTooltip:AddDoubleLine(addIcon(info.iconFileID) .. info.name, amount, 1, 1, 1)
+        if info.maxQuantity > 0 then
+            GameTooltip:AddDoubleLine(
+                addIcon(info.iconFileID)..info.name,
+                BreakUpLargeNumbers(info.quantity) .. '/' .. BreakUpLargeNumbers(info.maxQuantity),
+                1, 1, 1, 1, 1, 1
+            )
+        else
+            GameTooltip:AddDoubleLine(
+                addIcon(info.iconFileID)..info.name,
+                BreakUpLargeNumbers(info.quantity),
+                1, 1, 1, 1, 1, 1
+            )
+        end
     end
 
     GameTooltip:AddLine(' ')
