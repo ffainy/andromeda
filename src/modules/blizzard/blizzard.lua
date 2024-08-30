@@ -287,19 +287,6 @@ do
     end)
 end
 
-do
-    local distanceText = SuperTrackedFrame.DistanceText
-    if not distanceText.__SetText then
-        distanceText.__SetText = distanceText.SetText
-        hooksecurefunc(distanceText, 'SetText', function(frame, text)
-            if strmatch(text, '%d%d%d%d.%d+') then
-                text = gsub(text, '(%d+)%.%d+', '%1')
-                frame:__SetText(text)
-            end
-        end)
-    end
-end
-
 -- Fix Drag Collections taint
 do
     local done
