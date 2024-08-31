@@ -910,6 +910,32 @@ function INVENTORY:CloseBags()
     CloseAllBags()
 end
 
+local scanTip = CreateFrame('GameTooltip', 'InventoryScanTooltip', nil, 'GameTooltipTemplate')
+local function getBindType(bagId, slotId)
+    scanTip:SetOwner(UIParent, 'ANCHOR_NONE')
+    scanTip:SetBagItem(bagId, slotId)
+    scanTip:Show()
+
+    for i = 1, scanTip:NumLines() do
+        local str = _G['InventoryScanTooltipTextLeft' .. i]
+        if str then
+            if (str:GetText() == ITEM_SOULBOUND) then
+                return '1'
+            elseif (str:GetText() == ITEM_ACCOUNTBOUND_UNTIL_EQUIP) then
+                return '2'
+            elseif (str:GetText() == ITEM_BIND_ON_EQUIP) then
+                return '3'
+            elseif (str:GetText() == ITEM_BIND_ON_USE) then
+                return '4'
+            end
+        end
+    end
+
+    scanTip:Hide()
+
+    return '0'
+end
+
 function INVENTORY:OnLogin()
     if not C.DB.Inventory.Enable then
         return
@@ -1290,13 +1316,16 @@ function INVENTORY:OnLogin()
                 return
             end
 
-            local _, _, itemRarity, _, _, _, _, _, _, _, _, _, _, bindType = C_Item.GetItemInfo(itemLink)
-            if F.IsBoA(item.bagId, item.slotId) or itemRarity == 7 or itemRarity == 8 then
-                self.BindType:SetText('|cff00ccffBOA|r')
-            elseif not F.IsSoulBound(item.bagId, item.slotId) and bindType == 2 then
-                self.BindType:SetText('|cff1eff00BOE|r')
-            else
+            -- local _, _, itemQuality, _, _, _, _, _, _, _, _, _, _, bindType = C_Item.GetItemInfo(itemLink)
+            local bt = getBindType(item.bagId, item.slotId)
+            if bt == '1' then
                 self.BindType:SetText('')
+            elseif bt == '2' then
+                self.BindType:SetText('|cff00ccffWuE|r')
+            elseif bt == '3' then
+                self.BindType:SetText('|cff1eff00BoE|r')
+            elseif bt == '4' then
+                self.BindType:SetText('|cff1eff00BoU|r')
             end
         else
             self.BindType:SetText('')
