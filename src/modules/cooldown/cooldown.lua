@@ -49,7 +49,7 @@ function COOLDOWN:OnSizeChanged(width, height)
     end
     self.fontScale = fontScale
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     local font = C.Assets.Fonts.Heavy
 
     if fontScale < minScale then
@@ -90,7 +90,7 @@ function COOLDOWN:OnCreate()
 
     local scaler = CreateFrame('Frame', nil, self)
     scaler:SetAllPoints(self)
-    -- scaler:SetFrameStrata('HIGH')
+    scaler:SetFrameStrata('HIGH')
 
     local timer = CreateFrame('Frame', nil, scaler)
     timer:Hide()
@@ -223,19 +223,19 @@ function COOLDOWN:OnLogin()
         return
     end
 
-    local cooldownIndex = getmetatable(_G.ActionButton1Cooldown).__index
+    local cooldownIndex = getmetatable(ActionButton1Cooldown).__index
     hooksecurefunc(cooldownIndex, 'SetCooldown', COOLDOWN.StartTimer)
 
     hooksecurefunc('CooldownFrame_SetDisplayAsPercentage', COOLDOWN.HideCooldownNumbers)
 
-    hooksecurefunc(_G.ActionBarButtonEventsFrameMixin, 'RegisterFrame', COOLDOWN.RegisterActionButton)
+    hooksecurefunc(ActionBarButtonEventsFrameMixin, 'RegisterFrame', COOLDOWN.RegisterActionButton)
 
     if _G['ActionBarButtonEventsFrame'].frames then
         for _, frame in pairs(_G['ActionBarButtonEventsFrame'].frames) do
             COOLDOWN.RegisterActionButton(frame)
         end
     end
-    hooksecurefunc(_G.ActionBarButtonEventsFrameMixin, 'RegisterFrame', COOLDOWN.RegisterActionButton)
+    hooksecurefunc(ActionBarButtonEventsFrameMixin, 'RegisterFrame', COOLDOWN.RegisterActionButton)
 
     -- Hide Default Cooldown
     SetCVar('countdownForCooldowns', 0) -- #TODO: hide default option
