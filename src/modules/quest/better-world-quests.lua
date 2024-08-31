@@ -3,66 +3,96 @@
 -- https://github.com/p3lim-wow/BetterWorldQuests
 
 
+local F, C = unpack(select(2, ...))
+local QUEST = F:GetModule('Quest')
+
+local hbd = F.Libs.HereBeDragons
+local bwq = {}
+
 local mapScale = 1
 local parentScale = 1
 local zoomFactor = 0.5
+local showAzeroth = false
+local modifier = 'ALT'
 
-local PARENT_MAPS = {
+
+local CONTINENTS = {
     -- list of all continents and their sub-zones that have world quests
-    [2274] = {         -- Khaz Algar
+    [2274] = {   -- Khaz Algar
         [2248] = true, -- Isle of Dorn
         [2215] = true, -- Hallowfall
         [2214] = true, -- The Ringing Deeps
         [2255] = true, -- Azj-Kahet
-        [2256] = true, -- Azj-Kahet - Lower (don't know how this works yet)
-        [2213] = true, -- City of Threads (not really representable on Algar, TBD)
-        [2216] = true, -- City of Threads - Lower (again, don't know how this works)
+        [2256] = true, -- Azj-Kahet - Lower
+        [2213] = true, -- City of Threads
+        [2216] = true, -- City of Threads - Lower
     },
-    [1978] = {         -- Dragon Isles
+    [1978] = {   -- Dragon Isles
         [2022] = true, -- The Walking Shores
         [2023] = true, -- Ohn'ahran Plains
         [2024] = true, -- The Azure Span
         [2025] = true, -- Thaldraszus
         [2151] = true, -- The Forbidden Reach
     },
-    [1550] = {         -- Shadowlands
+    [1550] = {   -- Shadowlands
         [1525] = true, -- Revendreth
         [1533] = true, -- Bastion
         [1536] = true, -- Maldraxxus
         [1565] = true, -- Ardenwald
         [1543] = true, -- The Maw
     },
-    [619] = {          -- Broken Isles
-        [630] = true,  -- Azsuna
-        [641] = true,  -- Val'sharah
-        [650] = true,  -- Highmountain
-        [634] = true,  -- Stormheim
-        [680] = true,  -- Suramar
-        [627] = true,  -- Dalaran
-        [790] = true,  -- Eye of Azshara (world version)
-        [646] = true,  -- Broken Shore
+    [619] = {    -- Broken Isles
+        [630] = true, -- Azsuna
+        [641] = true, -- Val'sharah
+        [650] = true, -- Highmountain
+        [634] = true, -- Stormheim
+        [680] = true, -- Suramar
+        [627] = true, -- Dalaran
+        [790] = true, -- Eye of Azshara (world version)
+        [646] = true, -- Broken Shore
     },
-    [875] = {          -- Zandalar
-        [862] = true,  -- Zuldazar
-        [864] = true,  -- Vol'Dun
-        [863] = true,  -- Nazmir
+    [424] = {    -- Pandaria
+        [1530] = true, -- Vale of Eternal Blossoms (BfA)
     },
-    [876] = {          -- Kul Tiras
-        [895] = true,  -- Tiragarde Sound
-        [896] = true,  -- Drustvar
-        [942] = true,  -- Stormsong Valley
+    [875] = {    -- Zandalar
+        [862] = true, -- Zuldazar
+        [864] = true, -- Vol'Dun
+        [863] = true, -- Nazmir
     },
-    [13] = {           -- Eastern Kingdoms
-        [14] = true,   -- Arathi Highlands (Warfronts)
+    [876] = {    -- Kul Tiras
+        [895] = true, -- Tiragarde Sound
+        [896] = true, -- Drustvar
+        [942] = true, -- Stormsong Valley
     },
-    [12] = {           -- Kalimdor
-        [62] = true,   -- Darkshore (Warfronts)
+    [13] = {     -- Eastern Kingdoms
+        [14] = true, -- Arathi Highlands (Warfronts)
+    },
+    [12] = {     -- Kalimdor
+        [62] = true, -- Darkshore (Warfronts)
+        [1527] = true, -- Uldum (BfA)
+    },
+    [947] = {    -- Azeroth
+        [13] = true, -- Eastern Kingdoms
+        [12] = true, -- Kalimdor
+        [619] = true, -- Broken Isles
+        [875] = true, -- Zandalar
+        [876] = true, -- Kul Tiras
+        [424] = true, -- Pandaria
+        [1978] = true, -- Dragon Isles
+        [2274] = true, -- Khaz Algar
     },
 }
 
-local function IsParentMap(mapID)
-    return not not PARENT_MAPS[mapID]
+function bwq:IsParentMap(mapID)
+    return not not CONTINENTS[mapID]
 end
+
+function bwq:IsChildMap(parentMapID, mapID)
+    local mapInfo = C_Map.GetMapInfo(mapID)
+    return parentMapID and mapID and mapInfo and mapInfo.parentMapID and mapInfo.parentMapID == parentMapID
+end
+
+
 
 local provider = CreateFromMixins(WorldMap_WorldQuestDataProviderMixin)
 provider:SetMatchWorldMapFilters(true)
@@ -74,10 +104,29 @@ function provider:GetPinTemplate()
     return 'BetterWorldQuestPinTemplate'
 end
 
--- override ShouldShowQuest method to also show on parent maps
-function provider:ShouldOverrideShowQuest(mapID) --, questInfo)
+-- override ShouldOverrideShowQuest method to show pins on continent maps
+function provider:ShouldOverrideShowQuest()
+    -- just nop so we don't hit the default
+end
+
+-- override ShouldShowQuest method to show pins on parent maps
+function provider:ShouldShowQuest(questInfo)
+    local mapID = self:GetMap():GetMapID()
+    if mapID == 947 then
+        -- TODO: change option to only show when there's few?
+        return showAzeroth
+    end
+
+    if WorldQuestDataProviderMixin.ShouldShowQuest(self, questInfo) then -- super
+        return true
+    end
+
     local mapInfo = C_Map.GetMapInfo(mapID)
-    return mapInfo.mapType == Enum.UIMapType.Continent
+    if mapInfo.mapType == Enum.UIMapType.Continent then
+        return true
+    end
+
+    return bwq:IsChildMap(mapID, questInfo.mapID)
 end
 
 WorldMapFrame:AddDataProvider(provider)
@@ -90,7 +139,7 @@ for dp in next, WorldMapFrame.dataProviders do
 end
 
 -- change visibility
-local modifier
+
 local function toggleVisibility()
     local state = true
     if modifier == 'ALT' then
@@ -109,6 +158,7 @@ end
 WorldMapFrame:HookScript('OnHide', function()
     toggleVisibility()
 end)
+F:RegisterEvent('MODIFIER_STATE_CHANGED', toggleVisibility)
 
 
 
@@ -116,10 +166,8 @@ end)
 
 
 
-local FACTION_ASSAULT_ATLAS = UnitFactionGroup('player') == 'Horde' and 'worldquest-icon-horde' or
-    'worldquest-icon-alliance'
 
-
+local FACTION_ASSAULT_ATLAS = UnitFactionGroup('player') == 'Horde' and 'worldquest-icon-horde' or 'worldquest-icon-alliance'
 
 
 BetterWorldQuestPinMixin = CreateFromMixins(WorldMap_WorldQuestPinMixin)
@@ -185,7 +233,10 @@ function BetterWorldQuestPinMixin:RefreshVisuals()
     self.Display.Icon:Hide()
 
     -- update scale
-    if IsParentMap(self:GetMap():GetMapID()) then
+    local mapID = self:GetMap():GetMapID()
+    if mapID == 947 then
+        self:SetScalingLimits(1, parentScale / 2, (parentScale / 2) + zoomFactor)
+    elseif bwq:IsParentMap(mapID) then
         self:SetScalingLimits(1, parentScale, parentScale + zoomFactor)
     else
         self:SetScalingLimits(1, mapScale, mapScale + zoomFactor)
@@ -278,8 +329,6 @@ function BetterWorldQuestPinMixin:SetPassThroughButtons()
     -- https://github.com/Stanzilla/WoWUIBugs/issues/453
 end
 
-local HBD = LibStub('HereBeDragons-2.0')
-
 local DRAGON_ISLES_MAPS = {
     [2022] = true, -- The Walking Shores
     [2023] = true, -- Ohn'ahran Plains
@@ -301,7 +350,7 @@ local function updatePOIs(self)
                 if info and startsWith(info.atlasName, 'ElementalStorm') then
                     local x, y = info.position:GetXY()
                     info.dataProvider = self
-                    info.position:SetXY(HBD:TranslateZoneCoordinates(x, y, childMapID, mapID))
+                    info.position:SetXY(hbd:TranslateZoneCoordinates(x, y, childMapID, mapID))
                     map:AcquirePin(self:GetPinTemplate(), info)
                 end
             end
@@ -309,8 +358,8 @@ local function updatePOIs(self)
     end
 end
 
-for provider in next, WorldMapFrame.dataProviders do
-    if provider.GetPinTemplate and provider:GetPinTemplate() == 'AreaPOIPinTemplate' then
-        hooksecurefunc(provider, 'RefreshAllData', updatePOIs)
+for p in next, WorldMapFrame.dataProviders do
+    if p.GetPinTemplate and p:GetPinTemplate() == 'AreaPOIPinTemplate' then
+        hooksecurefunc(p, 'RefreshAllData', updatePOIs)
     end
 end

@@ -76,6 +76,7 @@ do
     F:AddLib('LibRangeCheck', 'LibRangeCheck-3.0')
     F:AddLib('LibSharedMedia', 'LibSharedMedia-3.0')
     F:AddLib('LibBase64', 'LibBase64-1.0')
+    F:AddLib('HereBeDragons', 'HereBeDragons-2.0')
 
     F.Libs.oUF = engine.oUF
     F.Libs.cargBags = engine.cargBags
