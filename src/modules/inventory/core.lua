@@ -6,17 +6,17 @@ local iconsList = C.Assets.Textures
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local iconColor = { 0.5, 0.5, 0.5 }
 local bagTypeColor = {
-    [0] = { 0, 0, 0, 0.25 }, -- 容器
-    [1] = false, -- 灵魂袋
-    [2] = { 0, 0.5, 0, 0.25 }, -- 草药袋
-    [3] = { 0.8, 0, 0.8, 0.25 }, -- 附魔袋
-    [4] = { 1, 0.8, 0, 0.25 }, -- 工程袋
-    [5] = { 0, 0.8, 0.8, 0.25 }, -- 宝石袋
-    [6] = { 0.5, 0.4, 0, 0.25 }, -- 矿石袋
-    [7] = { 0.8, 0.5, 0.5, 0.25 }, -- 制皮包
-    [8] = { 0.8, 0.8, 0.8, 0.25 }, -- 铭文包
-    [9] = { 0.4, 0.6, 1, 0.25 }, -- 工具箱
-    [10] = { 0.8, 0, 0, 0.25 }, -- 烹饪包
+    [0] = { 0, 0, 0, 0.25 },        -- 容器
+    [1] = false,                    -- 灵魂袋
+    [2] = { 0, 0.5, 0, 0.25 },      -- 草药袋
+    [3] = { 0.8, 0, 0.8, 0.25 },    -- 附魔袋
+    [4] = { 1, 0.8, 0, 0.25 },      -- 工程袋
+    [5] = { 0, 0.8, 0.8, 0.25 },    -- 宝石袋
+    [6] = { 0.5, 0.4, 0, 0.25 },    -- 矿石袋
+    [7] = { 0.8, 0.5, 0.5, 0.25 },  -- 制皮包
+    [8] = { 0.8, 0.8, 0.8, 0.25 },  -- 铭文包
+    [9] = { 0.4, 0.6, 1, 0.25 },    -- 工具箱
+    [10] = { 0.8, 0, 0, 0.25 },     -- 烹饪包
     [11] = { 0.2, 0.8, 0.2, 0.25 }, -- 材料包
 }
 
@@ -43,7 +43,7 @@ end
 
 local anchorCache = {}
 
-local function CheckForBagReagent(name)
+local function checkForBagReagent(name)
     local pass = true
     if name == 'BagReagent' and C_Container.GetContainerNumSlots(5) == 0 then
         pass = false
@@ -61,7 +61,7 @@ function INVENTORY:UpdateBagsAnchor(parent, bags)
 
     for i = 1, #bags do
         local bag = bags[i]
-        if bag:GetHeight() > 45 and CheckForBagReagent(bag.name) then
+        if bag:GetHeight() > 45 and checkForBagReagent(bag.name) then
             bag:Show()
             index = index + 1
 
@@ -112,7 +112,7 @@ local function highlightFunction(button, match)
     button.searchOverlay:SetShown(not match)
 end
 
-local function IsItemMatched(str, text)
+local function isItemMatched(str, text)
     if not str or str == '' then
         return
     end
@@ -126,12 +126,12 @@ function INVENTORY:CreateMoneyFrame()
     moneyFrame:SetSize(140, 26)
 
     local tag = self:SpawnPlugin('TagDisplay', '[money]', moneyFrame)
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     F.SetFS(tag, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
     tag:SetPoint('TOPLEFT', 0, -4)
 end
 
-local function ToggleWidgetButtons(self)
+local function toggleWidgetButtons(self)
     C.DB['Inventory']['HideWidgets'] = not C.DB['Inventory']['HideWidgets']
 
     local buttons = self.__owner.widgetButtons
@@ -166,8 +166,8 @@ function INVENTORY:CreateCollapseArrow()
 
     bu.__owner = self
     C.DB['Inventory']['HideWidgets'] = not C.DB['Inventory']['HideWidgets'] -- reset before toggle
-    ToggleWidgetButtons(bu)
-    bu:SetScript('OnClick', ToggleWidgetButtons)
+    toggleWidgetButtons(bu)
+    bu:SetScript('OnClick', toggleWidgetButtons)
 
     self.widgetArrow = bu
 end
@@ -226,9 +226,9 @@ local function CloseOrRestoreBags(self, btn)
         reagent:SetPoint(unpack(bank.__anchor))
         account:ClearAllPoints()
         account:SetPoint(unpack(bank.__anchor))
-        PlaySound(_G.SOUNDKIT.IG_MINIMAP_OPEN)
+        PlaySound(SOUNDKIT.IG_MINIMAP_OPEN)
     else
-        _G.CloseAllBags()
+        CloseAllBags()
     end
 end
 
@@ -238,7 +238,7 @@ function INVENTORY:CreateRestoreButton(f)
     bu:RegisterForClicks('AnyUp')
     bu.__owner = f
     bu:SetScript('OnClick', CloseOrRestoreBags)
-    bu.tipHeader = _G.CLOSE .. '/' .. _G.RESET
+    bu.tipHeader = CLOSE .. '/' .. RESET
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
     return bu
@@ -250,12 +250,12 @@ function INVENTORY:CreateReagentButton(f)
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
         if not IsReagentBankUnlocked() then
-            _G.StaticPopup_Show('CONFIRM_BUY_REAGENTBANK_TAB')
+            StaticPopup_Show('CONFIRM_BUY_REAGENTBANK_TAB')
         else
-            PlaySound(_G.SOUNDKIT.IG_CHARACTER_INFO_TAB)
+            PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
             BankFrame_ShowPanel('ReagentBankFrame') -- trigger context matching
-            _G.BankFrame.selectedTab = 2
-            _G.BankFrame.activeTabIndex = 2
+            BankFrame.selectedTab = 2
+            BankFrame.activeTabIndex = 2
             f.reagent:Show()
             f.bank:Hide()
             f.accountbank:Hide()
@@ -266,7 +266,7 @@ function INVENTORY:CreateReagentButton(f)
         end
     end)
 
-    bu.tipHeader = _G.REAGENT_BANK
+    bu.tipHeader = REAGENT_BANK
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
     return bu
@@ -278,19 +278,19 @@ function INVENTORY:CreateAccountBankButton(f)
     bu.Icon:SetPoint('BOTTOMRIGHT', -C.MULT, -C.MULT)
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
-        if _G.AccountBankPanel:ShouldShowLockPrompt() then
-            _G.UIErrorsFrame:AddMessage(C.INFO_COLOR .. _G.ACCOUNT_BANK_LOCKED_PROMPT)
+        if AccountBankPanel:ShouldShowLockPrompt() then
+            UIErrorsFrame:AddMessage(C.INFO_COLOR .. ACCOUNT_BANK_LOCKED_PROMPT)
         else
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
             BankFrame_ShowPanel('AccountBankPanel') -- trigger context matching
-            _G.BankFrame.selectedTab = 3
-            _G.BankFrame.activeTabIndex = 3
+            BankFrame.selectedTab = 3
+            BankFrame.activeTabIndex = 3
             f.reagent:Hide()
             f.bank:Hide()
             f.accountbank:Show()
         end
     end)
-    bu.tipHeader = _G.ACCOUNT_BANK_PANEL_TITLE
+    bu.tipHeader = ACCOUNT_BANK_PANEL_TITLE
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
     return bu
@@ -301,7 +301,7 @@ function INVENTORY:CreateAccountMoney()
     frame:SetSize(50, 22)
 
     local tag = self:SpawnPlugin('TagDisplay', '[accountmoney]', self)
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     F.SetFS(tag, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
     tag:SetPoint('RIGHT', frame, -2, 0)
     frame.tag = tag
@@ -325,10 +325,10 @@ function INVENTORY:CreateAccountMoney()
         end
     end)
     frame.tipHeader = C.MOUSE_LEFT_BUTTON
-        .. _G.BANK_DEPOSIT_MONEY_BUTTON_LABEL
+        .. BANK_DEPOSIT_MONEY_BUTTON_LABEL
         .. '|n'
         .. C.MOUSE_RIGHT_BUTTON
-        .. _G.BANK_WITHDRAW_MONEY_BUTTON_LABEL
+        .. BANK_WITHDRAW_MONEY_BUTTON_LABEL
     F.AddTooltip(frame, 'ANCHOR_TOP')
 
     return frame
@@ -338,16 +338,16 @@ function INVENTORY:CreateBankButton(f)
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagReagen)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function()
-        PlaySound(_G.SOUNDKIT.IG_CHARACTER_INFO_TAB)
+        PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
         BankFrame_ShowPanel('BankSlotsFrame') -- trigger context matching
-        _G.BankFrame.selectedTab = 1
-        _G.BankFrame.activeTabIndex = 1
+        BankFrame.selectedTab = 1
+        BankFrame.activeTabIndex = 1
         f.reagent:Hide()
         f.accountbank:Hide()
         f.bank:Show()
     end)
 
-    bu.tipHeader = _G.BANK
+    bu.tipHeader = BANK
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
     return bu
@@ -380,11 +380,12 @@ function INVENTORY:CreateDepositButton()
         end
     end)
 
-    bu.tipHeader = _G.REAGENTBANK_DEPOSIT
+    bu.tipHeader = REAGENTBANK_DEPOSIT
     F.AddTooltip(
         bu,
         'ANCHOR_TOP',
-        L['Left click to deposit reagents, right click to switch deposit mode.|nIf the button is highlight, the reagents from your bags would auto deposit once you open the bank.'],
+        L
+        ['Left click to deposit reagents, right click to switch deposit mode.|nIf the button is highlight, the reagents from your bags would auto deposit once you open the bank.'],
         'BLUE'
     )
     updateDepositButtonStatus(bu)
@@ -413,27 +414,29 @@ function INVENTORY:CreateAccountBankDeposit()
             C_Bank.AutoDepositItemsIntoBank(ACCOUNT_BANK_TYPE)
         end
     end)
-    bu.tipHeader = _G.ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
+    bu.tipHeader = ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL
     F.AddTooltip(
         bu,
         'ANCHOR_TOP',
         C.INFO_COLOR
-            .. L['Left click to deposit warband items, right click to swith deposit mode.|nIf the button border shown, the reagents from your bags would deposit into your warband bank as well.']
+        ..
+        L
+        ['Left click to deposit warband items, right click to swith deposit mode.|nIf the button border shown, the reagents from your bags would deposit into your warband bank as well.']
     )
     updateAccountBankDeposit(bu)
 
     return bu
 end
 
-local function ToggleBackpacks(self)
+local function toggleBackpacks(self)
     local parent = self.__owner
     F:TogglePanel(parent.BagBar)
     if parent.BagBar:IsShown() then
         self.Icon:SetVertexColor(C.r, C.g, C.b)
-        PlaySound(_G.SOUNDKIT.IG_BACKPACK_OPEN)
+        PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
     else
         self.Icon:SetVertexColor(unpack(iconColor))
-        PlaySound(_G.SOUNDKIT.IG_BACKPACK_CLOSE)
+        PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
     end
 end
 
@@ -441,13 +444,13 @@ function INVENTORY:CreateBagToggle(click)
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagToggle)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu.__owner = self
-    bu:SetScript('OnClick', ToggleBackpacks)
+    bu:SetScript('OnClick', toggleBackpacks)
 
-    bu.tipHeader = _G.BACKPACK_TOOLTIP
+    bu.tipHeader = BACKPACK_TOOLTIP
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
     if click then
-        ToggleBackpacks(bu)
+        toggleBackpacks(bu)
     end
 
     return bu
@@ -458,7 +461,7 @@ function INVENTORY:CreateSortButton(name)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function()
         if C.DB.Inventory.SortMode == 3 then
-            _G.UIErrorsFrame:AddMessage(C.INFO_COLOR .. L['Inventory sort disabled!'])
+            UIErrorsFrame:AddMessage(C.INFO_COLOR .. L['Inventory sort disabled!'])
             return
         end
 
@@ -473,7 +476,7 @@ function INVENTORY:CreateSortButton(name)
                 C_Container.SortBags()
             elseif C.DB.Inventory.SortMode == 2 then
                 if InCombatLockdown() then
-                    _G.UIErrorsFrame:AddMessage(C.INFO_COLOR .. _G.ERR_NOT_IN_COMBAT)
+                    UIErrorsFrame:AddMessage(C.INFO_COLOR .. ERR_NOT_IN_COMBAT)
                 else
                     C_Container.SortBags()
                     wipe(sortCache)
@@ -491,18 +494,18 @@ function INVENTORY:CreateSortButton(name)
 end
 
 local function updateRepairButtonStatus(bu)
-    if _G.ANDROMEDA_ADB['RepairType'] == 1 then
+    if ANDROMEDA_ADB['RepairType'] == 1 then
         bu.Icon:SetVertexColor(C.r, C.g, C.b)
         bu.text = L['Repair your equipment automatically when you visit an able vendor.|nPriority use of guild funds.']
-        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. _G.VIDEO_OPTIONS_ENABLED
-    elseif _G.ANDROMEDA_ADB['RepairType'] == 2 then
+        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. VIDEO_OPTIONS_ENABLED
+    elseif ANDROMEDA_ADB['RepairType'] == 2 then
         bu.Icon:SetVertexColor(C.r, C.g, C.b)
         bu.text = L['Repair your equipment automatically when you visit an able vendor.|nDo not use guild funds.']
-        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. _G.VIDEO_OPTIONS_ENABLED
+        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. VIDEO_OPTIONS_ENABLED
     else
         bu.Icon:SetVertexColor(unpack(iconColor))
         bu.text = nil
-        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. _G.VIDEO_OPTIONS_DISABLED
+        bu.title = L['Auto Repair'] .. ': ' .. C.GREEN_COLOR .. VIDEO_OPTIONS_DISABLED
     end
 end
 
@@ -510,7 +513,7 @@ function INVENTORY:CreateRepairButton()
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagRepair)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function(self)
-        _G.ANDROMEDA_ADB['RepairType'] = mod(_G.ANDROMEDA_ADB['RepairType'] + 1, 3)
+        ANDROMEDA_ADB['RepairType'] = mod(ANDROMEDA_ADB['RepairType'] + 1, 3)
         updateRepairButtonStatus(bu)
         self:GetScript('OnEnter')(self)
     end)
@@ -525,11 +528,11 @@ local function updateSellButtonStatus(bu)
     if C.DB.Inventory.AutoSellJunk then
         bu.Icon:SetVertexColor(C.r, C.g, C.b)
         bu.text = L['Sell junk items automtically when you visit an able vendor.']
-        bu.title = L['Auto Sell Junk'] .. ': ' .. C.GREEN_COLOR .. _G.VIDEO_OPTIONS_ENABLED
+        bu.title = L['Auto Sell Junk'] .. ': ' .. C.GREEN_COLOR .. VIDEO_OPTIONS_ENABLED
     else
         bu.Icon:SetVertexColor(unpack(iconColor))
         bu.text = nil
-        bu.title = L['Auto Sell Junk'] .. ': ' .. C.GREEN_COLOR .. _G.VIDEO_OPTIONS_DISABLED
+        bu.title = L['Auto Sell Junk'] .. ': ' .. C.GREEN_COLOR .. VIDEO_OPTIONS_DISABLED
     end
 end
 
@@ -556,9 +559,9 @@ local smartFilter = {
         elseif text == 'aoe' then
             return item.bindOn == 'accountequip'
         else
-            return IsItemMatched(item.subType, text)
-                or IsItemMatched(item.equipLoc, text)
-                or IsItemMatched(item.name, text)
+            return isItemMatched(item.subType, text)
+                or isItemMatched(item.equipLoc, text)
+                or isItemMatched(item.name, text)
         end
     end,
     _default = 'default',
@@ -581,7 +584,8 @@ function INVENTORY:CreateSearchButton()
     F.AddTooltip(
         searchBar,
         'ANCHOR_TOP',
-        L["You can type in item names or item equip locations.|n'boe' for items that bind on equip, 'aoe' for items that warbound until equipped and 'quest' for quest items.nPress key ESC to clear editbox."],
+        L
+        ["You can type in item names or item equip locations.|n'boe' for items that bind on equip, 'aoe' for items that warbound until equipped and 'quest' for quest items.nPress key ESC to clear editbox."],
         'BLUE'
     )
 
@@ -682,8 +686,12 @@ function INVENTORY:CreateFreeSlots()
     slot.__name = name
 
     local tag = self:SpawnPlugin('TagDisplay', '[space]', slot)
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    F.SetFS(tag, C.Assets.Fonts.Bold, 11, outline or nil, '', 'CLASS', outline and 'NONE' or 'THICK')
+    local outline = ANDROMEDA_ADB.FontOutline
+    F.SetFS(
+        tag,
+        C.Assets.Fonts.Bold, 11, outline or nil,
+        '', 'CLASS', outline and 'NONE' or 'THICK'
+    )
     tag:SetPoint('BOTTOMRIGHT', -2, 2)
     tag.__name = name
     slot.tag = tag
@@ -703,7 +711,7 @@ end
 local favouriteEnable
 
 function INVENTORY.GetCustomGroupTitle(index)
-    return C.DB['Inventory']['CustomNamesList'][index] or (_G.PREFERENCES .. ' ' .. index)
+    return C.DB['Inventory']['CustomNamesList'][index] or (PREFERENCES .. ' ' .. index)
 end
 
 function INVENTORY:RenameCustomGroup(index)
@@ -742,7 +750,7 @@ local menuList = {
         tCoordBottom = 0.92,
     },
     {
-        text = _G.NONE,
+        text = NONE,
         arg1 = 0,
         func = INVENTORY.MoveItemToCustomBag,
         checked = INVENTORY.IsItemInCustomBag,
@@ -757,13 +765,18 @@ function INVENTORY:CreateFavouriteButton()
             func = INVENTORY.MoveItemToCustomBag,
             checked = INVENTORY.IsItemInCustomBag,
             hasArrow = true,
-            menuList = { { text = _G.BATTLE_PET_RENAME, arg1 = i, func = INVENTORY.RenameCustomGroup } },
+            menuList = {
+                {
+                    text = BATTLE_PET_RENAME,
+                    arg1 = i,
+                    func = INVENTORY.RenameCustomGroup,
+                },
+            },
         })
     end
     INVENTORY.CustomMenu = menuList
 
-    local enabledText =
-        L["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
+    local enabledText = L["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagFavourite)
     bu.Icon:SetVertexColor(unpack(iconColor))
@@ -817,8 +830,7 @@ end
 
 local customJunkEnable
 function INVENTORY:CreateCustomJunkButton()
-    local enabledText =
-        L["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
+    local enabledText = L["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagJunk)
     bu.Icon:SetVertexColor(unpack(iconColor))
@@ -829,7 +841,7 @@ function INVENTORY:CreateCustomJunkButton()
     end
     bu:SetScript('OnClick', function(self)
         if IsAltKeyDown() and IsControlKeyDown() then
-            _G.StaticPopup_Show('ANDROMEDA_INVENTORY_RESET_JUNK_LIST')
+            StaticPopup_Show('ANDROMEDA_INVENTORY_RESET_JUNK_LIST')
             return
         end
 
@@ -865,10 +877,10 @@ local function customJunkOnClick(self)
 
     local price = select(11, C_Item.GetItemInfo(itemID))
     if texture and price > 0 then
-        if _G.ANDROMEDA_ADB['CustomJunkList'][itemID] then
-            _G.ANDROMEDA_ADB['CustomJunkList'][itemID] = nil
+        if ANDROMEDA_ADB['CustomJunkList'][itemID] then
+            ANDROMEDA_ADB['CustomJunkList'][itemID] = nil
         else
-            _G.ANDROMEDA_ADB['CustomJunkList'][itemID] = true
+            ANDROMEDA_ADB['CustomJunkList'][itemID] = true
         end
         ClearCursor()
         INVENTORY:UpdateAllBags()
@@ -891,11 +903,11 @@ function INVENTORY:UpdateAllBags()
 end
 
 function INVENTORY:OpenBags()
-    _G.OpenAllBags(true)
+    OpenAllBags(true)
 end
 
 function INVENTORY:CloseBags()
-    _G.CloseAllBags()
+    CloseAllBags()
 end
 
 function INVENTORY:OnLogin()
@@ -914,17 +926,17 @@ function INVENTORY:OnLogin()
     local Backpack = cargBags:NewImplementation(C.ADDON_TITLE .. 'Backpack')
     Backpack:RegisterBlizzard()
     Backpack:HookScript('OnShow', function()
-        PlaySound(_G.SOUNDKIT.IG_BACKPACK_OPEN)
+        PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
     end)
     Backpack:HookScript('OnHide', function()
-        PlaySound(_G.SOUNDKIT.IG_BACKPACK_CLOSE)
+        PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
     end)
 
     INVENTORY.Bags = Backpack
     INVENTORY.BagsType = {}
-    INVENTORY.BagsType[0] = 0 -- backpack
-    INVENTORY.BagsType[-1] = 0 -- bank
-    INVENTORY.BagsType[-3] = 0 -- reagent
+    INVENTORY.BagsType[0] = 0         -- backpack
+    INVENTORY.BagsType[-1] = 0        -- bank
+    INVENTORY.BagsType[-3] = 0        -- reagent
     for bagID = 13, 17 do
         INVENTORY.BagsType[bagID] = 0 -- accountbank
     end
@@ -1004,7 +1016,7 @@ function INVENTORY:OnLogin()
 
     local initBagType
     function Backpack:OnBankOpened()
-        _G.BankFrame:Show()
+        BankFrame:Show()
         self:GetContainer('Bank'):Show()
 
         if not initBagType then
@@ -1015,8 +1027,8 @@ function INVENTORY:OnLogin()
     end
 
     function Backpack:OnBankClosed()
-        _G.BankFrame.selectedTab = 1
-        _G.BankFrame.activeTabIndex = 1
+        BankFrame.selectedTab = 1
+        BankFrame.activeTabIndex = 1
         self:GetContainer('Bank'):Hide()
         self:GetContainer('Reagent'):Hide()
         self:GetContainer('AccountBank'):Hide()
@@ -1035,7 +1047,7 @@ function INVENTORY:OnLogin()
 
         self.Icon:SetInside()
         self.Icon:SetTexCoord(unpack(C.TEX_COORD))
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         F.SetFS(
             self.Count,
             C.Assets.Fonts.Bold,
@@ -1129,7 +1141,7 @@ function INVENTORY:OnLogin()
         if hasCanIMogIt then
             self.canIMogIt = parentFrame:CreateTexture(nil, 'OVERLAY')
             self.canIMogIt:SetSize(13, 13)
-            self.canIMogIt:SetPoint(unpack(_G.CanIMogIt.ICON_LOCATIONS[_G.CanIMogItOptions['iconLocation']]))
+            self.canIMogIt:SetPoint(unpack(_G['CanIMogIt'].ICON_LOCATIONS[_G['CanIMogItOptions']['iconLocation']]))
         end
 
         if not self.ProfessionQualityOverlay then
@@ -1173,9 +1185,9 @@ function INVENTORY:OnLogin()
             return
         end
 
-        local text, unmodifiedText = _G.CanIMogIt:GetTooltipText(nil, item.bagId, item.slotId)
+        local text, unmodifiedText = _G['CanIMogIt']:GetTooltipText(nil, item.bagId, item.slotId)
         if text and text ~= '' then
-            local icon = _G.CanIMogIt.tooltipOverlayIcons[unmodifiedText]
+            local icon = _G['CanIMogIt']['tooltipOverlayIcons'][unmodifiedText]
             self.canIMogIt:SetTexture(icon)
             self.canIMogIt:Show()
         else
@@ -1187,19 +1199,19 @@ function INVENTORY:OnLogin()
         if not hasPawn then
             return
         end
-        if not _G.PawnIsContainerItemAnUpgrade then
+        if not _G['PawnIsContainerItemAnUpgrade'] then
             return
         end
         if self.UpgradeIcon then
-            self.UpgradeIcon:SetShown(_G.PawnIsContainerItemAnUpgrade(item.bagId, item.slotId))
+            self.UpgradeIcon:SetShown(_G['PawnIsContainerItemAnUpgrade'](item.bagId, item.slotId))
         end
     end
 
     function MyButton:OnUpdateButton(item)
         if self.JunkIcon then
             if
-                (_G.MerchantFrame:IsShown() or customJunkEnable)
-                and (item.quality == Enum.ItemQuality.Poor or _G.ANDROMEDA_ADB['CustomJunkList'][item.id])
+                (MerchantFrame:IsShown() or customJunkEnable)
+                and (item.quality == Enum.ItemQuality.Poor or ANDROMEDA_ADB['CustomJunkList'][item.id])
                 and item.hasPrice
             then
                 self.JunkIcon:Show()
@@ -1389,23 +1401,23 @@ function INVENTORY:OnLogin()
         if strmatch(name, 'AzeriteItem$') then
             label = L['Azerite armor']
         elseif strmatch(name, 'Equipment$') then
-            label = _G.BAG_FILTER_EQUIPMENT
+            label = BAG_FILTER_EQUIPMENT
         elseif strmatch(name, 'EquipSet$') then
             label = L['Equipement Set']
         elseif name == 'BankLegendary' then
-            label = _G.LOOT_JOURNAL_LEGENDARIES
+            label = LOOT_JOURNAL_LEGENDARIES
         elseif strmatch(name, 'Consumable$') then
-            label = _G.BAG_FILTER_CONSUMABLES
+            label = BAG_FILTER_CONSUMABLES
         elseif name == 'Junk' then
-            label = _G.BAG_FILTER_JUNK
+            label = BAG_FILTER_JUNK
         elseif strmatch(name, 'Collection') then
-            label = _G.COLLECTIONS
+            label = COLLECTIONS
         elseif strmatch(name, 'Goods') then
-            label = _G.AUCTION_CATEGORY_TRADE_GOODS
+            label = AUCTION_CATEGORY_TRADE_GOODS
         elseif strmatch(name, 'Quest') then
-            label = _G.QUESTS_LABEL
+            label = QUESTS_LABEL
         elseif strmatch(name, 'Anima') then
-            label = _G.POWER_TYPE_ANIMA
+            label = POWER_TYPE_ANIMA
         elseif name == 'BagRelic' then
             label = L['Korthia Relics']
         elseif strmatch(name, 'Custom%d') then
@@ -1415,10 +1427,10 @@ function INVENTORY:OnLogin()
         elseif name == 'BagStone' then
             label = C_Spell.GetSpellName(404861)
         elseif strmatch(name, 'AOE') then
-            label = _G.ITEM_ACCOUNTBOUND_UNTIL_EQUIP
+            label = ITEM_ACCOUNTBOUND_UNTIL_EQUIP
         end
 
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         if label then
             self.label = F.CreateFS(
                 self,
@@ -1559,8 +1571,8 @@ function INVENTORY:OnLogin()
     C_Container.SetInsertItemsLeftToRight(false)
 
     -- Init
-    _G.ToggleAllBags()
-    _G.ToggleAllBags()
+    ToggleAllBags()
+    ToggleAllBags()
     INVENTORY.initComplete = true
 
     F:RegisterEvent('TRADE_SHOW', INVENTORY.OpenBags)
@@ -1568,21 +1580,21 @@ function INVENTORY:OnLogin()
     F:RegisterEvent('BANKFRAME_OPENED', INVENTORY.AutoDeposit)
 
     -- Fixes
-    _G.BankFrame.GetRight = function()
+    BankFrame.GetRight = function()
         return f.bank:GetRight()
     end
-    _G.BankFrameItemButton_Update = nop
+    BankFrameItemButton_Update = nop
 
     -- Get rid of blizz annoying tutorial
     local passedSystems = {
         ['TutorialReagentBag'] = true,
     }
-    hooksecurefunc(_G.HelpTip, 'Show', function(self, _, info)
+    hooksecurefunc(HelpTip, 'Show', function(self, _, info)
         if info and passedSystems[info.system] then
             self:HideAllSystem(info.system)
         end
     end)
-    SetCVarBitfield('closedInfoFrames', _G.LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true)
+    SetCVarBitfield('closedInfoFrames', LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true)
     SetCVar('professionToolSlotsExampleShown', 1)
     SetCVar('professionAccessorySlotsExampleShown', 1)
 
@@ -1591,7 +1603,7 @@ function INVENTORY:OnLogin()
         if IsShiftKeyDown() then
             self.elapsed = (self.elapsed or 0) + elapsed
             if self.elapsed > 5 then
-                _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Your SHIFT key may be stuck.'])
+                UIErrorsFrame:AddMessage(C.RED_COLOR .. L['Your SHIFT key may be stuck.'])
                 self.elapsed = 0
             end
         end
