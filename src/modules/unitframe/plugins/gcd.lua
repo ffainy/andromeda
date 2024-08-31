@@ -3,23 +3,25 @@ local oUF = F.Libs.oUF
 
 local function Update(self)
     local spark = self.spark
-    local cooldownInfo = C_Spell.GetSpellCooldown(61304)
-    local start = cooldownInfo and cooldownInfo.startTime
-    local duration = cooldownInfo and cooldownInfo.duration
-    if start > 0 and duration and duration > 0 then
+    if (not spark) then return end
+
+    local cdInfo = C_Spell.GetSpellCooldown(61304)
+    local start = cdInfo.startTime
+    if (not start) then return end
+
+    local duration = cdInfo.duration
+    if (not duration) then duration = 0 end
+
+    if start > 0 and duration > 0 then
         if self.duration ~= duration then
             self:SetMinMaxValues(0, duration)
             self.duration = duration
         end
         self:SetValue(GetTime() - start)
 
-        if spark then
-            self.spark:Show()
-        end
+        spark:Show()
     else
-        if spark then
-            self.spark:Hide()
-        end
+        spark:Hide()
     end
 end
 
