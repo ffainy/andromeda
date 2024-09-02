@@ -256,7 +256,7 @@ function INFOBAR:OnLogin()
 
     INFOBAR:CreateGuildBlock()
     INFOBAR:CreateFriendsBlock()
-    INFOBAR:CreateProgressBlock()
+    INFOBAR:CreateChoreBlock()
 
     for _, block in pairs(INFOBAR.Modules) do
         INFOBAR:LoadInfobar(block)

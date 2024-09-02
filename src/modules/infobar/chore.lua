@@ -553,8 +553,8 @@ local function onLeave(self)
     F:UnregisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
-function INFOBAR:CreateProgressBlock()
-    if not C.DB.Infobar.Progress then
+function INFOBAR:CreateChoreBlock()
+    if not C.DB.Infobar.Chore then
         return
     end
 

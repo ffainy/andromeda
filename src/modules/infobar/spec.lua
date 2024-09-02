@@ -15,7 +15,7 @@ local function selectSpec(_, specIndex)
         return
     end
     SetSpecialization(specIndex)
-    _G.DropDownList1:Hide()
+    DropDownList1:Hide()
 end
 
 local function checkSpec(self)
@@ -24,7 +24,7 @@ end
 
 local function selectLootSpec(_, index)
     SetLootSpecialization(index)
-    _G.DropDownList1:Hide()
+    DropDownList1:Hide()
 end
 
 local function checkLootSpec(self)
@@ -37,16 +37,16 @@ local function refreshDefaultLootSpec()
     end
     local mult = 3 + numSpecs
     newMenu[numLocal - mult].text =
-        format(_G.LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or _G.NONE)
+        format(LOOT_SPECIALIZATION_DEFAULT, (select(2, GetSpecializationInfo(currentSpecIndex))) or NONE)
 end
 
 local function selectCurrentConfig(_, configID, specID)
     if InCombatLockdown() then
-        _G.UIErrorsFrame:AddMessage(C.INFO_COLOR .. _G.ERR_NOT_IN_COMBAT)
+        UIErrorsFrame:AddMessage(C.INFO_COLOR .. ERR_NOT_IN_COMBAT)
         return
     end
 
-    if configID == _G.Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
+    if configID == Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID then
         C_ClassTalents.SetStarterBuildActive(true)
     else
         C_ClassTalents.LoadConfig(configID, true)
@@ -112,10 +112,10 @@ local function BuildSpecMenu()
     end
 
     newMenu = {
-        { text = _G.SPECIALIZATION, isTitle = true, notCheckable = true },
+        { text = SPECIALIZATION,             isTitle = true, notCheckable = true },
         seperatorMenu,
-        { text = _G.SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true },
-        { text = '', arg1 = 0, func = selectLootSpec, checked = checkLootSpec },
+        { text = SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true },
+        { text = '',                         arg1 = 0,       func = selectLootSpec, checked = checkLootSpec },
     }
 
     for i = 1, 4 do
@@ -130,9 +130,9 @@ local function BuildSpecMenu()
     tinsert(newMenu, seperatorMenu)
     tinsert(newMenu, { text = C_Spell.GetSpellName(384255), isTitle = true, notCheckable = true })
     tinsert(newMenu, {
-        text = _G.BLUE_FONT_COLOR:WrapTextInColorCode(_G.TALENT_FRAME_DROP_DOWN_STARTER_BUILD),
+        text = BLUE_FONT_COLOR:WrapTextInColorCode(TALENT_FRAME_DROP_DOWN_STARTER_BUILD),
         func = selectCurrentConfig,
-        arg1 = _G.Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID,
+        arg1 = Constants.TraitConsts.STARTER_BUILD_TRAIT_CONFIG_ID,
         checked = function()
             return C_ClassTalents.GetStarterBuildActive()
         end,
@@ -169,6 +169,7 @@ local function Block_OnEvent(self)
     currentSpecIndex = GetSpecialization()
     currentLootIndex = GetLootSpecialization()
 
+    local myClass = C.MY_CLASS_COLOR
     if currentSpecIndex and currentSpecIndex < 5 then
         local _, name = GetSpecializationInfo(currentSpecIndex)
 
@@ -180,7 +181,7 @@ local function Block_OnEvent(self)
         if not lootname or name == lootname then
             self.text:SetText(
                 format(
-                    L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s',
+                    L['Spec'] .. ': ' .. myClass .. '%s  |r' .. L['Loot'] .. ':' .. myClass .. ' %s',
                     name,
                     name
                 )
@@ -188,14 +189,14 @@ local function Block_OnEvent(self)
         else
             self.text:SetText(
                 format(
-                    L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r' .. L['Loot'] .. ':' .. C.MY_CLASS_COLOR .. ' %s',
+                    L['Spec'] .. ': ' .. myClass .. '%s  |r' .. L['Loot'] .. ':' .. myClass .. ' %s',
                     name,
                     lootname
                 )
             )
         end
     else
-        self.text:SetText(format(L['Spec'] .. ': ' .. C.MY_CLASS_COLOR .. '%s  |r', _G.NONE))
+        self.text:SetText(format(L['Spec'] .. ': ' .. myClass .. '%s  |r', NONE))
     end
 end
 
@@ -207,13 +208,13 @@ local function Block_OnEnter(self)
     local anchorTop = C.DB.Infobar.AnchorTop
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
-    GameTooltip:AddLine(_G.TALENTS_BUTTON, 0.9, 0.8, 0.6)
+    GameTooltip:AddLine(TALENTS_BUTTON, 0.9, 0.8, 0.6)
     GameTooltip:AddLine(' ')
 
     local specID, specName, _, specIcon = GetSpecializationInfo(currentSpecIndex)
     GameTooltip:AddLine(addIcon(specIcon) .. ' ' .. specName, 0.6, 0.8, 1)
 
-    for t = 1, _G.MAX_TALENT_TIERS do
+    for t = 1, MAX_TALENT_TIERS do
         for c = 1, 3 do
             local _, name, icon, selected = GetTalentInfo(t, c, 1)
             if selected then
@@ -232,7 +233,7 @@ local function Block_OnEnter(self)
         pvpTalents = C_SpecializationInfo.GetAllSelectedPvpTalentIDs()
         if #pvpTalents > 0 then
             GameTooltip:AddLine(' ')
-            GameTooltip:AddLine(addIcon(pvpIconTexture) .. ' ' .. _G.PVP_TALENTS, 0.6, 0.8, 1)
+            GameTooltip:AddLine(addIcon(pvpIconTexture) .. ' ' .. PVP_TALENTS, 0.6, 0.8, 1)
             for _, talentID in next, pvpTalents do
                 local _, name, icon, _, _, _, unlocked = GetPvpTalentInfoByID(talentID)
                 if name and unlocked then
@@ -246,17 +247,17 @@ local function Block_OnEnter(self)
 
     GameTooltip:AddLine(' ')
     GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Talent Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:AddDoubleLine(
+        ' ',
+        C.MOUSE_LEFT_BUTTON .. L['Toggle Talent Panel'] .. ' ',
+        1, 1, 1, 0.9, 0.8, 0.6
+    )
     GameTooltip:AddDoubleLine(
         ' ',
         C.MOUSE_RIGHT_BUTTON .. L['Change Specialization & Loot'] .. ' ',
-        1,
-        1,
-        1,
-        0.9,
-        0.8,
-        0.6
+        1, 1, 1, 0.9, 0.8, 0.6
     )
+
     GameTooltip:Show()
 end
 
@@ -274,5 +275,9 @@ function INFOBAR:CreateSpecBlock()
     spec.onEnter = Block_OnEnter
     spec.onLeave = Block_OnLeave
     spec.onMouseUp = Block_OnMouseUp
-    spec.eventList = { 'PLAYER_ENTERING_WORLD', 'ACTIVE_TALENT_GROUP_CHANGED', 'PLAYER_LOOT_SPEC_UPDATED' }
+    spec.eventList = {
+        'PLAYER_ENTERING_WORLD',
+        'ACTIVE_TALENT_GROUP_CHANGED',
+        'PLAYER_LOOT_SPEC_UPDATED',
+    }
 end
