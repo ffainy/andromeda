@@ -213,7 +213,7 @@ function INFOBAR:FriendsPanel_Init()
     )
 
     local scrollFrame = CreateFrame(
-        'ScrollFrame', C.ADDON_TITLE .. 'FriendsInfobarScrollFrame', infoFrame, 'HybridScrollFrameTemplate'
+        'ScrollFrame', C.ADDON_TITLE .. 'InfobarFriendsScrollFrame', infoFrame, 'HybridScrollFrameTemplate'
     )
     scrollFrame:SetSize(370, 400)
     scrollFrame:SetPoint('TOPLEFT', 10, -35)
@@ -248,18 +248,18 @@ function INFOBAR:FriendsPanel_Init()
         C.LINE_STRING, nil, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -12, 42 }
     )
-    local whspInfo = C.INFO_COLOR .. C.MOUSE_RIGHT_BUTTON .. L['Whisper']
+    local whspInfo = C.MOUSE_RIGHT_BUTTON .. L['Whisper']
     F.CreateFS(
         infoFrame,
         C.Assets.Fonts.Regular, 13, outline or nil,
-        whspInfo, nil, outline and 'NONE' or 'THICK',
+        whspInfo, {0.9, 0.8, 0.6}, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -15, 26 }
     )
-    local invtInfo = C.INFO_COLOR .. 'ALT +' .. C.MOUSE_LEFT_BUTTON .. L['Invite']
+    local invtInfo = 'ALT +' .. C.MOUSE_LEFT_BUTTON .. L['Invite']
     F.CreateFS(
         infoFrame,
         C.Assets.Fonts.Regular, 13, outline or nil,
-        invtInfo, nil, outline and 'NONE' or 'THICK',
+        invtInfo, {0.9, 0.8, 0.6}, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -15, 10 }
     )
 end
@@ -564,7 +564,7 @@ function INFOBAR:FriendsPanel_UpdateButton(button)
 end
 
 function INFOBAR:FriendsPanel_Update()
-    local scrollFrame = _G[C.ADDON_TITLE .. 'FriendsInfobarScrollFrame']
+    local scrollFrame = _G[C.ADDON_TITLE .. 'InfobarFriendsScrollFrame']
     local usedHeight = 0
     local buttons = scrollFrame.buttons
     local height = scrollFrame.buttonHeight
@@ -677,9 +677,10 @@ local function blockOnEnter(self)
         updateRequest = true
     end
 
-    -- if GuildInfobar and GuildInfobar:IsShown() then -- #TODO
-    --     GuildInfobar:Hide()
-    -- end
+    local guildFrame = _G[C.ADDON_TITLE .. 'InfoBarGuildFrame']
+    if guildFrame and guildFrame:IsShown() then
+        guildFrame:Hide()
+    end
 
     INFOBAR:FriendsPanel_Init()
     INFOBAR:FriendsPanel_Update()
