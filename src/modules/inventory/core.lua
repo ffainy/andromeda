@@ -1310,6 +1310,7 @@ function INVENTORY:OnLogin()
             self:SetBackdropColor(0, 0, 0, 0.25)
         end
 
+        self.BindType:SetText('')
         if C.DB.Inventory.BindType and isItemExist(item) then
             local itemLink = C_Container.GetContainerItemLink(item.bagId, item.slotId)
             if not itemLink then
@@ -1327,8 +1328,6 @@ function INVENTORY:OnLogin()
             elseif bt == '4' then
                 self.BindType:SetText('|cff1eff00BoU|r')
             end
-        else
-            self.BindType:SetText('')
         end
 
         -- Hide empty tooltip
