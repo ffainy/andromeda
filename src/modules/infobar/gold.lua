@@ -16,16 +16,16 @@ end
 
 StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
     text = C.RED_COLOR .. L['Reset All Gold Statistics?'],
-    button1 = _G.YES,
-    button2 = _G.NO,
+    button1 = YES,
+    button2 = NO,
     OnAccept = function()
         for _, realm in pairs(crossRealms) do
-            if _G.ANDROMEDA_ADB['GoldStatistic'][realm] then
-                wipe(_G.ANDROMEDA_ADB['GoldStatistic'][realm])
+            if ANDROMEDA_ADB['GoldStatistic'][realm] then
+                wipe(ANDROMEDA_ADB['GoldStatistic'][realm])
             end
         end
 
-        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = { GetMoney(), myClass }
+        ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = { GetMoney(), myClass }
     end,
     timeout = 0,
     whileDead = 1,
@@ -33,7 +33,7 @@ StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
 
 local menuList = {
     {
-        text = F:RgbToHex(1, 0.8, 0) .. _G.REMOVE_WORLD_MARKERS .. '!!!',
+        text = F:RgbToHex(1, 0.8, 0) .. REMOVE_WORLD_MARKERS .. '!!!',
         notCheckable = true,
         func = function()
             StaticPopup_Show('ANDROMEDA_RESET_ALL_GOLD_STATISTICS')
@@ -42,7 +42,7 @@ local menuList = {
 }
 
 local function getClassIcon(class)
-    local c1, c2, c3, c4 = unpack(_G.CLASS_ICON_TCOORDS[class])
+    local c1, c2, c3, c4 = unpack(CLASS_ICON_TCOORDS[class])
     c1, c2, c3, c4 = (c1 + 0.03) * 50, (c2 - 0.03) * 50, (c3 + 0.03) * 50, (c4 - 0.03) * 50
     local prefix = '|TInterface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes:13:15:0:-1:50:50:'
     local classStr = prefix .. c1 .. ':' .. c2 .. ':' .. c3 .. ':' .. c4 .. '|t '
@@ -52,8 +52,8 @@ end
 local rebuildCharList
 
 local function clearCharGold(_, realm, name)
-    _G.ANDROMEDA_ADB['GoldStatistic'][realm][name] = nil
-    _G.DropDownList1:Hide()
+    ANDROMEDA_ADB['GoldStatistic'][realm][name] = nil
+    DropDownList1:Hide()
     rebuildCharList()
 end
 
@@ -66,8 +66,8 @@ function rebuildCharList()
 
     local index = 1
     for _, realm in pairs(crossRealms) do
-        if _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] then
-            for name, value in pairs(_G.ANDROMEDA_ADB['GoldStatistic'][myRealm]) do
+        if ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+            for name, value in pairs(ANDROMEDA_ADB['GoldStatistic'][myRealm]) do
                 if not (realm == myRealm and name == myRealm) then
                     index = index + 1
                     if not menuList[index] then
@@ -106,24 +106,24 @@ local function onEvent(self, event)
 
     self.text:SetText(formatMoney(newMoney))
 
-    if not _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] then
-        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm] = {}
+    if not ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+        ANDROMEDA_ADB['GoldStatistic'][myRealm] = {}
     end
-    if not _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] then
-        _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = {}
+    if not ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] then
+        ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = {}
     end
-    _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][1] = GetMoney()
-    _G.ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][2] = myClass
+    ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][1] = GetMoney()
+    ANDROMEDA_ADB['GoldStatistic'][myRealm][myName][2] = myClass
 
     oldMoney = newMoney
 end
 
 local function onMouseUp(self, btn)
     if btn == 'LeftButton' then
-        if not _G.StoreFrame then
-            LoadAddOn('Blizzard_StoreUI')
+        if not StoreFrame then
+            C_AddOns.LoadAddOn('Blizzard_StoreUI')
         end
-        securecall(_G.ToggleStoreUI)
+        securecall(ToggleStoreUI)
     elseif btn == 'RightButton' then
         if not menuList[1].created then
             rebuildCharList()
@@ -137,7 +137,7 @@ local function onEnter(self)
     local anchorTop = C.DB.Infobar.AnchorTop
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
-    GameTooltip:AddLine(_G.WORLD_QUEST_REWARD_FILTERS_GOLD, 0.9, 0.8, 0.6)
+    GameTooltip:AddLine(WORLD_QUEST_REWARD_FILTERS_GOLD, 0.9, 0.8, 0.6)
     GameTooltip:AddLine(' ')
 
     GameTooltip:AddLine(L['Session'], 0.6, 0.8, 1)
@@ -151,10 +151,10 @@ local function onEnter(self)
     GameTooltip:AddLine(' ')
 
     local totalGold = 0
-    GameTooltip:AddLine(_G.CHARACTER, 0.6, 0.8, 1)
+    GameTooltip:AddLine(CHARACTER, 0.6, 0.8, 1)
 
     for _, realm in pairs(crossRealms) do
-        local thisRealmList = _G.ANDROMEDA_ADB['GoldStatistic'][realm]
+        local thisRealmList = ANDROMEDA_ADB['GoldStatistic'][realm]
         if thisRealmList then
             for k, v in pairs(thisRealmList) do
                 local name = Ambiguate(k .. '-' .. realm, 'none')
@@ -170,7 +170,7 @@ local function onEnter(self)
     local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
     if accountmoney > 0 then
         GameTooltip:AddDoubleLine(
-            _G.ACCOUNT_BANK_PANEL_TITLE .. ':',
+            ACCOUNT_BANK_PANEL_TITLE .. ':',
             GetMoneyString(accountmoney),
             0.6,
             0.8,
@@ -180,13 +180,13 @@ local function onEnter(self)
             1
         )
     end
-    GameTooltip:AddDoubleLine(_G.TOTAL .. ':', GetMoneyString(totalGold + accountmoney), 0.6, 0.8, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(TOTAL .. ':', GetMoneyString(totalGold + accountmoney), 0.6, 0.8, 1, 1, 1, 1)
 
     GameTooltip:AddLine(' ')
-    GameTooltip:AddLine(_G.ITEM_QUALITY8_DESC, 0.6, 0.8, 1)
+    GameTooltip:AddLine(ITEM_QUALITY8_DESC, 0.6, 0.8, 1)
 
     local tokenPrice = C_WowTokenPublic.GetCurrentMarketPrice() or 0
-    GameTooltip:AddDoubleLine(_G.AUCTION_HOUSE_BROWSE_HEADER_PRICE, GetMoneyString(tokenPrice, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(AUCTION_HOUSE_BROWSE_HEADER_PRICE, GetMoneyString(tokenPrice, true), 1, 1, 1, 1, 1, 1)
 
     GameTooltip:AddLine(' ')
     GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
