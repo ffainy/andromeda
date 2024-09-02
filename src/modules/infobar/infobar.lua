@@ -79,6 +79,8 @@ local function block_OnLeave(block)
 end
 
 local function block_OnEvent(block, ...)
+    if not block.isActive then return end
+
     block:onEvent(...)
 end
 
@@ -112,20 +114,26 @@ function INFOBAR:RegisterNewBlock(name, position, width, noFade)
     block:SetBackdropColor(0, 0, 0, 0)
     block:SetBackdropBorderColor(0, 0, 0, 0)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    block.text = F.CreateFS(block, C.Assets.Fonts.Condensed, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'CENTER', 0, 0)
+    local outline = ANDROMEDA_ADB.FontOutline
+    block.text = F.CreateFS(
+        block,
+        C.Assets.Fonts.Condensed, 11, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK',
+        { 'CENTER', 0, 0 }
+    )
     block.position = position
 
     if C.DB.Infobar.Mouseover and not noFade then
         block:SetAlpha(0)
     end
 
-    block:SetScript('OnEnter', block_OnEnter)
-    block:SetScript('OnLeave', block_OnLeave)
+    block:HookScript('OnEnter', block_OnEnter)
+    block:HookScript('OnLeave', block_OnLeave)
 
     if noFade then
         block.noFade = true
     end
+    block.isActive = true
 
     INFOBAR.Modules[strlower(name)] = block
 
@@ -152,7 +160,7 @@ function INFOBAR:CreateInfoBar()
     bar:SetScript('OnEnter', bar_OnEnter)
     bar:SetScript('OnLeave', bar_OnLeave)
 
-    _G.RegisterStateDriver(bar, 'visibility', '[petbattle] hide; show')
+    RegisterStateDriver(bar, 'visibility', '[petbattle] hide; show')
 
     INFOBAR.Bar = bar
 
@@ -160,7 +168,13 @@ function INFOBAR:CreateInfoBar()
     bar.bg:SetOutside(bar, 2, 2)
     bar.bg:SetFrameStrata('BACKGROUND')
     bar.bg:SetFrameLevel(1) -- Make sure the frame level is higher than the vignetting
-    bar.bg:SetBackdrop({ bgFile = C.Assets.Textures.Backdrop, edgeFile = C.Assets.Textures.Backdrop, edgeSize = 1 })
+    bar.bg:SetBackdrop(
+        {
+            bgFile = C.Assets.Textures.Backdrop,
+            edgeFile = C.Assets.Textures.Backdrop,
+            edgeSize = 1,
+        }
+    )
     bar.bg:SetBackdropColor(0, 0, 0, mouseover and 0.25 or 0.65)
     bar.bg:SetBackdropBorderColor(0, 0, 0)
 
@@ -198,7 +212,7 @@ function INFOBAR:LoadInfobar(block)
     end
 end
 
-local function UpdateCombatPulse(event)
+local function updateCombatPulse(event)
     local bar = INFOBAR.Bar
     if event == 'PLAYER_REGEN_DISABLED' then
         bar.bg:SetBackdropBorderColor(C.r, C.g, C.b)
@@ -216,13 +230,13 @@ end
 
 function INFOBAR:CreateCombatPulse()
     if C.DB.Infobar.CombatPulse then
-        F:RegisterEvent('PLAYER_REGEN_ENABLED', UpdateCombatPulse)
-        F:RegisterEvent('PLAYER_REGEN_DISABLED', UpdateCombatPulse)
-        F:RegisterEvent('CALENDAR_UPDATE_PENDING_INVITES', UpdateCombatPulse)
+        F:RegisterEvent('PLAYER_REGEN_ENABLED', updateCombatPulse)
+        F:RegisterEvent('PLAYER_REGEN_DISABLED', updateCombatPulse)
+        F:RegisterEvent('CALENDAR_UPDATE_PENDING_INVITES', updateCombatPulse)
     else
-        F:UnregisterEvent('PLAYER_REGEN_ENABLED', UpdateCombatPulse)
-        F:UnregisterEvent('PLAYER_REGEN_DISABLED', UpdateCombatPulse)
-        F:UnregisterEvent('CALENDAR_UPDATE_PENDING_INVITES', UpdateCombatPulse)
+        F:UnregisterEvent('PLAYER_REGEN_ENABLED', updateCombatPulse)
+        F:UnregisterEvent('PLAYER_REGEN_DISABLED', updateCombatPulse)
+        F:UnregisterEvent('CALENDAR_UPDATE_PENDING_INVITES', updateCombatPulse)
     end
 end
 
@@ -242,7 +256,7 @@ function INFOBAR:OnLogin()
 
     INFOBAR:CreateGuildBlock()
     INFOBAR:CreateFriendsBlock()
-    INFOBAR:CreateDailyBlock()
+    INFOBAR:CreateProgressBlock()
 
     for _, block in pairs(INFOBAR.Modules) do
         INFOBAR:LoadInfobar(block)
