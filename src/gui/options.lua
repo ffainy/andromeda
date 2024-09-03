@@ -842,7 +842,7 @@ GUI.OptionsList = {
         {
             1,
             'Infobar',
-            'Stats',
+            'System',
             L['System Stats'],
             nil,
             nil,
@@ -852,7 +852,7 @@ GUI.OptionsList = {
         {
             1,
             'Infobar',
-            'Report',
+            'Chore',
             L['Daily/Weekly'],
             true,
             nil,
@@ -873,7 +873,7 @@ GUI.OptionsList = {
         {
             1,
             'Infobar',
-            'Currencies',
+            'Currency',
             L['Currencies'],
             true,
         },
