@@ -8,11 +8,10 @@ local onRangeObjects, onRangeFrame = {}
 local PowerTypesFull = { MANA = true, FOCUS = true, ENERGY = true }
 local VIGOR_BAR_ID = 631 -- this is the oval & diamond variant
 
-local GetMouseFocus = GetMouseFocus
-    or function()
-        local frames = _G.GetMouseFoci()
-        return frames and frames[1]
-    end
+local GetMouseFocus = function()
+    local frames = GetMouseFoci()
+    return frames and frames[1]
+end
 
 local function ClearTimers(element)
     if element.configTimer then
