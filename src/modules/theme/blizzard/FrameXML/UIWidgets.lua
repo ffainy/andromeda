@@ -79,8 +79,8 @@ local function reskinWidgetStatusBar(bar)
         end
 
         if bar.Label then
-            bar.Label:SetPoint('CENTER')
-            bar.Label:SetFontObject(Game12Font)
+            -- bar.Label:SetPoint('CENTER')
+            -- bar.Label:SetFontObject(Game12Font)
             resetLabelColor(bar.Label)
             hooksecurefunc(bar.Label, 'SetTextColor', resetLabelColor)
         end
@@ -230,6 +230,10 @@ tinsert(C.BlizzThemes, function()
         end
 
         reskinWidgetStatusBar(self.Bar)
+
+        if self.Label then
+            self.Label:SetTextColor(1, .8, 0)
+        end
     end)
 
     F.ReskinButton(UIWidgetCenterDisplayFrame.CloseButton)
