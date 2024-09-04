@@ -187,7 +187,8 @@ function ACTIONBAR:UpdateButtonConfig(i)
     end
 end
 
-local fullPage = '[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1'
+local fullPage =
+'[bar:6]6;[bar:5]5;[bar:4]4;[bar:3]3;[bar:2]2;[possessbar]16;[overridebar]18;[shapeshift]17;[vehicleui]16;[bonusbar:5]11;[bonusbar:4]10;[bonusbar:3]9;[bonusbar:2]8;[bonusbar:1]7;1'
 
 function ACTIONBAR:UpdateVisibility()
     for i = 1, 8 do
@@ -222,10 +223,14 @@ function ACTIONBAR:ReassignBindings()
 
     for index = 1, 8 do
         local frame = ACTIONBAR.headers[index]
-        for _, button in next, frame.buttons do
-            for _, key in next, { GetBindingKey(button.keyBoundTarget) } do
-                if key and key ~= '' then
-                    SetOverrideBindingClick(frame, false, key, button:GetName(), 'Keybind')
+        if frame then
+            ClearOverrideBindings(frame)
+
+            for _, button in next, frame.buttons do
+                for _, key in next, { GetBindingKey(button.keyBoundTarget) } do
+                    if key and key ~= '' then
+                        SetOverrideBindingClick(frame, false, key, button:GetName())
+                    end
                 end
             end
         end
@@ -247,7 +252,12 @@ function ACTIONBAR:CreateBars()
     ACTIONBAR.headers = {}
 
     for index = 1, 8 do
-        ACTIONBAR.headers[index] = CreateFrame('Frame', C.ADDON_TITLE .. 'ActionBar' .. index, UIParent, 'SecureHandlerStateTemplate')
+        ACTIONBAR.headers[index] = CreateFrame(
+            'Frame',
+            C.ADDON_TITLE .. 'ActionBar' .. index,
+            UIParent,
+            'SecureHandlerStateTemplate'
+        )
     end
 
     local margin = C.DB['Actionbar']['ButtonMargin']
@@ -270,17 +280,32 @@ function ACTIONBAR:CreateBars()
         local frame = ACTIONBAR.headers[index]
 
         if index == 3 then
-            frame.mover = F.Mover(frame, L['Actionbar'] .. '3L', 'Bar3L', { 'RIGHT', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOPLEFT', -margin, -padding / 2 })
+            frame.mover = F.Mover(
+                frame,
+                L['Actionbar'] .. '3L',
+                'Bar3L',
+                { 'RIGHT', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOPLEFT', -margin, -padding / 2 }
+            )
             local child = CreateFrame('Frame', nil, frame)
             child:SetSize(1, 1)
-            child.mover = F.Mover(child, L['Actionbar'] .. '3R', 'Bar3R', { 'LEFT', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOPRIGHT', margin, -padding / 2 })
+            child.mover = F.Mover(
+                child,
+                L['Actionbar'] .. '3R',
+                'Bar3R',
+                { 'LEFT', _G[C.ADDON_TITLE .. 'ActionBar1'], 'TOPRIGHT', margin, -padding / 2 }
+            )
             frame.child = child
 
             ACTIONBAR.movers[mIndex] = frame.mover
             ACTIONBAR.movers[mIndex + 1] = child.mover
             mIndex = mIndex + 2
         else
-            frame.mover = F.Mover(frame, L['Actionbar'] .. index, 'Bar' .. index, data.anchor)
+            frame.mover = F.Mover(
+                frame,
+                L['Actionbar'] .. index,
+                'Bar' .. index,
+                data.anchor
+            )
             ACTIONBAR.movers[mIndex] = frame.mover
             mIndex = mIndex + 1
         end
@@ -305,7 +330,7 @@ function ACTIONBAR:CreateBars()
                     end,
 
                     texture = 136190, -- Spell_Shadow_SacrificialShield
-                    tooltip = _G.LEAVE_VEHICLE,
+                    tooltip = LEAVE_VEHICLE,
                 })
             end
 
@@ -316,7 +341,8 @@ function ACTIONBAR:CreateBars()
             tinsert(ACTIONBAR.buttons, button)
         end
 
-        frame.visibility = index == 1 and '[petbattle] hide; show' or '[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show'
+        frame.visibility = index == 1 and '[petbattle] hide; show' or
+            '[petbattle][overridebar][vehicleui][possessbar,@vehicle,exists][shapeshift] hide; show'
 
         frame:SetAttribute(
             '_onstate-page',

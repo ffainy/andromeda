@@ -14,22 +14,27 @@ function ECF:GuildBest_UpdateTooltip()
     GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
     local name = C_ChallengeMode.GetMapUIInfo(leaderInfo.mapChallengeModeID)
     GameTooltip:SetText(name, 1, 1, 1)
-    GameTooltip:AddLine(format(_G.CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
+    GameTooltip:AddLine(format(CHALLENGE_MODE_POWER_LEVEL, leaderInfo.keystoneLevel))
     for i = 1, #leaderInfo.members do
         local classColorStr = strsub(F:RgbToHex(F:ClassColor(leaderInfo.members[i].classFileName)), 3, 10)
-        GameTooltip:AddLine(format(_G.CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
+        GameTooltip:AddLine(format(CHALLENGE_MODE_GUILD_BEST_LINE, classColorStr, leaderInfo.members[i].name))
     end
     GameTooltip:Show()
 end
 
 function ECF:GuildBest_Create()
-    frame = CreateFrame('Frame', nil, _G.ChallengesFrame, 'BackdropTemplate')
+    frame = CreateFrame('Frame', nil, ChallengesFrame, 'BackdropTemplate')
     frame:SetPoint('BOTTOMRIGHT', -8, 75)
     frame:SetSize(170, 105)
     F.CreateBD(frame, 0.3)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
-    F.CreateFS(frame, C.Assets.Fonts.Regular, 14, outline or nil, _G.GUILD, nil, outline and 'NONE' or 'THICK', 'TOPLEFT', 16, -6)
+    local outline = ANDROMEDA_ADB.FontOutline
+    F.CreateFS(
+        frame,
+        C.Assets.Fonts.Regular, 14, outline or nil,
+        GUILD, nil, outline and 'NONE' or 'THICK',
+        { 'TOPLEFT', 16, -6 }
+    )
 
     frame.entries = {}
     for i = 1, 4 do
@@ -37,10 +42,12 @@ function ECF:GuildBest_Create()
         entry:SetPoint('LEFT', 10, 0)
         entry:SetPoint('RIGHT', -10, 0)
         entry:SetHeight(18)
-        entry.CharacterName = F.CreateFS(entry, C.Assets.Fonts.Regular, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK', 'LEFT', 6, 0)
+        entry.CharacterName = F.CreateFS(entry, C.Assets.Fonts.Regular, 12, outline or nil, '', nil,
+            outline and 'NONE' or 'THICK', 'LEFT', 6, 0)
         entry.CharacterName:SetPoint('RIGHT', -30, 0)
         entry.CharacterName:SetJustifyH('LEFT')
-        entry.Level = F.CreateFS(entry, C.Assets.Fonts.Regular, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+        entry.Level = F.CreateFS(entry, C.Assets.Fonts.Regular, 12, outline or nil, '', nil,
+            outline and 'NONE' or 'THICK')
         entry.Level:SetJustifyH('LEFT')
         entry.Level:ClearAllPoints()
         entry.Level:SetPoint('LEFT', entry, 'RIGHT', -22, 0)
@@ -56,19 +63,19 @@ function ECF:GuildBest_Create()
     end
 
     if not hasAngryKeystones then
-        _G.ChallengesFrame.WeeklyInfo.Child.Description:SetPoint('CENTER', 0, 20)
+        ChallengesFrame.WeeklyInfo.Child.Description:SetPoint('CENTER', 0, 20)
     end
 
     -- Details key window
-    if _G.SlashCmdList.KEYSTONE then
+    if SlashCmdList.KEYSTONE then
         local button = CreateFrame('Button', nil, frame)
         button:SetSize(20, 20)
         button:SetPoint('TOPRIGHT', -12, -5)
         button:SetScript('OnClick', function()
-            if _G.DetailsKeystoneInfoFrame and _G.DetailsKeystoneInfoFrame:IsShown() then
-                _G.DetailsKeystoneInfoFrame:Hide()
+            if _G['DetailsKeystoneInfoFrame'] and _G['DetailsKeystoneInfoFrame']:IsShown() then
+                _G['DetailsKeystoneInfoFrame']:Hide()
             else
-                _G.SlashCmdList.KEYSTONE()
+                SlashCmdList.KEYSTONE()
             end
         end)
 
@@ -82,16 +89,16 @@ function ECF:GuildBest_Create()
         hl:SetTexture('Interface\\Buttons\\UI-GuildButton-PublicNote-Up')
     end
 
-    if _G.RaiderIO_GuildWeeklyFrame then
-        F.HideObject(_G.RaiderIO_GuildWeeklyFrame)
+    if _G['RaiderIO_GuildWeeklyFrame'] then
+        F.HideObject(_G['RaiderIO_GuildWeeklyFrame'])
     end
 end
 
 function ECF:GuildBest_SetUp(leaderInfo)
     self.leaderInfo = leaderInfo
-    local str = _G.CHALLENGE_MODE_GUILD_BEST_LINE
+    local str = CHALLENGE_MODE_GUILD_BEST_LINE
     if leaderInfo.isYou then
-        str = _G.CHALLENGE_MODE_GUILD_BEST_LINE_YOU
+        str = CHALLENGE_MODE_GUILD_BEST_LINE_YOU
     end
 
     local classColorStr = strsub(F:RgbToHex(F:ClassColor(leaderInfo.classFileName)), 3, 10)
@@ -124,14 +131,14 @@ function ECF:GuildBest_Update()
         end)
         self.WeeklyInfo.Child.ThisWeekLabel:SetPoint('TOP', -135, -25)
 
-        local schedule = _G.AngryKeystones.Modules.Schedule
+        local schedule = _G['AngryKeystones'].Modules.Schedule
         frame:SetWidth(246)
         frame:ClearAllPoints()
         frame:SetPoint('BOTTOMLEFT', schedule.AffixFrame, 'TOPLEFT', 0, 10)
 
         local keystoneText = schedule.KeystoneText
         if keystoneText then
-            keystoneText:SetFontObject(_G.Game13Font)
+            keystoneText:SetFontObject(Game13Font)
             keystoneText:ClearAllPoints()
             keystoneText:SetPoint('TOP', self.WeeklyInfo.Child.DungeonScoreInfo.Score, 'BOTTOM', 0, -3)
         end
@@ -142,9 +149,9 @@ end
 
 function ECF.GuildBest_OnLoad(event, addon)
     if addon == 'Blizzard_ChallengesUI' then
-        hooksecurefunc(_G.ChallengesFrame, 'Update', ECF.GuildBest_Update)
+        hooksecurefunc(ChallengesFrame, 'Update', ECF.GuildBest_Update)
         ECF:KeystoneInfo_Create()
-        _G.ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript('OnEnter', ECF.KeystoneInfo_WeeklyRuns)
+        ChallengesFrame.WeeklyInfo.Child.WeeklyChest:HookScript('OnEnter', ECF.KeystoneInfo_WeeklyRuns)
 
         F:UnregisterEvent(event, ECF.GuildBest_OnLoad)
     end
@@ -167,11 +174,9 @@ function ECF:KeystoneInfo_WeeklyRuns()
 
         GameTooltip:AddLine(' ')
         GameTooltip:AddDoubleLine(
-            isShiftKeyDown and _G.CHALLENGE_MODE_THIS_WEEK or format(_G.WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold),
+            isShiftKeyDown and CHALLENGE_MODE_THIS_WEEK or format(WEEKLY_REWARDS_MYTHIC_TOP_RUNS, WeeklyRunsThreshold),
             '(' .. numRuns .. ')',
-            0.6,
-            0.8,
-            1
+            0.6, 0.8, 1
         )
         sort(runHistory, sortHistory)
 
@@ -198,9 +203,9 @@ function ECF:KeystoneInfo_WeeklyRuns()
 end
 
 function ECF:KeystoneInfo_Create()
-    local texture = select(10, C_Item.GetItemInfo(158923)) or 525134
+    local texture = C_Item.GetItemIconByID(158923) or 525134
     local iconColor = C.QualityColors[Enum.ItemQuality.Epic or 4]
-    local button = CreateFrame('Frame', nil, _G.ChallengesFrame.WeeklyInfo, 'BackdropTemplate')
+    local button = CreateFrame('Frame', nil, ChallengesFrame.WeeklyInfo, 'BackdropTemplate')
     button:SetPoint('BOTTOMLEFT', 10, 67)
     button:SetSize(35, 35)
     F.PixelIcon(button, texture, true)
@@ -209,28 +214,29 @@ function ECF:KeystoneInfo_Create()
         GameTooltip:ClearLines()
         GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
         GameTooltip:AddLine(L['Account Keystones'])
-        for name, info in pairs(_G.ANDROMEDA_ADB.KeystoneInfo) do
+        for name, info in pairs(ANDROMEDA_ADB.KeystoneInfo) do
             local newName = Ambiguate(name, 'none')
             local mapID, level, class, faction = strsplit(':', info)
             local color = F:RgbToHex(F:ClassColor(class))
             local factionColor = faction == 'Horde' and '|cffff5040' or '|cff00adf0'
             local dungeon = C_ChallengeMode.GetMapUIInfo(tonumber(mapID))
-            GameTooltip:AddDoubleLine(format(color .. '%s:|r', newName), format('%s%s(%s)|r', factionColor, dungeon, level))
+            GameTooltip:AddDoubleLine(format(color .. '%s:|r', newName),
+                format('%s%s(%s)|r', factionColor, dungeon, level))
         end
         GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-        GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. _G.GREAT_VAULT_REWARDS .. ' ', 1, 1, 1, 0.6, 0.8, 1)
+        GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. GREAT_VAULT_REWARDS .. ' ', 1, 1, 1, 0.6, 0.8, 1)
         GameTooltip:AddDoubleLine(' ', C.MOUSE_MIDDLE_BUTTON .. L['Delete keystones info'] .. ' ', 1, 1, 1, 0.6, 0.8, 1)
         GameTooltip:Show()
     end)
     button:SetScript('OnLeave', F.HideTooltip)
     button:SetScript('OnMouseUp', function(_, btn)
         if btn == 'LeftButton' then
-            if not _G.WeeklyRewardsFrame then
-                _G.WeeklyRewards_LoadUI()
+            if not WeeklyRewardsFrame then
+                WeeklyRewards_LoadUI()
             end
-            F:TogglePanel(_G.WeeklyRewardsFrame)
+            F:TogglePanel(WeeklyRewardsFrame)
         elseif btn == 'MiddleButton' then
-            wipe(_G.ANDROMEDA_ADB.KeystoneInfo)
+            wipe(ANDROMEDA_ADB.KeystoneInfo)
             ECF:KeystoneInfo_Update() -- update own keystone info after reset
         end
     end)
@@ -246,9 +252,10 @@ end
 function ECF:KeystoneInfo_Update()
     local mapID, keystoneLevel = ECF:KeystoneInfo_UpdateBag()
     if mapID then
-        _G.ANDROMEDA_ADB['KeystoneInfo'][C.MY_FULL_NAME] = mapID .. ':' .. keystoneLevel .. ':' .. C.MY_CLASS .. ':' .. C.MY_FACTION
+        ANDROMEDA_ADB['KeystoneInfo'][C.MY_FULL_NAME] = mapID ..
+            ':' .. keystoneLevel .. ':' .. C.MY_CLASS .. ':' .. C.MY_FACTION
     else
-        _G.ANDROMEDA_ADB['KeystoneInfo'][C.MY_FULL_NAME] = nil
+        ANDROMEDA_ADB['KeystoneInfo'][C.MY_FULL_NAME] = nil
     end
 end
 

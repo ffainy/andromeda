@@ -2,7 +2,7 @@ local F, C, L = unpack(select(2, ...))
 local ACTIONBAR = F:GetModule('ActionBar')
 
 local function sendMsg(text)
-    if IsPartyLFG() then
+    if (IsPartyLFG() or C_PartyInfo.IsPartyWalkIn()) then
         SendChatMessage(text, 'INSTANCE_CHAT')
     elseif IsInRaid() then
         SendChatMessage(text, 'RAID')

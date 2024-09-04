@@ -66,7 +66,7 @@ function A:GetChannel(forceInGroup, warning)
     end
 
     if C.DB.Announcement.Channel == 1 then
-        if IsPartyLFG() or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsInRaid(LE_PARTY_CATEGORY_INSTANCE) then
+        if (IsPartyLFG() or C_PartyInfo.IsPartyWalkIn()) or IsInGroup(LE_PARTY_CATEGORY_INSTANCE) or IsInRaid(LE_PARTY_CATEGORY_INSTANCE) then
             return 'INSTANCE_CHAT'
         elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
             if warning and (UnitIsGroupLeader('player')

@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local CHAT = F:GetModule('Chat')
 
-local chatFrame = _G.SELECTED_DOCK_FRAME
+local chatFrame = SELECTED_DOCK_FRAME
 local editBox = chatFrame.editBox
 local buttonsList = {}
 
@@ -14,71 +14,61 @@ end
 
 local buttonsData = {
     {
-        1,
-        1,
-        1,
-        _G.SAY .. '/' .. _G.YELL,
+        1, 1, 1,
+        SAY .. '/' .. YELL,
         function(_, btn)
             if btn == 'RightButton' then
-                _G.ChatFrame_OpenChat('/y ', chatFrame)
+                ChatFrame_OpenChat('/y ', chatFrame)
             else
-                _G.ChatFrame_OpenChat('/s ', chatFrame)
+                ChatFrame_OpenChat('/s ', chatFrame)
             end
         end,
     },
     {
-        1,
-        0.5,
-        1,
-        _G.WHISPER,
+        1, 0.5, 1,
+        WHISPER,
         function(_, btn)
             if btn == 'RightButton' then
-                _G.ChatFrame_ReplyTell(chatFrame)
+                ChatFrame_ReplyTell(chatFrame)
                 if not editBox:IsVisible() or editBox:GetAttribute('chatType') ~= 'WHISPER' then
-                    _G.ChatFrame_OpenChat('/w ', chatFrame)
+                    ChatFrame_OpenChat('/w ', chatFrame)
                 end
             else
                 if UnitExists('target') and UnitName('target') and UnitIsPlayer('target') and GetDefaultLanguage('player') == GetDefaultLanguage('target') then
                     local name = GetUnitName('target', true)
-                    _G.ChatFrame_OpenChat('/w ' .. name .. ' ', chatFrame)
+                    ChatFrame_OpenChat('/w ' .. name .. ' ', chatFrame)
                 else
-                    _G.ChatFrame_OpenChat('/w ', chatFrame)
+                    ChatFrame_OpenChat('/w ', chatFrame)
                 end
             end
         end,
     },
     {
-        0.65,
-        0.65,
-        1,
-        _G.PARTY,
+        0.65, 0.65, 1,
+        PARTY,
         function()
-            _G.ChatFrame_OpenChat('/p ', chatFrame)
+            ChatFrame_OpenChat('/p ', chatFrame)
         end,
     },
     {
-        1,
-        0.5,
-        0,
-        _G.INSTANCE .. '/' .. _G.RAID,
+        1, 0.5, 0,
+        INSTANCE .. '/' .. RAID,
         function()
-            if IsPartyLFG() then
-                _G.ChatFrame_OpenChat('/i ', chatFrame)
+            if IsPartyLFG() or C_PartyInfo.IsPartyWalkIn() then
+                ChatFrame_OpenChat('/i ', chatFrame)
             else
-                _G.ChatFrame_OpenChat('/raid ', chatFrame)
+                ChatFrame_OpenChat('/raid ', chatFrame)
             end
         end,
     },
     {
-        0.25,
-        1,
-        0.25,
-        _G.GUILD .. '/' .. _G.OFFICER,
+        0.25, 1, 0.25,
+        GUILD .. '/' .. OFFICER,
         function(_, btn)
             if btn == 'RightButton' and C_GuildInfo.IsGuildOfficer() then
-                _G.ChatFrame_OpenChat('/o ', chatFrame)
+                ChatFrame_OpenChat('/o ', chatFrame)
             else
-                _G.ChatFrame_OpenChat('/g ', chatFrame)
+                ChatFrame_OpenChat('/g ', chatFrame)
             end
         end,
     },
@@ -86,16 +76,16 @@ local buttonsData = {
 
 local helpTip = {
     text = L["Press TAB key to switch available channels, it's a bit silly to click on bars all the time."],
-    buttonStyle = _G.HelpTip.ButtonStyle.GotIt,
-    targetPoint = _G.HelpTip.Point.TopEdgeCenter,
+    buttonStyle = HelpTip.ButtonStyle.GotIt,
+    targetPoint = HelpTip.Point.TopEdgeCenter,
     offsetY = 50,
     onAcknowledgeCallback = F.HelpInfoAcknowledge,
     callbackArg = 'ChatSwitch',
 }
 
 local function showHelpTip()
-    if not _G.ANDROMEDA_ADB['HelpTips']['ChatSwitch'] then
-        _G.HelpTip:Show(_G.ChatFrame1, helpTip)
+    if not ANDROMEDA_ADB['HelpTips']['ChatSwitch'] then
+        HelpTip:Show(ChatFrame1, helpTip)
     end
 end
 
@@ -108,9 +98,9 @@ local function bar_OnLeave()
 end
 
 local function createBar()
-    local channelBar = CreateFrame('Frame', C.ADDON_TITLE .. 'ChannelBar', _G.ChatFrame1)
-    channelBar:SetSize(_G.ChatFrame1:GetWidth(), 5)
-    channelBar:SetPoint('TOPLEFT', _G.ChatFrame1, 'BOTTOMLEFT', 0, -6)
+    local channelBar = CreateFrame('Frame', C.ADDON_TITLE .. 'ChannelBar', ChatFrame1)
+    channelBar:SetSize(ChatFrame1:GetWidth(), 5)
+    channelBar:SetPoint('TOPLEFT', ChatFrame1, 'BOTTOMLEFT', 0, -6)
     channelBar:SetAlpha(0.2)
     CHAT.ChannelBar = channelBar
 end
@@ -160,7 +150,7 @@ local function createChannelButtons()
 end
 
 local function createRollButton()
-    local rollButton = createButton(0.8, 1, 0.6, _G.LOOT_ROLL)
+    local rollButton = createButton(0.8, 1, 0.6, LOOT_ROLL)
     rollButton:SetAttribute('type', 'macro')
     rollButton:SetAttribute('macrotext', '/roll')
     rollButton:RegisterForClicks('AnyDown')
@@ -168,7 +158,7 @@ local function createRollButton()
 end
 
 local function createLogButton()
-    local clButton = createButton(1, 1, 0, _G.BINDING_NAME_TOGGLECOMBATLOG)
+    local clButton = createButton(1, 1, 0, BINDING_NAME_TOGGLECOMBATLOG)
     clButton:SetAttribute('type', 'macro')
     clButton:SetAttribute('macrotext', '/combatlog')
     clButton:RegisterForClicks('AnyDown')
@@ -179,15 +169,15 @@ local function lobbyButton_OnClick(self, btn)
     if CHAT.InWorldChannel then
         if btn == 'RightButton' then
             LeaveChannelByName(nameStr)
-            F:Print('|cffd82026' .. _G.QUIT .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
+            F:Print('|cffd82026' .. QUIT .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
             CHAT.InWorldChannel = false
         elseif CHAT.WorldChannelID then
-            _G.ChatFrame_OpenChat('/' .. CHAT.WorldChannelID, chatFrame)
+            ChatFrame_OpenChat('/' .. CHAT.WorldChannelID, chatFrame)
         end
     else
         JoinPermanentChannel(nameStr, nil, 1)
-        _G.ChatFrame_AddChannel(_G.ChatFrame1, nameStr)
-        F:Print('|cff27ba24' .. _G.JOIN .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
+        ChatFrame_AddChannel(ChatFrame1, nameStr)
+        F:Print('|cff27ba24' .. JOIN .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
         CHAT.InWorldChannel = true
     end
 end
@@ -206,7 +196,7 @@ local function createLobbyButton()
 end
 
 function CHAT:UpdateChannelBar()
-    CHAT.ChannelBar:SetSize(_G.ChatFrame1:GetWidth(), 5)
+    CHAT.ChannelBar:SetSize(ChatFrame1:GetWidth(), 5)
 
     for i = 1, #buttonsList do
         if i == 1 then
@@ -215,7 +205,7 @@ function CHAT:UpdateChannelBar()
             buttonsList[i]:SetPoint('LEFT', buttonsList[i - 1], 'RIGHT', 5, 0)
         end
 
-        local buttonWidth = (_G.ChatFrame1:GetWidth() - (#buttonsList - 1) * 5) / #buttonsList
+        local buttonWidth = (ChatFrame1:GetWidth() - (#buttonsList - 1) * 5) / #buttonsList
         buttonsList[i]:SetWidth(buttonWidth)
 
         buttonsList[i]:HookScript('OnEnter', bar_OnEnter)
