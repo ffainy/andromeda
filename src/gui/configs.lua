@@ -142,6 +142,7 @@ C.CharacterSettings = {
         SlotSize = 44,
         BagColumns = 10,
         BankColumns = 10,
+        AccountColumns = 10,
         BagsPerRow = 6,
         BankPerRow = 10,
         HideWidgets = true,

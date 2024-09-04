@@ -516,7 +516,8 @@ function GUI:SetupInventorySize(parent)
 
     local colDatas = {
         [1] = { key = 'BagColumns', value = values.BagColumns, text = L['Bag Columns'], min = 6, max = 20, step = 1 },
-        [2] = { key = 'BankColumns', value = values.BagColumns, text = L['Bank Columns'], min = 6, max = 20, step = 1 },
+        [2] = { key = 'BankColumns', value = values.BankColumns, text = L['Bank Columns'], min = 6, max = 20, step = 1 },
+        [3] = { key = 'AccountColumns', value = values.AccountColumns, text = L['Warband Bank Columns'], min = 6, max = 20, step = 1 },
     }
 
     local rowDatas = {

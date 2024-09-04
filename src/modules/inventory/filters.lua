@@ -3,13 +3,13 @@ local INVENTORY = F:GetModule('Inventory')
 
 -- Custom filter
 local CustomFilterList = {
-    [37863] = false, -- 酒吧传送器
+    [37863] = false,  -- 酒吧传送器
     [187532] = false, -- 魂焰凿石器 @TradeGoods
-    [141333] = true, -- 宁神圣典
-    [141446] = true, -- 宁神书卷
-    [153646] = true, -- 静心圣典
-    [153647] = true, -- 静心书卷
-    [161053] = true, -- 水手咸饼干
+    [141333] = true,  -- 宁神圣典
+    [141446] = true,  -- 宁神书卷
+    [153646] = true,  -- 静心圣典
+    [153647] = true,  -- 静心书卷
+    [161053] = true,  -- 水手咸饼干
 }
 
 local function isCustomFilter(item)
@@ -31,6 +31,10 @@ end
 
 local function isItemInBank(item)
     return item.bagId == -1 or (item.bagId > 5 and item.bagId < 13)
+end
+
+local function isItemInAccountBank(item)
+    return item.bagId > 12 and item.bagId < 18
 end
 
 local function isItemJunk(item)
@@ -290,14 +294,6 @@ local function isWarboundUntilEquipped(item)
     return item.bindOn and item.bindOn == 'accountequip'
 end
 
-local accountBankIDs = {
-    [Enum.BagIndex.AccountBankTab_1 or 13] = true,
-    [Enum.BagIndex.AccountBankTab_2 or 14] = true,
-    [Enum.BagIndex.AccountBankTab_3 or 15] = true,
-    [Enum.BagIndex.AccountBankTab_4 or 16] = true,
-    [Enum.BagIndex.AccountBankTab_5 or 17] = true,
-}
-
 function INVENTORY:GetFilters()
     local filters = {}
 
@@ -325,6 +321,34 @@ function INVENTORY:GetFilters()
         return isItemInBag(item) and isItemJunk(item)
     end
 
+    filters.bagCollection = function(item)
+        return isItemInBag(item) and isItemCollection(item)
+    end
+
+    filters.bagGoods = function(item)
+        return isItemInBag(item) and isTradeGoods(item)
+    end
+
+    filters.bagQuest = function(item)
+        return isItemInBag(item) and isQuestItem(item)
+    end
+
+    filters.bagAnima = function(item)
+        return isItemInBag(item) and isAnimaItem(item)
+    end
+
+    filters.bagRelic = function(item)
+        return isItemInBag(item) and isKorthiaRelic(item)
+    end
+
+    filters.bagStone = function(item)
+        return isItemInBag(item) and isPrimordialStone(item)
+    end
+
+    filters.bagAOE = function(item)
+        return isItemInBag(item) and isWarboundUntilEquipped(item)
+    end
+
     filters.onlyBank = function(item)
         return isItemInBank(item) and not isEmptySlot(item)
     end
@@ -349,72 +373,60 @@ function INVENTORY:GetFilters()
         return isItemInBank(item) and isItemConsumable(item)
     end
 
-    filters.onlyReagent = function(item)
-        return item.bagId == -3 and not isEmptySlot(item)
-    end
-
-    filters.bagCollection = function(item)
-        return isItemInBag(item) and isItemCollection(item)
-    end
-
     filters.bankCollection = function(item)
         return isItemInBank(item) and isItemCollection(item)
-    end
-
-    filters.bagGoods = function(item)
-        return isItemInBag(item) and isTradeGoods(item)
     end
 
     filters.bankGoods = function(item)
         return isItemInBank(item) and isTradeGoods(item)
     end
 
-    filters.bagQuest = function(item)
-        return isItemInBag(item) and isQuestItem(item)
-    end
-
     filters.bankQuest = function(item)
         return isItemInBank(item) and isQuestItem(item)
-    end
-
-    filters.bagAnima = function(item)
-        return isItemInBag(item) and isAnimaItem(item)
     end
 
     filters.bankAnima = function(item)
         return isItemInBank(item) and isAnimaItem(item)
     end
 
-    filters.bagRelic = function(item)
-        return isItemInBag(item) and isKorthiaRelic(item)
-    end
-
-    filters.onlyBagReagent = function(item)
-        return isItemInBagReagent(item) and not isEmptySlot(item)
-    end
-
-    filters.bagStone = function(item)
-        return isItemInBag(item) and isPrimordialStone(item)
-    end
-
-    filters.accountBank = function(item)
-        return accountBankIDs[item.bagId] and not isEmptySlot(item)
-    end
-
-    filters.bagAOE = function(item)
-        return isItemInBag(item) and isWarboundUntilEquipped(item)
-    end
-
     filters.bankAOE = function(item)
         return isItemInBank(item) and isWarboundUntilEquipped(item)
+    end
+
+    filters.onlyReagent = function(item)
+        return item.bagId == -3 and not isEmptySlot(item)
+    end -- reagent bank
+    filters.onlyBagReagent = function(item)
+        return (isItemInBagReagent(item) and not isEmptySlot(item)) or (isItemInBag(item) and isTradeGoods(item))
+    end -- reagent bagslot
+
+    filters.accountbank = function(item)
+        return isItemInAccountBank(item) and not isEmptySlot(item)
+    end
+    filters.accountEquipment = function(item)
+        return isItemInAccountBank(item) and isItemEquipment(item)
+    end
+    filters.accountConsumable = function(item)
+        return isItemInAccountBank(item) and isItemConsumable(item)
+    end
+    filters.accountGoods = function(item)
+        return isItemInAccountBank(item) and isTradeGoods(item)
+    end
+    filters.accountAOE = function(item)
+        return isItemInAccountBank(item) and isWarboundUntilEquipped(item)
     end
 
     for i = 1, 5 do
         filters['bagCustom' .. i] = function(item)
             return (isItemInBag(item) or isItemInBagReagent(item)) and isItemCustom(item, i)
         end
+
         filters['bankCustom' .. i] = function(item)
             return isItemInBank(item) and isItemCustom(item, i)
+        end
+
+        filters['accountCustom' .. i] = function(item)
+            return isItemInAccountBank(item) and isItemCustom(item, i)
         end
     end
 
