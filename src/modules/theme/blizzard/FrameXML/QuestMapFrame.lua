@@ -36,9 +36,9 @@ local function reskinAWQHeader()
     if C_AddOns.IsAddOnLoaded('AngrierWorldQuests') then
         local button = _G['AngrierWorldQuestsHeader']
         if button and not button.styled then
-            F.ReskinCollapse(button, true)
-            button:GetPushedTexture():SetAlpha(0)
-            button:GetHighlightTexture():SetAlpha(0)
+            F.StripTextures(button)
+            F.CreateBDFrame(button, .25)
+            button:GetHighlightTexture():SetColorTexture(1, 1, 1, .25)
 
             button.styled = true
         end
@@ -48,10 +48,10 @@ end
 tinsert(C.BlizzThemes, function()
     -- Quest frame
 
-    local QuestMapFrame = _G.QuestMapFrame
+    local QuestMapFrame = QuestMapFrame
     QuestMapFrame.VerticalSeparator:SetAlpha(0)
 
-    local QuestScrollFrame = _G.QuestScrollFrame
+    local QuestScrollFrame = QuestScrollFrame
     QuestScrollFrame.Contents.Separator:SetAlpha(0)
     reskinQuestHeader(QuestScrollFrame.Contents.StoryHeader)
 
@@ -80,7 +80,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(DetailsFrame.AbandonButton)
     F.ReskinButton(DetailsFrame.ShareButton)
     F.ReskinButton(DetailsFrame.TrackButton)
-    F.ReskinTrimScroll(_G.QuestMapDetailsScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(QuestMapDetailsScrollFrame.ScrollBar)
 
     F.ReskinButton(DetailsFrame.BackFrame.BackButton)
     F.StripTextures(DetailsFrame.RewardsFrameContainer.RewardsFrame)
@@ -154,14 +154,14 @@ tinsert(C.BlizzThemes, function()
 
     -- [[ Quest log popup detail frame ]]
 
-    local QuestLogPopupDetailFrame = _G.QuestLogPopupDetailFrame
+    local QuestLogPopupDetailFrame = QuestLogPopupDetailFrame
 
     F.ReskinPortraitFrame(QuestLogPopupDetailFrame)
     F.ReskinButton(QuestLogPopupDetailFrame.AbandonButton)
     F.ReskinButton(QuestLogPopupDetailFrame.TrackButton)
     F.ReskinButton(QuestLogPopupDetailFrame.ShareButton)
     QuestLogPopupDetailFrame.SealMaterialBG:SetAlpha(0)
-    F.ReskinTrimScroll(_G.QuestLogPopupDetailFrameScrollFrame.ScrollBar)
+    F.ReskinTrimScroll(QuestLogPopupDetailFrameScrollFrame.ScrollBar)
 
     -- Show map button
 
@@ -200,7 +200,7 @@ tinsert(C.BlizzThemes, function()
     sessionManagement.BG:Hide()
     F.CreateBDFrame(sessionManagement, 0.25)
 
-    hooksecurefunc(_G.QuestSessionManager, 'NotifyDialogShow', reskinSessionDialog)
+    hooksecurefunc(QuestSessionManager, 'NotifyDialogShow', reskinSessionDialog)
 
     local executeSessionCommand = sessionManagement.ExecuteSessionCommand
     F.ReskinButton(executeSessionCommand)
@@ -210,8 +210,8 @@ tinsert(C.BlizzThemes, function()
     executeSessionCommand.normalIcon = icon
 
     local sessionCommandToButtonAtlas = {
-        [_G.Enum.QuestSessionCommand.Start] = 'QuestSharing-DialogIcon',
-        [_G.Enum.QuestSessionCommand.Stop] = 'QuestSharing-Stop-DialogIcon',
+        [Enum.QuestSessionCommand.Start] = 'QuestSharing-DialogIcon',
+        [Enum.QuestSessionCommand.Stop] = 'QuestSharing-Stop-DialogIcon',
     }
 
     hooksecurefunc(QuestMapFrame.QuestSessionManagement, 'UpdateExecuteCommandAtlases', function(self, command)

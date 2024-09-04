@@ -1,14 +1,14 @@
 local F, C = unpack(select(2, ...))
 
 tinsert(C.BlizzThemes, function()
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    if not ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
     local r, g, b = C.r, C.g, C.b
 
     -- Head Frame
-    local frame = _G.PetBattleFrame
+    local frame = PetBattleFrame
     F.StripTextures(frame)
     frame.TopVersusText:SetPoint('TOP', 0, -45)
 
@@ -52,7 +52,7 @@ tinsert(C.BlizzThemes, function()
         unit.Iconbg = F.SetBD(unit.Icon)
 
         unit.LevelUnderlay:SetAlpha(0)
-        unit.Level:SetFontObject(_G.SystemFont_Shadow_Huge1)
+        unit.Level:SetFontObject(SystemFont_Shadow_Huge1)
         unit.Level:ClearAllPoints()
         if unit.SpeedIcon then
             unit.SpeedUnderlay:SetAlpha(0)
@@ -126,7 +126,7 @@ tinsert(C.BlizzThemes, function()
     hooksecurefunc('PetBattleUnitFrame_UpdatePetType', function(self)
         if self.PetType and self.petIcon then
             local petType = C_PetBattles.GetPetType(self.petOwner, self.petIndex)
-            self.petIcon:SetTexture('Interface\\ICONS\\Icon_PetFamily_' .. _G.PET_TYPE_SUFFIX[petType])
+            self.petIcon:SetTexture('Interface\\ICONS\\Icon_PetFamily_' .. PET_TYPE_SUFFIX[petType])
         end
     end)
 
@@ -147,7 +147,7 @@ tinsert(C.BlizzThemes, function()
             self.glow:Hide()
         end
         if self.Iconbg then
-            local quality = C_PetBattles.GetBreedQuality(self.petOwner, self.petIndex) - 1 or 1
+            local quality = C_PetBattles.GetBreedQuality(self.petOwner, self.petIndex) or 1
             local color = C.QualityColors[quality]
             self.Iconbg:SetBackdropBorderColor(color.r, color.g, color.b)
         end
@@ -251,7 +251,7 @@ tinsert(C.BlizzThemes, function()
     skipButton.HL:SetAllPoints(skipButton)
     skipButton:SetPushedTexture(C.Assets.Textures.ButtonChecked)
 
-    local xpbar = _G.PetBattleFrameXPBar
+    local xpbar = PetBattleFrameXPBar
     F.StripTextures(xpbar)
     xpbar:SetParent(bar)
     xpbar:SetWidth(bar:GetWidth())
@@ -273,7 +273,7 @@ tinsert(C.BlizzThemes, function()
         skipButton:ClearAllPoints()
         skipButton:SetPoint('LEFT', bottomFrame.ForfeitButton, 'RIGHT', 3, 0)
 
-        local pveBattle = C_PetBattles.IsPlayerNPC(_G.LE_BATTLE_PET_ENEMY)
+        local pveBattle = C_PetBattles.IsPlayerNPC(LE_BATTLE_PET_ENEMY)
         turnTimer.bg:SetShown(not pveBattle)
 
         xpbar:ClearAllPoints()
@@ -285,7 +285,7 @@ tinsert(C.BlizzThemes, function()
     end)
 
     -- Pet Changing
-    for i = 1, _G.NUM_BATTLE_PETS_IN_BATTLE do
+    for i = 1, NUM_BATTLE_PETS_IN_BATTLE do
         local unit = bottomFrame.PetSelectionFrame['Pet' .. i]
         local icon = unit.Icon
 

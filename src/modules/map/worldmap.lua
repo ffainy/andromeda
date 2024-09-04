@@ -32,7 +32,6 @@ function MAP:GetPlayerMapPos(mapID)
 end
 
 function MAP:GetCursorCoords()
-    local WorldMapFrame = WorldMapFrame
     if not WorldMapFrame.ScrollContainer:IsMouseOver() then
         return
     end
@@ -87,7 +86,6 @@ function MAP:AddCoords()
         return
     end
 
-    local WorldMapFrame = WorldMapFrame
     local outline = ANDROMEDA_ADB.FontOutline
     playerCoords = F.CreateFS(
         WorldMapFrame.BorderFrame, C.Assets.Fonts.Bold, 12, outline or nil,
@@ -123,14 +121,12 @@ function MAP:UpdateMapAnchor()
 end
 
 function MAP:WorldMapScale()
-    local WorldMapFrame = WorldMapFrame
-
     F.CreateMF(WorldMapFrame, nil, true)
+    WorldMapFrame:HookScript('OnShow', self.UpdateMapAnchor)
     hooksecurefunc(WorldMapFrame, 'SynchronizeDisplayState', self.UpdateMapAnchor)
 end
 
 function MAP:SetupWorldMap()
-    local WorldMapFrame = WorldMapFrame
     -- Remove from frame manager
     WorldMapFrame:ClearAllPoints()
     WorldMapFrame:SetPoint('CENTER') -- init anchor
