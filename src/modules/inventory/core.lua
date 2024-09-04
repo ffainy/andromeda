@@ -127,7 +127,11 @@ function INVENTORY:CreateMoneyFrame()
 
     local tag = self:SpawnPlugin('TagDisplay', '[money]', moneyFrame)
     local outline = ANDROMEDA_ADB.FontOutline
-    F.SetFS(tag, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+    F.SetFS(
+        tag,
+        C.Assets.Fonts.Bold, 12, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK'
+    )
     tag:SetPoint('TOPLEFT', 0, -4)
 end
 
@@ -206,7 +210,7 @@ function INVENTORY:CreateBagTab(settings, columns)
     self.BagBar = bagTab
 end
 
-local function CloseOrRestoreBags(self, btn)
+local function closeOrRestoreBags(self, btn)
     if btn == 'RightButton' then
         local bag = self.__owner.main
         local bank = self.__owner.bank
@@ -237,7 +241,7 @@ function INVENTORY:CreateRestoreButton(f)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:RegisterForClicks('AnyUp')
     bu.__owner = f
-    bu:SetScript('OnClick', CloseOrRestoreBags)
+    bu:SetScript('OnClick', closeOrRestoreBags)
     bu.tipHeader = CLOSE .. '/' .. RESET
     F.AddTooltip(bu, 'ANCHOR_TOP')
 
@@ -302,7 +306,11 @@ function INVENTORY:CreateAccountMoney()
 
     local tag = self:SpawnPlugin('TagDisplay', '[accountmoney]', self)
     local outline = ANDROMEDA_ADB.FontOutline
-    F.SetFS(tag, C.Assets.Fonts.Bold, 12, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+    F.SetFS(
+        tag,
+        C.Assets.Fonts.Bold, 12, outline or nil,
+        '', nil, outline and 'NONE' or 'THICK'
+    )
     tag:SetPoint('RIGHT', frame, -2, 0)
     frame.tag = tag
 
@@ -776,7 +784,8 @@ function INVENTORY:CreateFavouriteButton()
     end
     INVENTORY.CustomMenu = menuList
 
-    local enabledText = L["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
+    local enabledText = L
+        ["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagFavourite)
     bu.Icon:SetVertexColor(unpack(iconColor))
@@ -830,7 +839,8 @@ end
 
 local customJunkEnable
 function INVENTORY:CreateCustomJunkButton()
-    local enabledText = L["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
+    local enabledText = L
+        ["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagJunk)
     bu.Icon:SetVertexColor(unpack(iconColor))
@@ -1076,15 +1086,9 @@ function INVENTORY:OnLogin()
         local outline = ANDROMEDA_ADB.FontOutline
         F.SetFS(
             self.Count,
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMRIGHT',
-            -2,
-            2
+            C.Assets.Fonts.Bold, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMRIGHT', -2, 2 }
         )
         self.Cooldown:SetInside()
         self.IconOverlay:SetInside()
@@ -1109,27 +1113,15 @@ function INVENTORY:OnLogin()
 
         self.iLvl = F.CreateFS(
             self,
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMRIGHT',
-            -2,
-            2
+            C.Assets.Fonts.Bold, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMRIGHT', -2, 2 }
         )
         self.BindType = F.CreateFS(
             self,
-            C.Assets.Fonts.Condensed,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'TOPLEFT',
-            2,
-            -2
+            C.Assets.Fonts.Condensed, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'TOPLEFT', 2, -2 }
         )
 
         local flash = self:CreateTexture(nil, 'ARTWORK')
@@ -1138,6 +1130,7 @@ function INVENTORY:OnLogin()
         flash:SetPoint('BOTTOMRIGHT', 20, -20)
         flash:SetBlendMode('ADD')
         flash:SetAlpha(0)
+
         local anim = flash:CreateAnimationGroup()
         anim:SetLooping('REPEAT')
         anim.rota = anim:CreateAnimation('Rotation')
