@@ -22,13 +22,13 @@ HarmSpells['DEMONHUNTER'] = {
 }
 
 FriendSpells['DRUID'] = {
-    774, -- ['Rejuvenation'], -- 40
+    774,  -- ['Rejuvenation'], -- 40
     2782, -- ['Remove Corruption'], -- 40
 }
 HarmSpells['DRUID'] = {
-    5176, -- ['Wrath'], -- 40
-    339, -- ['Entangling Roots'], -- 35
-    6795, -- ['Growl'], -- 30
+    5176,  -- ['Wrath'], -- 40
+    339,   -- ['Entangling Roots'], -- 35
+    6795,  -- ['Growl'], -- 30
     33786, -- ['Cyclone'], -- 20
     22568, -- ['Ferocious Bite'], -- 5
 }
@@ -51,7 +51,7 @@ FriendSpells['MAGE'] = {
 }
 HarmSpells['MAGE'] = {
     44614, --['Frostfire Bolt'], -- 40
-    5019, -- ['Shoot'], -- 30
+    5019,  -- ['Shoot'], -- 30
 }
 
 FriendSpells['MONK'] = {
@@ -70,16 +70,16 @@ FriendSpells['PALADIN'] = {
 HarmSpells['PALADIN'] = {
     62124, -- ['Reckoning'], -- 30
     20271, -- ['Judgement'], -- 30
-    853, -- ['Hammer of Justice'], -- 10
+    853,   -- ['Hammer of Justice'], -- 10
     35395, -- ['Crusader Strike'], -- 5
 }
 
 FriendSpells['PRIEST'] = {
     527, -- ['Purify'], -- 40
-    17, -- ['Power Word: Shield'], -- 40
+    17,  -- ['Power Word: Shield'], -- 40
 }
 HarmSpells['PRIEST'] = {
-    589, -- ['Shadow Word: Pain'], -- 40
+    589,  -- ['Shadow Word: Pain'], -- 40
     5019, -- ['Shoot'], -- 30
 }
 
@@ -91,19 +91,19 @@ HarmSpells['ROGUE'] = {
 
 FriendSpells['SHAMAN'] = {
     8004, -- ['Healing Surge'], -- 40
-    546, -- ['Water Walking'], -- 30
+    546,  -- ['Water Walking'], -- 30
 }
 HarmSpells['SHAMAN'] = {
     188196, -- ['Lightning Bolt'] Dragonflight -- 40
-    403, -- ['Lightning Bolt'] Classic -- 40
-    370, -- ['Purge'], -- 30
-    73899, -- ['Primal Strike'],. -- 5
+    403,    -- ['Lightning Bolt'] Classic -- 40
+    370,    -- ['Purge'], -- 30
+    73899,  -- ['Primal Strike'],. -- 5
 }
 
 FriendSpells['WARRIOR'] = {}
 HarmSpells['WARRIOR'] = {
-    355, -- ['Taunt'], -- 30
-    100, -- ['Charge'], -- 8-25
+    355,  -- ['Taunt'], -- 30
+    100,  -- ['Charge'], -- 8-25
     5246, -- ['Intimidating Shout'], -- 8
 }
 
@@ -111,10 +111,13 @@ FriendSpells['WARLOCK'] = {
     5697, -- ['Unending Breath'], -- 30
 }
 HarmSpells['WARLOCK'] = {
-    686, -- ['Shadow Bolt'], -- 40
+    686,  -- ['Shadow Bolt'], -- 40
     5019, -- ['Shoot'], -- 30
 }
 
+local InCombatLockdownRestriction = function(unit)
+    return InCombatLockdown() and not UnitCanAttack('player', unit)
+end
 
 local function IsUnitInRange(unit)
     if not unit then return end
@@ -122,7 +125,6 @@ local function IsUnitInRange(unit)
     local canAttack = UnitCanAttack('player', unit)
     local canHelp = UnitCanAssist('player', unit)
     local isFriend = UnitIsFriend('player', unit)
-    local interactDistance = CheckInteractDistance(unit, 1)
     local isVisible = UnitIsVisible(unit)
     local rangeSpells, minRange, maxRange
     local connected = UnitIsConnected(unit)
@@ -153,12 +155,15 @@ local function IsUnitInRange(unit)
         end
         if canHelp then
             minRange, maxRange = libRangeCheck:GetRange(unit, true)
+            if not minRange then minRange = 0 end
             if not maxRange then maxRange = minRange end
             if maxRange < 40 then
                 return true
             end
         end
-        if interactDistance then return true end
+        if not InCombatLockdownRestriction(unit) then
+            if CheckInteractDistance(unit, 1) then return true end
+        end
     end
 
     return false
