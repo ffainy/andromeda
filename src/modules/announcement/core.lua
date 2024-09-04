@@ -101,7 +101,7 @@ function A:COMBAT_LOG_EVENT_UNFILTERED()
 
     if event == 'SPELL_CAST_SUCCESS' then
         A:ImportantSpells(srcGUID, srcName, destName, spellId)
-        A:CombatResurrection(srcName, destName, spellId)
+        A:CombatResurrection(srcGUID, srcName, destName, spellId)
     elseif event == 'SPELL_INTERRUPT' then
         A:Interrupt(srcGUID, srcName, destName, spellId, extraSpellId)
     elseif event == "SPELL_DISPEL" then

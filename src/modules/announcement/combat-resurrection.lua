@@ -23,12 +23,16 @@ local function formatString(msg, srcName, destName, spellId)
     return msg
 end
 
-function A:CombatResurrection(srcName, destName, spellId)
+function A:CombatResurrection(srcGUID, srcName, destName, spellId)
     if not C.DB.Announcement.CombatResurrection then
         return
     end
 
     if not srcName or not destName then
+        return
+    end
+
+    if not (srcGUID == UnitGUID('player') or srcGUID == UnitGUID('pet')) then
         return
     end
 
