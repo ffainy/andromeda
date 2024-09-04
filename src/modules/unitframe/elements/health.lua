@@ -93,7 +93,6 @@ end
 
 function UNITFRAME:CreateHealthBar(self)
     local healthHeight
-    -- stylua: ignore start
     healthHeight = UNITFRAME:GetHeightVal(
         self,
         C.DB.Unitframe.PlayerHealthHeight,
@@ -107,7 +106,6 @@ function UNITFRAME:CreateHealthBar(self)
         C.DB.Unitframe.BossHealthHeight,
         C.DB.Unitframe.ArenaHealthHeight
     )
-    -- stylua: ignore end
 
     local health = CreateFrame('StatusBar', nil, self)
     health:SetPoint('LEFT')

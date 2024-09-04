@@ -109,7 +109,6 @@ local frequentUpdateCheck = {
 
 function UNITFRAME:CreatePowerBar(self)
     local powerHeight
-    -- stylua: ignore start
     powerHeight = UNITFRAME:GetHeightVal(
         self,
         C.DB.Unitframe.PlayerPowerHeight,
@@ -123,7 +122,6 @@ function UNITFRAME:CreatePowerBar(self)
         C.DB.Unitframe.BossPowerHeight,
         C.DB.Unitframe.ArenaPowerHeight
     )
-    -- stylua: ignore end
 
     local power = CreateFrame('StatusBar', nil, self)
     power:SetPoint('LEFT')
