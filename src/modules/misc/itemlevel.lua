@@ -63,17 +63,23 @@ function IL:CreateItemString(frame, strType)
         return
     end
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     for index, slot in pairs(inspectSlots) do
         if index ~= 4 then
             local slotFrame = _G[strType .. slot .. 'Slot']
-            slotFrame.iLvlText =
-                F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+            slotFrame.iLvlText = F.CreateFS(
+                slotFrame,
+                C.Assets.Fonts.Condensed, 11, outline or nil,
+                '', nil, outline and 'NONE' or 'THICK'
+            )
             slotFrame.iLvlText:ClearAllPoints()
             slotFrame.iLvlText:SetPoint('BOTTOMRIGHT', slotFrame, -1, 1)
             local relF, x, y = IL:GetSlotAnchor(index)
-            slotFrame.enchantText =
-                F.CreateFS(slotFrame, C.Assets.Fonts.Bold, 11, outline or nil, '', nil, outline and 'NONE' or 'THICK')
+            slotFrame.enchantText = F.CreateFS(
+                slotFrame,
+                C.Assets.Fonts.Condensed, 11, outline or nil,
+                '', nil, outline and 'NONE' or 'THICK'
+            )
             slotFrame.enchantText:ClearAllPoints()
             slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
             slotFrame.enchantText:SetTextColor(0, 1, 0)
@@ -111,7 +117,7 @@ local function GetSlotItemLocation(id)
 
     local itemLocation = locationCache[id]
     if not itemLocation then
-        itemLocation = _G.ItemLocation:CreateFromEquipmentSlot(id)
+        itemLocation = ItemLocation:CreateFromEquipmentSlot(id)
         locationCache[id] = itemLocation
     end
     return itemLocation
@@ -255,30 +261,24 @@ function IL:ItemLevel_SetupLevel(frame, strType, unit)
 end
 
 function IL:ItemLevel_UpdatePlayer()
-    IL:ItemLevel_SetupLevel(_G.CharacterFrame, 'Character', 'player')
+    IL:ItemLevel_SetupLevel(CharacterFrame, 'Character', 'player')
 end
 
 function IL:ItemLevel_UpdateInspect(...)
     local guid = ...
-    if _G.InspectFrame and _G.InspectFrame.unit and UnitGUID(_G.InspectFrame.unit) == guid then
-        IL:ItemLevel_SetupLevel(_G.InspectFrame, 'Inspect', _G.InspectFrame.unit)
+    if InspectFrame and InspectFrame.unit and UnitGUID(InspectFrame.unit) == guid then
+        IL:ItemLevel_SetupLevel(InspectFrame, 'Inspect', InspectFrame.unit)
     end
 end
 
 function IL:ItemLevel_FlyoutUpdate(bag, slot, quality)
     if not self.iLvl then
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         self.iLvl = F.CreateFS(
             self,
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMRIGHT',
-            -1,
-            1
+            C.Assets.Fonts.Condensed, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMRIGHT', -1, 1 }
         )
     end
 
@@ -311,15 +311,15 @@ function IL:ItemLevel_FlyoutSetup()
     end
 
     if tonumber(location) then
-        if location >= _G.EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
+        if location >= EQUIPMENTFLYOUT_FIRST_SPECIAL_LOCATION then
             return
         end
 
-        local _, _, bags, voidStorage, slot, bag = _G.EquipmentManager_UnpackLocation(location)
+        local _, _, bags, voidStorage, slot, bag = EquipmentManager_UnpackLocation(location)
         if voidStorage then
             return
         end
-        local quality = select(13, _G.EquipmentManager_GetItemInfoByLocation(location))
+        local quality = select(13, EquipmentManager_GetItemInfoByLocation(location))
         if bags then
             IL.ItemLevel_FlyoutUpdate(self, bag, slot, quality)
         else
@@ -340,18 +340,12 @@ end
 
 function IL:ItemLevel_ScrappingUpdate()
     if not self.iLvl then
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         self.iLvl = F.CreateFS(
             self,
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMRIGHT',
-            -1,
-            1
+            C.Assets.Fonts.Condensed, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMRIGHT', -1, 1 }
         )
     end
     if not self.itemLink then
@@ -379,7 +373,7 @@ end
 
 function IL.ItemLevel_ScrappingShow(event, addon)
     if addon == 'Blizzard_ScrappingMachineUI' then
-        hooksecurefunc(_G.ScrappingMachineFrame, 'SetupScrapButtonPool', IL.ItemLevel_ScrappingSetup)
+        hooksecurefunc(ScrappingMachineFrame, 'SetupScrapButtonPool', IL.ItemLevel_ScrappingSetup)
 
         F:UnregisterEvent(event, IL.ItemLevel_ScrappingShow)
     end
@@ -387,18 +381,12 @@ end
 
 function IL:ItemLevel_UpdateMerchant(link)
     if not self.iLvl then
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         self.iLvl = F.CreateFS(
             _G[self:GetName() .. 'ItemButton'],
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMRIGHT',
-            -1,
-            1
+            C.Assets.Fonts.Condensed, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMRIGHT', -1, 1 }
         )
     end
     local quality = link and select(3, C_Item.GetItemInfo(link)) or nil
@@ -447,10 +435,10 @@ function IL:GuildNewsButtonOnClick(btn)
         return
     end
     if btn == 'LeftButton' and IsShiftKeyDown() then
-        if _G.MailFrame:IsShown() then
+        if MailFrame:IsShown() then
             MailFrameTab_OnClick(nil, 2)
-            _G.SendMailNameEditBox:SetText(self.playerName)
-            _G.SendMailNameEditBox:HighlightText()
+            SendMailNameEditBox:SetText(self.playerName)
+            SendMailNameEditBox:HighlightText()
         else
             local editBox = ChatEdit_ChooseBoxForSend()
             local hasText = (editBox:GetText() ~= '')
@@ -472,29 +460,23 @@ function IL:ItemLevel_ReplaceGuildNews(_, _, playerName)
     end
 
     if not self.hooked then
-        self.text:SetFontObject(_G.Game13Font)
+        self.text:SetFontObject(Game13Font)
         self:HookScript('OnClick', IL.GuildNewsButtonOnClick) -- copy name by key shift
         self.hooked = true
     end
 end
 
 function IL:ItemLevel_UpdateLoot()
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     for i = 1, self.ScrollTarget:GetNumChildren() do
         local button = select(i, self.ScrollTarget:GetChildren())
         if button and button.Item and button.GetElementData then
             if not button.iLvl then
                 button.iLvl = F.CreateFS(
                     button.Item,
-                    C.Assets.Fonts.Bold,
-                    11,
-                    outline or nil,
-                    '',
-                    nil,
-                    outline and 'NONE' or 'THICK',
-                    'BOTTOMLEFT',
-                    1,
-                    1
+                    C.Assets.Fonts.Condensed, 11, outline or nil,
+                    '', nil, outline and 'NONE' or 'THICK',
+                    { 'BOTTOMLEFT', 1, 1 }
                 )
             end
 
@@ -512,27 +494,21 @@ function IL:ItemLevel_UpdateLoot()
     end
 end
 
-function IL:ItemLevel_UpdateBags()
+function IL:ItemLevel_UpdateBag()
     local button = self.__owner
 
     if not button.iLvl then
-        local outline = _G.ANDROMEDA_ADB.FontOutline
+        local outline = ANDROMEDA_ADB.FontOutline
         button.iLvl = F.CreateFS(
             button,
-            C.Assets.Fonts.Bold,
-            11,
-            outline or nil,
-            '',
-            nil,
-            outline and 'NONE' or 'THICK',
-            'BOTTOMLEFT',
-            1,
-            1
+            C.Assets.Fonts.Condensed, 11, outline or nil,
+            '', nil, outline and 'NONE' or 'THICK',
+            { 'BOTTOMLEFT', 1, 1 }
         )
     end
 
-    local bagID = button:GetBagID()
-    local slotID = button:GetID()
+    local bagID = button.GetBankTabID and button:GetBankTabID() or button:GetBagID()
+    local slotID = button.GetContainerSlotID and button:GetContainerSlotID() or button:GetID()
     local info = C_Container.GetContainerItemInfo(bagID, slotID)
     local link = info and info.hyperlink
     local quality = info and info.quality
@@ -547,23 +523,30 @@ function IL:ItemLevel_UpdateBags()
     end
 end
 
+function IL:ItemLevel_HandleSlots()
+    for button in self.itemButtonPool:EnumerateActive() do
+        if not button.hooked then
+            button.IconBorder.__owner = button
+            hooksecurefunc(button.IconBorder, 'SetShown', IL.ItemLevel_UpdateBag)
+            button.hooked = true
+        end
+    end
+end
+
 function IL:ItemLevel_Containers()
     if C.DB['Inventory']['Enable'] then
         return
     end
 
     for i = 1, 13 do
-        for _, button in _G['ContainerFrame' .. i]:EnumerateItems() do
-            button.IconBorder.__owner = button
-            hooksecurefunc(button.IconBorder, 'SetShown', IL.ItemLevel_UpdateBags)
+        local frame = _G['ContainerFrame' .. i]
+        if frame then
+            hooksecurefunc(frame, 'UpdateItemSlots', IL.ItemLevel_HandleSlots)
         end
     end
 
-    for i = 1, 28 do
-        local button = _G['BankFrameItem' .. i]
-        button.IconBorder.__owner = button
-        hooksecurefunc(button.IconBorder, 'SetShown', IL.ItemLevel_UpdateBags)
-    end
+    hooksecurefunc(ContainerFrameCombinedBags, 'UpdateItemSlots', IL.ItemLevel_HandleSlots)
+    hooksecurefunc(AccountBankPanel, 'GenerateItemSlotsForSelectedTab', IL.ItemLevel_HandleSlots)
 end
 
 function IL:OnLogin()
@@ -572,7 +555,7 @@ function IL:OnLogin()
     end
 
     -- iLvl on CharacterFrame
-    _G.CharacterFrame:HookScript('OnShow', IL.ItemLevel_UpdatePlayer)
+    CharacterFrame:HookScript('OnShow', IL.ItemLevel_UpdatePlayer)
     F:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', IL.ItemLevel_UpdatePlayer)
 
     -- iLvl on InspectFrame
@@ -580,7 +563,7 @@ function IL:OnLogin()
 
     -- iLvl on FlyoutButtons
     hooksecurefunc('EquipmentFlyout_UpdateItems', function()
-        for _, button in pairs(_G.EquipmentFlyoutFrame.buttons) do
+        for _, button in pairs(EquipmentFlyoutFrame.buttons) do
             if button:IsShown() then
                 IL.ItemLevel_FlyoutSetup(button)
             end
@@ -601,7 +584,7 @@ function IL:OnLogin()
     hooksecurefunc('GuildNewsButton_SetText', IL.ItemLevel_ReplaceGuildNews)
 
     -- iLvl on LootFrame
-    hooksecurefunc(_G.LootFrame.ScrollBox, 'Update', IL.ItemLevel_UpdateLoot)
+    hooksecurefunc(LootFrame.ScrollBox, 'Update', IL.ItemLevel_UpdateLoot)
 
     -- iLvl on default Container
     IL:ItemLevel_Containers()
