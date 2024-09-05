@@ -221,6 +221,10 @@ do
     end
 
     function BLIZZARD:ReskinVigorBar()
+        if C_AddOns.IsAddOnLoaded('WeakAuras') then
+            return
+        end
+
         setupBar()
 
         F:RegisterEvent('PLAYER_ENTERING_WORLD', hookWidgets)
