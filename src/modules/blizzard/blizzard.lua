@@ -229,6 +229,44 @@ do
     end
 end
 
+-- expand the size of MacroFrame
+do
+    local temp = 0
+    local selectorHeight = 100
+    local scrollHeight = 150
+
+    local function fix()
+        if MacroFrame.MacroSelector.ScrollBox.scrollPercentage ~= 0 then
+            temp = MacroFrame.MacroSelector.ScrollBox.scrollPercentage
+        else
+            MacroFrame.MacroSelector.ScrollBox:SetScrollPercentage(temp)
+        end
+    end
+
+    local function hook(event, addon)
+        if addon == 'Blizzard_MacroUI' then
+            hooksecurefunc(MacroFrame, 'SelectMacro', fix)
+
+            MacroFrame.MacroSelector:SetHeight(146 + selectorHeight)
+            MacroHorizontalBarLeft:SetPoint('TOPLEFT', 2, -210 - selectorHeight)
+            MacroFrameSelectedMacroBackground:SetPoint('TOPLEFT', 2, -218 - selectorHeight)
+            MacroFrameTextBackground:SetPoint('TOPLEFT', 6, -289 - selectorHeight)
+
+            local h = MacroFrame:GetHeight()
+            MacroFrame:SetHeight(h + scrollHeight + selectorHeight)
+            MacroFrameScrollFrame:SetHeight(85 + scrollHeight)
+            MacroFrameText:SetHeight(85 + scrollHeight)
+            MacroFrameTextButton:SetHeight(85 + scrollHeight)
+            MacroFrameTextBackground:SetHeight(95 + scrollHeight)
+
+            F:UnregisterEvent(event, hook)
+        end
+    end
+
+    F:RegisterEvent('ADDON_LOADED', hook)
+end
+
+
 -- Kill blizz tutorial, real man dont need these crap
 -- Credit: ketho
 -- https://github.com/ketho-wow/HideTutorial
