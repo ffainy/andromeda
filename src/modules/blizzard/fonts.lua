@@ -2,37 +2,34 @@ local F, C = unpack(select(2, ...))
 
 local NORMAL = C.Assets.Fonts.Regular
 local BOLD = C.Assets.Fonts.Bold
+local CONDENSED = C.Assets.Fonts.Condensed
 local COMBAT = C.Assets.Fonts.Combat
 local HEADER = C.Assets.Fonts.Header
 
-local function replaceFont(obj, font, size, flag, shadow)
+local function replaceFont(obj, font, size)
     if not font then
         F:Debug('ReplaceFont: Unknown font object.')
         return
     end
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     local origFont, origSize = obj:GetFont()
     font = font or origFont
     size = size or origSize
 
     if outline then
         obj:SetFont(font, size, 'OUTLINE')
-    else
-        obj:SetFont(font, size, flag and 'OUTLINE' or '')
-    end
-
-    if shadow then
-        obj:SetShadowColor(0, 0, 0, 1)
-        obj:SetShadowOffset(2, -2)
-    else
         obj:SetShadowColor(0, 0, 0, 1)
         obj:SetShadowOffset(1, -1)
+    else
+        obj:SetFont(font, size, '')
+        obj:SetShadowColor(0, 0, 0, 1)
+        obj:SetShadowOffset(2, -2)
     end
 end
 
 local function reskinBlizzFonts()
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    if not ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
@@ -89,7 +86,6 @@ local function reskinBlizzFonts()
     replaceFont(Game13Font, NORMAL, 13)
     replaceFont(Game13FontShadow, NORMAL, 13)
     replaceFont(Game15Font, NORMAL, 15)
-    replaceFont(Game15Font_Shadow, NORMAL, 15)
     replaceFont(Game16Font, NORMAL, 16)
     replaceFont(Game17Font_Shadow, NORMAL, 17)
     replaceFont(Game18Font, NORMAL, 18)
@@ -130,26 +126,26 @@ local function reskinBlizzFonts()
     replaceFont(Fancy32Font, HEADER, 32)
     replaceFont(Fancy48Font, HEADER, 48)
 
-    replaceFont(NumberFont_GameNormal, NORMAL, 12, true)
-    replaceFont(NumberFont_OutlineThick_Mono_Small, NORMAL, 11, true)
-    replaceFont(Number12Font_o1, NORMAL, 11, true)
-    replaceFont(NumberFont_Small, NORMAL, 11, true)
-    replaceFont(Number11Font, NORMAL, 10, true)
-    replaceFont(Number12Font, NORMAL, 11, true)
-    replaceFont(Number13Font, NORMAL, 12, true)
-    replaceFont(Number15Font, NORMAL, 14, true)
-    replaceFont(Number16Font, NORMAL, 15, true)
-    replaceFont(Number18Font, NORMAL, 17, true)
-    replaceFont(NumberFont_Normal_Med, NORMAL, 13, true)
-    replaceFont(NumberFont_Outline_Med, NORMAL, 13, true)
-    replaceFont(NumberFont_Outline_Large, NORMAL, 16, true)
-    replaceFont(NumberFont_Outline_Huge, HEADER, 20, true)
-    replaceFont(NumberFont_Shadow_Tiny, NORMAL, 10, true)
-    replaceFont(NumberFont_Shadow_Small, NORMAL, 12, true)
-    replaceFont(NumberFont_Shadow_Med, NORMAL, 14, true)
-    replaceFont(NumberFont_Shadow_Large, HEADER, 20, true)
-    replaceFont(PriceFont, NORMAL, 14, true)
-    replaceFont(NumberFontNormalLargeRight, NORMAL, 14, true)
+    replaceFont(NumberFont_GameNormal, CONDENSED, 12)
+    replaceFont(NumberFont_OutlineThick_Mono_Small, CONDENSED, 11)
+    replaceFont(Number12Font_o1, CONDENSED, 11)
+    replaceFont(NumberFont_Small, CONDENSED, 11)
+    replaceFont(Number11Font, CONDENSED, 10)
+    replaceFont(Number12Font, CONDENSED, 11)
+    replaceFont(Number13Font, CONDENSED, 12)
+    replaceFont(Number15Font, CONDENSED, 14)
+    replaceFont(Number16Font, CONDENSED, 15)
+    replaceFont(Number18Font, CONDENSED, 17)
+    replaceFont(NumberFont_Normal_Med, CONDENSED, 13)
+    replaceFont(NumberFont_Outline_Med, CONDENSED, 13)
+    replaceFont(NumberFont_Outline_Large, CONDENSED, 16)
+    replaceFont(NumberFont_Outline_Huge, HEADER, 20)
+    replaceFont(NumberFont_Shadow_Tiny, CONDENSED, 10)
+    replaceFont(NumberFont_Shadow_Small, CONDENSED, 12)
+    replaceFont(NumberFont_Shadow_Med, CONDENSED, 14)
+    replaceFont(NumberFont_Shadow_Large, HEADER, 20)
+    replaceFont(PriceFont, CONDENSED, 14)
+    replaceFont(NumberFontNormalLargeRight, CONDENSED, 14)
 
     replaceFont(SplashHeaderFont, HEADER, 24)
 
@@ -200,11 +196,11 @@ local function reskinBlizzFonts()
 
     replaceFont(System_IME, BOLD, 16)
 
-    replaceFont(SystemFont_NamePlateFixed, HEADER, 9, nil, true)
-    replaceFont(SystemFont_LargeNamePlateFixed, HEADER, 9, nil, true)
-    replaceFont(SystemFont_NamePlate, HEADER, 9, nil, true)
-    replaceFont(SystemFont_LargeNamePlate, HEADER, 9, nil, true)
-    replaceFont(SystemFont_NamePlateCastBar, HEADER, 9, nil, true)
+    replaceFont(SystemFont_NamePlateFixed, HEADER, 9)
+    replaceFont(SystemFont_LargeNamePlateFixed, HEADER, 9)
+    replaceFont(SystemFont_NamePlate, HEADER, 9)
+    replaceFont(SystemFont_LargeNamePlate, HEADER, 9)
+    replaceFont(SystemFont_NamePlateCastBar, HEADER, 9)
 
     replaceFont(ErrorFont, BOLD, 14)
     replaceFont(CombatTextFont, COMBAT, 200) -- improved text quality at high resolution ???
@@ -221,14 +217,11 @@ local function reskinBlizzFonts()
     for i = 12, 22 do
         local font = _G['ObjectiveTrackerFont' .. i]
         if font then
-            replaceFont(font, NORMAL, 13, nil, true)
+            replaceFont(font, NORMAL, 13)
         end
     end
-
-    -- force to whiten some fonts
-    -- GameFontBlack:SetTextColor(1, 1, 1)
-    -- GameFontBlackMedium:SetTextColor(1, 1, 1)
-    -- CoreAbilityFont:SetTextColor(1, 1, 1)
+    replaceFont(ObjectiveTrackerHeaderFont, HEADER, 13)
+    replaceFont(ObjectiveTrackerLineFont, NORMAL, 13)
 
     F:UnregisterEvent('ADDON_LOADED', reskinBlizzFonts)
 end
