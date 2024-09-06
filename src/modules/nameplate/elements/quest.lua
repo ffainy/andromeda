@@ -60,7 +60,8 @@ function NAMEPLATE:UpdateQuestUnit(_, unit)
 
     if questProgress and not isNameOnly then
         self.questCount:SetText(questProgress)
-        self.questIcon:SetAtlas('Warfronts-BaseMapIcons-Horde-Barracks-Minimap')
+        -- self.questIcon:SetAtlas('Warfronts-BaseMapIcons-Horde-Barracks-Minimap')
+        self.questIcon:SetTexture(C.Assets.Textures.QuestMark)
         self.questIcon:Show()
     else
         self.questCount:SetText('')
@@ -76,7 +77,7 @@ function NAMEPLATE:CreateQuestIndicator(frame)
     local height = C.DB.Nameplate.Height
     local qicon = frame:CreateTexture(nil, 'OVERLAY', nil, 2)
     qicon:SetPoint('LEFT', frame, 'RIGHT', 3, 0)
-    qicon:SetSize(height + 10, height + 10)
+    qicon:SetSize(height + 5, height + 5)
     qicon:SetAtlas('adventureguide-microbutton-alert')
     qicon:Hide()
 

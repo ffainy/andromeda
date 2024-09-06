@@ -42,7 +42,7 @@ C.Assets = {
         ButtonPushed          = C.ASSET_PATH .. 'textures\\button\\button-pushed',
         ButtonChecked         = C.ASSET_PATH .. 'textures\\button\\button-checked',
         ButtonHighlight       = C.ASSET_PATH .. 'textures\\button\\button-highlight',
-
+        QuestMark             = C.ASSET_PATH .. 'textures\\quest',
         MenuBarAchievement    = C.ASSET_PATH .. 'textures\\menu\\menu-achievement',
         MenuBarBag            = C.ASSET_PATH .. 'textures\\menu\\menu-bag',
         MenuBarCalendar       = C.ASSET_PATH .. 'textures\\menu\\menu-calendar',
