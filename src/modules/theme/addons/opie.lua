@@ -80,7 +80,7 @@ local function constructor(name, parent, size)
     local highlight = button:CreateTexture(nil, 'OVERLAY')
     highlight:SetAllPoints()
     highlight:SetTexture(textures.highlight)
-    highlight:SetVertexColor(1, 1, 2 / 5, 1 / 4)
+    highlight:SetVertexColor(1, 1, 1, 1)
     button.Highlight = highlight
 
     local outline = ANDROMEDA_ADB.FontOutline
