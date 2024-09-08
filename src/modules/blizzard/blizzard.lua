@@ -235,21 +235,26 @@ end
 
 -- expand the size of MacroFrame
 do
-    local temp = 0
+    local tempScrollPer
     local selectorHeight = 100
     local scrollHeight = 150
 
-    local function fix()
-        if MacroFrame.MacroSelector.ScrollBox.scrollPercentage ~= 0 then
-            temp = MacroFrame.MacroSelector.ScrollBox.scrollPercentage
-        else
-            MacroFrame.MacroSelector.ScrollBox:SetScrollPercentage(temp)
+    local function selectMacro()
+        if tempScrollPer then
+            MacroFrame.MacroSelector.ScrollBox:SetScrollPercentage(tempScrollPer)
+            tempScrollPer = nil
+        end
+    end
+
+    local function updateMacro()
+        if MacroFrame then
+            tempScrollPer = MacroFrame.MacroSelector.ScrollBox.scrollPercentage
         end
     end
 
     local function hook(event, addon)
         if addon == 'Blizzard_MacroUI' then
-            hooksecurefunc(MacroFrame, 'SelectMacro', fix)
+            hooksecurefunc(MacroFrame, 'SelectMacro', selectMacro)
 
             MacroFrame.MacroSelector:SetHeight(146 + selectorHeight)
             MacroHorizontalBarLeft:SetPoint('TOPLEFT', 2, -210 - selectorHeight)
@@ -268,6 +273,7 @@ do
     end
 
     F:RegisterEvent('ADDON_LOADED', hook)
+    F:RegisterEvent('UPDATE_MACROS', updateMacro)
 end
 
 
