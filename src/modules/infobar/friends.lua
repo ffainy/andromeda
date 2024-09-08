@@ -30,7 +30,7 @@ local function buildFriendTable(num)
 
     for i = 1, num do
         local info = C_FriendList.GetFriendInfoByIndex(i)
-        if info and INFOBAR.connected then
+        if info and info.connected then
             local status = FRIENDS_TEXTURE_ONLINE
             if info.afk then
                 status = FRIENDS_TEXTURE_AFK
@@ -38,12 +38,12 @@ local function buildFriendTable(num)
                 status = FRIENDS_TEXTURE_DND
             end
 
-            local class = C.ClassList[INFOBAR.className]
+            local class = C.ClassList[info.className]
             tinsert(
                 friendTable,
                 {
-                    INFOBAR.name, INFOBAR.level, class,
-                    INFOBAR.area, status, info.notes,
+                    info.name, info.level, class,
+                    info.area, status, info.notes,
                 }
             )
         end
