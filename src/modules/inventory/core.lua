@@ -932,12 +932,14 @@ local function getBindType(bagId, slotId)
         if str then
             if (str:GetText() == ITEM_SOULBOUND) then
                 return '1'
-            elseif (str:GetText() == ITEM_ACCOUNTBOUND_UNTIL_EQUIP) then
+            elseif (str:GetText() == (ITEM_ACCOUNTBOUND_UNTIL_EQUIP or ITEM_BIND_TO_ACCOUNT_UNTIL_EQUIP)) then
                 return '2'
-            elseif (str:GetText() == ITEM_BIND_ON_EQUIP) then
+            elseif (str:GetText() == (ITEM_ACCOUNTBOUND or ITEM_BNETACCOUNTBOUND)) then
                 return '3'
-            elseif (str:GetText() == ITEM_BIND_ON_USE) then
+            elseif (str:GetText() == ITEM_BIND_ON_EQUIP) then
                 return '4'
+            elseif (str:GetText() == ITEM_BIND_ON_USE) then
+                return '5'
             end
         end
     end
@@ -1326,8 +1328,10 @@ function INVENTORY:OnLogin()
             elseif bt == '2' then
                 self.BindType:SetText('|cff00ccffWuE|r')
             elseif bt == '3' then
-                self.BindType:SetText('|cff1eff00BoE|r')
+                self.BindType:SetText('|cff00ccffBoW|r')
             elseif bt == '4' then
+                self.BindType:SetText('|cff1eff00BoE|r')
+            elseif bt == '5' then
                 self.BindType:SetText('|cff1eff00BoU|r')
             end
         end
