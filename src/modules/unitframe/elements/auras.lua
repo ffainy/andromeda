@@ -9,7 +9,7 @@ do
     end
 
     function UNITFRAME:MODIFIER_STATE_CHANGED(key, state)
-        if key ~= 'RALT' then
+        if key ~= 'RCTRL' then
             return
         end
 
