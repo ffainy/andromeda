@@ -1,11 +1,11 @@
 local F, C = unpack(select(2, ...))
 
 tinsert(C.BlizzThemes, function()
-    if not _G.ANDROMEDA_ADB.ReskinBlizz then
+    if not ANDROMEDA_ADB.ReskinBlizz then
         return
     end
 
-    local frame = _G.SettingsPanel
+    local frame = SettingsPanel
 
     F.StripTextures(frame)
     F.SetBD(frame)
@@ -61,36 +61,6 @@ tinsert(C.BlizzThemes, function()
     cBg:SetPoint('TOPLEFT', 1, 6)
     F.ReskinButton(frame.Container.SettingsList.Header.DefaultsButton)
     F.ReskinTrimScroll(frame.Container.SettingsList.ScrollBar)
-
-    local function reskinDropdownArrow(button, direction)
-        button.NormalTexture:SetAlpha(0)
-        button.PushedTexture:SetAlpha(0)
-        button:GetHighlightTexture():SetAlpha(0)
-
-        local dis = button:GetDisabledTexture()
-        F.SetupArrow(dis, direction)
-        dis:SetVertexColor(0, 0, 0, 0.7)
-        dis:SetDrawLayer('OVERLAY')
-        dis:SetInside(button, 4, 4)
-
-        local tex = button:CreateTexture(nil, 'ARTWORK')
-        tex:SetInside(button, 4, 4)
-        F.SetupArrow(tex, direction)
-        button.__texture = tex
-        button:HookScript('OnEnter', F.Texture_OnEnter)
-        button:HookScript('OnLeave', F.Texture_OnLeave)
-    end
-
-    local function reskinOptionDropDown(option)
-        local button = option.Button
-        F.ReskinButton(button)
-        button.__bg:SetInside(button, 6, 6)
-        button.NormalTexture:SetAlpha(0)
-        button.HighlightTexture:SetAlpha(0)
-
-        reskinDropdownArrow(option.DecrementButton, 'left')
-        reskinDropdownArrow(option.IncrementButton, 'right')
-    end
 
     local function reskinDropdown(option)
         F.ReskinButton(option.Dropdown)
@@ -160,20 +130,10 @@ tinsert(C.BlizzThemes, function()
                     bg:SetPoint('BOTTOMRIGHT', -30, -5)
                 end
 
-                if child.CheckBox then
-                    F.ReskinCheckbox(child.CheckBox)
-                    child.CheckBox.bg:SetInside(nil, 6, 6)
-                    hooksecurefunc(child, 'DesaturateHierarchy', forceSaturation)
-                end
-
                 if child.Checkbox then
                     F.ReskinCheckbox(child.Checkbox)
                     child.Checkbox.bg:SetInside(nil, 6, 6)
                     hooksecurefunc(child, 'DesaturateHierarchy', forceSaturation)
-                end
-
-                if child.ColorBlindFilterDropDown then
-                    reskinOptionDropDown(child.ColorBlindFilterDropDown)
                 end
 
                 if child.Control then
@@ -273,12 +233,12 @@ tinsert(C.BlizzThemes, function()
         end
     end
 
-    if _G.CompactUnitFrameProfilesSeparator then
-        _G.CompactUnitFrameProfilesSeparator:SetAtlas('Options_HorizontalDivider')
+    if CompactUnitFrameProfilesSeparator then
+        CompactUnitFrameProfilesSeparator:SetAtlas('Options_HorizontalDivider')
     end
 
-    if _G.CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG then
-        _G.CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG:Hide()
-        F.CreateBDFrame(_G.CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG, 0.25)
+    if CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG then
+        CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG:Hide()
+        F.CreateBDFrame(CompactUnitFrameProfilesGeneralOptionsFrameAutoActivateBG, 0.25)
     end
 end)
