@@ -18,65 +18,66 @@ local blacklist = {
 -- quests that doesn't have a defined area on the map (questID = bool/mapID/{mapID,...})
 -- these have low priority during collision
 local inaccurateQuestAreas = {
-    [11731] = { 84, 87, 103 }, -- alliance capitals (missing Darnassus)
-    [11921] = { 84, 87, 103 }, -- alliance capitals (missing Darnassus)
-    [11922] = { 18, 85, 88, 110 }, -- horde capitals
-    [11926] = { 18, 85, 88, 110 }, -- horde capitals
-    [12779] = 124, -- Scarlet Enclave (Death Knight starting zone)
-    [13998] = 11, -- Northern Barrens
-    [14246] = 66, -- Desolace
-    [24440] = 7, -- Mulgore
-    [24456] = 7, -- Mulgore
-    [24524] = 7, -- Mulgore
+    [11731] = { 84, 87, 103 },              -- alliance capitals (missing Darnassus)
+    [11921] = { 84, 87, 103 },              -- alliance capitals (missing Darnassus)
+    [11922] = { 18, 85, 88, 110 },          -- horde capitals
+    [11926] = { 18, 85, 88, 110 },          -- horde capitals
+    [12779] = 124,                          -- Scarlet Enclave (Death Knight starting zone)
+    [13998] = 11,                           -- Northern Barrens
+    [14246] = 66,                           -- Desolace
+    [24440] = 7,                            -- Mulgore
+    [24456] = 7,                            -- Mulgore
+    [24524] = 7,                            -- Mulgore
     [24629] = { 84, 85, 87, 88, 103, 110 }, -- major capitals (missing Darnassus & Undercity)
-    [25577] = 198, -- Mount Hyjal
-    [29506] = 407, -- Darkmoon Island
-    [29510] = 407, -- Darkmoon Island
-    [29515] = 407, -- Darkmoon Island
-    [29516] = 407, -- Darkmoon Island
-    [29517] = 407, -- Darkmoon Island
-    [49813] = true, -- anywhere
-    [49846] = true, -- anywhere
-    [49860] = true, -- anywhere
-    [49864] = true, -- anywhere
-    [25798] = 64, -- Thousand Needles
-    [25799] = 64, -- Thousand Needles
-    [34461] = 590, -- Horde Garrison
+    [25577] = 198,                          -- Mount Hyjal
+    [29506] = 407,                          -- Darkmoon Island
+    [29510] = 407,                          -- Darkmoon Island
+    [29515] = 407,                          -- Darkmoon Island
+    [29516] = 407,                          -- Darkmoon Island
+    [29517] = 407,                          -- Darkmoon Island
+    [49813] = true,                         -- anywhere
+    [49846] = true,                         -- anywhere
+    [49860] = true,                         -- anywhere
+    [49864] = true,                         -- anywhere
+    [25798] = 64,                           -- Thousand Needles
+    [25799] = 64,                           -- Thousand Needles
+    [34461] = 590,                          -- Horde Garrison
     [59809] = true,
-    [60004] = 118, -- 前夕任务：英勇之举
-    [63971] = 1543, -- 法夜突袭，蜗牛践踏
+    [60004] = 118,                          -- 前夕任务：英勇之举
+    [63971] = 1543,                         -- 法夜突袭，蜗牛践踏
+    [79960] = 2255,
 }
 
 -- items that should be used for a quest but aren't (questID = itemID)
 -- these have low priority during collision
 local questItems = {
-    [10129] = 28038, -- Hellfire Peninsula
-    [10146] = 28038, -- Hellfire Peninsula
-    [10162] = 28132, -- Hellfire Peninsula
-    [10163] = 28132, -- Hellfire Peninsula
-    [10346] = 28132, -- Hellfire Peninsula
-    [10347] = 28132, -- Hellfire Peninsula
-    [11617] = 34772, -- Borean Tundra
-    [11633] = 34782, -- Borean Tundra
-    [11894] = 35288, -- Borean Tundra
-    [11982] = 35734, -- Grizzly Hills
-    [11986] = 35739, -- Grizzly Hills
-    [11989] = 38083, -- Grizzly Hills
-    [12026] = 35739, -- Grizzly Hills
-    [12415] = 37716, -- Grizzly Hills
-    [12007] = 35797, -- Grizzly Hills
-    [12456] = 37881, -- Dragonblight
-    [12470] = 37923, -- Dragonblight
-    [12484] = 38149, -- Grizzly Hills
-    [12661] = 41390, -- Zul'Drak
-    [12713] = 38699, -- Zul'Drak
-    [12861] = 41161, -- Zul'Drak
-    [13343] = 44450, -- Dragonblight
-    [29821] = 84157, -- Jade Forest
-    [31112] = 84157, -- Jade Forest
-    [31769] = 89769, -- Jade Forest
-    [35237] = 11891, -- Ashenvale
-    [36848] = 36851, -- Grizzly Hills
+    [10129] = 28038,  -- Hellfire Peninsula
+    [10146] = 28038,  -- Hellfire Peninsula
+    [10162] = 28132,  -- Hellfire Peninsula
+    [10163] = 28132,  -- Hellfire Peninsula
+    [10346] = 28132,  -- Hellfire Peninsula
+    [10347] = 28132,  -- Hellfire Peninsula
+    [11617] = 34772,  -- Borean Tundra
+    [11633] = 34782,  -- Borean Tundra
+    [11894] = 35288,  -- Borean Tundra
+    [11982] = 35734,  -- Grizzly Hills
+    [11986] = 35739,  -- Grizzly Hills
+    [11989] = 38083,  -- Grizzly Hills
+    [12026] = 35739,  -- Grizzly Hills
+    [12415] = 37716,  -- Grizzly Hills
+    [12007] = 35797,  -- Grizzly Hills
+    [12456] = 37881,  -- Dragonblight
+    [12470] = 37923,  -- Dragonblight
+    [12484] = 38149,  -- Grizzly Hills
+    [12661] = 41390,  -- Zul'Drak
+    [12713] = 38699,  -- Zul'Drak
+    [12861] = 41161,  -- Zul'Drak
+    [13343] = 44450,  -- Dragonblight
+    [29821] = 84157,  -- Jade Forest
+    [31112] = 84157,  -- Jade Forest
+    [31769] = 89769,  -- Jade Forest
+    [35237] = 11891,  -- Ashenvale
+    [36848] = 36851,  -- Grizzly Hills
     [37565] = 118330, -- Azsuna
     [39385] = 128287, -- Stormheim
     [39847] = 129047, -- Dalaran (Broken Isles)
@@ -92,14 +93,28 @@ local questItems = {
     [60188] = 178464, -- Night Fae Covenant
     [60649] = 180170, -- Ardenweald
     [60609] = 180008, -- Ardenweald
+    [61708] = 174043, -- Maldraxxus, untested
+    [63892] = 185963, -- Korthia
+    [12022] = 169219, -- Brewfest
+    [12191] = 169219, -- Brewfest
+    [66439] = 192545, -- The Waking Shores
+    [77891] = 209017, -- Emerald Dream
+    [77483] = 202247, -- Technoscrying
+    [77484] = 202247, -- Technoscrying
+    [77434] = 202247, -- Technoscrying
+    [78931] = 202247, -- Technoscrying
+    [78820] = 202247, -- Technoscrying
+    [78616] = 202247, -- Technoscrying
+    [78755] = 211483, -- Khaz Algar
+    [79960] = 216664, -- Azj
 }
 
 -- items that need to be shown, but not. (itemID = bool/mapID)
 local completeShownItems = {
-    [35797] = 116, -- Grizzly Hills
-    [60273] = 50, -- Northern Stranglethorn Vale
+    [35797] = 116,  -- Grizzly Hills
+    [60273] = 50,   -- Northern Stranglethorn Vale
     [52853] = true, -- Mount Hyjal
-    [41058] = 120, -- Storm Peaks
+    [41058] = 120,  -- Storm Peaks
     [177904] = true,
 }
 
@@ -218,12 +233,12 @@ function ExtraQuestButton:UPDATE_BINDINGS()
 end
 
 function ExtraQuestButton:PLAYER_LOGIN()
-    _G.RegisterStateDriver(self, 'visible', visibilityState)
+    RegisterStateDriver(self, 'visible', visibilityState)
     self:SetAttribute('_onattributechanged', onAttributeChanged)
     self:SetAttribute('type', 'item')
 
-    self:SetSize(_G.ExtraActionButton1:GetSize())
-    self:SetScale(_G.ExtraActionButton1:GetScale())
+    self:SetSize(ExtraActionButton1:GetSize())
+    self:SetScale(ExtraActionButton1:GetScale())
     self:SetScript('OnLeave', F.HideTooltip)
     self:SetClampedToScreen(true)
     self:SetToplevel(true)
@@ -294,13 +309,13 @@ end)
 
 ExtraQuestButton:SetScript('OnUpdate', function(self, elapsed)
     if self.updateRange then
-        if not InCombatLockdown() and ((self.rangeTimer or 0) > _G.TOOLTIP_UPDATE_TIME) then
+        if not InCombatLockdown() and ((self.rangeTimer or 0) > TOOLTIP_UPDATE_TIME) then
             local HotKey = self.HotKey
             local Icon = self.Icon
 
             -- BUG: C_Item.IsItemInRange() is broken versus friendly npcs (and possibly others)
             local inRange = C_Item.IsItemInRange(self.itemLink, 'target')
-            if HotKey:GetText() == _G.RANGE_INDICATOR then
+            if HotKey:GetText() == RANGE_INDICATOR then
                 if inRange == false then
                     HotKey:SetTextColor(1, 0.1, 0.1)
                     HotKey:Show()
@@ -337,7 +352,7 @@ ExtraQuestButton:SetScript('OnUpdate', function(self, elapsed)
 end)
 
 ExtraQuestButton:SetScript('OnEnable', function(self)
-    _G.RegisterStateDriver(self, 'visible', visibilityState)
+    RegisterStateDriver(self, 'visible', visibilityState)
     self:SetAttribute('_onattributechanged', onAttributeChanged)
     self:Update()
     self:SetItem()
@@ -348,7 +363,7 @@ ExtraQuestButton:SetScript('OnDisable', function(self)
         self:SetMovable(true)
     end
 
-    _G.RegisterStateDriver(self, 'visible', 'show')
+    RegisterStateDriver(self, 'visible', 'show')
     self:SetAttribute('_onattributechanged', nil)
     self.Icon:SetTexture([[Interface\Icons\INV_Misc_Wrench_01]])
     self.HotKey:Hide()
@@ -378,7 +393,7 @@ function ExtraQuestButton:SetItem(itemLink)
             HotKey:SetText(GetBindingText(key, 1))
             HotKey:Show()
         elseif hasRange then
-            HotKey:SetText(_G.RANGE_INDICATOR)
+            HotKey:SetText(RANGE_INDICATOR)
             HotKey:Show()
         else
             HotKey:Hide()
