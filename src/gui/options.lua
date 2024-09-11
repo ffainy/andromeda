@@ -58,6 +58,10 @@ local function SetupCooldownCount()
     GUI:SetupCooldownCount(GUI.Page[5])
 end
 
+local function toggleActionBarGlow()
+    ACTIONBAR:UpdateOverlays()
+end
+
 -- Chat
 
 local function UpdateWhisperSticky()
@@ -1305,7 +1309,6 @@ GUI.OptionsList = {
             nil,
             L['You can mouse wheel on actionbar buttons, and send its cooldown status to your group.'],
         },
-
         {
             1,
             'Actionbar',
@@ -1315,6 +1318,16 @@ GUI.OptionsList = {
             nil,
             nil,
             L['Display spell you are currently pressing.'],
+        },
+        {
+            1,
+            'Actionbar',
+            'ShowGlow',
+            L['Spell Activate Glow'],
+            nil,
+            nil,
+            toggleActionBarGlow,
+            L['Display spell activate glow on actionbar.'],
         },
         {},
         {
