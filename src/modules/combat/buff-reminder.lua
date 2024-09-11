@@ -4,7 +4,7 @@ local COMBAT = F:GetModule('Combat')
 local buffsList = {
     ITEMS = {
         {
-            itemID = 190384, -- 9.0永久属性符文
+            itemID = 190384,     -- 9.0永久属性符文
             spells = {
                 [393438] = true, -- 巨龙强化符文 itemID 201325
                 [367405] = true, -- 永久符文buff
@@ -25,8 +25,7 @@ local buffsList = {
     MAGE = {
         {
             spells = {
-                -- 奥术魔宠
-                [210126] = true,
+                [210126] = true, -- 奥术魔宠
             },
             depend = 205022,
             spec = 1,
@@ -36,8 +35,7 @@ local buffsList = {
         },
         {
             spells = {
-                -- 奥术智慧
-                [1459] = true,
+                [1459] = true, -- 奥术智慧
             },
             depend = 1459,
             instance = true,
@@ -46,8 +44,7 @@ local buffsList = {
     PRIEST = {
         {
             spells = {
-                -- 真言术耐
-                [21562] = true,
+                [21562] = true, -- 真言术耐
             },
             depend = 21562,
             instance = true,
@@ -56,8 +53,7 @@ local buffsList = {
     WARRIOR = {
         {
             spells = {
-                -- 战斗怒吼
-                [6673] = true,
+                [6673] = true, -- 战斗怒吼
             },
             depend = 6673,
             instance = true,
@@ -67,8 +63,9 @@ local buffsList = {
         {
             spells = {
                 [192106] = true, -- 闪电之盾
-                [974] = true, -- 大地之盾
-                [52127] = true, -- 水之护盾
+                [974] = true,    -- 大地之盾
+                [383648] = true, -- 大地之盾
+                [52127] = true,  -- 水之护盾
             },
             depend = 192106,
             combat = true,
@@ -109,8 +106,8 @@ local buffsList = {
         {
             spells = {
                 -- 伤害类毒药
-                [2823] = true, -- 致命药膏
-                [8679] = true, -- 致伤药膏
+                [2823] = true,   -- 致命药膏
+                [8679] = true,   -- 致伤药膏
                 [315584] = true, -- 速效药膏
                 [381664] = true, -- 增效药膏
             },
@@ -123,8 +120,8 @@ local buffsList = {
         {
             spells = {
                 -- 效果类毒药
-                [3408] = true, -- 减速药膏
-                [5761] = true, -- 迟钝药膏
+                [3408] = true,   -- 减速药膏
+                [5761] = true,   -- 迟钝药膏
                 [381637] = true, -- 萎缩药膏
             },
             depend = 3408,
