@@ -380,3 +380,18 @@ function ACTIONBAR:CreateBars()
         end
     end)
 end
+
+function ACTIONBAR:UpdateOverlays()
+    local eventFrame = LAB.eventFrame
+    if not eventFrame then return end
+
+    if C.DB['Actionbar']['ShowGlow'] then
+        eventFrame.showGlow = true
+        eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW')
+        eventFrame:RegisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_HIDE')
+    else
+        eventFrame.showGlow = false
+        eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_SHOW')
+        eventFrame:UnregisterEvent('SPELL_ACTIVATION_OVERLAY_GLOW_HIDE')
+    end
+end

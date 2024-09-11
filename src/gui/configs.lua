@@ -531,6 +531,7 @@ C.CharacterSettings = {
         BindType = 1,
         KeyFeedback = true,
         Grid = true,
+        showGlow = true,
 
         BarPreset = 1,
         ButtonMargin = 3,
