@@ -50,7 +50,7 @@ function BLIZZARD:UpdateProfessions()
         end
     end
 
-    if isCook and PlayerHasToy(CHEF_HAT) and C_ToyBox.IsToyUsable(CHEF_HAT) then
+    if isCook and PlayerHasToy(CHEF_HAT) then
         BLIZZARD:TradeTabs_Create(nil, CHEF_HAT)
     end
     if C_Item.GetItemCount(THERMAL_ANVIL) > 0 then
@@ -106,7 +106,7 @@ function BLIZZARD:TradeTabs_Create(spellID, toyID, itemID)
     if toyID then
         _, name, texture = C_ToyBox.GetToyInfo(toyID)
     elseif itemID then
-        name, _, _, _, _, _, _, _, _, texture = C_Item.GetItemInfo(itemID)
+        name, texture = C_Item.GetItemNameByID(itemID), C_Item.GetItemIconByID(itemID)
     else
         name, texture = C_Spell.GetSpellName(spellID), C_Spell.GetSpellTexture(spellID)
     end
@@ -178,11 +178,8 @@ function BLIZZARD:TradeTabs_FilterIcons()
         local bu = CreateFrame('Button', nil, ProfessionsFrame.CraftingPage.RecipeList, 'BackdropTemplate')
         bu:SetSize(22, 22)
         bu:SetPoint(
-            'BOTTOMRIGHT',
-            ProfessionsFrame.CraftingPage.RecipeList.FilterButton,
-            'TOPRIGHT',
-            -(index - 1) * 27,
-            10
+            'BOTTOMRIGHT', ProfessionsFrame.CraftingPage.RecipeList.FilterDropdown, 'TOPRIGHT',
+            -(index - 1) * 26 + 7, 10
         )
         F.PixelIcon(bu, value[1], true)
         F.AddTooltip(bu, 'ANCHOR_TOP', value[2])
