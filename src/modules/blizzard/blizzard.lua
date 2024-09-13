@@ -329,7 +329,7 @@ do
 
     hooksecurefunc('NPE_CheckTutorials', function()
         if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel('player') == 1 then
-            F:Print('Disabling NPE tutorial.')
+            F.Print('Disabling NPE tutorial.')
             SetCVar('showTutorials', 0)
         end
     end)

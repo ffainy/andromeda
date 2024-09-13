@@ -7,7 +7,7 @@ local function delayFunc()
     if isBankEmpty then
         autoRepair(true)
     else
-        F:Print(
+        F.Print(
             format(
                 C.GREEN_COLOR .. '%s|r %s',
                 L['Repair cost covered by Guild Bank'],
@@ -40,12 +40,12 @@ function autoRepair(override)
         else
             if myMoney > repairAllCost then
                 RepairAllItems()
-                F:Print(
+                F.Print(
                     format(C.GREEN_COLOR .. '%s|r %s', L['Repair cost'], GetMoneyString(repairAllCost, true))
                 )
                 return
             else
-                F:Print(C.RED_COLOR .. L['You have insufficient funds to repair your equipment!'])
+                F.Print(C.RED_COLOR .. L['You have insufficient funds to repair your equipment!'])
                 return
             end
         end

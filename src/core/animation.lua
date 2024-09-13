@@ -425,7 +425,7 @@ end
 
 function F.CreateAnimationGroup(frame, name)
     if not frame then
-        F:Debug('Animation.CreateAnimationGroup: frame not found')
+        F.Debug('Animation.CreateAnimationGroup: frame not found')
         return
     end
 
@@ -442,7 +442,7 @@ function F.AddTranslation(animationGroup, name)
         return
     end
     if not name then
-        F:Debug('Animation.AddTranslation: name not found')
+        F.Debug('Animation.AddTranslation: name not found')
         return
     end
 
@@ -453,12 +453,12 @@ end
 
 function F.AddFadeIn(animationGroup, name)
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.AddFadeIn: animation group not found')
+        F.Debug('Animation.AddFadeIn: animation group not found')
         return
     end
 
     if not name then
-        F:Debug('Animation.AddFadeIn: name not found')
+        F.Debug('Animation.AddFadeIn: name not found')
         return
     end
 
@@ -472,12 +472,12 @@ end
 
 function F.AddFadeOut(animationGroup, name)
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.AddFadeOut: animation group not found')
+        F.Debug('Animation.AddFadeOut: animation group not found')
         return
     end
 
     if not name then
-        F:Debug('Animation.AddFadeOut: name not found')
+        F.Debug('Animation.AddFadeOut: name not found')
         return
     end
 
@@ -491,22 +491,22 @@ end
 
 function F.AddScale(animationGroup, name, fromScale, toScale)
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.AddScale: animation group not found')
+        F.Debug('Animation.AddScale: animation group not found')
         return
     end
 
     if not name then
-        F:Debug('Animation.AddScale: name not found')
+        F.Debug('Animation.AddScale: name not found')
         return
     end
 
     if not fromScale or type(fromScale) ~= 'table' or getn(fromScale) < 2 then
-        F:Debug('Animation.AddScale: invalid fromScale (x, y)')
+        F.Debug('Animation.AddScale: invalid fromScale (x, y)')
         return
     end
 
     if not toScale or type(toScale) ~= 'table' or getn(toScale) < 2 then
-        F:Debug('Animation.AddScale: invalid toScale (x, y)')
+        F.Debug('Animation.AddScale: invalid toScale (x, y)')
         return
     end
 
@@ -523,7 +523,7 @@ function F.PlayAnimationOnShow(frame, animationGroup)
     end
 
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.PlayAnimationOnShow: animation group not found')
+        F.Debug('Animation.PlayAnimationOnShow: animation group not found')
         return
     end
 
@@ -538,7 +538,7 @@ function F.CloseAnimationOnHide(frame, animationGroup, callback)
     end
 
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.CloseAnimationOnHide: animation group not found')
+        F.Debug('Animation.CloseAnimationOnHide: animation group not found')
         return
     end
 
@@ -552,17 +552,17 @@ end
 
 function F.SpeedAnimationGroup(animationGroup, speed)
     if not speed or type(speed) ~= 'number' then
-        F:Debug('Animation.SpeedAnimationGroup: speed not found')
+        F.Debug('Animation.SpeedAnimationGroup: speed not found')
         return
     end
 
     if not (animationGroup and animationGroup:IsObjectType('AnimationGroup')) then
-        F:Debug('Animation.SpeedAnimationGroup: animation group not found')
+        F.Debug('Animation.SpeedAnimationGroup: animation group not found')
         return
     end
 
     if not animationGroup.GetAnimations then
-        F:Debug('Animation.SpeedAnimationGroup: animation not found')
+        F.Debug('Animation.SpeedAnimationGroup: animation not found')
         return
     end
 

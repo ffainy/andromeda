@@ -50,7 +50,7 @@ local function onEvent(_, id)
             local x, y = position:GetXY()
             nameStr = format(rareStr, mapID, x * 10000, y * 10000, info.name, x * 100, y * 100, '')
         end
-        F:Print(tex .. C.INFO_COLOR .. (nameStr or info.name or ''))
+        F.Print(tex .. C.INFO_COLOR .. (nameStr or info.name or ''))
 
         cache[id] = true
     end

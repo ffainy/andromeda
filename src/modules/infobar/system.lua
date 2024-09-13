@@ -270,7 +270,7 @@ local function onMouseUp(self, btn)
         end
         local before = gcinfo()
         collectgarbage('collect')
-        F:Print(format('%s %s', L['Collect Memory'], formatMemory(before - gcinfo())))
+        F.Print(format('%s %s', L['Collect Memory'], formatMemory(before - gcinfo())))
         onEnter(self)
     elseif btn == 'RightButton' and scriptProfileStatus then
         self.showMemory = not self.showMemory

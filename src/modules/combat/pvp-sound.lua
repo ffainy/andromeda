@@ -60,7 +60,7 @@ local function prtMsg(str)
         return
     end
 
-    F:Print(str)
+    F.Print(str)
 end
 
 local function resetAll()

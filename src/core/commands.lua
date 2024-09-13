@@ -30,7 +30,7 @@ F:RegisterSlashCommand('/and', function(msg)
     elseif strmatch(str, 'keybinding') or strmatch(str, 'kb') then
         SlashCmdList['ANDROMEDA_KEY_BINDING']('')
     elseif strmatch(str, 'ver') or strmatch(str, 'version') then
-        F:Printf('version: %s', C.ADDON_VERSION)
+        F.Print('version: %s', C.ADDON_VERSION)
     else
         GUI:ToggleCheatSheet()
         PlaySoundFile(C.Assets.Sounds.PhubIntro, 'Master')
@@ -56,7 +56,7 @@ F:RegisterSlashCommand('/convert', function()
             C_PartyInfo.ConvertToRaid()
         end
     else
-        F:Print('|cffff2020' .. ERR_NOT_IN_GROUP .. '|r')
+        F.Print('|cffff2020' .. ERR_NOT_IN_GROUP .. '|r')
     end
 end)
 
@@ -90,7 +90,7 @@ F:RegisterSlashCommand('/ms', function()
     if IsMounted() then
         DoEmote('MOUNTSPECIAL')
     else
-        F:Print('You are |cffff2020NOT|r mounted.')
+        F.Print('You are |cffff2020NOT|r mounted.')
     end
 end)
 
@@ -109,10 +109,10 @@ F:RegisterSlashCommand('/spec', function(msg)
                 SetSpecialization(specID)
             end
         else
-            F:Print('|cffff2020' .. failureReason)
+            F.Print('|cffff2020' .. failureReason)
         end
     else
-        F:Print('Please enter the |cffff2020SPECIALIZATION NUMBER|r.')
+        F.Print('Please enter the |cffff2020SPECIALIZATION NUMBER|r.')
     end
 end)
 

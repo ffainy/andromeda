@@ -64,7 +64,7 @@ function A:CheckImportantSpells()
                 _G.ANDROMEDA_ADB['AnnounceableSpellsList'][spellID] = nil
             end
         else
-            F:Debug('CheckAnnounceableSpells: Invalid Spell ID ' .. spellID)
+            F.Debug('CheckAnnounceableSpells: Invalid Spell ID ' .. spellID)
         end
     end
 

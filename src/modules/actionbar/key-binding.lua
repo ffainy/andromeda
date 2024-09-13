@@ -207,7 +207,7 @@ function ACTIONBAR:Bind_Listener(key)
                 SetBinding(frame.bindings[i])
             end
         end
-        F:Print(format(L['All keybinds cleared for %s.'], C.GREEN_COLOR .. (frame.tipName or frame.name) .. '|r'))
+        F.Print(format(L['All keybinds cleared for %s.'], C.GREEN_COLOR .. (frame.tipName or frame.name) .. '|r'))
 
         ACTIONBAR:Bind_Update(frame.button, frame.spellmacro)
 
@@ -235,7 +235,7 @@ function ACTIONBAR:Bind_Listener(key)
     else
         SetBinding(alt .. ctrl .. shift .. key, frame.spellmacro .. ' ' .. frame.name)
     end
-    F:Print(C.GREEN_COLOR .. (frame.tipName or frame.name) .. ' |r' .. L['bound to'] .. ' ' .. C.RED_COLOR .. alt .. ctrl .. shift .. key)
+    F.Print(C.GREEN_COLOR .. (frame.tipName or frame.name) .. ' |r' .. L['bound to'] .. ' ' .. C.RED_COLOR .. alt .. ctrl .. shift .. key)
 
     ACTIONBAR:Bind_Update(frame.button, frame.spellmacro)
 end
@@ -257,10 +257,10 @@ end
 function ACTIONBAR:Bind_Deactivate(save)
     if save == true then
         SaveBindings(C.DB.Actionbar.BindType)
-        F:Print(C.BLUE_COLOR .. L['Keybinds saved.'])
+        F.Print(C.BLUE_COLOR .. L['Keybinds saved.'])
     else
         LoadBindings(C.DB.Actionbar.BindType)
-        F:Print(C.BLUE_COLOR .. L['Keybinds discarded.'])
+        F.Print(C.BLUE_COLOR .. L['Keybinds discarded.'])
     end
 
     ACTIONBAR:Bind_HideFrame()

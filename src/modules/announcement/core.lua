@@ -34,7 +34,7 @@ function A:SendMessage(text, channel, raidWarning, whisperTarget)
 
     if channel == 'SELF' then
         -- ChatFrame1:AddMessage(text)
-        F:Printf(text)
+        F.Print(text)
         return
     end
 

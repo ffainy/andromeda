@@ -169,7 +169,7 @@ local function lobbyButton_OnClick(self, btn)
     if CHAT.InWorldChannel then
         if btn == 'RightButton' then
             LeaveChannelByName(nameStr)
-            F:Print('|cffd82026' .. QUIT .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
+            F.Print('|cffd82026' .. QUIT .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
             CHAT.InWorldChannel = false
         elseif CHAT.WorldChannelID then
             ChatFrame_OpenChat('/' .. CHAT.WorldChannelID, chatFrame)
@@ -177,7 +177,7 @@ local function lobbyButton_OnClick(self, btn)
     else
         JoinPermanentChannel(nameStr, nil, 1)
         ChatFrame_AddChannel(ChatFrame1, nameStr)
-        F:Print('|cff27ba24' .. JOIN .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
+        F.Print('|cff27ba24' .. JOIN .. '|r ' .. C.INFO_COLOR .. L['World Channel'])
         CHAT.InWorldChannel = true
     end
 end

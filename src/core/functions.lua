@@ -27,35 +27,6 @@ do
 
     --
 
-    do
-        local tmp = {}
-        local function myPrint(...)
-            local prefix = format('[%s]', C.COLORFUL_ADDON_TITLE)
-            local n = 0
-
-            n = n + 1
-            tmp[n] = prefix
-
-            for i = 1, select('#', ...) do
-                n = n + 1
-                tmp[n] = tostring(select(i, ...))
-            end
-
-            local frame = (_G.SELECTED_CHAT_FRAME or _G.DEFAULT_CHAT_FRAME)
-            frame:AddMessage(table.concat(tmp, ' ', 1, n))
-        end
-
-        function F:Print(...)
-            return myPrint(...)
-        end
-
-        function F:Printf(...)
-            return myPrint(format(...))
-        end
-    end
-
-    --
-
     function F:HookAddOn(addonName, callback)
         self:RegisterEvent('ADDON_LOADED', function(_, name)
             if name == addonName then
@@ -213,7 +184,7 @@ do
             if lockedVar ~= nil and state ~= lockedVar then
                 SetCVar(var, lockedVar)
                 if C.IS_DEVELOPER then
-                    F:Print('CVar reset', var, lockedVar)
+                    F.Print('CVar reset', var, lockedVar)
                 end
             end
         end

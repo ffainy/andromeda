@@ -30,7 +30,7 @@ function NOTIFICATION:VersionCheck_Create(text)
     end
 
     F:CreateNotification(C.ADDON_NAME, text, nil, 'Interface\\ICONS\\ability_warlock_soulswap')
-    F:Print(text)
+    F.Print(text)
 end
 
 function NOTIFICATION:VersionCheck_Init()

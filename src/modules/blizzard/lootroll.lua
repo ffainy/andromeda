@@ -370,7 +370,7 @@ function BLIZZARD:LootRoll_Start(rollID, rollTime)
         end
     end
 
-    F:Debug('RollID: %d %s', rollID, link)
+    F.Debug('RollID: %d %s', rollID, link)
 end
 
 local function getRollBarByID(rollID)

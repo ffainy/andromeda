@@ -2463,7 +2463,7 @@ do
     end
 
     local function isAuraExisted(instName, spellID)
-        F:Debug(instName, spellID, C.RaidDebuffsList[instName][spellID])
+        F.Debug(instName, spellID, C.RaidDebuffsList[instName][spellID])
 
         local localPrio = C.RaidDebuffsList[instName][spellID]
         local savedPrio = _G.ANDROMEDA_ADB['RaidDebuffsList'][instName] and _G.ANDROMEDA_ADB['RaidDebuffsList'][instName][spellID]
