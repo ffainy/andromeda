@@ -542,7 +542,7 @@ function TOOLTIP:OnLogin()
 
     TOOLTIP:ReskinTipIcon()
     TOOLTIP:SetupFonts()
-    TOOLTIP:AddIDs()
+    TOOLTIP:AddIds()
     TOOLTIP:ItemInfo()
     TOOLTIP:AddMountInfo()
     TOOLTIP:HyperLink()

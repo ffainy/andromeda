@@ -1,15 +1,15 @@
 local F, C, L = unpack(select(2, ...))
 local TOOLTIP = F:GetModule('Tooltip')
 
-local LEARNT_STRING = '|cffff0000' .. _G.ALREADY_LEARNED .. '|r'
+local LEARNT_STRING = '|cffff0000' .. ALREADY_LEARNED .. '|r'
 
 local typesList = {
-    spell = _G.SPELLS .. 'ID:',
-    item = _G.ITEMS .. 'ID:',
-    quest = _G.QUESTS_LABEL .. 'ID:',
-    talent = _G.TALENT .. 'ID:',
-    achievement = _G.ACHIEVEMENTS .. 'ID:',
-    currency = _G.CURRENCY .. 'ID:',
+    spell = SPELLS .. 'ID:',
+    item = ITEMS .. 'ID:',
+    quest = QUESTS_LABEL .. 'ID:',
+    talent = TALENT .. 'ID:',
+    achievement = ACHIEVEMENTS .. 'ID:',
+    currency = CURRENCY .. 'ID:',
     azerite = L['Trait'] .. 'ID:',
 }
 
@@ -50,7 +50,7 @@ function TOOLTIP:AddLineForId(id, linkType, noadd)
     self:Show()
 end
 
-function TOOLTIP:SetHyperLinkID(link)
+function TOOLTIP:SetHyperLinkId(link)
     if self:IsForbidden() then
         return
     end
@@ -75,18 +75,18 @@ function TOOLTIP:SetHyperLinkID(link)
     end
 end
 
-function TOOLTIP:AddIDs()
+function TOOLTIP:AddIds()
     if not C.DB.Tooltip.ShowId then
         return
     end
 
     local GameTooltip = GameTooltip
-    local ItemRefTooltip = _G.ItemRefTooltip
-    local TooltipDataProcessor = _G.TooltipDataProcessor
+    local ItemRefTooltip = ItemRefTooltip
+    local TooltipDataProcessor = TooltipDataProcessor
 
     -- Update all
-    hooksecurefunc(GameTooltip, 'SetHyperlink', TOOLTIP.SetHyperLinkID)
-    hooksecurefunc(ItemRefTooltip, 'SetHyperlink', TOOLTIP.SetHyperLinkID)
+    hooksecurefunc(GameTooltip, 'SetHyperlink', TOOLTIP.SetHyperLinkId)
+    hooksecurefunc(ItemRefTooltip, 'SetHyperlink', TOOLTIP.SetHyperLinkId)
 
     -- Spells
     hooksecurefunc(GameTooltip, 'SetUnitAura', function(self, ...)
@@ -165,7 +165,7 @@ function TOOLTIP:AddIDs()
             return
         end
 
-        if tooltipType == 0 then -- item
+        if tooltipType == 0 then     -- item
             TOOLTIP.AddLineForId(self, lineData.tooltipID, typesList.item)
         elseif tooltipType == 1 then -- spell
             TOOLTIP.AddLineForId(self, lineData.tooltipID, typesList.spell)
@@ -210,3 +210,87 @@ function TOOLTIP:AddIDs()
         end
     end)
 end
+
+-- 在藏品-外观面板的鼠标提示上添加ItemID/VisualID，方便iMorph使用
+
+local kinds = {
+    item = 'ItemID',
+    visual = 'VisualID',
+    source = 'SourceID',
+}
+
+local function hook(table, fn, cb)
+    if table and table[fn] then
+        hooksecurefunc(table, fn, cb)
+    end
+end
+
+local function contains(table, element)
+    for _, value in pairs(table) do
+        if value == element then return true end
+    end
+
+    return false
+end
+
+local function getTooltipName(tooltip)
+    return tooltip:GetName() or nil
+end
+
+local function addLine(tooltip, id, kind)
+    if not id or id == '' or not tooltip or not tooltip.GetName then return end
+    if type(id) == 'table' and #id == 1 then id = id[1] end
+
+    local ok, name = pcall(getTooltipName, tooltip)
+    if not ok or not name then return end
+
+    local frame, text
+    for i = tooltip:NumLines(), 1, -1 do
+        frame = _G[name .. 'TextLeft' .. i]
+        if frame then text = frame:GetText() end
+        if text and string.find(text, kinds[kind]) then return end
+    end
+
+    local left, right
+    if type(id) == 'table' then
+        left = NORMAL_FONT_COLOR_CODE .. kinds[kind] .. 's' .. FONT_COLOR_CODE_CLOSE
+        right = HIGHLIGHT_FONT_COLOR_CODE .. table.concat(id, ', ') .. FONT_COLOR_CODE_CLOSE
+    else
+        left = NORMAL_FONT_COLOR_CODE .. kinds[kind] .. FONT_COLOR_CODE_CLOSE
+        right = HIGHLIGHT_FONT_COLOR_CODE .. id .. FONT_COLOR_CODE_CLOSE
+    end
+
+    tooltip:AddDoubleLine(left, right)
+    tooltip:Show()
+end
+
+local function test(event, addon)
+    if addon == 'Blizzard_Collections' then
+        hook(CollectionWardrobeUtil, 'SetAppearanceTooltip', function(_frame, sources)
+            local visualIDs = {}
+            local sourceIDs = {}
+            local itemIDs = {}
+
+            for i = 1, #sources do
+                if sources[i].visualID and not contains(visualIDs, sources[i].visualID) then
+                    table.insert(visualIDs, sources[i].visualID)
+                end
+                if sources[i].sourceID and not contains(visualIDs, sources[i].sourceID) then
+                    table.insert(sourceIDs, sources[i].sourceID)
+                end
+                if sources[i].itemID and not contains(visualIDs, sources[i].itemID) then
+                    table.insert(itemIDs, sources[i].itemID)
+                end
+            end
+
+            if #visualIDs == 1 then addLine(GameTooltip, visualIDs[1], 'visual') end
+            if #sourceIDs == 1 then addLine(GameTooltip, sourceIDs[1], 'source') end
+            if #itemIDs == 1 then addLine(GameTooltip, itemIDs[1], 'item') end
+
+            if #visualIDs > 1 then addLine(GameTooltip, visualIDs, 'visual') end
+            if #sourceIDs > 1 then addLine(GameTooltip, sourceIDs, 'source') end
+            if #itemIDs > 1 then addLine(GameTooltip, itemIDs, 'item') end
+        end)
+    end
+end
+F:RegisterEvent('ADDON_LOADED', test)
