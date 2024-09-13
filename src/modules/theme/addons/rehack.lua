@@ -2,51 +2,51 @@ local F = unpack(select(2, ...))
 local THEME = F:GetModule('Theme')
 
 function THEME:ReskinREHack()
-    if not _G.ANDROMEDA_ADB.ReskinREHack then
+    if not ANDROMEDA_ADB.ReskinREHack then
         return
     end
 
-    if not _G.REHack then
+    if not _G['REHack'] then
         return
     end
 
-    if not IsAddOnLoaded('REHack') then
+    if not C_AddOns.IsAddOnLoaded('REHack') then
         return
     end
 
-    if _G.HackListFrame then
-        F.StripTextures(_G.HackListFrame, true)
-        F.SetBD(_G.HackListFrame)
-        F.ReskinClose(_G.HackListFrameClose)
-        F.ReskinCheckbox(_G.HackSearchName, true)
-        _G.HackSearchName:SetSize(20, 20)
-        F.ReskinCheckbox(_G.HackSearchBody, true)
-        _G.HackSearchBody:SetSize(20, 20)
-        F.ReskinEditbox(_G.HackSearchEdit)
-        _G.HackSearchEdit:SetSize(120, 16)
-        F.ReskinTab(_G.HackListFrameTab1)
-        F.ReskinTab(_G.HackListFrameTab2)
-        _G.HackListFrameTab2:ClearAllPoints()
-        _G.HackListFrameTab2:SetPoint('LEFT', _G.HackListFrameTab1, 'RIGHT', -4, 0)
+    if HackListFrame then
+        F.StripTextures(HackListFrame, true)
+        F.SetBD(HackListFrame)
+        F.ReskinClose(HackListFrameClose)
+        F.ReskinCheckbox(HackSearchName, true)
+        HackSearchName:SetSize(20, 20)
+        F.ReskinCheckbox(HackSearchBody, true)
+        HackSearchBody:SetSize(20, 20)
+        F.ReskinEditbox(HackSearchEdit)
+        HackSearchEdit:SetSize(120, 16)
+        F.ReskinTab(HackListFrameTab1)
+        F.ReskinTab(HackListFrameTab2)
+        HackListFrameTab2:ClearAllPoints()
+        HackListFrameTab2:SetPoint('LEFT', HackListFrameTab1, 'RIGHT', -4, 0)
     end
 
-    if _G.HackEditFrame then
-        F.StripTextures(_G.HackEditFrame, true)
-        F.SetBD(_G.HackEditFrame)
-        F.ReskinClose(_G.HackEditFrameClose)
-        F.ReskinScroll(_G.HackEditScrollFrameScrollBar)
-        F.CreateBDFrame(_G.HackEditScrollFrame, 0.25)
-        _G.HackEditBoxLineBG:SetColorTexture(0, 0, 0, 0.25)
+    if HackEditFrame then
+        F.StripTextures(HackEditFrame, true)
+        F.SetBD(HackEditFrame)
+        F.ReskinClose(HackEditFrameClose)
+        F.ReskinScroll(HackEditScrollFrameScrollBar)
+        F.CreateBDFrame(HackEditScrollFrame, 0.25)
+        HackEditBoxLineBG:SetColorTexture(0, 0, 0, 0.25)
 
-        local SetPoint = _G.HackEditFrame.SetPoint
-        _G.HackEditFrame.SetPoint = function(frame, point, relativeFrame, relativePoint, x, y)
+        local SetPoint = HackEditFrame.SetPoint
+        HackEditFrame.SetPoint = function(frame, point, relativeFrame, relativePoint, x, y)
             if point == 'TOPLEFT' and relativePoint == 'TOPRIGHT' and x and y == 0 then
                 x = x + 6
             end
             SetPoint(frame, point, relativeFrame, relativePoint, x, y)
         end
-        local tempPos = { _G.HackEditFrame:GetPoint() }
-        _G.HackEditFrame:ClearAllPoints()
-        _G.HackEditFrame:SetPoint(unpack(tempPos))
+        local tempPos = { HackEditFrame:GetPoint() }
+        HackEditFrame:ClearAllPoints()
+        HackEditFrame:SetPoint(unpack(tempPos))
     end
 end
