@@ -1,7 +1,7 @@
 local F, C = unpack(select(2, ...))
 local CHAT = F:GetModule('Chat')
 
-local BN_TOAST_TYPE_CLUB_INVITATION = _G.BN_TOAST_TYPE_CLUB_INVITATION or 6
+local BN_TOAST_TYPE_CLUB_INVITATION = BN_TOAST_TYPE_CLUB_INVITATION or 6
 
 -- Filter Chat symbols
 local msgSymbols = {
@@ -17,12 +17,12 @@ local msgSymbols = {
 
 local FilterList = {}
 function CHAT:UpdateFilterList()
-    F:SplitList(FilterList, _G.ANDROMEDA_ADB.ChatFilterBlackList, true)
+    F:SplitList(FilterList, ANDROMEDA_ADB.ChatFilterBlackList, true)
 end
 
 local WhiteFilterList = {}
 function CHAT:UpdateFilterWhiteList()
-    F:SplitList(WhiteFilterList, _G.ANDROMEDA_ADB.ChatFilterWhiteList, true)
+    F:SplitList(WhiteFilterList, ANDROMEDA_ADB.ChatFilterWhiteList, true)
 end
 
 -- ECF strings compare
@@ -151,12 +151,12 @@ function CHAT:SpamFilter()
     CHAT:UpdateFilterList()
     CHAT:UpdateFilterWhiteList()
 
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_CHANNEL', self.UpdateChatFilter)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_SAY', self.UpdateChatFilter)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_YELL', self.UpdateChatFilter)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_WHISPER', self.UpdateChatFilter)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_EMOTE', self.UpdateChatFilter)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_TEXT_EMOTE', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_CHANNEL', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_SAY', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_YELL', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_WHISPER', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_EMOTE', self.UpdateChatFilter)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_TEXT_EMOTE', self.UpdateChatFilter)
 end
 
 -- Block addon msg
@@ -225,16 +225,16 @@ function CHAT:BlockAddonSpam()
         return
     end
 
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_SAY', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_WHISPER', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_EMOTE', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_PARTY', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_PARTY_LEADER', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_RAID', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_RAID_LEADER', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_INSTANCE_CHAT', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_INSTANCE_CHAT_LEADER', CHAT.UpdateAddOnBlocker)
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_CHANNEL', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_SAY', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_WHISPER', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_EMOTE', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_PARTY', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_PARTY_LEADER', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_RAID', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_RAID_LEADER', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_INSTANCE_CHAT', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_INSTANCE_CHAT_LEADER', CHAT.UpdateAddOnBlocker)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_CHANNEL', CHAT.UpdateAddOnBlocker)
 end
 
 -- Block trash clubs
@@ -252,7 +252,7 @@ function CHAT:CheckClubName()
 end
 
 function CHAT:BlockTrashClub()
-    hooksecurefunc(_G.BNToastFrame, 'ShowToast', CHAT.CheckClubName)
+    hooksecurefunc(BNToastFrame, 'ShowToast', CHAT.CheckClubName)
 end
 
 -- Filter loot info from group members
@@ -287,11 +287,11 @@ function CHAT:GroupLootFilter()
         return
     end
 
-    _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_LOOT', self.CheckLoot)
+    ChatFrame_AddMessageEventFilter('CHAT_MSG_LOOT', self.CheckLoot)
 end
 
 -- Filter azerite message on island expeditions
-local AZERITE_STR = _G.ISLANDS_QUEUE_WEEKLY_QUEST_PROGRESS:gsub('%%d/%%d ', '')
+local AZERITE_STR = ISLANDS_QUEUE_WEEKLY_QUEST_PROGRESS:gsub('%%d/%%d ', '')
 local function filterAzeriteGain(_, _, msg)
     if strfind(msg, AZERITE_STR) then
         return true
@@ -301,9 +301,9 @@ end
 local function IsPlayerOnIslands()
     local _, instanceType, _, _, maxPlayers = GetInstanceInfo()
     if instanceType == 'scenario' and (maxPlayers == 3 or maxPlayers == 6) then
-        _G.ChatFrame_AddMessageEventFilter('CHAT_MSG_SYSTEM', filterAzeriteGain)
+        ChatFrame_AddMessageEventFilter('CHAT_MSG_SYSTEM', filterAzeriteGain)
     else
-        _G.ChatFrame_RemoveMessageEventFilter('CHAT_MSG_SYSTEM', filterAzeriteGain)
+        ChatFrame_RemoveMessageEventFilter('CHAT_MSG_SYSTEM', filterAzeriteGain)
     end
 end
 
@@ -318,5 +318,5 @@ function CHAT:ChatFilter()
     CHAT:ExtendLink()
     CHAT:GroupLootFilter()
     CHAT:AzeriteMessageFilter()
-    CHAT:DamageMeterFilter()
+    -- CHAT:DamageMeterFilter()
 end
