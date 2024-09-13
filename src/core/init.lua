@@ -133,7 +133,7 @@ local modules, initQueue = {}, {}
 function F:RegisterModule(name)
     if modules[name] then
         local L = engine[3]
-        F:Debug(format(L["module '%s' has been registered."], name))
+        F.Debug(format(L["module '%s' has been registered."], name))
 
         return
     end
@@ -150,7 +150,7 @@ end
 function F:GetModule(name)
     if not modules[name] then
         local L = engine[3]
-        F:Debug(format(L["module '%s' does not exist."], name))
+        F.Debug(format(L["module '%s' does not exist."], name))
 
         return
     end
@@ -177,7 +177,7 @@ F:RegisterEvent('PLAYER_LOGIN', function()
         if module.OnLogin then
             module:OnLogin()
         else
-            F:Debug(format(L["module '%s' does not loaded."], module.name))
+            F.Debug(format(L["module '%s' does not loaded."], module.name))
         end
     end
 
@@ -187,5 +187,15 @@ F:RegisterEvent('PLAYER_LOGIN', function()
         F:InitCallback()
     end
 
-    F:Printf(L['version: %s loaded.'], C.ADDON_VERSION)
+    F.Print(
+        L['%s: %s loaded, type %s for more help.'],
+        C.COLORFUL_ADDON_TITLE,
+        C.RED_COLOR .. C.ADDON_VERSION .. '|r',
+        C.MY_CLASS_COLOR..'/and|r'
+    )
+
+    F.Print(
+        L['Feel free to join %s for feedback and discussion.'],
+        C.BLUE_COLOR .. (C.IS_CHINESE and 'QQ Group (203621176)' or 'https://discord.gg/NPPUa46kCd') .. '|r'
+    )
 end)

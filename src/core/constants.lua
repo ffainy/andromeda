@@ -7,7 +7,7 @@ do
     C.MY_NAME = UnitName('player')
     C.MY_FULL_NAME = C.MY_NAME .. '-' .. C.MY_REALM
     C.MY_FACTION = select(2, UnitFactionGroup('player'))
-
+    C.IS_CHINESE = GetLocale() == 'zhCN'
     C.SCREEN_WIDTH, C.SCREEN_HEIGHT = GetPhysicalScreenSize()
     C.ASSET_PATH = 'Interface\\AddOns\\' .. C.ADDON_NAME .. '\\assets\\'
     C.TEX_COORD = { 0.08, 0.92, 0.08, 0.92 }
