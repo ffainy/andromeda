@@ -632,12 +632,10 @@ local roleIcons = {
 }
 
 local GetColoredName_orig = GetColoredName
-local function getColoredName(event, arg1, arg2, ...)
+local function GetColoredName_hook(event, arg1, arg2, ...)
     local ret = GetColoredName_orig(event, arg1, arg2, ...)
-
     if msgEvents[event] then
         local role = UnitGroupRolesAssigned(arg2)
-
         if role == 'NONE' and arg2:match(' *- *' .. GetRealmName() .. '$') then
             role = UnitGroupRolesAssigned(arg2:gsub(' *-[^-]+$', ''))
         end
@@ -650,12 +648,13 @@ local function getColoredName(event, arg1, arg2, ...)
     return ret
 end
 
-function CHAT:AddRoleIcon()
+function CHAT:AddRoleIcons() --#TODO cause url catch fail
+    if C.IS_WW then return end
     if not C.DB.Chat.GroupRoleIcon then
         return
     end
 
-    GetColoredName = getColoredName
+    GetColoredName = GetColoredName_hook
 end
 
 -- Disable pet battle tab
@@ -731,6 +730,7 @@ function CHAT:OnLogin()
     CHAT:SetupToastFrame()
     CHAT:SetupTemporaryWindow()
     CHAT:UpdateEditBoxBorderColor()
+    CHAT:AddRoleIcons()
     CHAT:ChatFilter()
     CHAT:ShortenChannelNames()
     CHAT:ChatCopy()
@@ -741,9 +741,9 @@ function CHAT:OnLogin()
     CHAT:SaveSlashCommandTypo()
     CHAT:WhisperInvite()
     CHAT:CreateChannelBar()
-    CHAT:AddRoleIcon()
     CHAT:UpdateLanguageFilter()
     CHAT:HideInCombat()
+
 
     -- Extra elements in chat tab menu
     do
