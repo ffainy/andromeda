@@ -1260,7 +1260,7 @@ C.Themes['Blizzard_GarrisonUI'] = function()
                     numButtons = numButtons + 1
                     if numButtons > 2 then
                         peek('UsedBorder'):SetTexture(nil)
-                        peek('UsedBorder').__shadow = F.CreateSD(peek('Portrait'), 5, true)
+                        peek('UsedBorder').__shadow = F.CreateSD(peek('Portrait'), 0.25, 5, 5, true)
                         peek('UsedBorder').__shadow:SetBackdropBorderColor(peek('UsedBorder'):GetVertexColor())
                         hooksecurefunc(peek('UsedBorder'), 'SetShown', updateActiveGlow)
                         tinsert(VPFollowers, widget)
