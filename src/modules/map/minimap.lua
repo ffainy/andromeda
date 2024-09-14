@@ -610,8 +610,7 @@ end
 -- Help Tip
 
 local minimapInfo = {
-    text = L
-        ['Mouse scroll to zoom in or out, hold down the alt key and mouse scroll to adjust game volume, middle click to toggle game menu, right click to toggle track menu.'],
+    text = L['Mouse scroll to zoom in or out, hold down the alt key and mouse scroll to adjust game volume, middle click to toggle game menu, right click to toggle track menu.'],
     buttonStyle = HelpTip.ButtonStyle.GotIt,
     targetPoint = HelpTip.Point.LeftEdgeCenter,
     onAcknowledgeCallback = F.HelpInfoAcknowledge,

@@ -392,8 +392,7 @@ function INVENTORY:CreateDepositButton()
     F.AddTooltip(
         bu,
         'ANCHOR_TOP',
-        L
-        ['Left click to deposit reagents, right click to switch deposit mode.|nIf the button is highlight, the reagents from your bags would auto deposit once you open the bank.'],
+        L['Left click to deposit reagents, right click to switch deposit mode.|nIf the button is highlight, the reagents from your bags would auto deposit once you open the bank.'],
         'BLUE'
     )
     updateDepositButtonStatus(bu)
@@ -428,8 +427,7 @@ function INVENTORY:CreateAccountBankDeposit()
         'ANCHOR_TOP',
         C.INFO_COLOR
         ..
-        L
-        ['Left click to deposit warband items, right click to swith deposit mode.|nIf the button border shown, the reagents from your bags would deposit into your warband bank as well.']
+        L['Left click to deposit warband items, right click to swith deposit mode.|nIf the button border shown, the reagents from your bags would deposit into your warband bank as well.']
     )
     updateAccountBankDeposit(bu)
 
@@ -592,8 +590,7 @@ function INVENTORY:CreateSearchButton()
     F.AddTooltip(
         searchBar,
         'ANCHOR_TOP',
-        L
-        ["You can type in item names or item equip locations.|n'boe' for items that bind on equip, 'aoe' for items that warbound until equipped and 'quest' for quest items.nPress key ESC to clear editbox."],
+        L["You can type in item names or item equip locations.|n'boe' for items that bind on equip, 'aoe' for items that warbound until equipped and 'quest' for quest items.nPress key ESC to clear editbox."],
         'BLUE'
     )
 
@@ -785,8 +782,7 @@ function INVENTORY:CreateFavouriteButton()
     end
     INVENTORY.CustomMenu = menuList
 
-    local enabledText = L
-        ["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
+    local enabledText = L["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagFavourite)
     bu.Icon:SetVertexColor(unpack(iconColor))
@@ -840,8 +836,7 @@ end
 
 local customJunkEnable
 function INVENTORY:CreateCustomJunkButton()
-    local enabledText = L
-        ["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
+    local enabledText = L["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
 
     local bu = F.CreateButton(self, 16, 16, true, iconsList.BagJunk)
     bu.Icon:SetVertexColor(unpack(iconColor))
