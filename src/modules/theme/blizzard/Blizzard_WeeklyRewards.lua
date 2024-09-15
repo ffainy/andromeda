@@ -78,7 +78,8 @@ C.Themes['Blizzard_WeeklyRewards'] = function()
     F.StripTextures(WeeklyRewardsFrame.SelectRewardButton)
     F.ReskinButton(WeeklyRewardsFrame.SelectRewardButton)
 
-    WeeklyRewardsFrame.BorderShadow:SetInside(bg)
+    WeeklyRewardsFrame.Background:SetAlpha(0)
+    WeeklyRewardsFrame.BorderShadow:SetAlpha(0)
     WeeklyRewardsFrame.BorderContainer:SetAlpha(0)
 
 
