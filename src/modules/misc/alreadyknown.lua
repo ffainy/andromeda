@@ -44,7 +44,7 @@ local function IsAlreadyKnown(link, index)
             if knowns[link] then
                 return true
             end
-            if not knowables[itemClassID] then
+            if not knowables[itemClassID] and not C_Item.IsCosmeticItem(link) then
                 return
             end
 
@@ -53,12 +53,12 @@ local function IsAlreadyKnown(link, index)
                 for i = 1, #data.lines do
                     local lineData = data.lines[i]
                     local text = lineData and lineData.leftText
-					if text then
-						if strfind(text, _G.COLLECTED) or text == _G.ITEM_SPELL_KNOWN then
-							knowns[link] = true
-							return true
-						end
-					end
+                    if text then
+                        if strfind(text, COLLECTED) or text == ITEM_SPELL_KNOWN then
+                            knowns[link] = true
+                            return true
+                        end
+                    end
                 end
             end
         end
@@ -68,8 +68,8 @@ end
 -- merchant frame
 local function Hook_UpdateMerchantInfo()
     local numItems = GetMerchantNumItems()
-    for i = 1, _G.MERCHANT_ITEMS_PER_PAGE do
-        local index = (_G.MerchantFrame.page - 1) * _G.MERCHANT_ITEMS_PER_PAGE + i
+    for i = 1, MERCHANT_ITEMS_PER_PAGE do
+        local index = (MerchantFrame.page - 1) * MERCHANT_ITEMS_PER_PAGE + i
         if index > numItems then
             return
         end
@@ -82,7 +82,7 @@ local function Hook_UpdateMerchantInfo()
                 if numAvailable == 0 then
                     r, g, b = r * 0.5, g * 0.5, b * 0.5
                 end
-                _G.SetItemButtonTextureVertexColor(button, r, g, b)
+                SetItemButtonTextureVertexColor(button, r, g, b)
             end
         end
     end
@@ -91,7 +91,7 @@ hooksecurefunc('MerchantFrame_UpdateMerchantInfo', Hook_UpdateMerchantInfo)
 
 local function Hook_UpdateBuybackInfo()
     local numItems = GetNumBuybackItems()
-    for index = 1, _G.BUYBACK_ITEMS_PER_PAGE do
+    for index = 1, BUYBACK_ITEMS_PER_PAGE do
         if index > numItems then
             return
         end
@@ -100,7 +100,7 @@ local function Hook_UpdateBuybackInfo()
         if button and button:IsShown() then
             local _, _, _, _, _, isUsable = GetBuybackItemInfo(index)
             if isUsable and IsAlreadyKnown(GetBuybackItemLink(index)) then
-                _G.SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
+                SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
             end
         end
     end
@@ -143,8 +143,8 @@ local function Hook_UpdateAuctionItems(self)
 end
 
 -- guild bank frame
-local MAX_GUILDBANK_SLOTS_PER_TAB = _G.MAX_GUILDBANK_SLOTS_PER_TAB or 98
-local NUM_SLOTS_PER_GUILDBANK_GROUP = _G.NUM_SLOTS_PER_GUILDBANK_GROUP or 14
+local MAX_GUILDBANK_SLOTS_PER_TAB = MAX_GUILDBANK_SLOTS_PER_TAB or 98
+local NUM_SLOTS_PER_GUILDBANK_GROUP = NUM_SLOTS_PER_GUILDBANK_GROUP or 14
 
 local function GuildBankFrame_Update(self)
     if self.mode ~= 'bank' then
@@ -165,9 +165,9 @@ local function GuildBankFrame_Update(self)
             local texture, _, locked = GetGuildBankItemInfo(tab, i)
             if texture and not locked then
                 if IsAlreadyKnown(GetGuildBankItemLink(tab, i), i) then
-                    _G.SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
+                    SetItemButtonTextureVertexColor(button, COLOR.r, COLOR.g, COLOR.b)
                 else
-                    _G.SetItemButtonTextureVertexColor(button, 1, 1, 1)
+                    SetItemButtonTextureVertexColor(button, 1, 1, 1)
                 end
             end
         end
@@ -179,10 +179,10 @@ local f = CreateFrame('Frame')
 f:RegisterEvent('ADDON_LOADED')
 f:SetScript('OnEvent', function(_, event, addon)
     if addon == 'Blizzard_AuctionHouseUI' then
-        hooksecurefunc(_G.AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, 'Update', Hook_UpdateAuctionItems)
+        hooksecurefunc(AuctionHouseFrame.BrowseResultsFrame.ItemList.ScrollBox, 'Update', Hook_UpdateAuctionItems)
         hookCount = hookCount + 1
     elseif addon == 'Blizzard_GuildBankUI' then
-        hooksecurefunc(_G.GuildBankFrame, 'Update', GuildBankFrame_Update)
+        hooksecurefunc(GuildBankFrame, 'Update', GuildBankFrame_Update)
         hookCount = hookCount + 1
     end
 
