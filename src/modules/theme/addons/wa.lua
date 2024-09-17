@@ -39,7 +39,6 @@ local function handleIcon(icon)
     hooksecurefunc(icon, 'SetTexCoord', updateIconTexCoord)
     icon.bg = F.SetBD(icon, 0)
     icon.bg:SetBackdropBorderColor(0, 0, 0)
-    icon.bg:SetFrameLevel(0)
     hooksecurefunc(icon, 'SetVertexColor', updateIconBgAlpha)
 end
 
@@ -50,13 +49,16 @@ local function handleBar(f)
 end
 
 local function resetBgLevel(frame)
-    frame.bg:SetFrameLevel(0)
+    if frame.bg then
+        frame.bg:SetFrameLevel(0)
+    end
 end
 
 local function setupIconAndBar(f, fType)
     if fType == 'icon' then
         if not f.styled then
             handleIcon(f.icon)
+            hooksecurefunc(f, 'SetFrameStrata', resetBgLevel)
 
             f.styled = true
         end
@@ -74,11 +76,11 @@ local function setupIconAndBar(f, fType)
 end
 
 local function reskinWeakAuras()
-    if not _G.ANDROMEDA_ADB.ReskinWeakAuras then
+    if not ANDROMEDA_ADB.ReskinWeakAuras then
         return
     end
 
-    local WeakAuras = _G.WeakAuras
+    local WeakAuras = _G['WeakAuras']
     if not WeakAuras or not WeakAuras.Private then
         return
     end
