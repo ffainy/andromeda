@@ -158,6 +158,24 @@ function F:GetModule(name)
     return modules[name]
 end
 
+local function loginMsg(_, isInitialLogin)
+    if isInitialLogin then
+        local L = engine[3]
+        F.Print(
+            L['%s: %s loaded, type %s for more help.'],
+            C.COLORFUL_ADDON_TITLE,
+            C.RED_COLOR .. C.ADDON_VERSION .. '|r',
+            C.MY_CLASS_COLOR..'/and|r'
+        )
+        F.Print(
+            L['Feel free to join %s for feedback and discussion.'],
+            C.BLUE_COLOR .. (C.IS_CHINESE and 'QQ Group (203621176)' or 'https://discord.gg/NPPUa46kCd') .. '|r'
+        )
+    end
+
+    F:UnregisterEvent('PLAYER_ENTERING_WORLD', loginMsg)
+end
+
 F:RegisterEvent('PLAYER_LOGIN', function()
     if C.DB.InstallationComplete then
         F:SetupUIScale()
@@ -183,19 +201,5 @@ F:RegisterEvent('PLAYER_LOGIN', function()
 
     engine.Modules = modules
 
-    if F.InitCallback then
-        F:InitCallback()
-    end
-
-    F.Print(
-        L['%s: %s loaded, type %s for more help.'],
-        C.COLORFUL_ADDON_TITLE,
-        C.RED_COLOR .. C.ADDON_VERSION .. '|r',
-        C.MY_CLASS_COLOR..'/and|r'
-    )
-
-    F.Print(
-        L['Feel free to join %s for feedback and discussion.'],
-        C.BLUE_COLOR .. (C.IS_CHINESE and 'QQ Group (203621176)' or 'https://discord.gg/NPPUa46kCd') .. '|r'
-    )
+    F:RegisterEvent('PLAYER_ENTERING_WORLD', loginMsg)
 end)
