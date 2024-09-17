@@ -2,12 +2,23 @@ local F, C, L = unpack(select(2, ...))
 local MAP = F:GetModule('Map')
 local TOOLTIP = F:GetModule('Tooltip')
 
-local function isAzeriteAvailable()
-    local itemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-    return itemLocation and itemLocation:IsEquipmentSlot() and not C_AzeriteItem.IsAzeriteItemAtMaxLevel()
-end
+local barEntered = false
 
-local function initRenownLevel()
+local events = {
+    'PLAYER_XP_UPDATE',
+    'PLAYER_LEVEL_UP',
+    'UPDATE_EXHAUSTION',
+    'PLAYER_ENTERING_WORLD',
+    'UPDATE_FACTION',
+    'ARTIFACT_XP_UPDATE',
+    'PLAYER_EQUIPMENT_CHANGED',
+    'ENABLE_XP_GAIN',
+    'DISABLE_XP_GAIN',
+    'AZERITE_ITEM_EXPERIENCE_CHANGED',
+    'HONOR_XP_UPDATE',
+}
+
+local function initCovenantLevel()
     if not _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] then
         _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] = {}
     end
@@ -21,46 +32,32 @@ local function initRenownLevel()
     end
 end
 
-local function checkRenownLevel()
+local function checkCovenantLevel()
     local level = C_CovenantSanctumUI.GetRenownLevel()
     local CovenantID = C_Covenants.GetActiveCovenantID()
 
     _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][CovenantID] = level
 end
 
-local function updateRenownLevel()
+local function updateCovenantLevel()
     F:RegisterEvent('PLAYER_ENTERING_WORLD', function()
         F:Delay(1, function()
-            checkRenownLevel()
+            checkCovenantLevel()
         end)
     end)
 
     F:RegisterEvent('COVENANT_CHOSEN', function()
         F:Delay(3, function()
-            checkRenownLevel()
+            checkCovenantLevel()
         end)
     end)
 
     F:RegisterEvent('COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED', function()
         F:Delay(3, function()
-            checkRenownLevel()
+            checkCovenantLevel()
         end)
     end)
 end
-
-local eventsList = {
-    'PLAYER_XP_UPDATE',
-    'PLAYER_LEVEL_UP',
-    'UPDATE_EXHAUSTION',
-    'PLAYER_ENTERING_WORLD',
-    'UPDATE_FACTION',
-    'ARTIFACT_XP_UPDATE',
-    'PLAYER_EQUIPMENT_CHANGED',
-    'ENABLE_XP_GAIN',
-    'DISABLE_XP_GAIN',
-    'AZERITE_ITEM_EXPERIENCE_CHANGED',
-    'HONOR_XP_UPDATE',
-}
 
 local function createBar()
     local Minimap = Minimap
@@ -159,7 +156,15 @@ local function onEvent(self)
     end
 end
 
+local function onShiftDown()
+    if barEntered then
+        MAP.ExpBar:onEnter()
+    end
+end
+
 local function onEnter(self)
+    barEntered = true
+
     GameTooltip:SetOwner(self, 'ANCHOR_LEFT')
     GameTooltip:ClearLines()
     GameTooltip:AddDoubleLine(C.MY_NAME, LEVEL .. ': ' .. UnitLevel('player'), C.r, C.g, C.b, 1, 1, 1)
@@ -168,13 +173,13 @@ local function onEnter(self)
         GameTooltip:AddLine(' ')
         local xp, mxp, rxp = UnitXP('player'), UnitXPMax('player'), GetXPExhaustion()
         GameTooltip:AddDoubleLine(
-            XP .. ':',
+            XP,
             BreakUpLargeNumbers(xp) .. ' / ' .. BreakUpLargeNumbers(mxp) .. ' (' .. format('%.1f%%)', xp / mxp * 100),
             0.6, 0.8, 1, 1, 1, 1
         )
         if rxp then
             GameTooltip:AddDoubleLine(
-                TUTORIAL_TITLE26 .. ':',
+                TUTORIAL_TITLE26,
                 '+' .. BreakUpLargeNumbers(rxp) .. ' (' .. format('%.1f%%)', rxp / mxp * 100),
                 0.6, 0.8, 1, 1, 1, 1
             )
@@ -271,82 +276,101 @@ local function onEnter(self)
     if IsWatchingHonorAsXP() then
         local current, barMax, level = UnitHonor('player'), UnitHonorMax('player'), UnitHonorLevel('player')
         GameTooltip:AddLine(' ')
-        GameTooltip:AddLine(HONOR, 0, 0.6, 1)
-        GameTooltip:AddDoubleLine(LEVEL .. ' ' .. level, current .. ' / ' .. barMax, 0.6, 0.8, 1, 1, 1, 1)
+        GameTooltip:AddLine(HONOR, 0.9, 0.8, 0.6)
+        GameTooltip:AddDoubleLine(
+            LEVEL .. ' ' .. level,
+            BreakUpLargeNumbers(current) .. ' / ' .. BreakUpLargeNumbers(barMax),
+            0.6, 0.8, 1, 1, 1, 1
+        )
     end
 
-    if isAzeriteAvailable() then
-        local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-        local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
-        local xp, totalLevelXP = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-        local currentLevel = C_AzeriteItem.GetPowerLevel(azeriteItemLocation)
-        azeriteItem:ContinueWithCancelOnItemLoad(function()
-            GameTooltip:AddLine(' ')
-            GameTooltip:AddLine(
-                azeriteItem:GetItemName() .. ' (' .. format(SPELLBOOK_AVAILABLE_AT, currentLevel) .. ')',
-                0, 0.6, 1
-            )
+    -- factions of the WarWithin
+    local wwFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_WAR_WITHIN)
+    --if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN) then
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(EXPANSION_NAME10, 0.9, 0.8, 0.6)
+        for _, id in pairs(wwFactionIds) do
+            local data = C_MajorFactions.GetMajorFactionData(id)
+            if not data then
+                return
+            end
+            if not data.isUnlocked then
+                return
+            end
+
             GameTooltip:AddDoubleLine(
-                ARTIFACT_POWER,
-                BreakUpLargeNumbers(xp)
-                .. ' / '
-                .. BreakUpLargeNumbers(totalLevelXP)
-                .. ' ('
-                .. floor(xp / totalLevelXP * 100)
-                .. '%)',
+                data.name .. ' ' .. data.renownLevel,
+                BreakUpLargeNumbers(data.renownReputationEarned) ..
+                ' / ' .. BreakUpLargeNumbers(data.renownLevelThreshold),
                 0.6, 0.8, 1, 1, 1, 1
             )
-        end)
-    end
+        end
+    --end
 
-    if HasArtifactEquipped() then
-        local _, _, name, _, totalXP, pointsSpent, _, _, _, _, _, _, artifactTier =
-            C_ArtifactUI.GetEquippedArtifactInfo()
-        local num, xp, xpForNextPoint =
-            ArtifactBarGetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP, artifactTier)
-        GameTooltip:AddLine(' ')
-        if C_ArtifactUI.IsEquippedArtifactDisabled() then
-            GameTooltip:AddLine(name, 0, 0.6, 1)
-            GameTooltip:AddLine(ARTIFACT_RETIRED, 0.6, 0.8, 1, 1)
-        else
-            GameTooltip:AddLine(name .. ' (' .. format(SPELLBOOK_AVAILABLE_AT, pointsSpent) .. ')', 0, 0.6, 1)
-            local numText = num > 0 and ' (' .. num .. ')' or ''
-            GameTooltip:AddDoubleLine(ARTIFACT_POWER, BreakUpLargeNumbers(totalXP) .. numText, 0.6, 0.8, 1, 1, 1, 1)
-            if xpForNextPoint ~= 0 then
-                local perc = ' (' .. floor(xp / xpForNextPoint * 100) .. '%)'
+    if IsShiftKeyDown() then
+        -- factions of DragonFlight
+        local dfFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
+        --if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT) then
+            GameTooltip:AddLine(' ')
+            GameTooltip:AddLine(EXPANSION_NAME9, 0.9, 0.8, 0.6)
+            for _, id in pairs(dfFactionIds) do
+                local data = C_MajorFactions.GetMajorFactionData(id)
+                if not data then
+                    return
+                end
+                if not data.isUnlocked then
+                    return
+                end
+
                 GameTooltip:AddDoubleLine(
-                    L['Next Trait'],
-                    BreakUpLargeNumbers(xp) .. ' / ' .. BreakUpLargeNumbers(xpForNextPoint) .. perc,
+                    data.name .. ' ' .. data.renownLevel,
+                    BreakUpLargeNumbers(data.renownReputationEarned) ..
+                    ' / ' .. BreakUpLargeNumbers(data.renownLevelThreshold),
                     0.6, 0.8, 1, 1, 1, 1
                 )
             end
-        end
-    end
+        --end
 
-    local covenantID = C_Covenants.GetActiveCovenantID()
-    if covenantID and covenantID > 0 then
-        GameTooltip:AddLine(' ')
-        GameTooltip:AddLine(LANDING_PAGE_RENOWN_LABEL, 0, 0.6, 1)
+        -- factions of ShadowLands
+        local covenantID = C_Covenants.GetActiveCovenantID()
+        if covenantID and covenantID > 0 then
+            GameTooltip:AddLine(' ')
+            GameTooltip:AddLine(EXPANSION_NAME8, 0.9, 0.8, 0.6)
 
-        for i = 1, 4 do
-            local level = _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][i]
-            if level > 0 then
-                GameTooltip:AddDoubleLine(TOOLTIP:GetCovenantIcon(i) .. TOOLTIP:GetCovenantName(i), level)
+            for i = 1, 4 do
+                local level = _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][i]
+                if level > 0 then
+                    GameTooltip:AddDoubleLine(TOOLTIP:GetCovenantIcon(i) .. TOOLTIP:GetCovenantName(i), level)
+                end
             end
         end
+    else
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(
+            L['Hold SHIFT key for more factions'],
+            0.6, 0.8, 1
+        )
     end
 
     GameTooltip:Show()
+    F:RegisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
+end
+
+local function onLeave(self)
+    barEntered = false
+    F.HideTooltip()
+    F:UnregisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
 local function setupScript()
-    for _, event in pairs(eventsList) do
+    for _, event in pairs(events) do
         MAP.ExpBar:RegisterEvent(event)
     end
 
+    MAP.ExpBar.onEnter = onEnter
     MAP.ExpBar:SetScript('OnEvent', onEvent)
     MAP.ExpBar:SetScript('OnEnter', onEnter)
-    MAP.ExpBar:SetScript('OnLeave', F.HideTooltip)
+    MAP.ExpBar:SetScript('OnLeave', onLeave)
 
     hooksecurefunc(StatusTrackingBarManager, 'UpdateBarsShown', function()
         onEvent(MAP.ExpBar)
@@ -360,32 +384,6 @@ function MAP:CreateExpBar()
 
     createBar()
     setupScript()
-    initRenownLevel()
-    updateRenownLevel()
-end
-
--- #TODO
--- Paragon reputation info
-function MAP:ParagonReputationSetup()
-    --[[ hooksecurefunc('ReputationFrame_InitReputationRow', function(factionRow)
-        local factionID = factionRow.factionID
-        local factionContainer = factionRow.Container
-        local factionBar = factionContainer.ReputationBar
-        local factionStanding = factionBar.FactionStanding
-
-        if factionContainer.Paragon:IsShown() then
-            local currentValue, threshold = C_Reputation.GetFactionParagonInfo(factionID)
-            if currentValue then
-                local barValue = mod(currentValue, threshold)
-                local factionStandingtext = L['Paragon'] .. floor(currentValue / threshold)
-
-                factionBar:SetMinMaxValues(0, threshold)
-                factionBar:SetValue(barValue)
-                factionStanding:SetText(factionStandingtext)
-                factionRow.standingText = factionStandingtext
-                factionRow.rolloverText =
-                    format(REPUTATION_PROGRESS_FORMAT, BreakUpLargeNumbers(barValue), BreakUpLargeNumbers(threshold))
-            end
-        end
-    end) ]]
+    initCovenantLevel()
+    updateCovenantLevel()
 end
