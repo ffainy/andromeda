@@ -57,122 +57,65 @@ local function formatWaypoint(mapID, x, y)
 end
 
 
-local playerClass = {}
-function CHAT:FRIENDLIST_UPDATE()
-    for index = 1, C_FriendList.GetNumFriends() do
-        local friend = C_FriendList.GetFriendInfoByIndex(index)
-        if friend and friend.connected then
-            playerClass[friend.name] = friend.className -- TODO: is this className localized or not?
+
+
+
+function CHAT:GetColor(className, isLocal)
+    -- For modules that need to class color things
+    if isLocal then
+        local found
+        for k, v in next, LOCALIZED_CLASS_NAMES_FEMALE do
+            if v == className then
+                className = k
+                found = true
+                break
+            end
         end
-    end
-end
-
-function CHAT:GUILD_ROSTER_UPDATE()
-    for index = 1, (GetNumGuildMembers()) do
-        local characterName, _, _, _, _, _, _, _, isOnline, _, characterClass = GetGuildRosterInfo(index)
-        if isOnline then
-            -- guildies are always on the same server (for now)
-            characterName = string.split('-', characterName)
-            playerClass[characterName] = characterClass
-        end
-    end
-end
-
-function CHAT:GROUP_ROSTER_UPDATE()
-    if IsInGroup() then
-        local prefix = IsInRaid() and 'raid' or 'party'
-        local groupSize = IsInRaid() and 40 or 5
-
-        for index = 1, groupSize do
-            if UnitExists(prefix .. index) and not UnitIsUnit('player', prefix .. index) then
-                local name, realm = UnitName(prefix .. index)
-                if realm then
-                    name = name .. '-' .. realm
+        if not found then
+            for k, v in next, LOCALIZED_CLASS_NAMES_MALE do
+                if v == className then
+                    className = k
+                    break
                 end
-
-                playerClass[name] = UnitClassBase(prefix .. index)
             end
         end
     end
-end
-
-function CHAT:PLAYER_TARGET_CHANGED()
-    if UnitExists('target') then
-        playerClass[GetUnitName('target')] = UnitClassBase('target')
+    local tbl = C.ClassColors and C.ClassColors[className] or RAID_CLASS_COLORS[className]
+    if not tbl then
+        -- Seems to be a bug since 5.3 where the friends list is randomly empty and fires friendlist updates with an "Unknown" class.
+        return ('%02x%02x%02x'):format(GRAY_FONT_COLOR.r * 255, GRAY_FONT_COLOR.g * 255, GRAY_FONT_COLOR.b * 255)
     end
+    local color = ('%02x%02x%02x'):format(tbl.r * 255, tbl.g * 255, tbl.b * 255)
+    return color
 end
 
-function CHAT:CHAT_MSG_WHISPER(_, playerName, _, _, _, _, _, _, _, _, _, playerGUID)
-    if not playerClass[playerName] then
-        local _, className = GetPlayerInfoByGUID(playerGUID)
-        playerClass[playerName] = className
-    end
-end
+local changeBNetName = function(icon, misc, id, moreMisc, fakeName, tag, colon)
+    local accountInfoTbl = C_BattleNet.GetAccountInfoByID(id)
+    local battleTag, englishClass = accountInfoTbl.battleTag, accountInfoTbl.gameAccountInfo.className
 
-function CHAT:PLAYER_LOGIN()
-    -- these two don't seem to trigger on login
-    self:FRIENDLIST_UPDATE()
-    self:GROUP_ROSTER_UPDATE()
-    return true
-end
-
--- adjust abbreviations in the edit box
-local editBoxHooks = {}
-function editBoxHooks.WHISPER(editBox)
-    if not editBox.header then
-        return
-    end
-
-    local characterName = editBox:GetAttribute('tellTarget')
-    local characterClass = playerClass[characterName]
-    if characterClass then
-        local classColor = C_ClassColor.GetClassColor(characterClass)
-        editBox.header:SetFormattedText('|cffa1a1a1@|r%s: ', classColor:WrapTextInColorCode(characterName))
+    if not battleTag then
+        local msg = 'battleTag was nil!'
+        F.Debug(msg)
+        geterrorhandler()(msg)
+    elseif battleTag == '' then
+        local msg = 'battleTag was blank!'
+        F.Debug(msg)
+        geterrorhandler()(msg)
     else
-        editBox.header:SetFormattedText('|cffa1a1a1@|r%s: ', characterName)
+        fakeName = battleTag:gsub('^(.+)#%d+$', '%1') -- Replace real name with battle tag
     end
+
+    if englishClass and englishClass ~= '' then                              -- Not playing wow, logging off, etc.
+        -- fakeName = noBNetColor and fakeName or "|cFF"..CHAT:GetColor(englishClass, true)..fakeName.."|r"
+        fakeName = '|cFF' .. CHAT:GetColor(englishClass, true) .. fakeName .. '|r' -- Colour name if enabled
+    end
+
+    -- if noBNetIcon then --Remove "person" icon if enabled
+    -- 	icon = icon:gsub("|[Tt][^|]+|[Tt]", "")
+    -- end
+
+    return icon .. misc .. id .. moreMisc .. fakeName .. tag .. colon
 end
-
-function editBoxHooks.BN_WHISPER(editBox)
-    local color, tag = getClientColorAndTag(GetAutoCompletePresenceID(editBox:GetAttribute('tellTarget')))
-    if color and tag then
-        editBox.header:SetFormattedText('|cffa1a1a1@|r|cff%s%s|r: ', color, tag)
-    end
-end
-
-function editBoxHooks.CHANNEL(editBox)
-    local _, channelName, instanceID = GetChannelName(editBox:GetAttribute('channelTarget'))
-    if channelName then
-        -- channelName = channelName:match('%w+')
-        if instanceID > 0 then
-            channelName = channelName .. instanceID
-        end
-
-        editBox.header:SetFormattedText('%s: ', channelName)
-    end
-end
-
-hooksecurefunc('ChatEdit_UpdateHeader', function(editBox)
-    local chatType = editBox:GetAttribute('chatType')
-    if not chatType or not editBox.header then
-        return
-    end
-
-    if editBoxHooks[chatType] then
-        editBoxHooks[chatType](editBox)
-    end
-
-    -- since we're re-formatting the editbox header we'll need to adjust its insets
-    editBox:SetTextInsets(editBox.header:GetWidth() + 13, 13, 0, 0)
-end)
-
-
-
-
-
-
-
-
 
 
 local chatFrameHooks = {}
@@ -194,7 +137,8 @@ local function addMessage(chatFrame, msg, ...)
     end
 
     msg = msg:gsub('|Hplayer:(.-)|h%[(.-)%]|h', formatPlayer)
-    msg = msg:gsub('|HBNplayer:(.-)|h%[(.-)%]|h', formatBNPlayer)
+    --msg = msg:gsub('|HBNplayer:(.-)|h%[(.-)%]|h', formatBNPlayer)
+    msg = msg:gsub('^(.*)(|HBNplayer:%S-|k:)(%d-)(:%S-|h)%[(%S-)%](|?h?)(:?)', changeBNetName)
     msg = msg:gsub('|Hchannel:(.-)|h%[(.-)%]|h', formatChannel)
     msg = msg:gsub('^%w- (|H)', '|cffa1a1a1@|r%1')
     msg = msg:gsub('^(.-|h) %w-:', '%1:')
@@ -217,6 +161,8 @@ function CHAT:ShortenChannelNames()
             chatFrame.AddMessage = addMessage
         end
     end
+
+
 
     -- whisper
     CHAT_WHISPER_INFORM_GET = L['Tell'] .. ' %s: '
