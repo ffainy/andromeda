@@ -318,5 +318,5 @@ function CHAT:ChatFilter()
     CHAT:ExtendLink()
     CHAT:GroupLootFilter()
     CHAT:AzeriteMessageFilter()
-    -- CHAT:DamageMeterFilter()
+    CHAT:DamageMeterFilter()
 end

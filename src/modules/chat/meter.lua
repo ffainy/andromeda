@@ -4,7 +4,7 @@
 local F, C = unpack(select(2, ...))
 local CHAT = F:GetModule('Chat')
 
---[[ local firstLines = {
+local firstLines = {
     '^Details!: (.*)$', -- Details!
     '^Recount - (.*)$', -- Recount
     '^Skada: (.*) for (.*):$', -- Skada enUS
@@ -147,4 +147,4 @@ function CHAT:DamageMeterFilter()
     for _, event in pairs(events) do
         _G.ChatFrame_AddMessageEventFilter(event, ParseChatEvent)
     end
-end ]]
+end
