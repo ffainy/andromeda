@@ -39,9 +39,9 @@ local function onEnter(self)
     GameTooltip:AddLine(CURRENCY, 0.9, 0.8, 0.6)
 
     title = false
-    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2912) -- 苏生觉醒 / Renascent Awakening
+    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2813) -- 协和绸缎 / Harmonized Silk
     if chargeInfo then
-        addTitle('Tier Charges')
+        addTitle(chargeInfo.name)
 
         GameTooltip:AddDoubleLine(
             addIcon(chargeInfo.iconFileID) .. chargeInfo.name,
