@@ -19,7 +19,7 @@ local function formatString(msg, srcName, destName, spellId)
     srcName = srcName:gsub('%-[^|]+', '')
     msg = gsub(msg, '%%player%%', srcName)
     msg = gsub(msg, '%%target%%', destName)
-    msg = gsub(msg, '%%spell%%', C_Spell.GetSpellLink(spellId))
+    msg = gsub(msg, '%%player_spell%%', C_Spell.GetSpellLink(spellId))
     return msg
 end
 
