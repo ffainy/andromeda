@@ -440,6 +440,19 @@ GUI.OptionsList = {
         {
             4,
             'ACCOUNT',
+            'LibCustomGlowType',
+            L['Button Glow Type'],
+            nil,
+            {
+                'Pixel',
+                'Autocast',
+                'Action Button',
+                'Proc',
+            },
+        },
+        {
+            4,
+            'ACCOUNT',
             'NumberFormat',
             L['Number Format'],
             true,
@@ -672,19 +685,6 @@ GUI.OptionsList = {
             nil,
             nil,
             L['Allow space bar, escape key and enter key to cancel cinematic without confirmation.'],
-        },
-        {
-            4,
-            'ACCOUNT',
-            'LibCustomGlowType',
-            L['Button Glow Type'],
-            true,
-            {
-                'Pixel',
-                'Autocast',
-                'Action Button',
-                'Proc',
-            },
         },
         {},
         {
