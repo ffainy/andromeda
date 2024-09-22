@@ -268,13 +268,13 @@ function ExtraQuestButton:PLAYER_LOGIN()
     self.Icon = Icon
 
     local HotKey = self:CreateFontString('$parentHotKey')
-    HotKey:SetFont(C.Assets.Fonts.Condensed, 10, 'OUTLINE')
-    HotKey:SetPoint('TOPRIGHT', -2, -2)
+    HotKey:SetFont(C.Assets.Fonts.Condensed, 11, 'OUTLINE')
+    HotKey:SetPoint('TOPLEFT', 2, -2)
     self.HotKey = HotKey
 
     local Count = self:CreateFontString('$parentCount')
-    Count:SetFont(C.Assets.Fonts.Condensed, 10, 'OUTLINE')
-    Count:SetPoint('BOTTOMLEFT', 2, 2)
+    Count:SetFont(C.Assets.Fonts.Condensed, 11, 'OUTLINE')
+    Count:SetPoint('BOTTOMRIGHT', -2, 2)
     self.Count = Count
 
     local Cooldown = CreateFrame('Cooldown', '$parentCooldown', self, 'CooldownFrameTemplate')

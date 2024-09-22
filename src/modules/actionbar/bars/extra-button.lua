@@ -12,22 +12,35 @@ function ACTIONBAR:CreateExtraBar()
     frame:SetHeight(size + 2 * padding)
     frame.mover = F.Mover(frame, L['ExtraButton'], 'ExtraButton', { 'CENTER', UIParent, 'CENTER', 0, 250 })
 
-    local ExtraActionBarFrame = _G.ExtraActionBarFrame
+    local ExtraActionBarFrame = ExtraActionBarFrame
     ExtraActionBarFrame:EnableMouse(false)
     ExtraActionBarFrame:ClearAllPoints()
     ExtraActionBarFrame:SetPoint('CENTER', frame)
     ExtraActionBarFrame.ignoreFramePositionManager = true
 
     hooksecurefunc(ExtraActionBarFrame, 'SetParent', function(self, parent)
-        if parent == _G.ExtraAbilityContainer then
+        if parent == ExtraAbilityContainer then
             self:SetParent(frame)
         end
     end)
 
-    local button = _G.ExtraActionButton1
+    local button = ExtraActionButton1
     tinsert(buttonList, button)
     tinsert(ACTIONBAR.buttons, button)
     button:SetSize(size, size)
+
+    if ExtraActionButton1HotKey then
+        ExtraActionButton1HotKey:SetFont(C.Assets.Fonts.Condensed, 11, 'OUTLINE')
+        ExtraActionButton1HotKey:ClearAllPoints()
+        ExtraActionButton1HotKey:SetPoint('TOPLEFT', button, 'TOPLEFT', 2, -2)
+        ExtraActionButton1HotKey:SetJustifyH('LEFT')
+    end
+    if ExtraActionButton1Count then
+        ExtraActionButton1Count:SetFont(C.Assets.Fonts.Condensed, 11, 'OUTLINE')
+        ExtraActionButton1Count:ClearAllPoints()
+        ExtraActionButton1Count:SetPoint('BOTTOMRIGHT', button, 'BOTTOMRIGHT', -2, 2)
+        ExtraActionButton1Count:SetJustifyH('RIGHT')
+    end
 
     frame.frameVisibility = '[extrabar] show; hide'
     RegisterStateDriver(frame, 'visibility', frame.frameVisibility)
@@ -38,7 +51,7 @@ function ACTIONBAR:CreateExtraBar()
     zoneFrame:SetHeight(size + 2 * padding)
     zoneFrame.mover = F.Mover(zoneFrame, L['ZoneAbilityButton'], 'ZoneAbilityButton', { 'CENTER', UIParent, 'CENTER', 0, 200 })
 
-    local ZoneAbilityFrame = _G.ZoneAbilityFrame
+    local ZoneAbilityFrame = ZoneAbilityFrame
     ZoneAbilityFrame:SetParent(zoneFrame)
     ZoneAbilityFrame:ClearAllPoints()
     ZoneAbilityFrame:SetPoint('CENTER', zoneFrame)
@@ -61,7 +74,7 @@ function ACTIONBAR:CreateExtraBar()
 
     -- Fix button visibility
     hooksecurefunc(ZoneAbilityFrame, 'SetParent', function(self, parent)
-        if parent == _G.ExtraAbilityContainer then
+        if parent == ExtraAbilityContainer then
             self:SetParent(zoneFrame)
         end
     end)
