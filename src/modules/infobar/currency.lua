@@ -2,8 +2,20 @@ local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
 local currPvP = {
-    ['Honor'] = 1792,
-    ['Conquest'] = 1602,
+    '1792', -- 荣誉
+    '1602', -- 征服
+}
+
+local currPvE = {
+    '2815', -- 共鸣水晶
+    '3008', -- 神勇石
+    '2914', -- 风化
+    '2915', -- 蚀刻
+    '2916', -- 符文
+    '2917', -- 鎏金
+    '3028', -- 宝匣钥匙
+    '2803', -- 晦幽铸币
+    '3056', -- 刻基
 }
 
 local function addIcon(texture)
@@ -41,7 +53,7 @@ local function onEnter(self)
     title = false
     local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2813) -- 协和绸缎 / Harmonized Silk
     if chargeInfo then
-        addTitle(chargeInfo.name)
+        addTitle(L['Catalyst Charge'])
 
         GameTooltip:AddDoubleLine(
             addIcon(chargeInfo.iconFileID) .. chargeInfo.name,
@@ -51,29 +63,22 @@ local function onEnter(self)
     end
 
     title = false
-    for i = 1, 10 do
-        local currencyInfo = C_CurrencyInfo.GetBackpackCurrencyInfo(i)
-        if not currencyInfo then
-            break
-        end
+    for _, id in pairs(currPvE) do
+        addTitle('PvE')
 
-        if currencyInfo.name and currencyInfo.quantity then
-            addTitle('PvE')
-
-            local total = C_CurrencyInfo.GetCurrencyInfo(currencyInfo.currencyTypesID).maxQuantity
-            if total > 0 then
-                GameTooltip:AddDoubleLine(
-                    addIcon(currencyInfo.iconFileID) .. currencyInfo.name,
-                    BreakUpLargeNumbers(currencyInfo.quantity) .. '/' .. BreakUpLargeNumbers(total),
-                    1, 1, 1, 1, 1, 1
-                )
-            else
-                GameTooltip:AddDoubleLine(
-                    addIcon(currencyInfo.iconFileID) .. currencyInfo.name,
-                    BreakUpLargeNumbers(currencyInfo.quantity),
-                    1, 1, 1, 1, 1, 1
-                )
-            end
+        local pveInfo = C_CurrencyInfo.GetCurrencyInfo(id)
+        if pveInfo.maxQuantity > 0 then
+            GameTooltip:AddDoubleLine(
+                addIcon(pveInfo.iconFileID) .. pveInfo.name,
+                BreakUpLargeNumbers(pveInfo.quantity) .. '/' .. BreakUpLargeNumbers(pveInfo.maxQuantity),
+                1, 1, 1, 1, 1, 1
+            )
+        else
+            GameTooltip:AddDoubleLine(
+                addIcon(pveInfo.iconFileID) .. pveInfo.name,
+                BreakUpLargeNumbers(pveInfo.quantity),
+                1, 1, 1, 1, 1, 1
+            )
         end
     end
 
@@ -81,17 +86,17 @@ local function onEnter(self)
     for _, id in pairs(currPvP) do
         addTitle('PvP')
 
-        local info = C_CurrencyInfo.GetCurrencyInfo(id)
-        if info.maxQuantity > 0 then
+        local pvpInfo = C_CurrencyInfo.GetCurrencyInfo(id)
+        if pvpInfo.maxQuantity > 0 then
             GameTooltip:AddDoubleLine(
-                addIcon(info.iconFileID)..info.name,
-                BreakUpLargeNumbers(info.quantity) .. '/' .. BreakUpLargeNumbers(info.maxQuantity),
+                addIcon(pvpInfo.iconFileID)..pvpInfo.name,
+                BreakUpLargeNumbers(pvpInfo.quantity) .. '/' .. BreakUpLargeNumbers(pvpInfo.maxQuantity),
                 1, 1, 1, 1, 1, 1
             )
         else
             GameTooltip:AddDoubleLine(
-                addIcon(info.iconFileID)..info.name,
-                BreakUpLargeNumbers(info.quantity),
+                addIcon(pvpInfo.iconFileID)..pvpInfo.name,
+                BreakUpLargeNumbers(pvpInfo.quantity),
                 1, 1, 1, 1, 1, 1
             )
         end
@@ -103,7 +108,7 @@ local function onEnter(self)
     GameTooltip:Show()
 end
 
-local function onLeave(self)
+local function onLeave()
     F:HideTooltip()
 end
 
