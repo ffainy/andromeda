@@ -2,6 +2,6 @@
     <Script file="filters.lua"/>
     <Script file="nameplate.lua"/>
     <Script file="dungeon.lua"/>
-    <Script file="incarnates.lua"/>
+    <Script file="nerubar.lua"/>
     <Script file="group.lua"/>
 </Ui>

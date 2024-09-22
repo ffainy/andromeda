@@ -117,5 +117,5 @@ function UNITFRAME:InitFilters()
     UNITFRAME:InitPartySpellsList()
     NAMEPLATE:InitMajorSpellsList()
     UNITFRAME:RegisterDungeonSpells()
-    UNITFRAME:RegisterIncarnatesSpells()
+    UNITFRAME:RegisterNerubarSpells()
 end
