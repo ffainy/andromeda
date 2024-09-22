@@ -1,6 +1,9 @@
 local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
+local block
+local blockEntered = false
+
 local currPvP = {
     '1792', -- 荣誉
     '1602', -- 征服
@@ -16,6 +19,10 @@ local currPvE = {
     '3028', -- 宝匣钥匙
     '2803', -- 晦幽铸币
     '3056', -- 刻基
+}
+
+local currOld = {
+    '2912', -- 苏生觉醒 / Renascent Awakening
 }
 
 local function addIcon(texture)
@@ -44,22 +51,38 @@ local function onMouseUp(self, btn)
     end
 end
 
+local function onShiftDown()
+    if blockEntered then
+        block:onEnter()
+    end
+end
+
 local function onEnter(self)
+    blockEntered = true
+
     local anchorTop = C.DB.Infobar.AnchorTop
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
     GameTooltip:AddLine(CURRENCY, 0.9, 0.8, 0.6)
 
     title = false
-    local chargeInfo = C_CurrencyInfo.GetCurrencyInfo(2813) -- 协和绸缎 / Harmonized Silk
-    if chargeInfo then
+    local catalystInfo = C_CurrencyInfo.GetCurrencyInfo(2813) -- 协和绸缎 / Harmonized Silk
+    if catalystInfo then
         addTitle(L['Catalyst Charge'])
 
-        GameTooltip:AddDoubleLine(
-            addIcon(chargeInfo.iconFileID) .. chargeInfo.name,
-            chargeInfo.quantity .. '/' .. chargeInfo.maxQuantity,
-            1, 1, 1, 1, 1, 1
-        )
+        if catalystInfo.maxQuantity > 0 then
+            GameTooltip:AddDoubleLine(
+                addIcon(catalystInfo.iconFileID) .. catalystInfo.name,
+                BreakUpLargeNumbers(catalystInfo.quantity) .. '/' .. BreakUpLargeNumbers(catalystInfo.maxQuantity),
+                1, 1, 1, 1, 1, 1
+            )
+        else
+            GameTooltip:AddDoubleLine(
+                addIcon(catalystInfo.iconFileID) .. catalystInfo.name,
+                BreakUpLargeNumbers(catalystInfo.quantity),
+                1, 1, 1, 1, 1, 1
+            )
+        end
     end
 
     title = false
@@ -89,27 +112,59 @@ local function onEnter(self)
         local pvpInfo = C_CurrencyInfo.GetCurrencyInfo(id)
         if pvpInfo.maxQuantity > 0 then
             GameTooltip:AddDoubleLine(
-                addIcon(pvpInfo.iconFileID)..pvpInfo.name,
+                addIcon(pvpInfo.iconFileID) .. pvpInfo.name,
                 BreakUpLargeNumbers(pvpInfo.quantity) .. '/' .. BreakUpLargeNumbers(pvpInfo.maxQuantity),
                 1, 1, 1, 1, 1, 1
             )
         else
             GameTooltip:AddDoubleLine(
-                addIcon(pvpInfo.iconFileID)..pvpInfo.name,
+                addIcon(pvpInfo.iconFileID) .. pvpInfo.name,
                 BreakUpLargeNumbers(pvpInfo.quantity),
                 1, 1, 1, 1, 1, 1
             )
         end
     end
 
+    if IsShiftKeyDown() then
+        title = false
+        for _, id in pairs(currOld) do
+            addTitle(L['Previous Expansion'])
+
+            local oldInfo = C_CurrencyInfo.GetCurrencyInfo(id)
+            if oldInfo.maxQuantity > 0 then
+                GameTooltip:AddDoubleLine(
+                    addIcon(oldInfo.iconFileID) .. oldInfo.name,
+                    BreakUpLargeNumbers(oldInfo.quantity) .. '/' .. BreakUpLargeNumbers(oldInfo.maxQuantity),
+                    1, 1, 1, 1, 1, 1
+                )
+            else
+                GameTooltip:AddDoubleLine(
+                    addIcon(oldInfo.iconFileID) .. oldInfo.name,
+                    BreakUpLargeNumbers(oldInfo.quantity),
+                    1, 1, 1, 1, 1, 1
+                )
+            end
+        end
+    else
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(
+            L['Hold SHIFT key for more currencies'],
+            0.6, 0.8, 1
+        )
+    end
+
     GameTooltip:AddLine(' ')
     GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
     GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Currency Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
     GameTooltip:Show()
+
+    F:RegisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
 local function onLeave()
-    F:HideTooltip()
+    blockEntered = false
+    F.HideTooltip()
+    F:UnregisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
 function INFOBAR:CreateCurrencyBlock()
@@ -117,14 +172,13 @@ function INFOBAR:CreateCurrencyBlock()
         return
     end
 
-    local cur = INFOBAR:RegisterNewBlock('currency', 'LEFT', 150)
+    block = INFOBAR:RegisterNewBlock('currency', 'LEFT', 150)
+    block.onEvent = onEvent
+    block.onEnter = onEnter
+    block.onLeave = onLeave
+    block.onMouseUp = onMouseUp
 
-    cur.onEvent = onEvent
-    cur.onEnter = onEnter
-    cur.onLeave = onLeave
-    cur.onMouseUp = onMouseUp
-
-    cur.eventList = {
+    block.eventList = {
         'PLAYER_ENTERING_WORLD',
         'CURRENCY_DISPLAY_UPDATE',
     }
