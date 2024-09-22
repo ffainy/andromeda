@@ -22,11 +22,10 @@ F:RegisterSlashCommand('/and', function(msg)
         end
         LOGO.logoFrame:Show()
     elseif strmatch(str, 'clickbinding') or strmatch(str, 'cb') then
-        if InClickBindingMode() then
-            ClickBindingFrame.SaveButton:Click()
-        else
-            ToggleClickBindingFrame()
+        if not C_AddOns.IsAddOnLoaded('Blizzard_ClickBindingUI') then
+            C_AddOns.LoadAddOn('Blizzard_ClickBindingUI')
         end
+        ClickBindingFrame_Toggle()
     elseif strmatch(str, 'keybinding') or strmatch(str, 'kb') then
         SlashCmdList['ANDROMEDA_KEY_BINDING']('')
     elseif strmatch(str, 'ver') or strmatch(str, 'version') then
