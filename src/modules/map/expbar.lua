@@ -18,48 +18,7 @@ local events = {
     'HONOR_XP_UPDATE',
 }
 
-local function initCovenantLevel()
-    if not _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] then
-        _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] = {}
-    end
-
-    if not _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME] then
-        _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME] = {}
-
-        for i = 1, 4 do
-            _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][i] = 0
-        end
-    end
-end
-
-local function checkCovenantLevel()
-    local level = C_CovenantSanctumUI.GetRenownLevel()
-    local CovenantID = C_Covenants.GetActiveCovenantID()
-
-    _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][CovenantID] = level
-end
-
-local function updateCovenantLevel()
-    F:RegisterEvent('PLAYER_ENTERING_WORLD', function()
-        F:Delay(1, function()
-            checkCovenantLevel()
-        end)
-    end)
-
-    F:RegisterEvent('COVENANT_CHOSEN', function()
-        F:Delay(3, function()
-            checkCovenantLevel()
-        end)
-    end)
-
-    F:RegisterEvent('COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED', function()
-        F:Delay(3, function()
-            checkCovenantLevel()
-        end)
-    end)
-end
-
-local function createBar()
+local function createExpRepBar()
     local Minimap = Minimap
     local bar = CreateFrame('StatusBar', C.ADDON_TITLE .. 'MinimapProgressBar', Minimap)
     bar:SetPoint('TOPLEFT', 0, -Minimap.halfDiff)
@@ -81,6 +40,47 @@ local function createBar()
     bar.restBar = rest
 
     MAP.ExpBar = bar
+end
+
+local function initCovenantRenownLevel()
+    if not _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] then
+        _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM] = {}
+    end
+
+    if not _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME] then
+        _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME] = {}
+
+        for i = 1, 4 do
+            _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][i] = 0
+        end
+    end
+end
+
+local function checkCovenantRenownLevel()
+    local level = C_CovenantSanctumUI.GetRenownLevel()
+    local CovenantID = C_Covenants.GetActiveCovenantID()
+
+    _G['ANDROMEDA_ADB']['RenownLevels'][C.MY_REALM][C.MY_NAME][CovenantID] = level
+end
+
+local function updateCovenantRenownLevel()
+    F:RegisterEvent('PLAYER_ENTERING_WORLD', function()
+        F:Delay(1, function()
+            checkCovenantRenownLevel()
+        end)
+    end)
+
+    F:RegisterEvent('COVENANT_CHOSEN', function()
+        F:Delay(3, function()
+            checkCovenantRenownLevel()
+        end)
+    end)
+
+    F:RegisterEvent('COVENANT_SANCTUM_RENOWN_LEVEL_CHANGED', function()
+        F:Delay(3, function()
+            checkCovenantRenownLevel()
+        end)
+    end)
 end
 
 local function onEvent(self)
@@ -286,7 +286,7 @@ local function onEnter(self)
 
     -- factions of the WarWithin
     local wwFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_WAR_WITHIN)
-    --if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN) then
+    if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN) then
         GameTooltip:AddLine(' ')
         GameTooltip:AddLine(EXPANSION_NAME10, 0.9, 0.8, 0.6)
         for _, id in pairs(wwFactionIds) do
@@ -305,12 +305,12 @@ local function onEnter(self)
                 0.6, 0.8, 1, 1, 1, 1
             )
         end
-    --end
+    end
 
     if IsShiftKeyDown() then
         -- factions of DragonFlight
         local dfFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-        --if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT) then
+        if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT) then
             GameTooltip:AddLine(' ')
             GameTooltip:AddLine(EXPANSION_NAME9, 0.9, 0.8, 0.6)
             for _, id in pairs(dfFactionIds) do
@@ -329,7 +329,7 @@ local function onEnter(self)
                     0.6, 0.8, 1, 1, 1, 1
                 )
             end
-        --end
+        end
 
         -- factions of ShadowLands
         local covenantID = C_Covenants.GetActiveCovenantID()
@@ -382,8 +382,8 @@ function MAP:CreateExpBar()
         return
     end
 
-    createBar()
+    createExpRepBar()
     setupScript()
-    initCovenantLevel()
-    updateCovenantLevel()
+    initCovenantRenownLevel()
+    updateCovenantRenownLevel()
 end
