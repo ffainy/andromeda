@@ -27,7 +27,6 @@ C.CharacterSettings = {
         PlayerDead = false,
         FasterZooming = true,
         ActionCamera = false,
-        FlashCursor = false,
         Vignetting = true,
         VignettingAlpha = 0.85,
         FasterMovieSkip = true,
