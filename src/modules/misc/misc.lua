@@ -282,41 +282,6 @@ function M:BlockStrangerInvite()
     end)
 end
 
--- weekly lottery
-do
-    local function onMouseUp(self)
-        self:Hide()
-
-        PlaySound(SOUNDKIT.UI_LEGENDARY_LOOT_TOAST)
-    end
-
-    local function addMask(frame)
-        local mask = CreateFrame('Frame', nil, frame)
-        mask:SetAllPoints()
-        mask:SetFrameLevel(99)
-
-        mask.tex = mask:CreateTexture()
-        mask.tex:SetAllPoints()
-        mask.tex:SetColorTexture(0, 0, 0)
-
-        mask:SetScript('OnMouseUp', onMouseUp)
-    end
-
-    function M:WeeklyLottery()
-        if not C.DB.General.WeeklyLottery then
-            return
-        end
-
-        F:HookAddOn('Blizzard_WeeklyRewards', function()
-            if C_WeeklyRewards.HasAvailableRewards() then
-                for _, frame in pairs(WeeklyRewardsFrame.Activities) do
-                    addMask(frame)
-                end
-            end
-        end)
-    end
-end
-
 -- action camera
 do
     local function exec(cmd)
@@ -338,7 +303,6 @@ function M:OnLogin()
     M:ForceWarning()
     M:MuteAnnoyingSounds()
     M:FasterMovieSkip()
-    M:WeeklyLottery()
     M:UpdateActionCamera()
     M:BlockStrangerInvite()
     M:MicroMenu()

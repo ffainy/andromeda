@@ -59,7 +59,6 @@ C.CharacterSettings = {
         RaidToolCountdown = '10',
 
         MuteAnnoyingSounds = true,
-        WeeklyLottery = true,
 
         BlockStrangerInvite = false,
         BlockStrangerRequest = false,

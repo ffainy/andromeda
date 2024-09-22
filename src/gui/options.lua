@@ -603,16 +603,6 @@ GUI.OptionsList = {
             nil,
             L['Enhance the default merchant frame by expanding it to twice the width.'],
         },
-        {
-            1,
-            'General',
-            'WeeklyLottery',
-            L['Weekly Lottery'],
-            true,
-            nil,
-            nil,
-            L['The great vault rewards are hidden by default and shown when clicked to simulate the feel of a lottery.'],
-        },
         {},
         {
             1,
