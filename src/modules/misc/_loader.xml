@@ -5,7 +5,6 @@
     <Script file="alreadyknown.lua"/>
     <Script file="camera.lua"/>
     <Script file="cursor.lua"/>
-    <Script file="dragemall.lua"/>
     <Script file="ignorenote.lua"/>
     <Script file="itemlevel.lua"/>
     <Script file="logo.lua"/>
