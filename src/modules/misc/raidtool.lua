@@ -48,7 +48,7 @@ function RT:RaidTool_Header()
     frame:SetSize(120, 28)
     frame:SetFrameLevel(2)
     F.ReskinButton(frame)
-    F.Mover(frame, L['GroupTool'], 'GroupTool', { 'TOP', 0, -30 })
+    F.Mover(frame, L['RaidTool'], 'RaidTool', { 'TOP', 0, -30 })
 
     RT:RaidTool_Visibility(frame)
     F:RegisterEvent('GROUP_ROSTER_UPDATE', function()
@@ -98,9 +98,9 @@ function RT:GetRaidMaxGroup()
         return 1
     elseif instType ~= 'raid' then
         return 8
-    elseif difficulty == 8 or difficulty == 1 or difficulty == 2 or difficulty == 24 then
+    elseif difficulty == 8 or difficulty == 1 or difficulty == 2 then
         return 1
-    elseif difficulty == 14 or difficulty == 15 then
+    elseif difficulty == 14 or difficulty == 15 or (difficulty == 24 and instType == 'raid') then
         return 6
     elseif difficulty == 16 then
         return 4
@@ -619,7 +619,7 @@ function RT:RaidTool_Misc()
 end
 
 function RT:OnLogin()
-    if not C.DB.General.GroupTool then
+    if not C.DB.General.RaidTool then
         return
     end
 

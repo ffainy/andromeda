@@ -54,7 +54,7 @@ C.CharacterSettings = {
         GameMenuSmooth = 0.5,
         GameMenuButtonGap = 2,
         GameMenuBarHeight = 22,
-        GroupTool = true,
+        RaidTool = true,
         RuneCheck = false,
         RaidToolCountdown = '10',
 

@@ -538,8 +538,8 @@ GUI.OptionsList = {
         {
             1,
             'General',
-            'GroupTool',
-            L['Group Tool'],
+            'RaidTool',
+            L['Raid Tool'],
             true,
             nil,
             nil,
