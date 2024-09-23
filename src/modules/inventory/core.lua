@@ -476,7 +476,7 @@ function INVENTORY:CreateSortButton(name)
         elseif name == 'Reagent' then
             C_Container.SortReagentBankBags()
         elseif name == 'Account' then
-            StaticPopup_Show('BANK_CONFIRM_CLEANUP', nil, nil, { bankType = ACCOUNT_BANK_TYPE })
+            C_Container.SortAccountBankBags()
         else
             if C.DB.Inventory.SortMode == 1 then
                 C_Container.SortBags()
