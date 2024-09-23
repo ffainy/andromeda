@@ -1272,6 +1272,7 @@ GUI.OptionsList = {
             nil,
             nil,
             UpdateBarConfig,
+            OPTION_TOOLTIP_ACTION_BUTTON_USE_KEY_DOWN,
         },
         {
             1,
@@ -1281,6 +1282,7 @@ GUI.OptionsList = {
             true,
             nil,
             UpdateBarConfig,
+            OPTION_TOOLTIP_LOCK_ACTIONBAR,
         },
         {
             1,
