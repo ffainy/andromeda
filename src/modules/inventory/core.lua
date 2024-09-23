@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local INVENTORY = F:GetModule('Inventory')
 local cargBags = F.Libs.cargBags
-local iconsList = C.Assets.Textures
+local iconsList = C.Assets.Textures.inventory
 
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local iconColor = { 0.5, 0.5, 0.5 }
@@ -149,11 +149,11 @@ local function toggleWidgetButtons(self)
     if C.DB['Inventory']['HideWidgets'] then
         -- self.tag:Show()
         self:SetPoint('RIGHT', buttons[2], 'LEFT', -1, 0)
-        self.__texture:SetTexture(iconsList.BagSplit)
+        self.__texture:SetTexture(iconsList.split)
     else
         -- self.tag:Hide()
         self:SetPoint('RIGHT', buttons[#buttons], 'LEFT', -1, 0)
-        self.__texture:SetTexture(iconsList.BagSplit)
+        self.__texture:SetTexture(iconsList.split)
     end
     self:Show()
 end
@@ -163,7 +163,7 @@ function INVENTORY:CreateCollapseArrow()
     bu:SetSize(16, 16)
     local tex = bu:CreateTexture()
     tex:SetAllPoints()
-    tex:SetTexture(iconsList.BagSplit)
+    tex:SetTexture(iconsList.split)
     bu.__texture = tex
     bu:SetScript('OnEnter', F.Texture_OnEnter)
     bu:SetScript('OnLeave', F.Texture_OnLeave)
@@ -237,7 +237,7 @@ local function closeOrRestoreBags(self, btn)
 end
 
 function INVENTORY:CreateRestoreButton(f)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagRestore)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.restore)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:RegisterForClicks('AnyUp')
     bu.__owner = f
@@ -249,7 +249,7 @@ function INVENTORY:CreateRestoreButton(f)
 end
 
 function INVENTORY:CreateReagentButton(f)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagReagen)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.reagen)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
@@ -277,9 +277,7 @@ function INVENTORY:CreateReagentButton(f)
 end
 
 function INVENTORY:CreateAccountBankButton(f)
-    local bu = F.CreateButton(self, 16, 16, true, 235423)
-    bu.Icon:SetTexCoord(0.6, 0.9, 0.1, 0.4)
-    bu.Icon:SetPoint('BOTTOMRIGHT', -C.MULT, -C.MULT)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.warband)  -- #TODO need better icon
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
         if AccountBankPanel:ShouldShowLockPrompt() then
@@ -343,7 +341,7 @@ function INVENTORY:CreateAccountMoney()
 end
 
 function INVENTORY:CreateBankButton(f)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagReagen)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.bank)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function()
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
@@ -376,7 +374,7 @@ function INVENTORY:AutoDeposit()
 end
 
 function INVENTORY:CreateDepositButton()
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagDeposit)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.deposit)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
@@ -402,15 +400,14 @@ end
 
 local function updateAccountBankDeposit(bu)
     if GetCVarBool('bankAutoDepositReagents') then
-        bu.bg:SetBackdropBorderColor(1, 0.8, 0)
+        bu.Icon:SetVertexColor(C.r, C.g, C.b)
     else
-        F.SetBorderColor(bu.bg)
+        bu.Icon:SetVertexColor(unpack(iconColor))
     end
 end
 
 function INVENTORY:CreateAccountBankDeposit()
-    local bu = F.CreateButton(self, 16, 16, true, 'Atlas:GreenCross')
-    bu.Icon:SetOutside()
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.deposit)
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
         if btn == 'RightButton' then
@@ -425,9 +422,8 @@ function INVENTORY:CreateAccountBankDeposit()
     F.AddTooltip(
         bu,
         'ANCHOR_TOP',
-        C.INFO_COLOR
-        ..
-        L['Left click to deposit warband items, right click to swith deposit mode.|nIf the button border shown, the reagents from your bags would deposit into your warband bank as well.']
+        L['Left click to deposit warband items, right click to swith deposit mode.|nIf the button is highlight, the reagents from your bags would deposit into your warband bank as well.'],
+        'BLUE'
     )
     updateAccountBankDeposit(bu)
 
@@ -447,7 +443,7 @@ local function toggleBackpacks(self)
 end
 
 function INVENTORY:CreateBagToggle(click)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagToggle)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.toggle)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu.__owner = self
     bu:SetScript('OnClick', toggleBackpacks)
@@ -463,7 +459,7 @@ function INVENTORY:CreateBagToggle(click)
 end
 
 function INVENTORY:CreateSortButton(name)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagSort)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.sort)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function()
         if C.DB.Inventory.SortMode == 3 then
@@ -516,7 +512,7 @@ local function updateRepairButtonStatus(bu)
 end
 
 function INVENTORY:CreateRepairButton()
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagRepair)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.repair)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function(self)
         ANDROMEDA_ADB['RepairType'] = mod(ANDROMEDA_ADB['RepairType'] + 1, 3)
@@ -543,7 +539,7 @@ local function updateSellButtonStatus(bu)
 end
 
 function INVENTORY:CreateSellButton()
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagSell)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.sell)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function(self)
         C.DB.Inventory.AutoSellJunk = not C.DB.Inventory.AutoSellJunk
@@ -574,7 +570,7 @@ local smartFilter = {
 }
 
 function INVENTORY:CreateSearchButton()
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagSearch)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.search)
     bu.Icon:SetVertexColor(unpack(iconColor))
 
     bu.tipHeader = L['Search']
@@ -784,7 +780,7 @@ function INVENTORY:CreateFavouriteButton()
 
     local enabledText = L["You can now star items.|nIf 'Item Filter' enabled, the item you starred will add to Preferences filter slots.|nThis is not available to junk."]
 
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagFavourite)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.fav)
     bu.Icon:SetVertexColor(unpack(iconColor))
 
     bu.__turnOff = function()
@@ -838,7 +834,7 @@ local customJunkEnable
 function INVENTORY:CreateCustomJunkButton()
     local enabledText = L["Click to tag item as junk.|nIf 'Auto sell junk' enabled, these items would be sold as well.|nThe list is saved account-wide, and won't be in the export data.|nYou can hold CTRL + ALT and click to wipe the custom junk list."]
 
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.BagJunk)
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.junk)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu.__turnOff = function()
         bu.Icon:SetVertexColor(unpack(iconColor))
