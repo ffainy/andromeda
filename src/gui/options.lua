@@ -2108,6 +2108,16 @@ GUI.OptionsList = {
             nil,
             L['Color dispellable buffs border with white.']
         },
+        {
+            1,
+            'Unitframe',
+            'HideTargetBuffs',
+            L['Hide Target Buffs'],
+            nil,
+            nil,
+            nil,
+            L['Hide buffs on target frame.']
+        },
         {},
         {
             1,

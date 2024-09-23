@@ -189,6 +189,7 @@ C.CharacterSettings = {
         DesaturateIcon = true,
         DebuffTypeColor = true,
         StealableBuffs = true,
+        HideTargetBuffs = false,
 
         Fader = true,
         MinAlpha = 0,

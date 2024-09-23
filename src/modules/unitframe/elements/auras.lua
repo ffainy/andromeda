@@ -246,6 +246,9 @@ do
         local isStealable = data.isStealable
         local spellID = data.spellId
         local nameplateShowAll = data.nameplateShowAll
+        local isPlayerAura = data.isPlayerAura
+        local isHarmful = data.isHarmful
+        local isHelpful = data.isHelpful
 
         if style == 'nameplate' or style == 'boss' or style == 'arena' then
             if name and spellID == 209859 then -- pass all bolster
@@ -261,16 +264,20 @@ do
                 return true
             else
                 local auraFilter = C.DB.Nameplate.AuraFilterMode
-                return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and data.isPlayerAura)
+                return (auraFilter == 3 and nameplateShowAll) or (auraFilter ~= 1 and isPlayerAura)
             end
         elseif style == 'player' then
             return true
         elseif style == 'pet' then
             return true
         elseif style == 'target' then
-            return isStealable or not data.isHarmful or (element.onlyShowPlayer and data.isPlayerAura) or (not element.onlyShowPlayer and name)
+            if C.DB.Unitframe.HideTargetBuffs then
+                return isStealable or (isHarmful and element.onlyShowPlayer and isPlayerAura) or (not element.onlyShowPlayer and isHarmful and name)
+            else
+                return isStealable or not isHarmful or (element.onlyShowPlayer and isPlayerAura) or (not element.onlyShowPlayer and name)
+            end
         else
-            return (element.onlyShowPlayer and data.isPlayerAura) or (not element.onlyShowPlayer and name)
+            return (element.onlyShowPlayer and isPlayerAura) or (not element.onlyShowPlayer and name)
         end
     end
 
