@@ -175,8 +175,8 @@ do
     do
         local lockedCVars = {}
         function F:LockCVar(name, value)
-            SetCVar(name, value)
             lockedCVars[name] = value
+            SetCVar(name, value)
         end
 
         function F:UpdateCVars(var, state)

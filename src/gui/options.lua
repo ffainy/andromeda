@@ -1264,7 +1264,24 @@ GUI.OptionsList = {
             UpdateBarConfig,
             L['Color the button backdrop of actionbar by player class.'],
         },
-
+        {
+            1,
+            'Actionbar',
+            'KeyDown',
+            L['Cast on Keydown'],
+            nil,
+            nil,
+            UpdateBarConfig,
+        },
+        {
+            1,
+            'Actionbar',
+            'ButtonLock',
+            L['Lock Actionbars'],
+            true,
+            nil,
+            UpdateBarConfig,
+        },
         {
             1,
             'Actionbar',

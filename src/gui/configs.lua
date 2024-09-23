@@ -530,6 +530,8 @@ C.CharacterSettings = {
         KeyFeedback = true,
         Grid = true,
         ShowGlow = true,
+        KeyDown = true,
+        ButtonLock = true,
 
         BarPreset = 1,
         ButtonMargin = 3,

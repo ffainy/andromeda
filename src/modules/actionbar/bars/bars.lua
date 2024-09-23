@@ -124,7 +124,7 @@ function ACTIONBAR:UpdateButtonConfig(i)
             },
         }
     end
-    self.buttonConfig.clickOnDown = true
+    self.buttonConfig.clickOnDown = GetCVarBool('ActionButtonUseKeyDown')
     self.buttonConfig.showGrid = C.DB['Actionbar']['Grid']
     self.buttonConfig.flyoutDirection = directions[C.DB['Actionbar']['Bar' .. i .. 'Flyout']]
 
@@ -163,14 +163,12 @@ function ACTIONBAR:UpdateButtonConfig(i)
     hideElements.macro = not C.DB['Actionbar']['ShowMacroName']
     hideElements.equipped = not C.DB['Actionbar']['EquipColor']
 
-    local lockBars = GetCVarBool('lockActionBars')
+    local lockBars = C.DB['Actionbar']['ButtonLock']
     for _, button in next, self.buttons do
         self.buttonConfig.keyBoundTarget = button.bindName
         button.keyBoundTarget = self.buttonConfig.keyBoundTarget
 
         button:SetAttribute('buttonlock', lockBars)
-
-        button:SetAttribute('unlockedpreventdrag', not lockBars) -- make sure button can drag without being click
         button:SetAttribute('checkmouseovercast', true)
         button:SetAttribute('checkfocuscast', true)
         button:SetAttribute('checkselfcast', true)
@@ -208,6 +206,7 @@ function ACTIONBAR:UpdateVisibility()
 end
 
 function ACTIONBAR:UpdateBarConfig()
+    SetCVar('ActionButtonUseKeyDown', C.DB['Actionbar']['KeyDown'] and 1 or 0)
     for i = 1, 8 do
         local frame = _G[C.ADDON_TITLE .. 'ActionBar' .. i]
         if frame then
