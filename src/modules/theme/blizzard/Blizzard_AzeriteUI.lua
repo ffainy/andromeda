@@ -55,6 +55,8 @@ local function reskinReforgeUI(frame, index)
     F.ReskinClose(frame.CloseButton)
     F.ReskinIcon(frame.ItemSlot.Icon)
 
+    frame.Background:SetAlpha(0)
+
     local buttonFrame = frame.ButtonFrame
     F.StripTextures(buttonFrame)
     buttonFrame.MoneyFrameEdge:SetAlpha(0)
