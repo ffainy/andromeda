@@ -286,7 +286,7 @@ local function onEnter(self)
 
     -- factions of the WarWithin
     local wwFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_WAR_WITHIN)
-    if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN) then
+    -- if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_WAR_WITHIN) then
         GameTooltip:AddLine(' ')
         GameTooltip:AddLine(EXPANSION_NAME10, 0.9, 0.8, 0.6)
         for _, id in pairs(wwFactionIds) do
@@ -305,12 +305,12 @@ local function onEnter(self)
                 0.6, 0.8, 1, 1, 1, 1
             )
         end
-    end
+    -- end
 
     if IsShiftKeyDown() then
         -- factions of DragonFlight
         local dfFactionIds = C_MajorFactions.GetMajorFactionIDs(LE_EXPANSION_DRAGONFLIGHT)
-        if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT) then
+        -- if C_PlayerInfo.IsExpansionLandingPageUnlockedForPlayer(LE_EXPANSION_DRAGONFLIGHT) then
             GameTooltip:AddLine(' ')
             GameTooltip:AddLine(EXPANSION_NAME9, 0.9, 0.8, 0.6)
             for _, id in pairs(dfFactionIds) do
@@ -329,7 +329,7 @@ local function onEnter(self)
                     0.6, 0.8, 1, 1, 1, 1
                 )
             end
-        end
+        -- end
 
         -- factions of ShadowLands
         local covenantID = C_Covenants.GetActiveCovenantID()
