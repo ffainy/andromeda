@@ -2102,8 +2102,11 @@ GUI.OptionsList = {
             1,
             'Unitframe',
             'StealableBuffs',
-            L['Display Dispellable Buffs'],
+            L['Dispellable Buffs Color'],
             true,
+            nil,
+            nil,
+            L['Color dispellable buffs border with white.']
         },
         {},
         {
