@@ -1978,6 +1978,7 @@ GUI.OptionsList = {
             },
             UpdateHealthBarColor,
         },
+        {},
         {
             1,
             'Unitframe',
@@ -1991,12 +1992,33 @@ GUI.OptionsList = {
         {
             1,
             'Unitframe',
-            'Smooth',
-            L['Smooth'],
+            'HideTargetBuffs',
+            L['Hide Target Buffs'],
             true,
             nil,
             nil,
+            L['Hide buffs on target frame. |nYou can always temporarily show all the auras on the target frame by hold down the RIGHT CTRL key.']
+        },
+        {},
+        {
+            1,
+            'Unitframe',
+            'Smooth',
+            L['Smooth'],
+            nil,
+            nil,
+            nil,
             L['Smoothly animate unit frame bars.'],
+        },
+        {
+            1,
+            'Unitframe',
+            'TargetSound',
+            L['Target Sound'],
+            true,
+            nil,
+            toggleTargetSound,
+            L['Plays a sound effecs when the target or focus changes.']
         },
         {
             1,
@@ -2057,16 +2079,6 @@ GUI.OptionsList = {
             UpdateClassPower,
             L['Show special resources of the class, such as Combo Points, Holy Power, Chi, Runes, etc.'],
         },
-        {
-            1,
-            'Unitframe',
-            'TargetSound',
-            L['Target Sound'],
-            nil,
-            nil,
-            toggleTargetSound,
-            L['Plays a sound effecs when the target or focus changes.']
-        },
         {},
         {
             1,
@@ -2076,7 +2088,7 @@ GUI.OptionsList = {
             nil,
             nil,
             nil,
-            L['Display debuffs cast by you only.'],
+            L['Hide debuffs not cast by you. |nThis option takes effect on all unitframes, including target, focus, boss, etc. |nYou can always temporarily show all the auras on the target frame by hold down the RIGHT CTRL key.'],
         },
         {
             1,
@@ -2107,16 +2119,6 @@ GUI.OptionsList = {
             nil,
             nil,
             L['Color dispellable buffs border with white.']
-        },
-        {
-            1,
-            'Unitframe',
-            'HideTargetBuffs',
-            L['Hide Target Buffs'],
-            nil,
-            nil,
-            nil,
-            L['Hide buffs on target frame.']
         },
         {},
         {
