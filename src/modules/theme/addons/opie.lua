@@ -85,7 +85,7 @@ local function constructor(name, parent, size)
 
     local outline = ANDROMEDA_ADB.FontOutline
     local cdText = F.CreateFS(
-        button, C.Assets.Fonts.Bold, 13, outline or nil,
+        button, C.Assets.Fonts.Heavy, 20, outline or nil,
         '', nil, outline and 'NONE' or 'THICK',
         { 'CENTER' }
     )
