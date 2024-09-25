@@ -335,37 +335,6 @@ do
     end)
 end
 
--- Fix Drag Collections taint
-do
-    local done
-    local function OnEvent(event, addon)
-        if event == 'ADDON_LOADED' and addon == 'Blizzard_Collections' then
-            -- Fix undragable issue
-            local checkBox = WardrobeTransmogFrame.ToggleSecondaryAppearanceCheckbox
-            checkBox.Label:ClearAllPoints()
-            checkBox.Label:SetPoint('LEFT', checkBox, 'RIGHT', 2, 1)
-            checkBox.Label:SetWidth(152)
-
-            CollectionsJournal:HookScript('OnShow', function()
-                if not done then
-                    if InCombatLockdown() then
-                        F:RegisterEvent('PLAYER_REGEN_ENABLED', OnEvent)
-                    else
-                        F.CreateMF(CollectionsJournal)
-                    end
-                    done = true
-                end
-            end)
-            F:UnregisterEvent(event, OnEvent)
-        elseif event == 'PLAYER_REGEN_ENABLED' then
-            F.CreateMF(CollectionsJournal)
-            F:UnregisterEvent(event, OnEvent)
-        end
-    end
-
-    F:RegisterEvent('ADDON_LOADED', OnEvent)
-end
-
 -- Select target when click on raid units
 do
     local function FixRaidGroupButton()
