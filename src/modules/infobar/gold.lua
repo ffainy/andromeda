@@ -160,7 +160,11 @@ local function onEnter(self)
                 local name = Ambiguate(k .. '-' .. realm, 'none')
                 local gold, class = unpack(v)
                 local r, g, b = F:ClassColor(class)
-                GameTooltip:AddDoubleLine(getClassIcon(class) .. name, GetMoneyString(gold, true), r, g, b, 1, 1, 1)
+                GameTooltip:AddDoubleLine(
+                    getClassIcon(class) .. name,
+                    GetMoneyString(gold, true),
+                    r, g, b, 1, 1, 1
+                )
                 totalGold = totalGold + gold
             end
         end
@@ -170,28 +174,39 @@ local function onEnter(self)
     local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
     if accountmoney > 0 then
         GameTooltip:AddDoubleLine(
-            ACCOUNT_BANK_PANEL_TITLE .. ':',
-            GetMoneyString(accountmoney),
-            0.6,
-            0.8,
-            1,
-            1,
-            1,
-            1
+            ACCOUNT_BANK_PANEL_TITLE,
+            GetMoneyString(accountmoney, true),
+            0.6, 0.8, 1, 1, 1, 1
         )
     end
-    GameTooltip:AddDoubleLine(TOTAL .. ':', GetMoneyString(totalGold + accountmoney), 0.6, 0.8, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(
+        TOTAL,
+        GetMoneyString(totalGold + accountmoney, true),
+        0.6, 0.8, 1, 1, 1, 1
+    )
 
     GameTooltip:AddLine(' ')
     GameTooltip:AddLine(ITEM_QUALITY8_DESC, 0.6, 0.8, 1)
 
     local tokenPrice = C_WowTokenPublic.GetCurrentMarketPrice() or 0
-    GameTooltip:AddDoubleLine(AUCTION_HOUSE_BROWSE_HEADER_PRICE, GetMoneyString(tokenPrice, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(
+        AUCTION_HOUSE_BROWSE_HEADER_PRICE,
+        GetMoneyString(tokenPrice, true),
+        1, 1, 1, 1, 1, 1
+    )
 
     GameTooltip:AddLine(' ')
     GameTooltip:AddDoubleLine(' ', C.LINE_STRING)
-    GameTooltip:AddDoubleLine(' ', C.MOUSE_LEFT_BUTTON .. L['Toggle Store Panel'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
-    GameTooltip:AddDoubleLine(' ', C.MOUSE_RIGHT_BUTTON .. L['Reset Gold Statistics'] .. ' ', 1, 1, 1, 0.9, 0.8, 0.6)
+    GameTooltip:AddDoubleLine(
+        ' ',
+        C.MOUSE_LEFT_BUTTON .. L['Toggle Store Panel'] .. ' ',
+        1, 1, 1, 0.9, 0.8, 0.6
+    )
+    GameTooltip:AddDoubleLine(
+        ' ',
+        C.MOUSE_RIGHT_BUTTON .. L['Reset Gold Statistics'] .. ' ',
+        1, 1, 1, 0.9, 0.8, 0.6
+    )
     GameTooltip:Show()
 end
 
