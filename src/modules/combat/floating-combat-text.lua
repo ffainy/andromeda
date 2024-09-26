@@ -2,20 +2,20 @@
     Floating combat text
     Credits: RgsCT by Rubgrsch
     https://github.com/Rubgrsch/RgsCT
-]]
+--]]
 
 local F, C, L = unpack(select(2, ...))
-local COMBAT = F:GetModule('Combat')
+local fct = F:RegisterModule('FloatingCombatText')
 
-local mask_mine_friendly_player = _G.bit.bor(
-    _G.COMBATLOG_OBJECT_AFFILIATION_MASK,
-    _G.COMBATLOG_OBJECT_REACTION_MASK,
-    _G.COMBATLOG_OBJECT_CONTROL_MASK
+local mask_mine_friendly_player = bit.bor(
+    COMBATLOG_OBJECT_AFFILIATION_MASK,
+    COMBATLOG_OBJECT_REACTION_MASK,
+    COMBATLOG_OBJECT_CONTROL_MASK
 )
-local flag_mine_friendly_player = _G.bit.bor(
-    _G.COMBATLOG_OBJECT_AFFILIATION_MINE,
-    _G.COMBATLOG_OBJECT_REACTION_FRIENDLY,
-    _G.COMBATLOG_OBJECT_CONTROL_PLAYER
+local flag_mine_friendly_player = bit.bor(
+    COMBATLOG_OBJECT_AFFILIATION_MINE,
+    COMBATLOG_OBJECT_REACTION_FRIENDLY,
+    COMBATLOG_OBJECT_CONTROL_PLAYER
 )
 
 local eventFrame = CreateFrame('Frame')
@@ -67,16 +67,19 @@ setmetatable(dmgcolor, {
 })
 
 local environmentalTypeText = {
-    Drowning = _G.ACTION_ENVIRONMENTAL_DAMAGE_DROWNING,
-    Falling = _G.ACTION_ENVIRONMENTAL_DAMAGE_FALLING,
-    Fatigue = _G.ACTION_ENVIRONMENTAL_DAMAGE_FATIGUE,
-    Fire = _G.ACTION_ENVIRONMENTAL_DAMAGE_FIRE,
-    Lava = _G.ACTION_ENVIRONMENTAL_DAMAGE_LAVA,
-    Slime = _G.ACTION_ENVIRONMENTAL_DAMAGE_SLIME,
+    Drowning = ACTION_ENVIRONMENTAL_DAMAGE_DROWNING,
+    Falling = ACTION_ENVIRONMENTAL_DAMAGE_FALLING,
+    Fatigue = ACTION_ENVIRONMENTAL_DAMAGE_FATIGUE,
+    Fire = ACTION_ENVIRONMENTAL_DAMAGE_FIRE,
+    Lava = ACTION_ENVIRONMENTAL_DAMAGE_LAVA,
+    Slime = ACTION_ENVIRONMENTAL_DAMAGE_SLIME,
 }
 
 local dmgFunc
-local mergeData = { [true] = { [true] = {}, [false] = {} }, [false] = { [true] = {}, [false] = {} } }
+local mergeData = {
+    [true] = { [true] = {}, [false] = {} },
+    [false] = { [true] = {}, [false] = {} },
+}
 
 local function createCTFrame(frameName, spacing, maxLines, fadeDuration, timeVisible, justify, width, height)
     local frame = CreateFrame('ScrollingMessageFrame', frameName, UIParent)
@@ -86,7 +89,7 @@ local function createCTFrame(frameName, spacing, maxLines, fadeDuration, timeVis
     frame:SetTimeVisible(timeVisible)
     frame:SetJustifyH(justify)
     frame:SetSize(width, height)
-    frame:SetFont(C.Assets.Fonts.Condensed, 14, '')
+    frame:SetFont(C.Assets.Fonts.Condensed, 13, '')
     frame:SetShadowColor(0, 0, 0, 1)
     frame:SetShadowOffset(2, -2)
 
@@ -211,7 +214,7 @@ local function vehicleChanged(_, _, unit, _, _, _, guid)
     end
 end
 
-function COMBAT:FloatingCombatText()
+function fct:OnLogin()
     if not C.DB.Combat.SimpleFloatingCombatText then
         return
     end
@@ -245,10 +248,10 @@ function COMBAT:FloatingCombatText()
             CombatLogGetCurrentEventInfo()
         local vehicleGUID, playerGUID = self.vehicleGUID, self.playerGUID
         local fromMe = sourceGUID == playerGUID
-        local fromPet = _G.bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
-            and _G.bit.band(sourceFlags, _G.COMBATLOG_OBJECT_TYPE_PET) > 0
-        local fromGuardian = _G.bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
-            and _G.bit.band(sourceFlags, _G.COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
+        local fromPet = bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
+            and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PET) > 0
+        local fromGuardian = bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
+            and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
         local fromMine = fromMe or (C.DB.Combat.Pet and (fromPet or fromGuardian)) or sourceGUID == vehicleGUID
 
         local toMe = destGUID == playerGUID or destGUID == vehicleGUID
