@@ -514,7 +514,72 @@ do
             return fs
         end
 
-        function F:SetFS(font, size, flag, text, colour, shadow)
+        local function getFontStringColor(color)
+            local r, g, b
+            if color == 'CLASS' then
+                r, g, b = F:HexToRgb(C.MY_CLASS_COLOR)
+            elseif color == 'INFO' then
+                r, g, b = F:HexToRgb(C.INFO_COLOR)
+            elseif color == 'YELLOW' then
+                r, g, b = F:HexToRgb(C.YELLOW_COLOR)
+            elseif color == 'RED' then
+                r, g, b = F:HexToRgb(C.RED_COLOR)
+            elseif color == 'GREEN' then
+                r, g, b = F:HexToRgb(C.GREEN_COLOR)
+            elseif color == 'BLUE' then
+                r, g, b = F:HexToRgb(C.BLUE_COLOR)
+            elseif color == 'GREY' then
+                r, g, b = F:HexToRgb(C.GREY_COLOR)
+            else
+                r, g, b = 255, 255, 255
+            end
+            return r, g, b
+        end
+
+        function F.SetFS(object, font, size, forceOutline, text, color, anchor, x, y)
+            if not font then
+                return
+            end
+            local ol = ANDROMEDA_ADB.FontOutline
+            if type(font) == 'table' then
+                object:SetFont(font[1], font[2], (ol or forceOutline) and 'OUTLINE' or '')
+            else
+                object:SetFont(font, size, (ol or forceOutline) and 'OUTLINE' or '')
+            end
+
+            if ol or forceOutline then
+                object:SetShadowColor(0, 0, 0, 0)
+                object:SetShadowOffset(0, 0)
+            else
+                object:SetShadowColor(0, 0, 0, 1)
+                object:SetShadowOffset(2, -2)
+            end
+
+            if text then
+                object:SetText(text)
+            end
+
+            if type(color) == 'table' then
+                object:SetTextColor(color[1], color[2], color[3])
+            else
+                local r, g, b = getFontStringColor(color)
+                object:SetTextColor(r / 255, g / 255, b / 255)
+            end
+
+            if anchor then
+                object:ClearAllPoints()
+            end
+
+            if type(anchor) == 'table' then
+                object:SetPoint(unpack(anchor))
+            elseif anchor and x and y then
+                object:SetPoint(anchor, x, y)
+            else
+                object:SetPoint('CENTER', 1, 0)
+            end
+        end
+
+        --[[ function F:SetFS(font, size, flag, text, colour, shadow)
             if not font then
                 return
             end
@@ -560,7 +625,7 @@ do
                 self:SetShadowColor(0, 0, 0, 0)
                 self:SetShadowOffset(0, 0)
             end
-        end
+        end ]]
 
         function F:SetFontSize(size)
             local name, _, flag = self:GetFont()
@@ -1290,11 +1355,11 @@ do
             local outline = _G.ANDROMEDA_ADB.FontOutline
             local font = C.Assets.Fonts.Condensed
 
-            F.SetFS(slider.Low, font, 11, outline or nil, minValue, nil, outline and 'NONE' or 'THICK')
+            F.SetFS(slider.Low, font, 11, outline, minValue)
             slider.Low:ClearAllPoints()
             slider.Low:SetPoint('TOPLEFT', slider, 'BOTTOMLEFT', 10, -2)
 
-            F.SetFS(slider.High, font, 11, outline or nil, maxValue, nil, outline and 'NONE' or 'THICK')
+            F.SetFS(slider.High, font, 11, outline, maxValue)
             slider.High:ClearAllPoints()
             slider.High:SetPoint('TOPRIGHT', slider, 'BOTTOMRIGHT', -10, -2)
 

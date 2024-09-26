@@ -136,13 +136,12 @@ end
 function NAMEPLATE.ConfigureNameTag(frame)
     local nameOnly = frame.plateType == 'NameOnly'
     local name = frame.NameTag
-    local outline = _G.ANDROMEDA_ADB.FontOutline
 
     name:SetShown(not frame.widgetsOnly)
     name:ClearAllPoints()
 
     if nameOnly then
-        F.SetFS(name, C.Assets.Fonts.Header, 16, outline or nil, nil, nil, outline and 'NONE' or 'THICK')
+        F.SetFS(name, C.Assets.Fonts.Header, 16, ANDROMEDA_ADB.FontOutline)
 
         name:SetParent(frame)
         name:SetPoint('CENTER', frame, 'TOP', 0, 8)
@@ -150,7 +149,7 @@ function NAMEPLATE.ConfigureNameTag(frame)
 
         frame:Tag(name, '[andromeda:color][andromeda:npnamefull]')
     else
-        F.SetFS(name, C.Assets.Fonts.Bold, 11, outline or nil, nil, nil, outline and 'NONE' or 'THICK')
+        F.SetFS(name, C.Assets.Fonts.Bold, 11, ANDROMEDA_ADB.FontOutline)
 
         name:SetParent(frame.Health)
         name:SetPoint('LEFT', frame, 'TOPLEFT')

@@ -126,13 +126,8 @@ function INVENTORY:CreateMoneyFrame()
     moneyFrame:SetSize(140, 26)
 
     local tag = self:SpawnPlugin('TagDisplay', '[money]', moneyFrame)
-    local outline = ANDROMEDA_ADB.FontOutline
-    F.SetFS(
-        tag,
-        C.Assets.Fonts.Bold, 12, outline or nil,
-        '', nil, outline and 'NONE' or 'THICK'
-    )
     tag:SetPoint('TOPLEFT', 0, -4)
+    F.SetFS(tag, C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline, '')
 end
 
 local function toggleWidgetButtons(self)
@@ -303,13 +298,8 @@ function INVENTORY:CreateAccountMoney()
     frame:SetSize(50, 22)
 
     local tag = self:SpawnPlugin('TagDisplay', '[accountmoney]', self)
-    local outline = ANDROMEDA_ADB.FontOutline
-    F.SetFS(
-        tag,
-        C.Assets.Fonts.Bold, 12, outline or nil,
-        '', nil, outline and 'NONE' or 'THICK'
-    )
     tag:SetPoint('RIGHT', frame, -2, 0)
+    F.SetFS(tag, C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline, '')
     frame.tag = tag
 
     frame:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
@@ -688,13 +678,9 @@ function INVENTORY:CreateFreeSlots()
     slot.__name = name
 
     local tag = self:SpawnPlugin('TagDisplay', '[space]', slot)
-    local outline = ANDROMEDA_ADB.FontOutline
-    F.SetFS(
-        tag,
-        C.Assets.Fonts.Bold, 11, outline or nil,
-        '', 'CLASS', outline and 'NONE' or 'THICK'
-    )
     tag:SetPoint('BOTTOMRIGHT', -2, 2)
+    F.SetFS(tag, C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline, '', 'CLASS')
+
     tag.__name = name
     slot.tag = tag
 
@@ -1085,11 +1071,10 @@ function INVENTORY:OnLogin()
 
         self.Icon:SetInside()
         self.Icon:SetTexCoord(unpack(C.TEX_COORD))
-        local outline = ANDROMEDA_ADB.FontOutline
         F.SetFS(
             self.Count,
-            C.Assets.Fonts.Bold, 11, outline or nil,
-            '', nil, outline and 'NONE' or 'THICK',
+            C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline,
+            '', nil,
             { 'BOTTOMRIGHT', -2, 2 }
         )
         self.Cooldown:SetInside()
@@ -1113,6 +1098,7 @@ function INVENTORY:OnLogin()
         self.Quest:SetSize(24, 24)
         self.Quest:SetPoint('TOPLEFT', -2, -2)
 
+        local outline = ANDROMEDA_ADB.FontOutline
         self.iLvl = F.CreateFS(
             self,
             C.Assets.Fonts.Bold, 11, outline or nil,
@@ -1462,15 +1448,9 @@ function INVENTORY:OnLogin()
         if label then
             self.label = F.CreateFS(
                 self,
-                C.Assets.Fonts.Bold,
-                11,
-                outline or nil,
-                label,
-                nil,
-                outline and 'NONE' or 'THICK',
-                'TOPLEFT',
-                5,
-                -4
+                C.Assets.Fonts.Condensed, 12, outline or nil,
+                label, nil, outline and 'NONE' or 'THICK',
+                { 'TOPLEFT', 5, -4 }
             )
             return
         end
