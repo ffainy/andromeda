@@ -1,59 +1,89 @@
-local F, C = unpack(select(2, ...))
-local AS = F:RegisterModule('AutoScreenshot')
+local F, C, L = unpack(select(2, ...))
+local ass = F:RegisterModule('AutoScreenshot')
 
-local function AchievementEarned(_, _, alreadyEarned)
-    if not C.DB.General.EarnedNewAchievement then
-        return
+function ass.takeScreenshot(event)
+    if C.DB.autoScreenshot.printMsg then
+        F.Print(format(L['taking screenshot (%s) (%s)'], event, date()))
     end
 
+    if C.DB.autoScreenshot.hideUI then
+        UIParent:Hide()
+        F:Delay(0.5, function()
+            Screenshot()
+        end)
+        F:Delay(0.55, function()
+            UIParent:Show()
+        end)
+    else
+        F:Delay(0.5, function()
+            Screenshot()
+        end)
+    end
+end
+
+function ass.PlayerStartdMoving(event) -- debug
+    ass.takeScreenshot(event)
+end
+
+function ass.AchievementEarned(event, alreadyEarned)
     if alreadyEarned then
         return
     end
 
-    F:Delay(1, function()
-        Screenshot()
+    ass.takeScreenshot(event)
+end
+
+function ass.ChallengeModeCompleted(event)
+    ChallengeModeCompleteBanner:HookScript('OnShow', function()
+        ass.takeScreenshot(event)
     end)
 end
 
-local function ChallengeModeCompleted()
-    if not C.DB.General.ChallengeModeCompleted then
-        return
-    end
-
-    _G.ChallengeModeCompleteBanner:HookScript('OnShow', function()
-        F:Delay(1, function()
-            Screenshot()
-        end)
-    end)
+function ass.PlayerLevelUp(event)
+    ass.takeScreenshot(event)
 end
 
-local function PlayerLevelUp()
-    if not C.DB.General.PlayerLevelUp then
-        return
-    end
-
-    F:Delay(1, function()
-        Screenshot()
-    end)
+function ass.PlayerDead(event)
+    ass.takeScreenshot(event)
 end
 
-local function PlayerDead()
-    if not C.DB.General.PlayerDead then
-        return
+function ass.UpdateConfig()
+    local db = C.DB.autoScreenshot
+    if db.enable and db.playerStartedMoving then
+        F:RegisterEvent('PLAYER_STARTED_MOVING', ass.PlayerStartdMoving)
+    else
+        F:UnregisterEvent('PLAYER_STARTED_MOVING', ass.PlayerStartdMoving)
     end
 
-    F:Delay(1, function()
-        Screenshot()
-    end)
+    if db.enable and db.achievementEarned then
+        F:RegisterEvent('ACHIEVEMENT_EARNED', ass.AchievementEarned)
+    else
+        F:UnregisterEvent('ACHIEVEMENT_EARNED', ass.AchievementEarned)
+    end
+
+    if db.enable and db.challengeModeCompleted then
+        F:RegisterEvent('CHALLENGE_MODE_COMPLETED', ass.ChallengeModeCompleted)
+    else
+        F:UnregisterEvent('CHALLENGE_MODE_COMPLETED', ass.ChallengeModeCompleted)
+    end
+
+    if db.enable and db.playerLevelUp then
+        F:RegisterEvent('PLAYER_LEVEL_UP', ass.PlayerLevelUp)
+    else
+        F:UnregisterEvent('PLAYER_LEVEL_UP', ass.PlayerLevelUp)
+    end
+
+    if db.enable and db.playerDead then
+        F:RegisterEvent('PLAYER_DEAD', ass.PlayerDead)
+    else
+        F:UnregisterEvent('PLAYER_DEAD', ass.PlayerDead)
+    end
 end
 
-function AS:OnLogin()
-    if not C.DB.General.AutoScreenshot then
+function ass:OnLogin()
+    if not C.DB.autoScreenshot.enable then
         return
     end
 
-    F:RegisterEvent('ACHIEVEMENT_EARNED', AchievementEarned)
-    F:RegisterEvent('CHALLENGE_MODE_COMPLETED', ChallengeModeCompleted)
-    F:RegisterEvent('PLAYER_LEVEL_UP', PlayerLevelUp)
-    F:RegisterEvent('PLAYER_DEAD', PlayerDead)
+    ass.UpdateConfig()
 end

@@ -2999,6 +2999,9 @@ do
 end
 
 -- General
+local function updateAutoScreenshot()
+    F:GetModule('AutoScreenshot').UpdateConfig()
+end
 
 function GUI:SetupAutoScreenshot(parent)
     local guiName = C.ADDON_TITLE .. 'GUIAutoScreenshot'
@@ -3011,16 +3014,19 @@ function GUI:SetupAutoScreenshot(parent)
     local scroll = createScrollFrame(panel, 220, 540)
 
     local datas = {
-        [1] = { value = 'EarnedNewAchievement', text = L['Earned new achievement'] },
-        [2] = { value = 'ChallengeModeCompleted', text = L['Mythic+ completed'] },
-        [3] = { value = 'PlayerLevelUp', text = L['Level up'] },
-        [4] = { value = 'PlayerDead', text = _G.DEAD },
+        [1] = { value = 'achievementEarned', label = L['Earned new achievement'], tip = '' },
+        [2] = { value = 'challengeModeCompleted', label = L['Mythic+ completed'], tip = '' },
+        [3] = { value = 'playerLevelUp', label = L['Level up'], tip = '' },
+        [4] = { value = 'playerDead', label = DEAD, tip = '' },
+        [5] = { value = 'printMsg', label = 'Print Message', tip = '' },
+        [6] = { value = 'hideUI', label = 'Hide UI', tip = '' },
+        -- [7] = { value = 'playerStartedMoving', label = 'playerStartedMoving', tip = '' },
     }
 
     local offset = -10
     for _, data in ipairs(datas) do
         createGroupTitle(scroll, L['Auto Screenshot'], offset)
-        createCheckbox(scroll, offset - 30, 'General', data.value, data.text)
+        createCheckbox(scroll, offset - 30, 'autoScreenshot', data.value, data.label, updateAutoScreenshot, data.tip)
         offset = offset - 35
     end
 end

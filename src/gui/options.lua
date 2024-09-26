@@ -329,6 +329,10 @@ local function SetupVignettingVisibility()
     GUI:SetupVignettingVisibility(GUI.Page[1])
 end
 
+local function updateAutoScreenshot()
+    F:GetModule('AutoScreenshot').UpdateConfig()
+end
+
 local function SetupAutoScreenshot()
     GUI:SetupAutoScreenshot(GUI.Page[1])
 end
@@ -668,12 +672,12 @@ GUI.OptionsList = {
         },
         {
             1,
-            'General',
-            'AutoScreenshot',
+            'autoScreenshot',
+            'enable',
             L['Auto Screenshot'],
             true,
             SetupAutoScreenshot,
-            nil,
+            updateAutoScreenshot,
             L['Take screenshots automatically based on specific events.'],
         },
         {

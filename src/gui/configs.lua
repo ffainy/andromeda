@@ -20,11 +20,8 @@ C.CharacterSettings = {
         ItemLevel = true,
         GemEnchant = true,
         AzeriteTrait = true,
-        AutoScreenshot = true,
-        EarnedNewAchievement = true,
-        ChallengeModeCompleted = true,
-        PlayerLevelUp = false,
-        PlayerDead = false,
+
+
         FasterZooming = true,
         ActionCamera = false,
         Vignetting = true,
@@ -62,6 +59,8 @@ C.CharacterSettings = {
 
         BlockStrangerInvite = false,
         BlockStrangerRequest = false,
+
+
     },
     Combat = {
         Enable = true,
@@ -647,6 +646,17 @@ C.CharacterSettings = {
         WowheadLink = true,
         IgnoreQuestNPC = {},
     },
+
+    autoScreenshot = {
+        enable = true,
+        printMsg = true,
+        hideUI = false,
+        achievementEarned = true,
+        challengeModeCompleted = true,
+        playerLevelUp = false,
+        playerDead = false,
+        playerStartedMoving = false,
+    }
 }
 
 C.AccountSettings = {
