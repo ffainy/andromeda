@@ -1,6 +1,14 @@
 local F, C, L = unpack(select(2, ...))
 local M = F:GetModule('Misc')
 
+local MISC_LIST = {}
+function M:RegisterMisc(name, func)
+    if not MISC_LIST[name] then
+        MISC_LIST[name] = func
+    end
+end
+-- M:RegisterMisc('aaa', M.aaa)
+
 -- Force warning
 do
     local function onEvent(_, event)
@@ -233,7 +241,7 @@ do
     local function updateColor()
         local outline = ANDROMEDA_ADB.FontOutline
         local infoText = F.CreateFS(TradeFrame, C.Assets.Fonts.Bold, 14, outline or nil, '', nil,
-        outline and 'NONE' or 'THICK')
+            outline and 'NONE' or 'THICK')
         infoText:ClearAllPoints()
         infoText:SetPoint('TOP', TradeFrameRecipientNameText, 'BOTTOM', 0, -5)
 
