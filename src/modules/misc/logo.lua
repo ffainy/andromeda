@@ -1,27 +1,31 @@
 local F, C = unpack(select(2, ...))
-local LOGO = F:GetModule('Logo')
+local logo = F:RegisterModule('Logo')
+
+-- play logo animation on login
 
 local needAnimation
-
-function LOGO:Logo_PlayAnimation()
+function logo:PlayAnimation()
     if needAnimation then
-        LOGO.logoFrame:Show()
-        F:UnregisterEvent(self, LOGO.Logo_PlayAnimation)
+        logo.logoFrame:Show()
+        F:UnregisterEvent(self, logo.PlayAnimation)
         needAnimation = false
     end
 end
 
-function LOGO:Logo_CheckStatus(isInitialLogin)
-    if isInitialLogin and not (IsInInstance() and InCombatLockdown()) then
+function logo:CheckStatus(isInitialLogin)
+    if
+        C.DB.InstallationComplete and isInitialLogin
+        and not (IsInInstance() and InCombatLockdown())
+    then
         needAnimation = true
-        LOGO:Logo_Create()
-        F:RegisterEvent('PLAYER_STARTED_MOVING', LOGO.Logo_PlayAnimation)
-        -- F:RegisterEvent('PLAYER_ENTERING_WORLD', LOGO.Logo_PlayAnimation)
+        logo:ConstructFrame()
+        F:RegisterEvent('PLAYER_STARTED_MOVING', logo.PlayAnimation)
+        -- F:RegisterEvent('PLAYER_ENTERING_WORLD', logo.PlayAnimation)
     end
-    F:UnregisterEvent(self, LOGO.Logo_CheckStatus)
+    F:UnregisterEvent(self, logo.CheckStatus)
 end
 
-function LOGO:Logo_Create()
+function logo:ConstructFrame()
     local frame = CreateFrame('Frame', nil, UIParent)
     frame:SetSize(512, 256)
     frame:SetPoint('CENTER', UIParent, 'BOTTOM', -500, GetScreenHeight() * 0.618)
@@ -42,9 +46,6 @@ function LOGO:Logo_Create()
     local timer3 = 0.2
 
     local anim = frame:CreateAnimationGroup()
-
-
-
     anim.move1 = anim:CreateAnimation('Translation')
     anim.move1:SetOffset(480, 0)
     anim.move1:SetDuration(timer1)
@@ -88,15 +89,19 @@ function LOGO:Logo_Create()
     frame:SetScript('OnShow', function()
         anim:Play()
     end)
+
     anim:SetScript('OnFinished', function()
         frame:Hide()
     end)
+
     anim.fadeIn:SetScript('OnFinished', function()
         PlaySoundFile(C.Assets.Sounds.Intro, 'Master')
     end)
 
-    LOGO.logoFrame = frame
+    logo.logoFrame = frame
 end
+
+-- insert logo icon into AddonList panel
 
 local function replaceIconString(self, text)
     if not text then
@@ -114,8 +119,7 @@ local function replaceIconString(self, text)
     end
 end
 
-function LOGO:HandleTitle()
-    -- Square logo texture
+function logo:HandleAddOnTitle()
     hooksecurefunc('AddonList_InitButton', function(entry)
         if not entry.logoHooked then
             replaceIconString(entry.Title)
@@ -126,12 +130,8 @@ function LOGO:HandleTitle()
     end)
 end
 
-function LOGO:OnLogin()
-    LOGO:HandleTitle()
+function logo:OnLogin()
+    logo:HandleAddOnTitle()
 
-    if not C.DB.InstallationComplete then
-        return
-    end
-
-    F:RegisterEvent('PLAYER_ENTERING_WORLD', LOGO.Logo_CheckStatus)
+    F:RegisterEvent('PLAYER_ENTERING_WORLD', logo.CheckStatus)
 end

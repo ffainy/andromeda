@@ -1,7 +1,6 @@
 local F, C = unpack(select(2, ...))
 local GUI = F:GetModule('GUI')
 local TUTORIAL = F:GetModule('Tutorial')
-local LOGO = F:GetModule('Logo')
 
 F:RegisterSlashCommand('/and', function(msg)
     local str, _ = strsplit(' ', strlower(msg), 2)
@@ -17,10 +16,10 @@ F:RegisterSlashCommand('/and', function(msg)
     elseif strmatch(str, 'help') or strmatch(str, 'cheatsheet') then
         GUI:ToggleCheatSheet()
     elseif strmatch(str, 'logo') then
-        if not LOGO.logoFrame then
-            LOGO:Logo_Create()
+        if not F:GetModule('Logo').logoFrame then
+            F:GetModule('Logo'):ConstructFrame()
         end
-        LOGO.logoFrame:Show()
+        F:GetModule('Logo').logoFrame:Show()
     elseif strmatch(str, 'clickbinding') or strmatch(str, 'cb') then
         if not C_AddOns.IsAddOnLoaded('Blizzard_ClickBindingUI') then
             C_AddOns.LoadAddOn('Blizzard_ClickBindingUI')

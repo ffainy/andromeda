@@ -21,7 +21,6 @@ do
     F:RegisterModule('Inventory')
     F:RegisterModule('ItemLevel')
     F:RegisterModule('Layout')
-    F:RegisterModule('Logo')
     F:RegisterModule('Map')
     F:RegisterModule('Misc')
     F:RegisterModule('Nameplate')
