@@ -270,7 +270,7 @@ function NAMEPLATE:UpdateColor(_, unit)
             r, g, b = focusColor.r, focusColor.g, focusColor.b
         elseif showSpecialUnit and isSpecialUnit then
             r, g, b = specialColor.r, specialColor.g, specialColor.b
-        elseif self.Auras.hasCustomDebuff then
+        elseif self.Auras.hasTheDot then
             r, g, b = debuffColor.r, debuffColor.g, debuffColor.b
         elseif isPlayer and isFriendly then
             if friendlyClassColor then
