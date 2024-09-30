@@ -153,7 +153,7 @@ local function createRollButton()
     local rollButton = createButton(0.8, 1, 0.6, LOOT_ROLL)
     rollButton:SetAttribute('type', 'macro')
     rollButton:SetAttribute('macrotext', '/roll')
-    rollButton:RegisterForClicks('AnyDown')
+    rollButton:RegisterForClicks('AnyUp', 'AnyDown')
     CHAT.ChannelBar.RollButton = rollButton
 end
 
@@ -161,7 +161,7 @@ local function createLogButton()
     local clButton = createButton(1, 1, 0, BINDING_NAME_TOGGLECOMBATLOG)
     clButton:SetAttribute('type', 'macro')
     clButton:SetAttribute('macrotext', '/combatlog')
-    clButton:RegisterForClicks('AnyDown')
+    clButton:RegisterForClicks('AnyUp', 'AnyDown')
     CHAT.ChannelBar.LoggingButton = clButton
 end
 

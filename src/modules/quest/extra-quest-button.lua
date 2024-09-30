@@ -137,7 +137,7 @@ local ExtraQuestButton = CreateFrame(
 )
 ExtraQuestButton:SetMovable(true)
 ExtraQuestButton:RegisterEvent('PLAYER_LOGIN')
-ExtraQuestButton:RegisterForClicks('AnyDown')
+ExtraQuestButton:RegisterForClicks('AnyUp', 'AnyDown')
 ExtraQuestButton:Hide()
 ExtraQuestButton:SetScript('OnEvent', function(self, event, ...)
     if self[event] then

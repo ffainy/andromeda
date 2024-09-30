@@ -340,7 +340,7 @@ function AURA:CreateAuraIcon(button)
     F.CreateBD(button, 0.25)
     F.CreateSD(button)
 
-    button:RegisterForClicks('RightButtonDown')
+    button:RegisterForClicks('RightButtonUp', 'RightButtonDown')
     button:SetScript('OnAttributeChanged', AURA.OnAttributeChanged)
     button:SetScript('OnEnter', AURA.Button_OnEnter)
     button:SetScript('OnLeave', F.HideTooltip)
