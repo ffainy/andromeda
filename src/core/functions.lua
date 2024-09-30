@@ -344,10 +344,7 @@ do
             local data = C_TooltipInfo.GetHyperlink(format('unit:Creature-0-0-0-0-%d', npcID))
             local lineData = data and data.lines
             if lineData then
-                local argVal = lineData[1] and lineData[1].args
-                if argVal then
-                    name = argVal[2] and argVal[2].stringVal
-                end
+                name = lineData[1] and lineData[1].leftText
             end
             if name == loadingStr then
                 if not pendingNPCs[npcID] then
