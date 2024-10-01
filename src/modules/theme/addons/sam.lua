@@ -5,7 +5,8 @@ local function handleItemsList(frame, template)
     if template == 'SimpleAddonManagerAddonItem' or template == 'SimpleAddonManagerCategoryItem' then
         for _, btn in pairs(frame.buttons) do
             if not btn.styled then
-                F.ReskinCheckbox(btn.EnabledButton)
+                F.ReskinCheckbox(btn.EnabledButton, true)
+                btn.EnabledButton:SetSize(14, 14)
 
                 if btn.ExpandOrCollapseButton then
                     F.ReskinCollapse(btn.ExpandOrCollapseButton)

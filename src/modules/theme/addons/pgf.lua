@@ -35,6 +35,7 @@ function THEME:ReskinPGF()
         'Defeated',
         'MatchingId',
         'PvPRating',
+        'NotDeclined',
     }
 
     local function handleDropdown(drop)
@@ -43,6 +44,7 @@ function THEME:ReskinPGF()
         local bg = F.CreateBDFrame(drop, 0, true)
         bg:SetPoint('TOPLEFT', 16, -4)
         bg:SetPoint('BOTTOMRIGHT', -18, 8)
+        F.CreateSD(bg)
 
         local down = drop.Button
         down:ClearAllPoints()
@@ -56,9 +58,9 @@ function THEME:ReskinPGF()
             if frame then
                 local check = frame.Act
                 if check then
-                    check:SetSize(26, 26)
-                    check:SetPoint('TOPLEFT', 5, -1)
-                    F.ReskinCheckbox(check)
+                    check:SetSize(18, 18)
+                    check:SetPoint('TOPLEFT', 4, -2)
+                    F.ReskinCheckbox(check, true)
                 end
                 local input = frame.Min
                 if input then
@@ -110,9 +112,9 @@ function THEME:ReskinPGF()
             local dungeon = DungeonPanel.Dungeons['Dungeon' .. i]
             local check = dungeon and dungeon.Act
             if check then
-                check:SetSize(26, 26)
-                check:SetPoint('TOPLEFT', 5, -1)
-                F.ReskinCheckbox(check)
+                check:SetSize(18, 18)
+                check:SetPoint('TOPLEFT', 4, -2)
+                F.ReskinCheckbox(check, true)
             end
         end
     end)
