@@ -57,6 +57,10 @@ local function onShiftDown()
     end
 end
 
+local yellow = '|cffF5D952%s|r'
+local red = '|cffff2020%s|r'
+local green = '|cff20ff20%s|r'
+
 local function onEnter(self)
     blockEntered = true
 
@@ -73,13 +77,18 @@ local function onEnter(self)
         if catalystInfo.maxQuantity > 0 then
             GameTooltip:AddDoubleLine(
                 addIcon(catalystInfo.iconFileID) .. catalystInfo.name,
-                BreakUpLargeNumbers(catalystInfo.quantity) .. '/' .. BreakUpLargeNumbers(catalystInfo.maxQuantity),
+                format(
+                    yellow .. ' / ' .. red,
+                    BreakUpLargeNumbers(catalystInfo.quantity),
+                    BreakUpLargeNumbers(catalystInfo.maxQuantity)),
                 1, 1, 1, 1, 1, 1
             )
         else
             GameTooltip:AddDoubleLine(
                 addIcon(catalystInfo.iconFileID) .. catalystInfo.name,
-                BreakUpLargeNumbers(catalystInfo.quantity),
+                format(
+                    yellow,
+                    BreakUpLargeNumbers(catalystInfo.quantity)),
                 1, 1, 1, 1, 1, 1
             )
         end
@@ -91,15 +100,42 @@ local function onEnter(self)
 
         local pveInfo = C_CurrencyInfo.GetCurrencyInfo(id)
         if pveInfo.maxQuantity > 0 then
-            GameTooltip:AddDoubleLine(
-                addIcon(pveInfo.iconFileID) .. pveInfo.name,
-                BreakUpLargeNumbers(pveInfo.quantity) .. '/' .. BreakUpLargeNumbers(pveInfo.maxQuantity),
-                1, 1, 1, 1, 1, 1
-            )
+            if pveInfo.totalEarned ~= 0 then
+                if pveInfo.maxQuantity == pveInfo.totalEarned then
+                    GameTooltip:AddDoubleLine(
+                        addIcon(pveInfo.iconFileID) .. pveInfo.name,
+                        format(
+                            yellow .. ' (' .. red .. ' / ' .. red .. ')',
+                            BreakUpLargeNumbers(pveInfo.quantity),
+                            BreakUpLargeNumbers(pveInfo.totalEarned),
+                            BreakUpLargeNumbers(pveInfo.maxQuantity)),
+                        1, 1, 1, 1, 1, 1
+                    )
+                else
+                    GameTooltip:AddDoubleLine(
+                        addIcon(pveInfo.iconFileID) .. pveInfo.name,
+                        format(
+                            yellow .. ' (' .. green .. ' / ' .. red .. ')',
+                            BreakUpLargeNumbers(pveInfo.quantity),
+                            BreakUpLargeNumbers(pveInfo.totalEarned),
+                            BreakUpLargeNumbers(pveInfo.maxQuantity)),
+                        1, 1, 1, 1, 1, 1
+                    )
+                end
+            else
+                GameTooltip:AddDoubleLine(
+                    addIcon(pveInfo.iconFileID) .. pveInfo.name,
+                    format(
+                        yellow .. ' / ' .. red,
+                        BreakUpLargeNumbers(pveInfo.quantity),
+                        BreakUpLargeNumbers(pveInfo.maxQuantity)),
+                    1, 1, 1, 1, 1, 1
+                )
+            end
         else
             GameTooltip:AddDoubleLine(
                 addIcon(pveInfo.iconFileID) .. pveInfo.name,
-                BreakUpLargeNumbers(pveInfo.quantity),
+                format(yellow, BreakUpLargeNumbers(pveInfo.quantity)),
                 1, 1, 1, 1, 1, 1
             )
         end
@@ -113,13 +149,18 @@ local function onEnter(self)
         if pvpInfo.maxQuantity > 0 then
             GameTooltip:AddDoubleLine(
                 addIcon(pvpInfo.iconFileID) .. pvpInfo.name,
-                BreakUpLargeNumbers(pvpInfo.quantity) .. '/' .. BreakUpLargeNumbers(pvpInfo.maxQuantity),
+                format(
+                    yellow .. ' / ' .. red,
+                    BreakUpLargeNumbers(pvpInfo.quantity),
+                    BreakUpLargeNumbers(pvpInfo.maxQuantity)),
                 1, 1, 1, 1, 1, 1
             )
         else
             GameTooltip:AddDoubleLine(
                 addIcon(pvpInfo.iconFileID) .. pvpInfo.name,
-                BreakUpLargeNumbers(pvpInfo.quantity),
+                format(
+                    yellow,
+                    BreakUpLargeNumbers(pvpInfo.quantity)),
                 1, 1, 1, 1, 1, 1
             )
         end
@@ -134,13 +175,18 @@ local function onEnter(self)
             if oldInfo.maxQuantity > 0 then
                 GameTooltip:AddDoubleLine(
                     addIcon(oldInfo.iconFileID) .. oldInfo.name,
-                    BreakUpLargeNumbers(oldInfo.quantity) .. '/' .. BreakUpLargeNumbers(oldInfo.maxQuantity),
+                    format(
+                        yellow .. ' / ' .. red,
+                        BreakUpLargeNumbers(oldInfo.quantity),
+                        BreakUpLargeNumbers(oldInfo.maxQuantity)),
                     1, 1, 1, 1, 1, 1
                 )
             else
                 GameTooltip:AddDoubleLine(
                     addIcon(oldInfo.iconFileID) .. oldInfo.name,
-                    BreakUpLargeNumbers(oldInfo.quantity),
+                    format(
+                        yellow,
+                        BreakUpLargeNumbers(oldInfo.quantity)),
                     1, 1, 1, 1, 1, 1
                 )
             end
