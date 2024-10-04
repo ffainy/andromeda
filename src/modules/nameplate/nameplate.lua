@@ -489,12 +489,11 @@ function NAMEPLATE:UpdateClickableSize()
         return
     end
 
-    local scale = _G.ANDROMEDA_ADB.UIScale
     local harmWidth, harmHeight = C.DB.Nameplate.ClickableWidth, C.DB.Nameplate.ClickableHeight
     local helpWidth, helpHeight = C.DB.Nameplate.FriendlyClickableWidth, C.DB.Nameplate.FriendlyClickableHeight
 
-    C_NamePlate.SetNamePlateEnemySize(harmWidth * scale, harmHeight * scale)
-    C_NamePlate.SetNamePlateFriendlySize(helpWidth * scale, helpHeight * scale)
+    C_NamePlate.SetNamePlateEnemySize(harmWidth, harmHeight)
+    C_NamePlate.SetNamePlateFriendlySize(helpWidth, helpHeight)
 end
 
 function NAMEPLATE:ToggleNameplateAuras()
