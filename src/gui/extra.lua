@@ -2512,18 +2512,17 @@ do
         end
 
         local dungeons = {}
-        for dungeonID = 1196, 1204 do
-            if dungeonID ~= 1200 then
-                addNewDungeon(dungeons, dungeonID)
-            end
-        end
-        addNewDungeon(dungeons, 313) -- 青龙寺
-        addNewDungeon(dungeons, 537) -- 影月墓地
-        addNewDungeon(dungeons, 721) -- 英灵殿
-        addNewDungeon(dungeons, 800) -- 群星庭院
+        addNewDungeon(dungeons, 71) -- 格瑞姆巴托
+        addNewDungeon(dungeons, 1023) -- 围攻伯拉勒斯
+        addNewDungeon(dungeons, 1182) -- 通灵战潮
+        addNewDungeon(dungeons, 1184) -- 塞兹仙林的迷雾
+        addNewDungeon(dungeons, 1269) -- 矶石宝库
+        addNewDungeon(dungeons, 1270) -- 破晨号
+        addNewDungeon(dungeons, 1271) -- 艾拉-卡拉，回响之城
+        addNewDungeon(dungeons, 1274) -- 千丝之城
 
         local raids = {
-            [1] = EJ_GetInstanceInfo(1200),
+            [1] = EJ_GetInstanceInfo(1273), -- 尼鲁巴尔王宫
         }
 
         options[1] = createDropdown(frame, _G.DUNGEONS, 123, -30, dungeons, L['Select a specific dungeon.'], 107, 24)
