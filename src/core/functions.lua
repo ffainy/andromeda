@@ -1997,12 +1997,16 @@ do
         end
 
         -- WowTrimScrollBar
-        function F:ReskinTrimScroll()
+        function F:ReskinTrimScroll(noTaint)
             F.StripTextures(self)
             reskinScrollArrow(self.Back, 'up', true)
             reskinScrollArrow(self.Forward, 'down', true)
             if self.Track then
                 self.Track:DisableDrawLayer('ARTWORK')
+            end
+
+            if noTaint then
+                return
             end
 
             local color = _G.ANDROMEDA_ADB.ButtonBackdropColor

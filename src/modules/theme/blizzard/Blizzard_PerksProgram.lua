@@ -34,7 +34,7 @@ local function setupSetButton(button)
 end
 
 C.Themes['Blizzard_PerksProgram'] = function()
-    local frame = _G.PerksProgramFrame
+    local frame = PerksProgramFrame
 
     if not frame then
         return
@@ -48,6 +48,8 @@ C.Themes['Blizzard_PerksProgram'] = function()
 
         F.ReskinCheckbox(footerFrame.TogglePlayerPreview)
         F.ReskinCheckbox(footerFrame.ToggleHideArmor)
+        F.ReskinCheckbox(footerFrame.ToggleAttackAnimation)
+        F.ReskinCheckbox(footerFrame.ToggleMountSpecial)
 
         reskinCustomizeButton(footerFrame.RotateButtonContainer.RotateLeftButton)
         reskinCustomizeButton(footerFrame.RotateButtonContainer.RotateRightButton)

@@ -41,6 +41,18 @@ function F:ReskinModelControl()
     end
 end
 
+local function noTaintArrow(self, direction) -- needs review
+    F.StripTextures(self)
+
+    local tex = self:CreateTexture(nil, 'ARTWORK')
+    tex:SetAllPoints()
+    F.SetupArrow(tex, direction)
+    self.__texture = tex
+
+    self:HookScript('OnEnter', F.Texture_OnEnter)
+    self:HookScript('OnLeave', F.Texture_OnLeave)
+end
+
 tinsert(C.BlizzThemes, function()
     if not ANDROMEDA_ADB.ReskinBlizz then
         return
@@ -339,6 +351,10 @@ tinsert(C.BlizzThemes, function()
     F.ReskinButton(detailFrame.ViewRenownButton)
 
     -- Token frame
+    F.ReskinTrimScroll(TokenFrame.ScrollBar, true) -- taint if touching thumb, needs review
+    if C.IS_NEW_PATCH then
+        F.ReskinDropdown(TokenFrame.filterDropdown)
+    end
     if TokenFramePopup.CloseButton then -- blizz typo by parentKey "CloseButton" into "$parent.CloseButton"
         F.ReskinClose(TokenFramePopup.CloseButton)
     else
@@ -349,7 +365,7 @@ tinsert(C.BlizzThemes, function()
     F.ReskinCheckbox(TokenFramePopup.InactiveCheckbox)
     F.ReskinCheckbox(TokenFramePopup.BackpackCheckbox)
 
-    F.ReskinArrow(TokenFrame.CurrencyTransferLogToggleButton, 'right')
+    noTaintArrow(TokenFrame.CurrencyTransferLogToggleButton, 'right') -- taint control, needs review
     F.ReskinPortraitFrame(CurrencyTransferLog)
     F.ReskinTrimScroll(CurrencyTransferLog.ScrollBar)
 
@@ -367,14 +383,20 @@ tinsert(C.BlizzThemes, function()
     F.CreateBDFrame(CurrencyTransferMenu.SourceSelector, 0.25)
     CurrencyTransferMenu.SourceSelector.SourceLabel:SetWidth(56)
     F.ReskinDropdown(CurrencyTransferMenu.SourceSelector.Dropdown)
-    F.ReskinEditbox(CurrencyTransferMenu.AmountSelector.InputBox)
-    F.CreateBDFrame(CurrencyTransferMenu.AmountSelector, 0.25)
     F.ReskinIcon(CurrencyTransferMenu.SourceBalancePreview.BalanceInfo.CurrencyIcon)
     F.ReskinIcon(CurrencyTransferMenu.PlayerBalancePreview.BalanceInfo.CurrencyIcon)
     F.ReskinButton(CurrencyTransferMenu.ConfirmButton)
     F.ReskinButton(CurrencyTransferMenu.CancelButton)
 
-    F.ReskinTrimScroll(TokenFrame.ScrollBar)
+    local amountSelector = CurrencyTransferMenu.AmountSelector
+    if amountSelector then
+        F.CreateBDFrame(amountSelector, .25)
+        if C.IS_NEW_PATCH then
+            F.Reskin(amountSelector.MaxQuantityButton)
+        end
+        F.ReskinEditbox(amountSelector.InputBox)
+        amountSelector.InputBox.__bg:SetInside(nil, 3, 3)
+    end
 
     hooksecurefunc(TokenFrame.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
