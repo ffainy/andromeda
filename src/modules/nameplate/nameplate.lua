@@ -597,7 +597,7 @@ end
 local disabledElements = {
     'Health',
     'Castbar',
-    'HealPredictionAndAbsorb',
+    'HealthPrediction',
     'PvPClassificationIndicator',
     'ThreatIndicator',
 }
