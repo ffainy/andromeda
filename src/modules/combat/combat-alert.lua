@@ -2,12 +2,12 @@
 -- https://github.com/fang2hou/ElvUI_WindTools/blob/development/Modules/Combat/CombatAlert.lua
 
 local F, C, L = unpack(select(2, ...))
-local COMBAT = F:GetModule('Combat')
+local ca = F:RegisterModule('CombatAlert')
 
 local isPlaying = false
 local alertQueue = {}
 
-function COMBAT:CreateAnimationFrame()
+function ca:CreateAnimationFrame()
     if self.animationFrame then
         return
     end
@@ -23,7 +23,7 @@ function COMBAT:CreateAnimationFrame()
     F.AddTranslation(anime, 'moveToCenter')
     F.AddFadeIn(anime, 'fadeIn')
     F.AddFadeOut(anime, 'fadeOut')
-    F.CloseAnimationOnHide(frame, anime, COMBAT.LoadNextAlert)
+    F.CloseAnimationOnHide(frame, anime, ca.LoadNextAlert)
     anime.moveToCenter:SetDuration(0.2)
     anime.moveToCenter:SetStartDelay(0)
     anime.fadeIn:SetDuration(0.2)
@@ -40,7 +40,7 @@ function COMBAT:CreateAnimationFrame()
     anime.scale:SetStartDelay(0.6)
     anime.fadeOut:SetDuration(0.6)
     anime.fadeOut:SetStartDelay(0.6)
-    F.CloseAnimationOnHide(frame, anime, COMBAT.LoadNextAlert)
+    F.CloseAnimationOnHide(frame, anime, ca.LoadNextAlert)
     self.animationFrame.shield = frame
 
     -- 剑 ↗
@@ -100,7 +100,7 @@ function COMBAT:CreateAnimationFrame()
     self.animationFrame.swordRightToLeft = frame
 end
 
-function COMBAT:UpdateAnimationFrame()
+function ca:UpdateAnimationFrame()
     if not self.animationFrame then
         return
     end
@@ -136,7 +136,7 @@ function COMBAT:UpdateAnimationFrame()
     F.SpeedAnimationGroup(f.swordRightToLeft.leave, C.DB.Combat.CombatAlertSpeed)
 end
 
-function COMBAT:CreateTextFrame()
+function ca:CreateTextFrame()
     if self.textFrame then
         return
     end
@@ -174,7 +174,7 @@ function COMBAT:CreateTextFrame()
     self.textFrame = frame
 end
 
-function COMBAT:UpdateTextFrame()
+function ca:UpdateTextFrame()
     if not self.textFrame then
         return
     end
@@ -198,15 +198,15 @@ function COMBAT:UpdateTextFrame()
 
     -- 上方动画窗体如果不存在，确认下个提示的工作就交给文字窗体了
     -- if not self.db.animation then
-    F.CloseAnimationOnHide(f, 'enter', COMBAT.LoadNextAlert)
-    F.CloseAnimationOnHide(f, 'leave', COMBAT.LoadNextAlert)
+    F.CloseAnimationOnHide(f, 'enter', ca.LoadNextAlert)
+    F.CloseAnimationOnHide(f, 'leave', ca.LoadNextAlert)
     -- else
     -- 	F.CloseAnimationOnHide(f, 'enter')
     -- 	F.CloseAnimationOnHide(f, 'leave')
     -- end
 end
 
-function COMBAT:ShowAlert(alertType)
+function ca:ShowAlert(alertType)
     if isPlaying then
         self:QueueAlert(alertType)
         return
@@ -267,28 +267,28 @@ function COMBAT:ShowAlert(alertType)
     end
 end
 
-function COMBAT:QueueAlert(alertType)
+function ca:QueueAlert(alertType)
     tinsert(alertQueue, alertType)
 end
 
-function COMBAT.LoadNextAlert()
+function ca.LoadNextAlert()
     isPlaying = false
 
     if alertQueue and alertQueue[1] then
-        COMBAT:ShowAlert(alertQueue[1])
+        ca:ShowAlert(alertQueue[1])
         tremove(alertQueue, 1)
     end
 end
 
-function COMBAT:PLAYER_REGEN_DISABLED()
-    COMBAT:ShowAlert('ENTER')
+function ca:PLAYER_REGEN_DISABLED()
+    ca:ShowAlert('ENTER')
 end
 
-function COMBAT:PLAYER_REGEN_ENABLED()
-    COMBAT:ShowAlert('LEAVE')
+function ca:PLAYER_REGEN_ENABLED()
+    ca:ShowAlert('LEAVE')
 end
 
-function COMBAT:UpdateHolderSize()
+function ca:UpdateHolderSize()
     if not self.combatAlertHolder then
         return
     end
@@ -308,7 +308,7 @@ function COMBAT:UpdateHolderSize()
     end
 end
 
-function COMBAT:CombatAlert()
+function ca:OnLogin()
     if not C.DB.Combat.CombatAlert then
         return
     end
@@ -319,14 +319,14 @@ function COMBAT:CombatAlert()
     self.combatAlertWidth = 0
     self.combatAlertHeight = 0
 
-    COMBAT:CreateAnimationFrame()
-    COMBAT:CreateTextFrame()
-    COMBAT:UpdateAnimationFrame()
-    COMBAT:UpdateTextFrame()
-    COMBAT:UpdateHolderSize()
+    ca:CreateAnimationFrame()
+    ca:CreateTextFrame()
+    ca:UpdateAnimationFrame()
+    ca:UpdateTextFrame()
+    ca:UpdateHolderSize()
 
     F.Mover(self.combatAlertHolder, L['CombatAlert'], 'CombatAlert', { 'CENTER', UIParent, 0, 200 }, self.combatAlertWidth, self.combatAlertHeight)
 
-    F:RegisterEvent('PLAYER_REGEN_DISABLED', COMBAT.PLAYER_REGEN_DISABLED)
-    F:RegisterEvent('PLAYER_REGEN_ENABLED', COMBAT.PLAYER_REGEN_ENABLED)
+    F:RegisterEvent('PLAYER_REGEN_DISABLED', ca.PLAYER_REGEN_DISABLED)
+    F:RegisterEvent('PLAYER_REGEN_ENABLED', ca.PLAYER_REGEN_ENABLED)
 end

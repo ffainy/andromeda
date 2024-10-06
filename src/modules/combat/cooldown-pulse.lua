@@ -10,12 +10,12 @@ local cooldowns, animating, watching = {}, {}, {}
 local itemSpells, ignoredSpells = {}, {}
 
 local configs = {
-    fadeInTime = 0.3,
-    fadeOutTime = 0.3,
+    fadeInTime = 0.2,
+    fadeOutTime = 0.2,
     maxAlpha = 1,
     animScale = 2,
     iconSize = 32,
-    holdTime = 0.3,
+    holdTime = 0.2,
     threshold = 3,
     elapsed = 0,
     runtimer = 0,

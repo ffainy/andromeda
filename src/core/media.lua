@@ -137,6 +137,26 @@ C.Assets = {
         HalfHeight = C.ASSET_PATH .. 'fonts\\roadway.ttf',
         Small      = C.ASSET_PATH .. 'fonts\\super-effective.ttf',
     },
+
+    killingBlow = {
+        play = C.ASSET_PATH .. 'sounds\\killingblow\\play.ogg',
+        firstblood = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\firstblood.ogg',
+        killingspree = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\killingspree.ogg',
+        rampage = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\rampage.ogg',
+        dominating = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\dominating.ogg',
+        unstoppable = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\unstoppable.ogg',
+        godlike = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\godlike.ogg',
+        wickedsick = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\wickedsick.ogg',
+        doublekill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\doublekill.ogg',
+        multikill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\multikill.ogg',
+        megakill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\megakill.ogg',
+        ultrakill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\ultrakill.ogg',
+        monsterkill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\monsterkill.ogg',
+        ludicrouskill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\ludicrouskill.ogg',
+        holyshit = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\holyshit.ogg',
+        denied = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\denied.ogg',
+        retribution = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\retribution.ogg',
+    },
 }
 
 -- Overwrite fonts

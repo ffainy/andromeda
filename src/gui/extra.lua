@@ -479,14 +479,14 @@ function GUI:SetupInventoryFilter(parent)
         [3] = { value = 'FilterTradeGoods', text = _G.AUCTION_CATEGORY_TRADE_GOODS },
         [4] = { value = 'FilterConsumable', text = _G.BAG_FILTER_CONSUMABLES },
         [5] = { value = 'FilterAnima', text = _G.POWER_TYPE_ANIMA },
-        [6] = { value = 'FilterRelic', text = L['Korthia Relics'] },
-        [7] = { value = 'FilterStone', text = L['Primordial Stones'] },
-        [8] = { value = 'FilterEquipment', text = _G.BAG_FILTER_EQUIPMENT },
-        [9] = { value = 'FilterEquipSet', text = L['Equipement Set'] },
-        [10] = { value = 'FilterLegendary', text = _G.LOOT_JOURNAL_LEGENDARIES },
-        [11] = { value = 'FilterCollection', text = _G.COLLECTIONS },
-        [12] = { value = 'FilterFavourite', text = _G.PREFERENCES },
-        [13] = { value = 'FilterAOE', text = _G.ITEM_ACCOUNTBOUND },
+        [6] = { value = 'FilterStone', text = L['Primordial Stones'] },
+        [7] = { value = 'FilterEquipment', text = _G.BAG_FILTER_EQUIPMENT },
+        [8] = { value = 'FilterEquipSet', text = L['Equipement Set'] },
+        [9] = { value = 'FilterLegendary', text = _G.LOOT_JOURNAL_LEGENDARIES },
+        [10] = { value = 'FilterCollection', text = _G.COLLECTIONS },
+        [11] = { value = 'FilterFavourite', text = _G.PREFERENCES },
+        [12] = { value = 'FilterAOE', text = _G.ITEM_ACCOUNTBOUND },
+        [13] = { value = 'FilterLower', text = L[''] },
     }
 
     local offset = -10
@@ -564,9 +564,9 @@ function GUI:SetupMinItemLevelToShow(parent)
         key = 'MinItemLevelToShow',
         value = values.MinItemLevelToShow,
         text = L['Min'],
-        min = 0,
-        max = 1,
-        step = 0.1,
+        min = 1,
+        max = 800,
+        step = 1,
     }
 
     local offset = -10
@@ -3152,6 +3152,17 @@ function GUI:SetupSoundAlert(parent)
         createCheckbox(scroll, offset - 30, 'Combat', data.value, data.text)
         offset = offset - 35
     end
+end
+
+function GUI:SetupKillingBlow(parent)
+    local guiName = C.ADDON_TITLE .. 'GUIKillingBlow'
+    togglePanel(guiName)
+    if extraGUIs[guiName] then
+        return
+    end
+
+    local panel = createPanel(parent, guiName)
+    local scroll = createScrollFrame(panel, 220, 540)
 end
 
 -- Announcement

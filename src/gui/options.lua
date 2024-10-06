@@ -415,6 +415,14 @@ local function toggleCooldownPulse()
     COMBAT:HandleCdpEvents()
 end
 
+local function toggleKillingBlow()
+    F:GetModule('KillingBlow').ToggleKillingBlow()
+end
+
+local function setupKillingBlow()
+    GUI:SetupKillingBlow(GUI.Page[6])
+end
+
 -- Announcement
 local function SetupAnnounceableSpells()
     GUI:SetupAnnounceableSpells(GUI.Page[7])
@@ -1551,13 +1559,13 @@ GUI.OptionsList = {
         },
         {
             1,
-            'Combat',
-            'PvPSound',
-            L['PvP Sound'],
+            'killingBlow',
+            'enable',
+            L['Killing Blow'],
             nil,
-            nil,
-            nil,
-            L['Play DotA-like sounds on PvP killing blows.'],
+            setupKillingBlow,
+            toggleKillingBlow,
+            L['Plays various Unreal Tournament sounds on killing blows.'],
         },
         {},
         {

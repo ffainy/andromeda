@@ -6,6 +6,6 @@
     <Script file="easy-focus.lua"/>
     <Script file="easy-mark.lua"/>
     <Script file="floating-combat-text.lua"/>
-    <Script file="pvp-sound.lua"/>
+    <Script file="killing-blow.lua"/>
     <Script file="smart-tab.lua"/>
 </Ui>

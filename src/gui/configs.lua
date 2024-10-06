@@ -79,7 +79,7 @@ C.CharacterSettings = {
         LowMana = true,
         LowManaThreshold = 0.3,
 
-        KillingBlow = true,
+
         SmartTab = true,
         EasyMark = true,
         EasyMarkKey = 1,
@@ -87,12 +87,7 @@ C.CharacterSettings = {
         EasyFocusKey = 3,
         EasyFocusOnUnitframe = false,
 
-        SimpleFloatingCombatText = true,
-        Pet = true,
-        Periodic = true,
-        Merge = true,
-        Incoming = true,
-        Outgoing = false,
+
 
         CooldownPulse = true,
         FadeInTime = 0.3,
@@ -165,9 +160,9 @@ C.CharacterSettings = {
         FilterCollection = true,
         FilterFavourite = true,
         FilterAnima = true,
-        FilterRelic = true,
         FilterStone = true,
         FilterAOE = true,
+        FilterLower = true,
         AutoSellJunk = true,
         AutoRepair = true,
     },
@@ -656,6 +651,26 @@ C.CharacterSettings = {
         playerLevelUp = false,
         playerDead = false,
         playerStartedMoving = false,
+    },
+
+    combatAlert = {
+        enable = true,
+    },
+
+    killingBlow = {
+        enable = true,
+        pvpOnly = true,
+        emote = false,
+    },
+
+    floatingCombatText = {
+        enable = true,
+        pet = true,
+        periodic = true,
+        merge = true,
+        incoming = true,
+        outgoing = false,
+        fontSize = 13,
     }
 }
 

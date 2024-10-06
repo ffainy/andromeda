@@ -7,18 +7,18 @@
 local F, C, L = unpack(select(2, ...))
 local fct = F:RegisterModule('FloatingCombatText')
 
-local mask_mine_friendly_player = bit.bor(
+local vehicleGUID
+local playerGUID = UnitGUID('player')
+local MASK_MINE_FRIENDLY_PLAYER = bit.bor(
     COMBATLOG_OBJECT_AFFILIATION_MASK,
     COMBATLOG_OBJECT_REACTION_MASK,
     COMBATLOG_OBJECT_CONTROL_MASK
 )
-local flag_mine_friendly_player = bit.bor(
+local FLAG_MINE_FRIENDLY_PLAYER = bit.bor(
     COMBATLOG_OBJECT_AFFILIATION_MINE,
     COMBATLOG_OBJECT_REACTION_FRIENDLY,
     COMBATLOG_OBJECT_CONTROL_PLAYER
 )
-
-local eventFrame = CreateFrame('Frame')
 
 local blacklist = {
     [201633] = true, -- Earthen Wall
@@ -81,7 +81,7 @@ local mergeData = {
     [false] = { [true] = {}, [false] = {} },
 }
 
-local function createCTFrame(frameName, spacing, maxLines, fadeDuration, timeVisible, justify, width, height)
+local function createFctFrame(frameName, spacing, maxLines, fadeDuration, timeVisible, justify, width, height)
     local frame = CreateFrame('ScrollingMessageFrame', frameName, UIParent)
     frame:SetSpacing(spacing)
     frame:SetMaxLines(maxLines)
@@ -89,18 +89,23 @@ local function createCTFrame(frameName, spacing, maxLines, fadeDuration, timeVis
     frame:SetTimeVisible(timeVisible)
     frame:SetJustifyH(justify)
     frame:SetSize(width, height)
-    frame:SetFont(C.Assets.Fonts.Condensed, 13, '')
-    frame:SetShadowColor(0, 0, 0, 1)
-    frame:SetShadowOffset(2, -2)
+    frame:SetFont(
+        C.Assets.Fonts.Heavy,
+        C.DB.floatingCombatText.fontSize,
+        ANDROMEDA_ADB.FontOutline and 'OUTLINE' or '')
+    if ANDROMEDA_ADB.FontOutline then
+        frame:SetShadowColor(0, 0, 0, 1)
+        frame:SetShadowOffset(1, -1)
+    else
+        frame:SetShadowColor(0, 0, 0, 1)
+        frame:SetShadowOffset(2, -2)
+    end
 
     return frame
 end
 
-local inFrame = createCTFrame('CombatText_In', 3, 20, 0.2, 3, 'LEFT', 120, 160)
-local outFrame = createCTFrame('CombatText_Out', 3, 20, 0.2, 3, 'RIGHT', 120, 160)
-
 local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, Hits)
-    local frame = isIn and inFrame or outFrame
+    local frame = isIn and fct.InFrame or fct.OutFrame
     local symbol = isHealing and '+' or (isIn and '-' or '')
 
     if isIn then
@@ -153,7 +158,7 @@ local function dmgString(isIn, isHealing, spellID, amount, school, isCritical, H
 end
 
 local function missString(isIn, spellID, missType, amountMissed)
-    local frame = isIn and inFrame or outFrame
+    local frame = isIn and fct.InFrame or fct.OutFrame
 
     if isIn then
         if missType == 'ABSORB' then
@@ -205,116 +210,129 @@ local function dmgMerge(isIn, isHealing, spellID, amount, school, critical)
 end
 
 local function setMerge()
-    dmgFunc = C.DB.Combat.Merge and dmgMerge or dmgString
+    dmgFunc = C.DB.floatingCombatText.merge and dmgMerge or dmgString
 end
 
 local function vehicleChanged(_, _, unit, _, _, _, guid)
     if unit == 'player' then
-        eventFrame.vehicleGUID = guid
+        vehicleGUID = guid
+    end
+end
+
+local function onEvent()
+    local db = C.DB.floatingCombatText
+    local _, Event, _, sourceGUID, _, sourceFlags, _, destGUID, _, _, _, arg1, arg2, arg3, arg4, arg5, arg6, arg7, _, _, arg10 =
+        CombatLogGetCurrentEventInfo()
+    local fromMe = sourceGUID == playerGUID
+    local fromPet = bit.band(sourceFlags, MASK_MINE_FRIENDLY_PLAYER) == FLAG_MINE_FRIENDLY_PLAYER
+        and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PET) > 0
+    local fromGuardian = bit.band(sourceFlags, MASK_MINE_FRIENDLY_PLAYER) == FLAG_MINE_FRIENDLY_PLAYER
+        and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
+    local fromMine = fromMe or (db.pet and (fromPet or fromGuardian)) or sourceGUID == vehicleGUID
+
+    local toMe = destGUID == playerGUID or destGUID == vehicleGUID
+
+    if Event == 'SWING_DAMAGE' then
+        if fromMine then
+            dmgFunc(false, false, 5586, arg1, arg3, arg7)
+        end
+        if toMe then
+            dmgFunc(true, false, 5586, arg1, arg3, arg7)
+        end
+    elseif
+        (Event == 'SPELL_DAMAGE' or Event == 'RANGE_DAMAGE')
+        or (db.periodic and Event == 'SPELL_PERIODIC_DAMAGE')
+    then
+        if blacklist[arg1] then
+            return
+        end
+        if toMe then
+            dmgFunc(true, false, arg1, arg4, arg6, arg10)
+        elseif fromMine then
+            dmgFunc(false, false, arg1, arg4, arg6, arg10)
+        end
+    elseif Event == 'SWING_MISSED' then
+        if fromMe then
+            missString(false, 5586, arg1, arg3)
+        end
+        if toMe then
+            missString(true, 5586, arg1, arg3)
+        end
+    elseif Event == 'SPELL_MISSED' or Event == 'RANGE_MISSED' then
+        if blacklist[arg1] then
+            return
+        end
+        if toMe then
+            missString(true, arg1, arg4, arg6)
+        elseif fromMe or (db.pet and fromPet) or sourceGUID == vehicleGUID then
+            missString(false, arg1, arg4, arg6)
+        end
+    elseif Event == 'SPELL_HEAL' or (db.periodic and Event == 'SPELL_PERIODIC_HEAL') then
+        -- block full-overhealing
+        if blacklist[arg1] or arg4 == arg5 then
+            return
+        end
+        -- Show healing in outFrame for healers, inFrame for tank/dps
+        if fromMine and C.MyRole == 'Healer' then
+            dmgFunc(false, true, arg1, arg4, arg3, arg7)
+        elseif toMe then
+            dmgFunc(true, true, arg1, arg4, arg3, arg7)
+        elseif fromMine then
+            dmgFunc(false, true, arg1, arg4, arg3, arg7)
+        end
+    elseif Event == 'ENVIRONMENTAL_DAMAGE' then
+        if toMe then
+            fct.InFrame:AddMessage(
+                format('|cff%s%s -%s|r', dmgcolor[arg4], environmentalTypeText[arg1], F:Numb(arg2))
+            )
+        end
+    end
+end
+
+function fct.UpdateConfig()
+    if C.DB.floatingCombatText.enable then
+        F:RegisterEvent('UNIT_ENTERED_VEHICLE', vehicleChanged)
+        F:RegisterEvent('UNIT_EXITING_VEHICLE', vehicleChanged)
+        F:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', onEvent)
+    else
+        F:UnregisterEvent('UNIT_ENTERED_VEHICLE', vehicleChanged)
+        F:UnregisterEvent('UNIT_EXITING_VEHICLE', vehicleChanged)
+        F:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED', onEvent)
     end
 end
 
 function fct:OnLogin()
-    if not C.DB.Combat.SimpleFloatingCombatText then
+    if not C.DB.floatingCombatText.enable then
         return
     end
 
-    if C.DB.Combat.Incoming then
+    fct.InFrame = createFctFrame('CombatText_In', 3, 20, 0.2, 3, 'LEFT', 120, 160)
+    fct.OutFrame = createFctFrame('CombatText_Out', 3, 20, 0.2, 3, 'RIGHT', 120, 160)
+
+    if C.DB.floatingCombatText.incoming then
         F.Mover(
-            inFrame,
+            fct.InFrame,
             L['FCTInFrame'],
             'FCTInFrame',
             { 'RIGHT', UIParent, 'CENTER', -500, 0 },
-            inFrame:GetWidth(),
-            inFrame:GetHeight()
+            fct.InFrame:GetWidth(),
+            fct.InFrame:GetHeight()
         )
     end
 
-    if C.DB.Combat.Outgoing then
+    if C.DB.floatingCombatText.outgoing then
         F.Mover(
-            outFrame,
+            fct.OutFrame,
             L['FCTOutFrame'],
             'FCTOutFrame',
             { 'LEFT', UIParent, 'CENTER', 300, 140 },
-            outFrame:GetWidth(),
-            outFrame:GetHeight()
+            fct.OutFrame:GetWidth(),
+            fct.OutFrame:GetHeight()
         )
     end
 
     setMerge()
 
-    eventFrame:SetScript('OnEvent', function(self)
-        local _, Event, _, sourceGUID, _, sourceFlags, _, destGUID, _, _, _, arg1, arg2, arg3, arg4, arg5, arg6, arg7, _, _, arg10 =
-            CombatLogGetCurrentEventInfo()
-        local vehicleGUID, playerGUID = self.vehicleGUID, self.playerGUID
-        local fromMe = sourceGUID == playerGUID
-        local fromPet = bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
-            and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PET) > 0
-        local fromGuardian = bit.band(sourceFlags, mask_mine_friendly_player) == flag_mine_friendly_player
-            and bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_GUARDIAN) > 0
-        local fromMine = fromMe or (C.DB.Combat.Pet and (fromPet or fromGuardian)) or sourceGUID == vehicleGUID
 
-        local toMe = destGUID == playerGUID or destGUID == vehicleGUID
-
-        if Event == 'SWING_DAMAGE' then
-            if fromMine then
-                dmgFunc(false, false, 5586, arg1, arg3, arg7)
-            end
-            if toMe then
-                dmgFunc(true, false, 5586, arg1, arg3, arg7)
-            end
-        elseif
-            (Event == 'SPELL_DAMAGE' or Event == 'RANGE_DAMAGE')
-            or (C.DB.Combat.Periodic and Event == 'SPELL_PERIODIC_DAMAGE')
-        then
-            if blacklist[arg1] then
-                return
-            end
-            if toMe then
-                dmgFunc(true, false, arg1, arg4, arg6, arg10)
-            elseif fromMine then
-                dmgFunc(false, false, arg1, arg4, arg6, arg10)
-            end
-        elseif Event == 'SWING_MISSED' then
-            if fromMe then
-                missString(false, 5586, arg1, arg3)
-            end
-            if toMe then
-                missString(true, 5586, arg1, arg3)
-            end
-        elseif Event == 'SPELL_MISSED' or Event == 'RANGE_MISSED' then
-            if blacklist[arg1] then
-                return
-            end
-            if toMe then
-                missString(true, arg1, arg4, arg6)
-            elseif fromMe or (C.DB.Combat.Pet and fromPet) or sourceGUID == vehicleGUID then
-                missString(false, arg1, arg4, arg6)
-            end
-        elseif Event == 'SPELL_HEAL' or (C.DB.Combat.Periodic and Event == 'SPELL_PERIODIC_HEAL') then
-            -- block full-overhealing
-            if blacklist[arg1] or arg4 == arg5 then
-                return
-            end
-            -- Show healing in outFrame for healers, inFrame for tank/dps
-            if fromMine and C.MyRole == 'Healer' then
-                dmgFunc(false, true, arg1, arg4, arg3, arg7)
-            elseif toMe then
-                dmgFunc(true, true, arg1, arg4, arg3, arg7)
-            elseif fromMine then
-                dmgFunc(false, true, arg1, arg4, arg3, arg7)
-            end
-        elseif Event == 'ENVIRONMENTAL_DAMAGE' then
-            if toMe then
-                inFrame:AddMessage(
-                    format('|cff%s%s -%s|r', dmgcolor[arg4], environmentalTypeText[arg1], F:Numb(arg2))
-                )
-            end
-        end
-    end)
-    eventFrame.playerGUID = UnitGUID('player')
-    eventFrame:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED')
-
-    F:RegisterEvent('UNIT_ENTERED_VEHICLE', vehicleChanged)
-    F:RegisterEvent('UNIT_EXITING_VEHICLE', vehicleChanged)
+    fct.UpdateConfig()
 end
