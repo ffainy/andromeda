@@ -40,11 +40,6 @@ local function disableAllScripts(frame)
     end
 end
 
-local function updateTokenVisibility()
-    TokenFrame_LoadUI()
-    TokenFrame:Update()
-end
-
 local function buttonEventsRegisterFrame(self, added)
     local frames = self.frames
     for index = #frames, 1, -1 do
@@ -63,13 +58,6 @@ local function buttonEventsRegisterFrame(self, added)
 end
 
 local function disableDefaultBarEvents() -- credit: Simpy
-    -- MainMenuBar:ClearAllPoints taint during combat
-    MainMenuBar.SetPositionForStatusBars = nop
-
-    -- Spellbook open in combat taint, only happens sometimes
-    MultiActionBar_HideAllGrids = nop
-    MultiActionBar_ShowAllGrids = nop
-
     -- shut down some events for things we dont use
     ActionBarController:UnregisterAllEvents()
     ActionBarController:RegisterEvent('SETTINGS_LOADED')        -- this is needed for page controller to spawn properly
@@ -82,9 +70,6 @@ local function disableDefaultBarEvents() -- credit: Simpy
     ActionBarButtonEventsFrame:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN') -- needed for cooldowns of them both
     hooksecurefunc(ActionBarButtonEventsFrame, 'RegisterFrame', buttonEventsRegisterFrame)
     buttonEventsRegisterFrame(ActionBarButtonEventsFrame)
-
-    -- fix keybind error, this actually just prevents reopen of the GameMenu
-    SettingsPanel.TransitionBackOpeningPanel = HideUIPanel
 end
 
 function ACTIONBAR:RemoveBlizzStuff()
@@ -102,8 +87,8 @@ function ACTIONBAR:RemoveBlizzStuff()
     -- Fix maw block anchor
     MainMenuBarVehicleLeaveButton:RegisterEvent('PLAYER_ENTERING_WORLD')
 
-    -- Update token panel
-    --F:RegisterEvent("CURRENCY_DISPLAY_UPDATE", updateTokenVisibility) -- needs review, taint the money transfer
+    -- Update token panel, some alts may hide token as default
+    SetCVar('showTokenFrame', 1)
 
     -- Hide blizzard expbar
     StatusTrackingBarManager:UnregisterAllEvents()

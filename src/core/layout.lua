@@ -347,8 +347,7 @@ local function CreateConsole()
     header:SetSize(260, 30)
     header:SetPoint('TOP')
     F.CreateMF(header, f)
-    local tips = '|nCTRL +' ..
-    C.MOUSE_RIGHT_BUTTON .. L['Reset default anchor'] .. '|nSHIFT +' .. C.MOUSE_RIGHT_BUTTON .. L['Hide the frame']
+    local tips = '|nCTRL +' .. C.MOUSE_RIGHT_BUTTON .. L['Reset default anchor'] .. '|nSHIFT +' .. C.MOUSE_RIGHT_BUTTON .. L['Hide the frame']
     header.tipHeader = L['Layout']
     F.AddTooltip(header, 'ANCHOR_TOP', tips, 'BLUE')
 
@@ -498,69 +497,8 @@ local function isArenaEnable()
     return C.DB['Unitframe']['Enable'] and C.DB['Unitframe']['Arena']
 end
 
-local function isTalkingHeadHidden()
-    return C.DB['General']['HideTalkingHead']
-end
-
-local ignoredFrames = {
-    -- ActionBars
-    ['StanceBar'] = isActionbarEnable,
-    ['EncounterBar'] = isActionbarEnable,
-    ['PetActionBar'] = isActionbarEnable,
-    ['PossessActionBar'] = isActionbarEnable,
-    ['MainMenuBarVehicleLeaveButton'] = isActionbarEnable,
-    ['MultiBarBottomLeft'] = isActionbarEnable,
-    ['MultiBarBottomRight'] = isActionbarEnable,
-    ['MultiBarLeft'] = isActionbarEnable,
-    ['MultiBarRight'] = isActionbarEnable,
-    ['MultiBar5'] = isActionbarEnable,
-    ['MultiBar6'] = isActionbarEnable,
-    ['MultiBar7'] = isActionbarEnable,
-    -- Auras
-    ['BuffFrame'] = isBuffEnable,
-    ['DebuffFrame'] = isBuffEnable,
-    -- UnitFrames
-    ['PlayerFrame'] = isUnitFrameEnable,
-    ['PlayerCastingBarFrame'] = isCastbarEnable,
-    ['FocusFrame'] = isUnitFrameEnable,
-    ['TargetFrame'] = isUnitFrameEnable,
-    ['BossTargetFrameContainer'] = isUnitFrameEnable,
-    ['PartyFrame'] = isPartyEnable,
-    ['CompactRaidFrameContainer'] = isRaidEnable,
-    ['ArenaEnemyFramesContainer'] = isArenaEnable,
-    -- Misc
-    ['MinimapCluster'] = function()
-        return C.DB['Map']['Minimap']
-    end,
-    ['GameTooltipDefaultContainer'] = function()
-        return true
-    end,
-    ['TalkingHeadFrame'] = isTalkingHeadHidden,
-}
-
-local shutdownMode = {
-    'OnEditModeEnter',
-    'OnEditModeExit',
-    'HasActiveChanges',
-    'HighlightSystem',
-    'SelectSystem',
-}
-
 function M:DisableBlizzardMover()
     local editMode = EditModeManagerFrame
-
-    -- remove the initial registers
-    local registered = editMode.registeredSystemFrames
-    for i = #registered, 1, -1 do
-        local frame = registered[i]
-        local ignore = ignoredFrames[frame:GetName()]
-
-        if ignore and ignore() then
-            for _, key in next, shutdownMode do
-                frame[key] = nop
-            end
-        end
-    end
 
     -- account settings will be tainted
     local mixin = editMode.AccountSettings
@@ -568,31 +506,26 @@ function M:DisableBlizzardMover()
         mixin.RefreshCastBar = nop
     end
     if isBuffEnable() then
-        mixin.RefreshAuraFrame = nop
+        mixin.RefreshBuffsAndDebuffs = nop
     end
     if isRaidEnable() then
-        mixin.ResetRaidFrames = nop
         mixin.RefreshRaidFrames = nop
     end
     if isArenaEnable() then
         mixin.RefreshArenaFrames = nop
     end
     if isPartyEnable() then
-        mixin.ResetPartyFrames = nop
         mixin.RefreshPartyFrames = nop
     end
-    if isTalkingHeadHidden() then
-        mixin.RefreshTalkingHeadFrame = nop
-    end
     if isUnitFrameEnable() then
-        mixin.ResetTargetAndFocus = nop
         mixin.RefreshTargetAndFocus = nop
         mixin.RefreshBossFrames = nop
     end
     if isActionbarEnable() then
+        mixin.RefreshPetFrame = nop
         mixin.RefreshEncounterBar = nop
         mixin.RefreshActionBarShown = nop
         mixin.RefreshVehicleLeaveButton = nop
+        mixin.ResetActionBarShown = nop
     end
-    ObjectiveTrackerFrame.IsInDefaultPosition = nop
 end
