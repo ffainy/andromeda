@@ -100,7 +100,8 @@ local function isItemLowerLevel(item)
         return
     end
 
-    return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl and item.ilvl < C.DB.Inventory.MinItemLevelToShow
+    return item.link and item.quality > Enum.ItemQuality.Common and item.ilvl and
+    item.ilvl < C.DB.Inventory.MinItemLevelToShow
 end
 
 local consumableIDs = {
@@ -247,6 +248,10 @@ local primordialStones = {}
 for id = 204000, 204030 do
     primordialStones[id] = true
 end
+for id = 204573, 204579 do
+    primordialStones[id] = true
+end
+primordialStones[203703] = true -- 棱光碎片
 
 local function isPrimordialStone(item)
     if not C.DB['Inventory']['ItemFilter'] then
