@@ -374,7 +374,6 @@ function uf.RaidAurasPostUpdate(element, unit)
                 auras:ClearAllPoints()
                 auras:SetPoint('CENTER')
             end
-            print(aura.visibleNum)
         end
     end
 
