@@ -2093,6 +2093,16 @@ GUI.OptionsList = {
             UpdateClassPower,
             L['Show special resources of the class, such as Combo Points, Holy Power, Chi, Runes, etc.'],
         },
+        {
+            1,
+            'Unitframe',
+            'OverAbsorb',
+            L['Over Absorb Bar'],
+            nil,
+            nil,
+            nil,
+            L['If enabled, show over absorb bar if unit absorb value greater than max health.']
+        },
         {},
         {
             1,
@@ -2421,17 +2431,6 @@ GUI.OptionsList = {
             nil,
             UpdateRaidTargetIndicator,
             L['Display raid target indicator on GroupFrame.'],
-        },
-
-        {
-            1,
-            'Unitframe',
-            'ThreatIndicator',
-            L['Display Threat Indicator'],
-            nil,
-            nil,
-            nil,
-            L['The glow on the outside of the PartyFrame represents the threat status.'],
         },
         {
             1,

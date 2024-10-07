@@ -138,7 +138,7 @@ local function UpdateWatcherAnchor(element)
     end
     local rel1 = not horizon and not otherSide and 'RIGHT' or 'LEFT'
     local rel2 = not horizon and not otherSide and 'LEFT' or 'RIGHT'
-    local iconSize = (C.DB.Unitframe.PartyHealthHeight + C.DB.Unitframe.PartyPowerHeight) * 0.85
+    local iconSize = (C.DB.Unitframe.PartyHealthHeight + C.DB.Unitframe.PartyPowerHeight) * 0.75
 
     for i = 1, element.__max do
         local bu = element[i]

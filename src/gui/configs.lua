@@ -177,6 +177,7 @@ C.CharacterSettings = {
         InvertedHealthAlpha = 0.8,
         AlternativePower = true,
         TargetSound = true,
+        OverAbsorb = false,
 
         ShowAuras = true,
         OnlyShowPlayer = true,
@@ -312,7 +313,6 @@ C.CharacterSettings = {
 
 
         RaidTargetIndicator = true,
-        ThreatIndicator = true,
         GroupName = false,
         GroupRole = true,
         GroupLeader = true,

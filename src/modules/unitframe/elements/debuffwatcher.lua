@@ -122,6 +122,29 @@ function UNITFRAME:AuraButton_OnEnter()
     GameTooltip:Show()
 end
 
+function UNITFRAME:AurasIndicator_UpdatePosition(button, aura)
+    --F.Debug('AurasIndicator_UpdatePosition')
+    --F.Debug('aura.visibleNum', aura.visibleNum)
+
+    local frame = self.AurasIndicator
+    if aura.visibleNum == 1 then
+        frame:SetSize(frame.ButtonSize, frame.ButtonSize)
+        frame:ClearAllPoints()
+        frame:SetPoint('CENTER')
+    elseif aura.visibleNum == 2 then
+        frame:SetSize(frame.ButtonSize * 2 + 5, frame.ButtonSize)
+        frame:ClearAllPoints()
+        frame:SetPoint('CENTER')
+    else
+        frame:SetSize(1, 1)
+        frame:ClearAllPoints()
+        frame:SetPoint('CENTER')
+    end
+
+end
+
+
+
 function UNITFRAME:CreateAurasIndicator(self)
     local auraSize = (C.DB.Unitframe.PartyHealthHeight + C.DB.Unitframe.PartyPowerHeight) * 0.65
 
@@ -138,7 +161,7 @@ function UNITFRAME:CreateAurasIndicator(self)
         button:SetSize(auraSize, auraSize)
         button:SetFrameLevel(self:GetFrameLevel() + 3)
         F.PixelIcon(button)
-        F.CreateSD(button, 0.25, 5, 5, true)
+        F.CreateSD(button, 0.45, 5, 5, true)
         button.__shadow:SetFrameLevel(self:GetFrameLevel() + 2)
         button:Hide()
 
@@ -161,7 +184,7 @@ function UNITFRAME:CreateAurasIndicator(self)
         button.glowFrame = F.CreateGlowFrame(button, auraSize)
 
         if not prevAura then
-            button:SetPoint('CENTER')
+            button:SetPoint('LEFT')
         else
             button:SetPoint('LEFT', prevAura, 'RIGHT', 5, 0)
         end
@@ -171,8 +194,7 @@ function UNITFRAME:CreateAurasIndicator(self)
 
     self.AurasIndicator = auraFrame
     self.AurasIndicator.Debuffs = UNITFRAME.RaidDebuffsList
-
-    UNITFRAME.AurasIndicator_UpdateOptions(self)
+    self.AurasIndicator.ButtonSize = auraSize
 end
 
 function UNITFRAME.SortAuraTable(a, b)
@@ -245,7 +267,7 @@ function UNITFRAME:AurasIndicator_UpdateButton(button, aura)
     end
     local color = DispellColor[debuffType] or DispellColor.none
     if button.__shadow then
-        button.__shadow:SetBackdropBorderColor(color[1], color[2], color[3])
+        button.__shadow:SetBackdropBorderColor(color[1], color[2], color[3], 0.45)
     end
     if button.glowFrame then
         if aura.priority == 6 then
@@ -255,6 +277,7 @@ function UNITFRAME:AurasIndicator_UpdateButton(button, aura)
         end
     end
     button:Show()
+
 end
 
 function UNITFRAME:AurasIndicator_HideButtons()

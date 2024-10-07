@@ -9,7 +9,7 @@ local function ConfigurePetStyle(self)
 
     UNITFRAME:CreateBackdrop(self)
     UNITFRAME:CreateHealthBar(self)
-    UNITFRAME:CreateHealPrediction(self)
+    UNITFRAME:CreateHealthPrediction(self)
     UNITFRAME:CreatePowerBar(self)
     UNITFRAME:CreatePortrait(self)
     UNITFRAME:CreateCastBar(self)

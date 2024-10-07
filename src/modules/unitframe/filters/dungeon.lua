@@ -9,12 +9,12 @@ function uf:RegisterDungeonSpells()
 
     tierID = 4
     instID = 71 -- 格瑞姆巴托
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 451395) -- 腐蚀
 
     tierID = 8
     instID = 1023 -- 围攻伯拉勒斯
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 257169) -- 恐惧咆哮
     uf:RegisterInstanceSpell(tierID, instID, 0, 257168) -- 诅咒挥砍
     uf:RegisterInstanceSpell(tierID, instID, 0, 272588) -- 腐烂伤口
@@ -33,7 +33,7 @@ function uf:RegisterDungeonSpells()
 
     tierID = 9
     instID = 1184 -- 塞兹仙林的迷雾
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 325027) -- 荆棘爆发
     uf:RegisterInstanceSpell(tierID, instID, 0, 323043) -- 放血
     uf:RegisterInstanceSpell(tierID, instID, 0, 322557) -- 灵魂分裂
@@ -53,7 +53,7 @@ function uf:RegisterDungeonSpells()
     uf:RegisterInstanceSpell(tierID, instID, 0, 321891) -- 鬼抓人锁定
 
     instID = 1182 -- 通灵战潮
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 321821) -- 作呕喷吐
     uf:RegisterInstanceSpell(tierID, instID, 0, 323365) -- 黑暗纠缠
     uf:RegisterInstanceSpell(tierID, instID, 0, 338353) -- 瘀液喷撒
@@ -82,23 +82,23 @@ function uf:RegisterDungeonSpells()
 
     tierID = 12
     instID = 1274 -- 千丝之城
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 452151) -- 严酷戳刺
 
     instID = 1269 -- 矶石宝库
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 449154) -- 熔岩迫击炮
     uf:RegisterInstanceSpell(tierID, instID, 0, 427361) -- 破裂
     uf:RegisterInstanceSpell(tierID, instID, 0, 423572) -- 不稳定的能量
     uf:RegisterInstanceSpell(tierID, instID, 0, 427329) -- 虚空腐蚀
 
     instID = 1270 -- 破晨号
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 431365) -- 折磨光束
     uf:RegisterInstanceSpell(tierID, instID, 0, 451119) -- 深渊轰击
 
     instID = 1271 -- 艾拉-卡拉，回响之城
-    uf:RegisterSeasonSpells(tierID, instID)
+    uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 434083) -- 伏击(减速)
     uf:RegisterInstanceSpell(tierID, instID, 0, 439070) -- 撕咬
     uf:RegisterInstanceSpell(tierID, instID, 0, 433740) -- 感染

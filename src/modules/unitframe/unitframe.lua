@@ -1,6 +1,7 @@
 local F, C = unpack(select(2, ...))
 local UNITFRAME = F:GetModule('UnitFrame')
-local colors = F.Libs.oUF.colors
+local oUF = F.Libs.oUF
+local colors = oUF.colors
 
 UNITFRAME.Positions = {
     player = { 'CENTER', UIParent, 'CENTER', 0, -180 },
@@ -154,13 +155,20 @@ function UNITFRAME:CreateBackdrop(self, onKeyDown)
     self.__sd = bg.__shadow
 end
 
--- Target border
+-- 当前选中目标白色边框
+-- 只对小队/团队框体生效
 
 local function updateTargetBorder(self)
+    if not self.__sd then
+        return
+    end
+
     if UnitIsUnit('target', self.unit) then
         self.__tarBorder:Show()
+        self.__sd:SetBackdropBorderColor(1, 1, 1, 0.35)
     else
         self.__tarBorder:Hide()
+        self.__sd:SetBackdropBorderColor(0, 0, 0, 0.35)
     end
 end
 
@@ -176,7 +184,7 @@ function UNITFRAME:CreateTargetBorder(self)
     self:RegisterEvent('GROUP_ROSTER_UPDATE', updateTargetBorder, true)
 end
 
--- Sound effect for target/focus changed
+-- 目标/焦点发生变化时音效提示
 
 do
     local SELECT_AGGRO = SOUNDKIT.IG_CREATURE_AGGRO_SELECT
@@ -228,6 +236,48 @@ do
             F:UnregisterEvent('PLAYER_TARGET_CHANGED', UNITFRAME.PLAYER_TARGET_CHANGED)
             F:UnregisterEvent('PLAYER_FOCUS_CHANGED', UNITFRAME.PLAYER_FOCUS_CHANGED)
             F:UnregisterEvent('SOUNDKIT_FINISHED', UNITFRAME.SOUNDKIT_FINISHED)
+        end
+    end
+end
+
+-- 按住右ctrl键暂时禁用目标框体上的光环过滤
+do
+    function UNITFRAME:MODIFIER_STATE_CHANGED(key, state)
+        if key ~= 'RCTRL' then
+            return
+        end
+
+        for _, object in next, oUF.objects do
+            local unit = object.realUnit or object.unit
+            if unit == 'target' then
+                local auras = object.Auras
+                if state == 1 then -- modifier key pressed
+                    auras.FilterAura = nil
+                else
+                    auras.FilterAura = UNITFRAME.FilterAura
+                end
+                auras:ForceUpdate()
+                break
+            end
+        end
+    end
+
+    function UNITFRAME:PLAYER_REGEN_DISABLED()
+        F:UnregisterEvent('MODIFIER_STATE_CHANGED', UNITFRAME.MODIFIER_STATE_CHANGED)
+    end
+
+    function UNITFRAME:PLAYER_REGEN_ENABLED()
+        F:RegisterEvent('MODIFIER_STATE_CHANGED', UNITFRAME.MODIFIER_STATE_CHANGED)
+    end
+
+    function UNITFRAME:UpdateAuraFilter()
+        F:RegisterEvent('PLAYER_REGEN_DISABLED', UNITFRAME.MODIFIER_STATE_CHANGED)
+        F:RegisterEvent('PLAYER_REGEN_ENABLED', UNITFRAME.MODIFIER_STATE_CHANGED)
+
+        if InCombatLockdown() then
+            UNITFRAME:PLAYER_REGEN_DISABLED()
+        else
+            UNITFRAME:PLAYER_REGEN_ENABLED()
         end
     end
 end

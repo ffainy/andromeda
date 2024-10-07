@@ -9,7 +9,7 @@ local function ConfigurePlayerStyle(self)
 
     UNITFRAME:CreateBackdrop(self)
     UNITFRAME:CreateHealthBar(self)
-    UNITFRAME:CreateHealPrediction(self)
+    UNITFRAME:CreateHealthPrediction(self)
     UNITFRAME:CreatePowerBar(self)
     UNITFRAME:CreateAlternativePowerBar(self)
     UNITFRAME:CreateAltPowerTag(self)

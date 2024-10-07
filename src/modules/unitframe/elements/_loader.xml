@@ -14,5 +14,4 @@
     <Script file="prediction.lua"/>
     <Script file="raidauras.lua"/>
     <Script file="range.lua"/>
-    <Script file="threat.lua"/>
 </Ui>

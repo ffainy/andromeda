@@ -127,7 +127,7 @@ function INVENTORY:CreateMoneyFrame()
 
     local tag = self:SpawnPlugin('TagDisplay', '[money]', moneyFrame)
     tag:SetPoint('TOPLEFT', 0, -4)
-    F.SetFS(tag, C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline, '')
+    F.SetFS(tag, C.Assets.Fonts.Bold, 12, ANDROMEDA_ADB.FontOutline, '')
 end
 
 local function toggleWidgetButtons(self)
@@ -295,11 +295,11 @@ end
 
 function INVENTORY:CreateAccountMoney()
     local frame = CreateFrame('Button', nil, self)
-    frame:SetSize(50, 22)
+    frame:SetSize(140, 26)
 
-    local tag = self:SpawnPlugin('TagDisplay', '[accountmoney]', self)
+    local tag = self:SpawnPlugin('TagDisplay', '[accountmoney]', frame)
     tag:SetPoint('RIGHT', frame, -2, 0)
-    F.SetFS(tag, C.Assets.Fonts.Condensed, 12, ANDROMEDA_ADB.FontOutline, '')
+    F.SetFS(tag, C.Assets.Fonts.Bold, 12, ANDROMEDA_ADB.FontOutline, '')
     frame.tag = tag
 
     frame:RegisterForClicks('LeftButtonUp', 'RightButtonUp')

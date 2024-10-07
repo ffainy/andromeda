@@ -36,6 +36,8 @@ local function UpdateAuras(element, list, maxButtons, unit, filter)
         aura.isDebuff = filter == 'HARMFUL'
         aura.priority = -1
 
+        aura.visibleNum = list.num
+
         -- UnitAura returns
         aura.name = auraData.name
         aura.texture = auraData.icon
@@ -73,6 +75,7 @@ local function Update(self, event, unit, isFullUpdate, updatedAuras)
 
         UpdateAuras(element, element.buffList, maxBuffs, unit, 'HELPFUL')
         UpdateAuras(element, element.debuffList, maxDebufs, unit, 'HARMFUL')
+
 
         if element.PostUpdate then
             element:PostUpdate(unit, isFullUpdate, updatedAuras)

@@ -2463,7 +2463,7 @@ do
     end
 
     local function isAuraExisted(instName, spellID)
-        F.Debug(instName, spellID, C.RaidDebuffsList[instName][spellID])
+        print(instName, spellID, C.RaidDebuffsList[instName][spellID])
 
         local localPrio = C.RaidDebuffsList[instName][spellID]
         local savedPrio = _G.ANDROMEDA_ADB['RaidDebuffsList'][instName] and _G.ANDROMEDA_ADB['RaidDebuffsList'][instName][spellID]
@@ -2822,7 +2822,7 @@ do
             anchor, r, g, b = parent.dd.Text:GetText(), parent.swatch.tex:GetColor()
             showAll = parent.showAll:GetChecked() or nil
 
-            local modValue = _G.ANDROMEDA_ADB['CornerSpells'][C.MY_CLASS][spellID]
+            local modValue = _G.ANDROMEDA_ADB['CornerSpellsList'][C.MY_CLASS][spellID]
             if (modValue and next(modValue)) or (C.CornerSpellsList[C.MY_CLASS][spellID] and not modValue) then
                 _G.UIErrorsFrame:AddMessage(C.RED_COLOR .. L['The SpellID is existed'])
                 return

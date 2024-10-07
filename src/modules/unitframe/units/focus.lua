@@ -9,7 +9,7 @@ local function ConfigureFocusStyle(self)
 
     UNITFRAME:CreateBackdrop(self)
     UNITFRAME:CreateHealthBar(self)
-    UNITFRAME:CreateHealPrediction(self)
+    UNITFRAME:CreateHealthPrediction(self)
     UNITFRAME:CreatePowerBar(self)
     UNITFRAME:CreateNameTag(self)
     UNITFRAME:CreateCastBar(self)

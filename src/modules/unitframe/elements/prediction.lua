@@ -2,12 +2,16 @@ local F, C = unpack(select(2, ...))
 local UNITFRAME = F:GetModule('UnitFrame')
 
 function UNITFRAME:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, allAbsorb)
-    self.overAbsorb:Hide()
+    if not C.DB.Unitframe.OverAbsorb then
+        self.overAbsorbBar:Hide()
+        return
+    end
 
+    local hasOverAbsorb
     local overAbsorbAmount = health + allIncomingHeal + allAbsorb - maxHealth
     if overAbsorbAmount > 0 then
         if overAbsorbAmount > maxHealth then
-            self.overAbsorb:Show()
+            hasOverAbsorb = true
             overAbsorbAmount = maxHealth
         end
         self.overAbsorbBar:SetMinMaxValues(0, maxHealth)
@@ -16,11 +20,18 @@ function UNITFRAME:PostUpdatePrediction(_, health, maxHealth, allIncomingHeal, a
     else
         self.overAbsorbBar:Hide()
     end
+
+    if hasOverAbsorb then
+        self.overAbsorb:Show()
+    else
+        self.overAbsorb:Hide()
+    end
 end
 
-function UNITFRAME:CreateHealPrediction(self)
+function UNITFRAME:CreateHealthPrediction(self)
     local frame = CreateFrame('Frame', nil, self)
     frame:SetAllPoints(self.Health)
+    frame:SetClipsChildren(true)
     local frameLevel = frame:GetFrameLevel() - 1
 
     -- Position and size
@@ -30,7 +41,7 @@ function UNITFRAME:CreateHealPrediction(self)
     myBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
     myBar:SetStatusBarTexture(UNITFRAME.StatusBarTex)
     myBar:SetStatusBarColor(0, 1, .5, .5)
-    myBar:Hide()
+    --myBar:Hide()
 
     local otherBar = CreateFrame('StatusBar', nil, frame)
     otherBar:SetPoint('TOP')
@@ -45,16 +56,28 @@ function UNITFRAME:CreateHealPrediction(self)
     absorbBar:SetPoint('BOTTOM')
     absorbBar:SetPoint('LEFT', otherBar:GetStatusBarTexture(), 'RIGHT')
     absorbBar:SetStatusBarTexture(UNITFRAME.StatusBarTex)
-    absorbBar:SetStatusBarColor(.66, 1, 1, .7)
+    absorbBar:SetStatusBarColor(.66, 1, 1)
     absorbBar:SetFrameLevel(frameLevel)
+    absorbBar:SetAlpha(.5)
     absorbBar:Hide()
+    local tex = absorbBar:CreateTexture(nil, 'ARTWORK', nil, 1)
+    tex:SetAllPoints(absorbBar:GetStatusBarTexture())
+    tex:SetTexture('Interface\\RaidFrame\\Shield-Overlay', true, true)
+    tex:SetHorizTile(true)
+    tex:SetVertTile(true)
 
     local overAbsorbBar = CreateFrame('StatusBar', nil, frame)
     overAbsorbBar:SetAllPoints()
     overAbsorbBar:SetStatusBarTexture(UNITFRAME.StatusBarTex)
-    overAbsorbBar:SetStatusBarColor(.66, 1, 1, .5)
+    overAbsorbBar:SetStatusBarColor(.66, 1, 1)
     overAbsorbBar:SetFrameLevel(frameLevel)
+    overAbsorbBar:SetAlpha(.35)
     overAbsorbBar:Hide()
+    local tex = overAbsorbBar:CreateTexture(nil, 'ARTWORK', nil, 1)
+    tex:SetAllPoints(overAbsorbBar:GetStatusBarTexture())
+    tex:SetTexture('Interface\\RaidFrame\\Shield-Overlay', true, true)
+    tex:SetHorizTile(true)
+    tex:SetVertTile(true)
 
     local healAbsorbBar = CreateFrame('StatusBar', nil, frame)
     healAbsorbBar:SetPoint('TOP')
@@ -62,6 +85,7 @@ function UNITFRAME:CreateHealPrediction(self)
     healAbsorbBar:SetPoint('RIGHT', self.Health:GetStatusBarTexture())
     healAbsorbBar:SetReverseFill(true)
     healAbsorbBar:SetStatusBarTexture(UNITFRAME.StatusBarTex)
+    healAbsorbBar:Hide()
     local tex = healAbsorbBar:GetStatusBarTexture()
     tex:SetTexture('Interface\\RaidFrame\\Shield-Overlay', true, true)
     tex:SetHorizTile(true)
