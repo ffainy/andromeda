@@ -1,17 +1,15 @@
 local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
+local block
+local blockEntered = false
+
 local profit, spent, oldMoney = 0, 0, 0
 local myName, myRealm, myClass = C.MY_NAME, C.MY_REALM, C.MY_CLASS
 myRealm = gsub(myRealm, '%s', '') -- fix for multi words realm name
 
 local function formatMoney(money)
-    return format('%s: %s', L['Gold'], GetMoneyString(money))
-end
-
-local crossRealms = GetAutoCompleteRealms()
-if not crossRealms or #crossRealms == 0 then
-    crossRealms = { [1] = myRealm }
+    return format('%s: %s', L['Gold'], GetMoneyString(money, true))
 end
 
 StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
@@ -19,10 +17,10 @@ StaticPopupDialogs.ANDROMEDA_RESET_ALL_GOLD_STATISTICS = {
     button1 = YES,
     button2 = NO,
     OnAccept = function()
-        for _, realm in pairs(crossRealms) do
-            if ANDROMEDA_ADB['GoldStatistic'][realm] then
-                wipe(ANDROMEDA_ADB['GoldStatistic'][realm])
-            end
+        wipe(ANDROMEDA_ADB['GoldStatistic'])
+
+        if not ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+            ANDROMEDA_ADB['GoldStatistic'][myRealm] = {}
         end
 
         ANDROMEDA_ADB['GoldStatistic'][myRealm][myName] = { GetMoney(), myClass }
@@ -65,20 +63,16 @@ function rebuildCharList()
     end
 
     local index = 1
-    for _, realm in pairs(crossRealms) do
-        if ANDROMEDA_ADB['GoldStatistic'][myRealm] then
-            for name, value in pairs(ANDROMEDA_ADB['GoldStatistic'][myRealm]) do
-                if not (realm == myRealm and name == myRealm) then
-                    index = index + 1
-                    if not menuList[index] then
-                        menuList[index] = {}
-                    end
-                    menuList[index].text = F:RgbToHex(F:ClassColor(value[2])) .. Ambiguate(name .. '-' .. realm, 'none')
-                    menuList[index].notCheckable = true
-                    menuList[index].arg1 = realm
-                    menuList[index].arg2 = name
-                    menuList[index].func = clearCharGold
-                end
+    for realm, data in pairs(ANDROMEDA_ADB['GoldStatistic']) do
+        for name, value in pairs(data) do
+            if not (realm == myRealm and name == myName) then
+                index = index + 1
+                if not menuList[index] then menuList[index] = {} end
+                menuList[index].text = F:RgbToHex(F.ClassColor(value[2])) .. Ambiguate(name .. '-' .. realm, 'none')
+                menuList[index].notCheckable = true
+                menuList[index].arg1 = realm
+                menuList[index].arg2 = name
+                menuList[index].func = clearCharGold
             end
         end
     end
@@ -118,6 +112,12 @@ local function onEvent(self, event)
     oldMoney = newMoney
 end
 
+local function onShiftDown()
+    if blockEntered then
+        block:onEnter()
+    end
+end
+
 local function onMouseUp(self, btn)
     if btn == 'LeftButton' then
         if not StoreFrame then
@@ -134,6 +134,8 @@ local function onMouseUp(self, btn)
 end
 
 local function onEnter(self)
+    blockEntered = true
+
     local anchorTop = C.DB.Infobar.AnchorTop
     GameTooltip:SetOwner(self, (anchorTop and 'ANCHOR_BOTTOM') or 'ANCHOR_TOP', 0, (anchorTop and -6) or 6)
     GameTooltip:ClearLines()
@@ -141,44 +143,77 @@ local function onEnter(self)
     GameTooltip:AddLine(' ')
 
     GameTooltip:AddLine(L['Session'], 0.6, 0.8, 1)
-    GameTooltip:AddDoubleLine(L['Earned'], GetMoneyString(profit, true), 1, 1, 1, 1, 1, 1)
-    GameTooltip:AddDoubleLine(L['Spent'], GetMoneyString(spent, true), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine(
+        L['Earned'], GetMoneyString(profit, true),
+        1, 1, 1, 1, 1, 1
+    )
+    GameTooltip:AddDoubleLine(
+        L['Spent'], GetMoneyString(spent, true),
+        1, 1, 1, 1, 1, 1
+    )
     if profit < spent then
-        GameTooltip:AddDoubleLine(L['Deficit'], GetMoneyString(spent - profit, true), 1, 0, 0, 1, 1, 1)
+        GameTooltip:AddDoubleLine(
+            L['Deficit'], GetMoneyString(spent - profit, true),
+            1, 0, 0, 1, 1, 1
+        )
     elseif profit > spent then
-        GameTooltip:AddDoubleLine(L['Profit'], GetMoneyString(profit - spent, true), 0, 1, 0, 1, 1, 1)
+        GameTooltip:AddDoubleLine(
+            L['Profit'], GetMoneyString(profit - spent, true),
+            0, 1, 0, 1, 1, 1
+        )
     end
     GameTooltip:AddLine(' ')
 
     local totalGold = 0
     GameTooltip:AddLine(CHARACTER, 0.6, 0.8, 1)
 
-    for _, realm in pairs(crossRealms) do
-        local thisRealmList = ANDROMEDA_ADB['GoldStatistic'][realm]
-        if thisRealmList then
-            for k, v in pairs(thisRealmList) do
-                local name = Ambiguate(k .. '-' .. realm, 'none')
+    if ANDROMEDA_ADB['GoldStatistic'][myRealm] then
+        for k, v in pairs(ANDROMEDA_ADB['GoldStatistic'][myRealm]) do
+            local name = Ambiguate(k .. '-' .. myRealm, 'none')
+            local gold, class = unpack(v)
+            local r, g, b = F.ClassColor(class)
+            GameTooltip:AddDoubleLine(
+                getClassIcon(class) .. name, GetMoneyString(gold, true),
+                r, g, b, 1, 1, 1
+            )
+            totalGold = totalGold + gold
+        end
+    end
+
+    local isShiftKeyDown = IsShiftKeyDown()
+    for realm, data in pairs(ANDROMEDA_ADB['GoldStatistic']) do
+        if realm ~= myRealm then
+            for k, v in pairs(data) do
                 local gold, class = unpack(v)
-                local r, g, b = F:ClassColor(class)
-                GameTooltip:AddDoubleLine(
-                    getClassIcon(class) .. name,
-                    GetMoneyString(gold, true),
-                    r, g, b, 1, 1, 1
-                )
+                if isShiftKeyDown then -- show other realms while holding shift
+                    local name = Ambiguate(k .. '-' .. realm, 'none')
+                    local r, g, b = F.ClassColor(class)
+                    GameTooltip:AddDoubleLine(
+                        getClassIcon(class) .. name,
+                        GetMoneyString(gold, true),
+                        r, g, b, 1, 1, 1
+                    )
+                end
                 totalGold = totalGold + gold
             end
         end
     end
 
-    GameTooltip:AddLine(' ')
-    local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
-    if accountmoney > 0 then
-        GameTooltip:AddDoubleLine(
-            ACCOUNT_BANK_PANEL_TITLE,
-            GetMoneyString(accountmoney, true),
-            0.6, 0.8, 1, 1, 1, 1
-        )
+    if not isShiftKeyDown then
+        GameTooltip:AddLine(' ')
+        GameTooltip:AddLine(L['Hold SHIFT key to show characters from all realm'], .6, .8, 1)
     end
+
+    local accountmoney = C_Bank.FetchDepositedMoney(Enum.BankType.Account)
+    GameTooltip:AddLine(' ')
+    GameTooltip:AddDoubleLine(
+        CHARACTER, GetMoneyString(totalGold, true),
+        .6, .8, 1, 1, 1, 1
+    )
+    GameTooltip:AddDoubleLine(
+        ACCOUNT_BANK_PANEL_TITLE, GetMoneyString(accountmoney, true),
+        .6, .8, 1, 1, 1, 1
+    )
     GameTooltip:AddDoubleLine(
         TOTAL,
         GetMoneyString(totalGold + accountmoney, true),
@@ -208,10 +243,14 @@ local function onEnter(self)
         1, 1, 1, 0.9, 0.8, 0.6
     )
     GameTooltip:Show()
+
+    F:RegisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
 local function onLeave(self)
-    F:HideTooltip()
+    blockEntered = false
+    F.HideTooltip()
+    F:UnregisterEvent('MODIFIER_STATE_CHANGED', onShiftDown)
 end
 
 function INFOBAR:CreateGoldBlock()
@@ -219,17 +258,19 @@ function INFOBAR:CreateGoldBlock()
         return
     end
 
-    local bu = INFOBAR:RegisterNewBlock('gold', 'LEFT', 200)
-    bu:HookScript('OnEvent', onEvent)
-    bu:HookScript('OnMouseUp', onMouseUp)
-    bu:HookScript('OnEnter', onEnter)
-    bu:HookScript('OnLeave', onLeave)
+    block = INFOBAR:RegisterNewBlock('gold', 'LEFT', 200)
+    block.onEvent = onEvent
+    block.onEnter = onEnter
+    block.onLeave = onLeave
+    block.onMouseUp = onMouseUp
 
-    bu:RegisterEvent('PLAYER_ENTERING_WORLD')
-    bu:RegisterEvent('PLAYER_MONEY')
-    bu:RegisterEvent('SEND_MAIL_MONEY_CHANGED')
-    bu:RegisterEvent('SEND_MAIL_COD_CHANGED')
-    bu:RegisterEvent('PLAYER_TRADE_MONEY')
-    bu:RegisterEvent('TRADE_MONEY_CHANGED')
-    bu:RegisterEvent('TOKEN_MARKET_PRICE_UPDATED')
+    block.eventList = {
+        'PLAYER_ENTERING_WORLD',
+        'PLAYER_MONEY',
+        'SEND_MAIL_MONEY_CHANGED',
+        'SEND_MAIL_COD_CHANGED',
+        'PLAYER_TRADE_MONEY',
+        'TRADE_MONEY_CHANGED',
+        'TOKEN_MARKET_PRICE_UPDATED',
+    }
 end
