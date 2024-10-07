@@ -170,7 +170,7 @@ local function createAtlasCoin(coin)
 	if not str then
 		local info = C_Texture.GetAtlasInfo("coin-"..coin)
 		if info then
-			str = ns[1]:GetTextureStrByAtlas(info, 14, 14)
+			str = ns[1]:GetTextureStrByAtlas(info, 12, 12)
 			atlasCache[coin] = str
 		end
 	end
@@ -182,7 +182,7 @@ tagPool["money"] = function(self)
 	local str = ""
 	local gold, silver, copper = floor(money/1e4), floor(money/100) % 100, money % 100
 
-	if gold > 0 then str = str..gold..createAtlasCoin("gold").." " end
+	if gold > 0 then str = str..BreakUpLargeNumbers(gold)..createAtlasCoin("gold").." " end
 	if silver > 0 then str = str..silver..createAtlasCoin("silver").." " end
 	if copper > 0 then str = str..copper..createAtlasCoin("copper").." " end
 
@@ -193,7 +193,7 @@ tagEvents["money"] = { "PLAYER_MONEY" }
 tagPool["accountmoney"] = function()
 	local money = C_Bank.FetchDepositedMoney(Enum.BankType.Account) or 0
 	local str = ""
-	local gold, silver, copper = floor(money/1e4), floor(money/100) % 100, money % 100
+	local gold, silver, copper = (floor(money/1e4)), floor(money/100) % 100, money % 100
 
 	if gold > 0 then str = str..BreakUpLargeNumbers(gold)..createAtlasCoin("gold").." " end
 	if silver > 0 then str = str..silver..createAtlasCoin("silver").." " end
