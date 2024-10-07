@@ -50,9 +50,12 @@ end
 function UNITFRAME:CreateSpellsIndicator(self)
     local spellSize = 8
 
+    local parent = CreateFrame('Frame', nil, self.Health)
+    parent:SetPoint('TOPLEFT', 2, -2)
+    parent:SetPoint('BOTTOMRIGHT', -2, 2)
     local buttons = {}
     for _, anchor in pairs(anchors) do
-        local button = CreateFrame('Frame', nil, self.Health)
+        local button = CreateFrame('Frame', nil, parent)
         button:SetFrameLevel(self:GetFrameLevel() + 10)
         button:SetSize(spellSize, spellSize)
         button:SetPoint(anchor)
