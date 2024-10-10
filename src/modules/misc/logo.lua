@@ -38,7 +38,10 @@ function logo:ConstructFrame()
     tex:SetTexture(C.Assets.Textures.LogoSplash)
     tex:SetBlendMode('ADD')
     tex:SetDesaturated(true)
-    -- tex:SetGradientAlpha('Vertical', 1, 1, 1, .75, 1, 1, 1, .75)
+    local db = ANDROMEDA_ADB.CustomClassColors[C.MY_CLASS]
+    local c1 = CreateColor(db.r, db.g, db.b, 1)
+    local c2 = CreateColor(1, 1, 1, 1)
+    tex:SetGradient('VERTICAL', c2, c1)
 
     local delayTime = 0
     local timer1 = 0.5
