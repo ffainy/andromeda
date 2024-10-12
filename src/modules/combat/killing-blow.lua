@@ -178,7 +178,7 @@ local function hook(_, index)
     local status = GetBattlefieldStatus(index)
     if playedIndex == 0 and status == 'confirm' then
         playedIndex = index
-        kb.PlaySound(C.Assets.killingblow.play)
+        kb.PlaySound(C.Assets.killingBlow.play)
     elseif playedIndex == index and (status == 'queued' or status == 'active' or status == 'none') then
         playedIndex = 0
     end
