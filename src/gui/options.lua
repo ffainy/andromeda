@@ -1529,8 +1529,8 @@ GUI.OptionsList = {
         },
         {
             1,
-            'Combat',
-            'SimpleFloatingCombatText',
+            'floatingCombatText',
+            'enable',
             L['Floating Combat Text'],
             true,
             SetupSimpleFloatingCombatText,

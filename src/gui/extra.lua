@@ -3111,17 +3111,17 @@ function GUI:SetupSimpleFloatingCombatText(parent)
     local scroll = createScrollFrame(panel, 220, 540)
 
     local datas = {
-        [1] = { value = 'Incoming', text = L['Incoming'] },
-        [2] = { value = 'Outgoing', text = L['Outgoing'] },
-        [3] = { value = 'Pet', text = L['Pet'] },
-        [4] = { value = 'Periodic', text = L['Periodic'] },
-        [5] = { value = 'Merge', text = L['Merge'] },
+        [1] = { value = 'incoming', text = L['Incoming'] },
+        [2] = { value = 'outgoing', text = L['Outgoing'] },
+        [3] = { value = 'pet', text = L['Pet'] },
+        [4] = { value = 'periodic', text = L['Periodic'] },
+        [5] = { value = 'merge', text = L['Merge'] },
     }
 
     local offset = -10
     for _, data in ipairs(datas) do
         createGroupTitle(scroll, L['Floating Combat Text'], offset)
-        createCheckbox(scroll, offset - 30, 'Combat', data.value, data.text)
+        createCheckbox(scroll, offset - 30, 'floatingCombatText', data.value, data.text)
         offset = offset - 35
     end
 end
