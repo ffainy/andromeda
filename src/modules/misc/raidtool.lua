@@ -340,8 +340,9 @@ function RT:RaidTool_BuffChecker(parent)
     F.ReskinButton(frame)
 
     local icon = frame:CreateTexture(nil, 'ARTWORK')
-    icon:SetOutside()
-    icon:SetAtlas('GM-icon-readyCheck')
+    icon:SetInside(frame, 5, 5)
+    --icon:SetAtlas('GM-icon-readyCheck')
+    icon:SetTexture(C.Assets.raidtool.check)
 
     local BuffName = { L['Flask'], POWER_TYPE_FOOD, SPELL_STAT4_NAME, RAID_BUFF_2, RAID_BUFF_3, RUNES }
     local NoBuff, numGroups, numPlayer = {}, 6, 0
@@ -468,8 +469,9 @@ function RT:RaidTool_CountDown(parent)
     F.ReskinButton(frame)
 
     local icon = frame:CreateTexture(nil, 'ARTWORK')
-    icon:SetOutside()
-    icon:SetAtlas('GM-icon-countdown')
+    icon:SetInside(frame, 5, 5)
+    --icon:SetAtlas('GM-icon-countdown')
+    icon:SetTexture(C.Assets.raidtool.count)
 
     frame:HookScript('OnEnter', function(self)
         GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
