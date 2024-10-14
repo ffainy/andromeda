@@ -227,6 +227,7 @@ local function UpdateDifficultyFlag()
     local wf = format('|cff00ff00%s|r', 'WF')     -- 绿色
     local tw = format('|cff00ff00%s|r', 'TW')     -- 绿色
     local scen = format('|cffffff00%s|r', 'SCEN') -- 黄色
+    local delve = format('|cff52D0A6%s|r', 'DELVE') -- 青色
 
     if instanceType == 'party' or instanceType == 'raid' or instanceType == 'scenario' then
         if difficulty == 1 then                                                                  -- Normal
@@ -263,6 +264,8 @@ local function UpdateDifficultyFlag()
             text:SetText(numplayers .. lfr)
         elseif difficulty == 18 or difficulty == 19 or difficulty == 20 or difficulty == 30 then -- Event / Event Scenario
             text:SetText(scen)
+        elseif difficulty == 208 then                                                            -- Delves
+            text:SetText(delve)
         elseif difficulty == 23 then                                                             -- Mythic Party
             text:SetText('5' .. myth)
         elseif difficulty == 24 or difficulty == 33 then                                         -- Timewalking /Timewalking Raid
