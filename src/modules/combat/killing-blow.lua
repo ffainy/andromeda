@@ -162,7 +162,24 @@ local function onEvent()
     end
 end
 
-function kb.ToggleKillingBlow()
+-- 排战场准备就绪时播放音效
+local function hook(_, index)
+    if not C.DB.killingBlow.bgReady then
+        return
+    end
+
+    local status = GetBattlefieldStatus(index)
+    if playedIndex == 0 and status == 'confirm' then
+        playedIndex = index
+        if C.DB.killingBlow.bgReady then
+            kb.PlaySound(C.Assets.killingBlow.play)
+        end
+    elseif playedIndex == index and (status == 'queued' or status == 'active' or status == 'none') then
+        playedIndex = 0
+    end
+end
+
+function kb.UpdateConfig()
     if C.DB.killingBlow.enable then
         F:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', onEvent)
         F:RegisterEvent('ZONE_CHANGED_NEW_AREA', kb.ResetAllCounts)
@@ -174,19 +191,8 @@ function kb.ToggleKillingBlow()
     end
 end
 
-local function hook(_, index)
-    local status = GetBattlefieldStatus(index)
-    if playedIndex == 0 and status == 'confirm' then
-        playedIndex = index
-        kb.PlaySound(C.Assets.killingBlow.play)
-    elseif playedIndex == index and (status == 'queued' or status == 'active' or status == 'none') then
-        playedIndex = 0
-    end
-end
-
 function kb:OnLogin()
-    kb.ToggleKillingBlow()
+    kb.UpdateConfig()
 
-    -- 排战场准备就绪时播放音效
     hooksecurefunc('PVPReadyDialog_Update', hook)
 end

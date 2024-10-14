@@ -5,7 +5,9 @@
     <Script file="cooldown-pulse.lua"/>
     <Script file="easy-focus.lua"/>
     <Script file="easy-mark.lua"/>
+    <Script file="emergency.lua"/>
     <Script file="floating-combat-text.lua"/>
     <Script file="killing-blow.lua"/>
     <Script file="smart-tab.lua"/>
+    <Script file="spell-alert.lua"/>
 </Ui>

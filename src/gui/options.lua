@@ -387,19 +387,20 @@ local function UpdateBackdropAlpha()
 end
 
 -- Combat
-local function UpdateWorldTextScale()
-    SetCVar('WorldTextScale', ANDROMEDA_ADB.WorldTextScale)
-end
-
-local function UpdateBlizzardFloatingCombatText()
+local function updateBlizzardFloatingCombatText()
     local enable = ANDROMEDA_ADB.FloatingCombatText
-    local oldStyle = ANDROMEDA_ADB.FloatingCombatTextOldStyle
+    local scale = ANDROMEDA_ADB.WorldTextScale
+    local damage = ANDROMEDA_ADB.FloatingCombatTextDamage
+    local healing = ANDROMEDA_ADB.FloatingCombatTextHealing
+    local mode = ANDROMEDA_ADB.FloatingCombatTextMode
 
-    SetCVar('floatingCombatTextCombatDamage', enable and 1 or 0) -- 黄色伤害数字
-    SetCVar('floatingCombatTextCombatHealing', enable and 1 or 0) -- 绿色治疗数字
+    SetCVar('WorldTextScale', scale)
 
-    SetCVar('floatingCombatTextCombatDamageDirectionalScale', oldStyle and 0 or 1) -- 0 旧式向上垂直 1-5 新式
-    SetCVar('floatingCombatTextFloatMode', oldStyle and 1 or 3) -- 1 向上 2 向下 3 四散
+    SetCVar('floatingCombatTextCombatDamage', enable and damage and 1 or 0) -- 黄色伤害数字
+    SetCVar('floatingCombatTextCombatHealing', enable and healing and 1 or 0) -- 绿色治疗数字
+
+    SetCVar('floatingCombatTextCombatDamageDirectionalScale', mode) -- 0 旧式向上垂直 1-5 新式四散
+    SetCVar('floatingCombatTextFloatMode', mode == 0 and 1 or 3) -- 1 向上 2 向下 3 四散
     SetCVar('floatingCombatTextCombatDamageDirectionalOffset', 4)
 end
 
@@ -407,8 +408,28 @@ local function SetupSimpleFloatingCombatText()
     GUI:SetupSimpleFloatingCombatText(GUI.Page[6])
 end
 
-local function SetupSoundAlert()
-    GUI:SetupSoundAlert(GUI.Page[6])
+local function toggleSpellAlert()
+    F:GetModule('SpellAlert'):UpdateConfig()
+end
+
+local function SetupSpellAlert()
+    GUI:SetupSpellAlert(GUI.Page[6])
+end
+
+local function toggleCombatAlert()
+    F:GetModule('CombatAlert'):UpdateConfig()
+end
+
+local function SetupCombatAlert()
+    GUI:SetupCombatAlert(GUI.Page[6])
+end
+
+local function toggleEmergency()
+    F:GetModule('Emergency'):UpdateConfig()
+end
+
+local function SetupEmergency()
+    GUI:SetupEmergency(GUI.Page[6])
 end
 
 local function toggleCooldownPulse()
@@ -1473,12 +1494,32 @@ GUI.OptionsList = {
         {
             1,
             'ACCOUNT',
-            'FloatingCombatText',
-            L['Show blizzard combat text'],
+            'FloatingCombatTextDamage',
+            L['Enable Damage Combat Text'],
             nil,
             nil,
-            UpdateBlizzardFloatingCombatText,
-            L['Show blizzard combat text of damage and healing.'],
+            updateBlizzardFloatingCombatText,
+            L['Show blizzard yellow combat text of damage.'],
+        },
+        {
+            1,
+            'ACCOUNT',
+            'FloatingCombatTextHealing',
+            L['Enable Healing Combat Text'],
+            true,
+            nil,
+            updateBlizzardFloatingCombatText,
+            L['Show blizzard green combat text of healing.'],
+        },
+        {
+            3,
+            'ACCOUNT',
+            'FloatingCombatTextMode',
+            L['Combat Text Mode'],
+            nil,
+            { 0, 5, 1 },
+            updateBlizzardFloatingCombatText,
+            L['Changes the way combat text is displayed.\n0 is the old style, vertically up.\n1-5 is the new style, which flares outward.']
         },
         {
             3,
@@ -1487,35 +1528,49 @@ GUI.OptionsList = {
             L['Combat Text Scale'],
             true,
             { 1, 3, 0.1 },
-            UpdateWorldTextScale,
+            updateBlizzardFloatingCombatText,
+            L['Changes the overall scaling of the combat text.']
+        },
+        {},
+        {
+            1,
+            'emergency',
+            'enable',
+            L['Emergency'],
+            nil,
+            SetupEmergency,
+            toggleEmergency,
+            L['Plays a sound when health or mana is low.'],
         },
         {
             1,
-            'ACCOUNT',
-            'FloatingCombatTextOldStyle',
-            L['Use old style combat text'],
-            nil,
-            nil,
-            UpdateBlizzardFloatingCombatText,
-            L['Combat text vertical up over nameplate instead of arc.'],
-        },
-        {
-            1,
-            'Combat',
-            'CombatAlert',
-            L['Combat alert'],
-            nil,
-            nil,
-            nil,
-            L['Show an animated alert when you enter/leave combat.'],
-        },
-        {
-            1,
-            'Combat',
-            'SoundAlert',
-            L['Sound Alert'],
+            'killingBlow',
+            'enable',
+            L['Killing Blow'],
             true,
-            SetupSoundAlert,
+            setupKillingBlow,
+            toggleKillingBlow,
+            L['Plays various Unreal Tournament sounds on killing blows.'],
+        },
+        {
+            1,
+            'combatAlert',
+            'enable',
+            L['Enter/Leave Combat'],
+            nil,
+            SetupCombatAlert,
+            toggleCombatAlert,
+            L['Plays an animation when you enter or leave combat status.'],
+        },
+        {
+            1,
+            'spellAlert',
+            'enable',
+            L['Spell Alert'],
+            true,
+            SetupSpellAlert,
+            toggleSpellAlert,
+            L['Plays a sound when you successfully interrupt or dispel.'],
         },
         {
             1,
@@ -1556,16 +1611,6 @@ GUI.OptionsList = {
             nil,
             toggleCooldownPulse,
             L['Flashs ability icons when they are available to be used after cooldown.'],
-        },
-        {
-            1,
-            'killingBlow',
-            'enable',
-            L['Killing Blow'],
-            nil,
-            setupKillingBlow,
-            toggleKillingBlow,
-            L['Plays various Unreal Tournament sounds on killing blows.'],
         },
         {},
         {

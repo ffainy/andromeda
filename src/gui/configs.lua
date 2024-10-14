@@ -64,20 +64,7 @@ C.CharacterSettings = {
     },
     Combat = {
         Enable = true,
-        CombatAlert = true,
-        CombatAlertScale = 0.4,
-        CombatAlertSpeed = 1,
 
-
-        Interrupt = true,
-        Dispel = true,
-        Steal = true,
-        Miss = true,
-
-        LowHealth = true,
-        LowHealthThreshold = 0.3,
-        LowMana = true,
-        LowManaThreshold = 0.3,
 
 
         SmartTab = true,
@@ -86,8 +73,6 @@ C.CharacterSettings = {
         EasyFocus = true,
         EasyFocusKey = 3,
         EasyFocusOnUnitframe = false,
-
-
 
         CooldownPulse = true,
         FadeInTime = 0.3,
@@ -655,12 +640,15 @@ C.CharacterSettings = {
 
     combatAlert = {
         enable = true,
+        scale = 0.4,
+        speed = 1,
     },
 
     killingBlow = {
         enable = true,
         pvpOnly = true,
         emote = false,
+        bgReady = true,
     },
 
     floatingCombatText = {
@@ -671,6 +659,22 @@ C.CharacterSettings = {
         incoming = true,
         outgoing = false,
         fontSize = 13,
+    },
+
+    spellAlert = {
+        enable = true,
+        interrupt = true,
+        dispel = true,
+        steal = true,
+        miss = true,
+    },
+
+    emergency = {
+        enable = true,
+        health = true,
+        healthThreshold = 0.3,
+        mana = true,
+        manaThreshold = 0.3,
     }
 }
 
@@ -716,8 +720,9 @@ C.AccountSettings = {
     NumberFormat = 1,
     FontOutline = false,
     WorldTextScale = 1,
-    FloatingCombatText = true,
-    FloatingCombatTextOldStyle = true,
+    FloatingCombatTextDamage = true,
+    FloatingCombatTextHealing = true,
+    FloatingCombatTextMode = 2,
     ChatFilterBlackList = '',
     ChatFilterWhiteList = '',
     RepairType = 1,

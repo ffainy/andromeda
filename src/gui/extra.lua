@@ -3126,7 +3126,11 @@ function GUI:SetupSimpleFloatingCombatText(parent)
     end
 end
 
-function GUI:SetupSoundAlert(parent)
+local function updateSpellAlert()
+    F:GetModule('SpellAlert'):UpdateConfig()
+end
+
+function GUI:SetupSpellAlert(parent)
     local guiName = C.ADDON_TITLE .. 'GUISoundAlert'
     togglePanel(guiName)
     if extraGUIs[guiName] then
@@ -3137,20 +3141,76 @@ function GUI:SetupSoundAlert(parent)
     local scroll = createScrollFrame(panel, 220, 540)
 
     local datas = {
-        [1] = { value = 'Interrupt', text = L['Interrupt'] },
-        [2] = { value = 'Dispel', text = L['Dispel'] },
-        [3] = { value = 'SpellSteal', text = L['Spell Steal'] },
-        [4] = { value = 'SpellMiss', text = L['Spell Miss'] },
-        [5] = { value = 'LowHealth', text = L['Low Health'] },
-        [6] = { value = 'LowMana', text = L['Low Mana'] },
+        [1] = { value = 'interrupt', text = L['Interrupt'] },
+        [2] = { value = 'dispel', text = L['Dispel'] },
+        [3] = { value = 'steal', text = L['Steal'] },
+        [4] = { value = 'miss', text = L['Miss'] },
     }
 
     local offset = -10
     for _, data in ipairs(datas) do
-        createGroupTitle(scroll, L['Sound Alert'], offset)
-        createCheckbox(scroll, offset - 30, 'Combat', data.value, data.text)
+        createGroupTitle(scroll, L['Spell Alert'], offset)
+        createCheckbox(scroll, offset - 30, 'spellAlert', data.value, data.text, updateSpellAlert)
         offset = offset - 35
     end
+end
+
+local function updateCombatAlert()
+    F:GetModule('SpellAlert'):UpdateConfig()
+end
+
+function GUI:SetupCombatAlert(parent)
+    local guiName = C.ADDON_TITLE .. 'GUICombatAlert'
+    togglePanel(guiName)
+    if extraGUIs[guiName] then
+        return
+    end
+
+    local panel = createPanel(parent, guiName)
+    local scroll = createScrollFrame(panel, 220, 540)
+
+    local datas = {
+        [1] = { value = 'scale', text = L['Scale'] },
+        [2] = { value = 'speed', text = L['Speed'] },
+    }
+
+    local offset = -10
+    for _, data in ipairs(datas) do
+        createGroupTitle(scroll, L['Combat Alert'], offset)
+        createCheckbox(scroll, offset - 30, 'combatAlert', data.value, data.text, updateCombatAlert)
+        offset = offset - 35
+    end
+end
+
+local function updateEmergency()
+    F:GetModule('Emergency'):UpdateConfig()
+end
+
+function GUI:SetupEmergency(parent)
+    local guiName = C.ADDON_TITLE .. 'GUIEmergency'
+    togglePanel(guiName)
+    if extraGUIs[guiName] then
+        return
+    end
+
+    local panel = createPanel(parent, guiName)
+    local scroll = createScrollFrame(panel, 220, 540)
+
+    local datas = {
+        [1] = { value = 'health', text = L['Low Health'] },
+        [2] = { value = 'mana', text = L['Low Mana'] },
+    }
+
+    local offset = -10
+    for _, data in ipairs(datas) do
+        createGroupTitle(scroll, L['Emergency'], offset)
+        createCheckbox(scroll, offset - 30, 'emergency', data.value, data.text, updateEmergency)
+        offset = offset - 35
+    end
+end
+
+local function updateKillingBlow()
+    F:GetModule('KillingBlow'):UpdateConfig()
 end
 
 function GUI:SetupKillingBlow(parent)
@@ -3162,6 +3222,31 @@ function GUI:SetupKillingBlow(parent)
 
     local panel = createPanel(parent, guiName)
     local scroll = createScrollFrame(panel, 220, 540)
+
+    local datas = {
+        [1] = {
+            value = 'pvpOnly',
+            text = L['PvP Only'],
+            tip = L['Only effective in PvP state.']
+        },
+        [2] = {
+            value = 'emote',
+            text = L['Emote'],
+            tip = L['Send a kill message using the emote channel.']
+        },
+        [3] = {
+            value = 'bgReady',
+            text = L['PvP Queue Ready'],
+            tip = L['Plays a sound when PvP queue is ready.']
+        },
+    }
+
+    local offset = -10
+    for _, data in ipairs(datas) do
+        createGroupTitle(scroll, L['Killing Blow'], offset)
+        createCheckbox(scroll, offset - 30, 'killingBlow', data.value, data.text, updateKillingBlow)
+        offset = offset - 35
+    end
 end
 
 -- Announcement
