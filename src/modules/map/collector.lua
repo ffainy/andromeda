@@ -205,13 +205,13 @@ function MAP:AddOnIconCollector()
     end
 
     local bu = CreateFrame('Button', C.ADDON_TITLE .. 'MinimapAddOnIconCollector', Minimap)
-    bu:SetSize(20, 20)
+    bu:SetSize(24, 24)
     bu:SetPoint('TOPRIGHT', -4, -Minimap.halfDiff - 8)
     bu:RegisterForClicks('LeftButtonUp', 'RightButtonUp')
     bu.Icon = bu:CreateTexture(nil, 'ARTWORK')
     bu.Icon:SetAllPoints()
-    bu.Icon:SetTexture(C.Assets.Textures.MinimapTray)
-    bu:SetHighlightTexture(C.Assets.Textures.MinimapTray)
+    bu.Icon:SetTexture(C.Assets.map.tray)
+    bu:SetHighlightTexture(C.Assets.map.tray)
     F.AddTooltip(bu, 'ANCHOR_LEFT', C.INFO_COLOR .. L['AddOns Icon Collector'])
     updateCollectorTip(bu)
     Minimap.AddOnCollector = bu

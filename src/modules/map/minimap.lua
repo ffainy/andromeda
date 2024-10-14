@@ -54,7 +54,7 @@ end
 -- Rectangular Minimap
 
 function MAP:RestyleMinimap()
-    local texturePath = C.Assets.Textures.MinimapMask
+    local texturePath = C.Assets.map.mask
     local diff = 256 - 190
     local halfDiff = ceil(diff / 2)
 
@@ -97,7 +97,7 @@ function MAP:RestyleHybridMinimap()
     local mapCanvas = HybridMinimap.MapCanvas
     local rectangleMask = HybridMinimap:CreateMaskTexture()
 
-    rectangleMask:SetTexture(C.Assets.Textures.MinimapMask)
+    rectangleMask:SetTexture(C.Assets.map.mask)
     rectangleMask:SetAllPoints(HybridMinimap)
 
     HybridMinimap.RectangleMask = rectangleMask
@@ -152,7 +152,8 @@ function MAP:CreateMailButton()
         updateIndicatorFrameAnchor(indicatorFrame)
         hooksecurefunc(indicatorFrame, 'SetPoint', updateIndicatorFrameAnchor)
         indicatorFrame:SetFrameLevel(11)
-        icon:SetScale(1.2)
+        icon:SetTexture(C.Assets.map.mail)
+        icon:SetScale(1.6)
         icon:SetPoint('CENTER', indicatorFrame)
     end
 end
@@ -295,7 +296,7 @@ function MAP:CreateDifficultyFlag()
     frame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
     local texture = frame:CreateTexture(nil, 'BACKGROUND')
     texture:SetAllPoints()
-    texture:SetTexture(C.Assets.Textures.MinimapDifficulty)
+    texture:SetTexture(C.Assets.map.difficulty)
     texture:SetVertexColor(0, 0, 0)
 
     local outline = ANDROMEDA_ADB.FontOutline
@@ -361,11 +362,11 @@ MAP.ExpansionMenuList = {
 
 local function updateExpansionLandingPageButton(self)
     self:ClearAllPoints()
-    self:SetPoint('BOTTOMLEFT', Minimap, -8, Minimap.halfDiff - 8)
-    self:GetNormalTexture():SetTexture('Interface\\Store\\category-icon-enchantscroll')
-    self:GetPushedTexture():SetTexture('Interface\\Store\\category-icon-enchantscroll')
-    self:GetHighlightTexture():SetTexture('Interface\\Store\\category-icon-enchantscroll')
-    self:SetSize(50, 50)
+    self:SetPoint('BOTTOMLEFT', Minimap, 6, Minimap.halfDiff + 4)
+    self:GetNormalTexture():SetTexture(C.Assets.map.garrison)
+    self:GetPushedTexture():SetTexture(C.Assets.map.garrisonActive)
+    self:GetHighlightTexture():SetTexture(C.Assets.map.garrisonActive)
+    self:SetSize(28, 28)
 end
 
 function MAP:CreateExpansionLandingPageButton()
@@ -406,7 +407,7 @@ end
 function MAP:CreateQueueStatusButton()
     QueueStatusButton:SetParent(Minimap)
     QueueStatusButton:ClearAllPoints()
-    QueueStatusButton:SetPoint('BOTTOMRIGHT', Minimap, 0, Minimap.halfDiff)
+    QueueStatusButton:SetPoint('BOTTOMRIGHT', Minimap, 0, Minimap.halfDiff-2)
     QueueStatusButton:SetFrameLevel(999)
     QueueStatusButton:SetSize(40, 40)
     QueueStatusButtonIcon:SetAlpha(0)
@@ -414,16 +415,17 @@ function MAP:CreateQueueStatusButton()
     QueueStatusFrame:SetPoint('BOTTOMRIGHT', Minimap, 'BOTTOMLEFT', -4, Minimap.halfDiff)
 
     hooksecurefunc(QueueStatusButton, 'SetPoint', function(button, _, _, _, x, y)
-        if not (x == 4 and y == Minimap.halfDiff - 4) then
+        if not (x == 4 and y == Minimap.halfDiff-2) then
             button:ClearAllPoints()
-            button:SetPoint('BOTTOMRIGHT', Minimap, 'BOTTOMRIGHT', 4, Minimap.halfDiff - 4)
+            button:SetPoint('BOTTOMRIGHT', Minimap, 'BOTTOMRIGHT', 4, Minimap.halfDiff-2)
         end
     end)
 
     local queueIcon = Minimap:CreateTexture(nil, 'OVERLAY')
     queueIcon:SetPoint('CENTER', QueueStatusButton)
-    queueIcon:SetSize(30, 30)
-    queueIcon:SetAtlas('Raid')
+    queueIcon:SetSize(24, 24)
+    --queueIcon:SetAtlas('Raid')
+    queueIcon:SetTexture(C.Assets.map.lfg)
 
     local anim = queueIcon:CreateAnimationGroup()
     anim:SetLooping('REPEAT')
