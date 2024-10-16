@@ -124,6 +124,7 @@ C.SpecialUnitsList = {
     [220196] = true, -- 安苏雷克的传令官
     [216339] = true, -- 苏雷吉反自然者
     [219198] = true, -- 贪婪的甲虫
+    [224732] = true, -- 隐秘网士
 }
 
 C.PowerUnitsList = {
