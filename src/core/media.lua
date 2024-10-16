@@ -15,10 +15,8 @@ C.Assets = {
         ClassifyElite         = C.ASSET_PATH .. 'textures\\nameplate-elite',
         ClassifyBoss          = C.ASSET_PATH .. 'textures\\nameplate-boss',
         NameplateBracket      = C.ASSET_PATH .. 'textures\\nameplate-bracket',
-        MinimapMail           = C.ASSET_PATH .. 'textures\\minimap-mail',
-        MinimapMask           = C.ASSET_PATH .. 'textures\\minimap-rectangle-mask',
-        MinimapTray           = C.ASSET_PATH .. 'textures\\minimap-tray',
-        MinimapDifficulty     = C.ASSET_PATH .. 'textures\\minimap-difficulty',
+
+
         CombatShield          = C.ASSET_PATH .. 'textures\\combat-shield',
         CombatSword           = C.ASSET_PATH .. 'textures\\combat-sword',
         Gear                  = C.ASSET_PATH .. 'textures\\ui-gear',
@@ -138,24 +136,39 @@ C.Assets = {
         Small      = C.ASSET_PATH .. 'fonts\\super-effective.ttf',
     },
 
+    raidtool = {
+        check = C.ASSET_PATH .. 'textures\\raidtool\\check',
+        count = C.ASSET_PATH .. 'textures\\raidtool\\count',
+    },
+
+    map = {
+        mail           = C.ASSET_PATH .. 'textures\\map\\mail',
+        mask           = C.ASSET_PATH .. 'textures\\map\\rectangle-mask',
+        tray           = C.ASSET_PATH .. 'textures\\map\\tray',
+        difficulty     = C.ASSET_PATH .. 'textures\\map\\difficulty',
+        garrisonActive = C.ASSET_PATH .. 'textures\\map\\garrison-active',
+        garrison       = C.ASSET_PATH .. 'textures\\map\\garrison',
+        lfg            = C.ASSET_PATH .. 'textures\\map\\lfd',
+    },
+
     killingBlow = {
-        play = C.ASSET_PATH .. 'sounds\\killingblow\\play.ogg',
-        firstblood = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\firstblood.ogg',
-        killingspree = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\killingspree.ogg',
-        rampage = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\rampage.ogg',
-        dominating = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\dominating.ogg',
-        unstoppable = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\unstoppable.ogg',
-        godlike = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\godlike.ogg',
-        wickedsick = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\wickedsick.ogg',
-        doublekill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\doublekill.ogg',
-        multikill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\multikill.ogg',
-        megakill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\megakill.ogg',
-        ultrakill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\ultrakill.ogg',
-        monsterkill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\monsterkill.ogg',
+        play          = C.ASSET_PATH .. 'sounds\\killingblow\\play.ogg',
+        firstblood    = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\firstblood.ogg',
+        killingspree  = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\killingspree.ogg',
+        rampage       = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\rampage.ogg',
+        dominating    = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\dominating.ogg',
+        unstoppable   = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\unstoppable.ogg',
+        godlike       = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\godlike.ogg',
+        wickedsick    = C.ASSET_PATH .. 'sounds\\killingblow\\kill\\wickedsick.ogg',
+        doublekill    = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\doublekill.ogg',
+        multikill     = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\multikill.ogg',
+        megakill      = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\megakill.ogg',
+        ultrakill     = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\ultrakill.ogg',
+        monsterkill   = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\monsterkill.ogg',
         ludicrouskill = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\ludicrouskill.ogg',
-        holyshit = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\holyshit.ogg',
-        denied = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\denied.ogg',
-        retribution = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\retribution.ogg',
+        holyshit      = C.ASSET_PATH .. 'sounds\\killingblow\\multikill\\holyshit.ogg',
+        denied        = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\denied.ogg',
+        retribution   = C.ASSET_PATH .. 'sounds\\killingblow\\revenge\\retribution.ogg',
     },
 }
 
@@ -171,6 +184,11 @@ do
         C.Assets.Fonts.Heavy = path .. 'heavy.ttf'
         C.Assets.Fonts.Combat = path .. 'combat.ttf'
         C.Assets.Fonts.Header = path .. 'header.ttf'
+
+        C.Assets.Fonts.WenHei = path .. 'HYWenHei_85W.ttf'
+        C.Assets.Fonts.WenKai = path .. 'LXGWWenKai-Medium.ttf'
+        C.Assets.Fonts.ZhenKai = path .. 'LXGWZhenKai-Regular.ttf'
+        C.Assets.Fonts.WenKaiBright = path .. 'LXGWBright-Medium.ttf'
     elseif GetLocale() == 'zhCN' then
         C.Assets.Fonts.Regular = 'Fonts\\ARKai_T.ttf'
         C.Assets.Fonts.Condensed = 'Fonts\\ARKai_T.ttf'

@@ -79,7 +79,8 @@ local _tags = {
         elseif UnitIsGhost(unit) then
             return '|cffcccccc' .. L['Ghost'] .. '|r'
         elseif UnitIsDead(unit) then
-            return '|cffcccccc' .. _G.DEAD .. '|r'
+            --return '|cffcccccc' .. _G.DEAD .. '|r'
+            return '|T'..C.ASSET_PATH..'textures\\icon-dead'..':24:24|t'
         end
     end,
 
