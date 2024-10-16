@@ -3,10 +3,9 @@ local UNITFRAME = F:GetModule('UnitFrame')
 local NAMEPLATE = F:GetModule('Nameplate')
 
 local seasonSpells = {
-    [209858] = 2, -- 死疽
-    [240443] = 2, -- 爆裂
-    [240559] = 1, -- 重伤
-    [408556] = 2, -- 缠绕
+    -- TWW S1
+    -- 词缀
+    [440313] = 2, -- 虚空裂隙
 }
 
 local raidDebuffsList = {}
