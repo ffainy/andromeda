@@ -16,6 +16,7 @@
 ## X-License: GPL-3.0
 ## X-Curse-Project-ID: 459524
 ## X-WoWI-ID: 23258
+## X-Wago-ID: 0mNw8l6o
 ## X-Support: TWW
 
 libraries\taintless.xml
