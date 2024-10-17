@@ -5,7 +5,7 @@ local buttonsList = {}
 local menuList = {
     {
         CHARACTER_BUTTON,
-        C.Assets.Textures.MenuBarPlayer,
+        C.Assets.Textures.microMenu.character,
         function()
             if not CharacterFrame:IsShown() then
                 ShowUIPanel(CharacterFrame)
@@ -19,7 +19,7 @@ local menuList = {
 
     {
         PROFESSIONS_BUTTON,
-        C.Assets.Textures.MenuBarSpellbook,
+        C.Assets.Textures.microMenu.spellbook,
         function()
             if InCombatLockdown() then
                 UIErrorsFrame:AddMessage(C.RED_COLOR .. ERR_NOT_IN_COMBAT)
@@ -30,7 +30,7 @@ local menuList = {
     },
     {
         PLAYERSPELLS_BUTTON,
-        C.Assets.Textures.MenuBarTalent,
+        C.Assets.Textures.microMenu.talent,
         function()
             if not PlayerSpellsFrame:IsShown() then
                 ShowUIPanel(PlayerSpellsFrame)
@@ -41,7 +41,7 @@ local menuList = {
     },
     {
         SOCIAL_BUTTON,
-        C.Assets.Textures.MenuBarFriend,
+        C.Assets.Textures.microMenu.friend,
         function()
             if not FriendsFrame:IsShown() then
                 ShowUIPanel(FriendsFrame)
@@ -52,7 +52,7 @@ local menuList = {
     },
     {
         COMMUNITIES_FRAME_TITLE,
-        C.Assets.Textures.MenuBarGuild,
+        C.Assets.Textures.microMenu.guild,
         function()
             if not CommunitiesFrame then
                 C_AddOns.LoadAddOn('Blizzard_Communities')
@@ -66,7 +66,7 @@ local menuList = {
     },
     {
         ACHIEVEMENT_BUTTON,
-        C.Assets.Textures.MenuBarAchievement,
+        C.Assets.Textures.microMenu.achievement,
         function()
             if not AchievementFrame then
                 C_AddOns.LoadAddOn('Blizzard_AchievementUI')
@@ -80,7 +80,7 @@ local menuList = {
     },
     {
         COLLECTIONS,
-        C.Assets.Textures.MenuBarCollection,
+        C.Assets.Textures.microMenu.collection,
         function()
             if not CollectionsJournal then
                 C_AddOns.LoadAddOn('Blizzard_Collections')
@@ -94,7 +94,7 @@ local menuList = {
     },
     {
         GROUP_FINDER,
-        C.Assets.Textures.MenuBarLfg,
+        C.Assets.Textures.microMenu.lfg,
         function()
             if not PVEFrame:IsShown() then
                 ShowUIPanel(PVEFrame)
@@ -106,7 +106,7 @@ local menuList = {
     },
     {
         ADVENTURE_JOURNAL,
-        C.Assets.Textures.MenuBarEncounter,
+        C.Assets.Textures.microMenu.encounter,
         function()
             if not EncounterJournal then
                 C_AddOns.LoadAddOn('Blizzard_EncounterJournal')
@@ -120,7 +120,7 @@ local menuList = {
     },
     {
         L['Calendar'],
-        C.Assets.Textures.MenuBarCalendar,
+        C.Assets.Textures.microMenu.calendar,
         function()
             if not CalendarFrame then
                 C_AddOns.LoadAddOn('Blizzard_Calendar')
@@ -134,7 +134,7 @@ local menuList = {
     },
     {
         MAP_AND_QUEST_LOG,
-        C.Assets.Textures.MenuBarMap,
+        C.Assets.Textures.microMenu.map,
         function()
             if not WorldMapFrame:IsShown() then
                 ShowUIPanel(WorldMapFrame)
@@ -145,14 +145,14 @@ local menuList = {
     },
     {
         BAGSLOT,
-        C.Assets.Textures.MenuBarBag,
+        C.Assets.Textures.microMenu.bag,
         function()
             ToggleAllBags()
         end,
     },
     {
         BLIZZARD_STORE,
-        C.Assets.Textures.MenuBarStore,
+        C.Assets.Textures.microMenu.store,
         function()
             if not StoreFrame then
                 C_AddOns.LoadAddOn('Blizzard_StoreUI')
@@ -162,7 +162,7 @@ local menuList = {
     },
     {
         GM_EMAIL_NAME,
-        C.Assets.Textures.MenuBarHelp,
+        C.Assets.Textures.microMenu.help,
         function()
             if not HelpFrame:IsShown() then
                 ShowUIPanel(HelpFrame)
