@@ -11,6 +11,13 @@ function uf:RegisterDungeonSpells()
     instID = 71 -- 格瑞姆巴托
     uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 451395) -- 腐蚀
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451378) -- 劈裂
+    uf:RegisterInstanceSpell(tierID, instID, 0, 447261) -- 碎颅打击
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451241) -- 暗影烈焰斩
+    uf:RegisterInstanceSpell(tierID, instID, 0, 449474) -- 熔浆火花
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451613) -- 暮光烈焰
+    uf:RegisterInstanceSpell(tierID, instID, 0, 448057) -- 深渊腐蚀
+    uf:RegisterInstanceSpell(tierID, instID, 0, 456719) -- 暗影之伤
 
     tierID = 8
     instID = 1023 -- 围攻伯拉勒斯
@@ -84,6 +91,13 @@ function uf:RegisterDungeonSpells()
     instID = 1274 -- 千丝之城
     uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 452151) -- 严酷戳刺
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451295) -- 虚空奔袭
+    uf:RegisterInstanceSpell(tierID, instID, 0, 440107) -- 飞刀投掷
+    uf:RegisterInstanceSpell(tierID, instID, 0, 441298) -- 冰冻之血
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451239) -- 残暴戳刺
+    uf:RegisterInstanceSpell(tierID, instID, 0, 443509) -- 贪婪之虫
+    uf:RegisterInstanceSpell(tierID, instID, 0, 446718) -- 晦幽纺纱
+    uf:RegisterInstanceSpell(tierID, instID, 0, 439341) -- 捻接
 
     instID = 1269 -- 矶石宝库
     uf:RegisterSeasonSpell(tierID, instID)
@@ -91,11 +105,18 @@ function uf:RegisterDungeonSpells()
     uf:RegisterInstanceSpell(tierID, instID, 0, 427361) -- 破裂
     uf:RegisterInstanceSpell(tierID, instID, 0, 423572) -- 不稳定的能量
     uf:RegisterInstanceSpell(tierID, instID, 0, 427329) -- 虚空腐蚀
+    uf:RegisterInstanceSpell(tierID, instID, 0, 424805) -- 折光射线
+    uf:RegisterInstanceSpell(tierID, instID, 0, 424913, 6) -- 不稳定的爆炸
+    uf:RegisterInstanceSpell(tierID, instID, 0, 443494) -- 结晶喷发
 
     instID = 1270 -- 破晨号
     uf:RegisterSeasonSpell(tierID, instID)
     uf:RegisterInstanceSpell(tierID, instID, 0, 431365) -- 折磨光束
     uf:RegisterInstanceSpell(tierID, instID, 0, 451119) -- 深渊轰击
+    uf:RegisterInstanceSpell(tierID, instID, 0, 451107) -- 迸发虫茧
+    uf:RegisterInstanceSpell(tierID, instID, 0, 431350) -- 折磨喷发
+    uf:RegisterInstanceSpell(tierID, instID, 0, 434668) -- 火花四射的阿拉希炸弹
+    uf:RegisterInstanceSpell(tierID, instID, 0, 434113) -- 喷射丝线
 
     instID = 1271 -- 艾拉-卡拉，回响之城
     uf:RegisterSeasonSpell(tierID, instID)
