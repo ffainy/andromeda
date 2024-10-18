@@ -3,13 +3,15 @@ local INVENTORY = F:GetModule('Inventory')
 
 -- Custom filter
 local CustomFilterList = {
-    [37863] = false,  -- 酒吧传送器
+    [37863]  = false, -- 酒吧传送器
     [187532] = false, -- 魂焰凿石器 @TradeGoods
     [141333] = true,  -- 宁神圣典
     [141446] = true,  -- 宁神书卷
     [153646] = true,  -- 静心圣典
     [153647] = true,  -- 静心书卷
     [161053] = true,  -- 水手咸饼干
+    [221269] = true,  -- 猩红神勇石
+    [225896] = true,  -- 虚触神勇石
 }
 
 local function isCustomFilter(item)

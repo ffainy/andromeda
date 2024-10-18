@@ -1577,7 +1577,9 @@ function INVENTORY:OnLogin()
     C_Container.SetInsertItemsLeftToRight(false)
 
     -- Init
+    C.DB.Inventory.CombineFreeSlots = not C.DB.Inventory.CombineFreeSlots
     ToggleAllBags()
+    C.DB.Inventory.CombineFreeSlots = not C.DB.Inventory.CombineFreeSlots
     ToggleAllBags()
     INVENTORY.initComplete = true
 
