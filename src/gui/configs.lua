@@ -640,8 +640,8 @@ C.CharacterSettings = {
 
     combatAlert = {
         enable = true,
-        scale = 0.4,
-        speed = 1,
+        animScale = 0.4,
+        animSpeed = 1,
     },
 
     killingBlow = {

@@ -1545,7 +1545,7 @@ GUI.OptionsList = {
         {
             3,
             'combatAlert',
-            'scale',
+            'animScale',
             L['Scale'],
             nil,
             { 0.4, 2, 0.1 },
@@ -1555,7 +1555,7 @@ GUI.OptionsList = {
         {
             3,
             'combatAlert',
-            'speed',
+            'animSpeed',
             L['Animation Speed'],
             true,
             { 0.4, 2, 0.1 },

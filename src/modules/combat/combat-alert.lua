@@ -108,10 +108,10 @@ function ca:UpdateAnimationFrame()
         return
     end
 
-    local animationFrameSize = { 240 * C.DB.combatAlert.scale, 220 * C.DB.combatAlert.scale }
-    local textureSize = 200 * C.DB.combatAlert.scale
-    local swordAnimationRange = 130 * C.DB.combatAlert.scale
-    local shieldAnimationRange = 65 * C.DB.combatAlert.scale
+    local animationFrameSize = { 240 * C.DB.combatAlert.animScale, 220 * C.DB.combatAlert.animScale }
+    local textureSize = 200 * C.DB.combatAlert.animScale
+    local swordAnimationRange = 130 * C.DB.combatAlert.animScale
+    local shieldAnimationRange = 65 * C.DB.combatAlert.animScale
 
     local f = self.animationFrame
 
@@ -131,12 +131,12 @@ function ca:UpdateAnimationFrame()
     f.swordRightToLeft.enter.moveToCenter:SetOffset(-swordAnimationRange, swordAnimationRange)
     f.swordRightToLeft.leave.moveToCorner:SetOffset(-swordAnimationRange, swordAnimationRange)
 
-    F.SpeedAnimationGroup(f.shield.enter, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.swordLeftToRight.enter, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.swordRightToLeft.enter, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.shield.leave, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.swordLeftToRight.leave, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.swordRightToLeft.leave, C.DB.combatAlert.speed)
+    F.SpeedAnimationGroup(f.shield.enter, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.swordLeftToRight.enter, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.swordRightToLeft.enter, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.shield.leave, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.swordLeftToRight.leave, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.swordRightToLeft.leave, C.DB.combatAlert.animSpeed)
 end
 
 function ca:CreateTextFrame()
@@ -182,8 +182,8 @@ function ca:UpdateTextFrame()
         return
     end
 
-    local moveUpOffset = 160 * C.DB.combatAlert.scale
-    local moveDownOffset = -40 * C.DB.combatAlert.scale
+    local moveUpOffset = 160 * C.DB.combatAlert.animScale
+    local moveDownOffset = -40 * C.DB.combatAlert.animScale
 
     local f = self.textFrame
 
@@ -196,8 +196,8 @@ function ca:UpdateTextFrame()
     f.enter.moveDown:SetOffset(0, moveDownOffset)
     f.leave.moveUp:SetOffset(0, -moveDownOffset)
 
-    F.SpeedAnimationGroup(f.enter, C.DB.combatAlert.speed)
-    F.SpeedAnimationGroup(f.leave, C.DB.combatAlert.speed)
+    F.SpeedAnimationGroup(f.enter, C.DB.combatAlert.animSpeed)
+    F.SpeedAnimationGroup(f.leave, C.DB.combatAlert.animSpeed)
 
     -- 上方动画窗体如果不存在，确认下个提示的工作就交给文字窗体了
     -- if not self.db.animation then
@@ -219,12 +219,12 @@ function ca:ShowAlert(alertType)
 
     local a = self.animationFrame
     local t = self.textFrame
-    local swordOffsetEnter = 150 * C.DB.combatAlert.scale
-    local swordOffsetLeave = 20 * C.DB.combatAlert.scale
-    local shieldOffsetEnter = 50 * C.DB.combatAlert.scale
-    local shieldOffsetLeave = -15 * C.DB.combatAlert.scale
-    local textOffsetEnter = -120 * C.DB.combatAlert.scale
-    local textOffsetLeave = -20 * C.DB.combatAlert.scale
+    local swordOffsetEnter = 150 * C.DB.combatAlert.animScale
+    local swordOffsetLeave = 20 * C.DB.combatAlert.animScale
+    local shieldOffsetEnter = 50 * C.DB.combatAlert.animScale
+    local shieldOffsetLeave = -15 * C.DB.combatAlert.animScale
+    local textOffsetEnter = -120 * C.DB.combatAlert.animScale
+    local textOffsetLeave = -20 * C.DB.combatAlert.animScale
 
     a.shield.enter:Stop()
     a.swordLeftToRight.enter:Stop()
