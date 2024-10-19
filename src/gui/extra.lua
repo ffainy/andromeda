@@ -3155,33 +3155,6 @@ function GUI:SetupSpellAlert(parent)
     end
 end
 
-local function updateCombatAlert()
-    F:GetModule('SpellAlert'):UpdateConfig()
-end
-
-function GUI:SetupCombatAlert(parent)
-    local guiName = C.ADDON_TITLE .. 'GUICombatAlert'
-    togglePanel(guiName)
-    if extraGUIs[guiName] then
-        return
-    end
-
-    local panel = createPanel(parent, guiName)
-    local scroll = createScrollFrame(panel, 220, 540)
-
-    local datas = {
-        [1] = { value = 'scale', text = L['Scale'] },
-        [2] = { value = 'speed', text = L['Speed'] },
-    }
-
-    local offset = -10
-    for _, data in ipairs(datas) do
-        createGroupTitle(scroll, L['Combat Alert'], offset)
-        createCheckbox(scroll, offset - 30, 'combatAlert', data.value, data.text, updateCombatAlert)
-        offset = offset - 35
-    end
-end
-
 local function updateEmergency()
     F:GetModule('Emergency'):UpdateConfig()
 end

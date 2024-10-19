@@ -337,6 +337,7 @@ function ca:OnLogin()
     ca:UpdateAnimationFrame()
     ca:UpdateTextFrame()
     ca:UpdateHolderSize()
+    ca:UpdateConfig()
 
     F.Mover(
         ca.combatAlertHolder,
