@@ -65,7 +65,7 @@ function INFOBAR:GuildPanel_CreateButton(parent, index)
         button,
         C.Assets.Fonts.Regular, 13, outline or nil,
         'Zone', nil, outline and 'NONE' or 'THICK',
-        {'RIGHT', -2, 0}
+        { 'RIGHT', -2, 0 }
     )
     button.zone:SetPoint('LEFT', button.name, 'RIGHT', -10, 0)
     button.zone:SetJustifyH('RIGHT')
@@ -264,21 +264,21 @@ function INFOBAR:GuildPanel_Init()
     F.CreateFS(
         infoFrame,
         C.Assets.Fonts.Regular, 13, outline or nil,
-        whspInfo, {0.9, 0.8, 0.6}, outline and 'NONE' or 'THICK',
+        whspInfo, { 0.9, 0.8, 0.6 }, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -15, 42 }
     )
     local invtInfo = 'ALT +' .. C.MOUSE_LEFT_BUTTON .. L['Invite']
     F.CreateFS(
         infoFrame,
         C.Assets.Fonts.Regular, 13, outline or nil,
-        invtInfo, {0.9, 0.8, 0.6}, outline and 'NONE' or 'THICK',
+        invtInfo, { 0.9, 0.8, 0.6 }, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -15, 26 }
     )
     local copyInfo = 'SHIFT +' .. C.MOUSE_LEFT_BUTTON .. L['Copy Name']
     F.CreateFS(
         infoFrame,
         C.Assets.Fonts.Regular, 13, outline or nil,
-        copyInfo, {0.9, 0.8, 0.6}, outline and 'NONE' or 'THICK',
+        copyInfo, { 0.9, 0.8, 0.6 }, outline and 'NONE' or 'THICK',
         { 'BOTTOMRIGHT', -15, 10 }
     )
 
@@ -327,16 +327,16 @@ function INFOBAR:GuildPanel_Refresh()
 
     wipe(guildTable)
     local count = 0
-    local total, _, online = GetNumGuildMembers()
+    local total, numOnline, allOnline = GetNumGuildMembers()
     local guildName, guildRank = GetGuildInfo('player')
 
     gName:SetText(F:RgbToHex({ 0.9, 0.8, 0.6 }) .. '<' .. (guildName or '') .. '>')
-    gOnline:SetText(format(C.INFO_COLOR .. '%s:' .. ' %d/%d', GUILD_ONLINE_LABEL, online, total))
+    gOnline:SetText(format(C.INFO_COLOR .. '%s:' .. ' %d/%d', GUILD_ONLINE_LABEL, (allOnline or numOnline), total))
     gRank:SetText(C.INFO_COLOR .. RANK .. ': ' .. (guildRank or ''))
 
     for i = 1, total do
         local name, _, _, level, _, zone, _, _, connected, status, class, _, _, mobile, _, _, guid = GetGuildRosterInfo(
-        i)
+            i)
         if connected or mobile then
             if mobile and not connected then
                 zone = REMOTE_CHAT
@@ -414,8 +414,8 @@ local function Block_OnEvent(self, event, arg1)
         end
     end
 
-    local online = select(3, GetNumGuildMembers())
-    self.text:SetText(GUILD .. ': ' .. C.MY_CLASS_COLOR .. online)
+    local _, numOnline, allOnline = GetNumGuildMembers()
+    self.text:SetText(GUILD .. ': ' .. C.MY_CLASS_COLOR .. (allOnline or numOnline))
 
     if infoFrame and infoFrame:IsShown() then
         INFOBAR:GuildPanel_Refresh()
