@@ -347,8 +347,12 @@ local function Disable(self)
 			element.overAbsorb:Hide()
 		end
 
-		if(element.overHealAbsorb) then
+		if (element.overHealAbsorb) then
 			element.overHealAbsorb:Hide()
+		end
+
+		if(element.overAbsorbBar) then -- andromeda
+			element.overAbsorbBar:Hide()
 		end
 
 		self:UnregisterEvent('UNIT_HEALTH', Path)
