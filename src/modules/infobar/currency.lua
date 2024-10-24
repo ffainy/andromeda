@@ -26,6 +26,7 @@ local currOld = {
     '1166', -- 时空扭曲徽章 / Timewarped Badge
     '2032', -- 商贩标币 / Trader's Tender
     '515',  -- 暗月奖券 / Darkmoon Prize Ticket
+    '3100', -- 青铜庆典奖币 / Bronze Celebration Token
 }
 
 local function addIcon(texture)
