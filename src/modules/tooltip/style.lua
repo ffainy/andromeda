@@ -255,6 +255,11 @@ TOOLTIP:RegisterTooltips(C.ADDON_NAME, function()
         if _G.AltoTooltip then
             TOOLTIP.ReskinTooltip(_G.AltoTooltip)
         end
+
+        -- opie
+        if _G.NotGameTooltip1 then
+            TOOLTIP.ReskinTooltip(_G.NotGameTooltip1)
+        end
     end)
 
     if C_AddOns.IsAddOnLoaded('BattlePetBreedID') then
