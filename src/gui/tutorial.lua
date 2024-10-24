@@ -127,6 +127,10 @@ local function SetupCVars()
     SetCVar('lockActionBars', 1)
     SetCVar('alwaysShowActionBars', 1)
 
+    -- 减少镜头被障碍物遮挡
+    SetCVar('cameraIndirectVisibility', 1)
+    SetCVar('cameraIndirectOffset', 10)
+
     if C.IS_DEVELOPER then
         SetCVar('AutoPushSpellToActionBar', 0)
         SetCVar('cursorsizepreferred', 2)
