@@ -68,6 +68,8 @@ function MAP:RestyleMinimap()
     holder.bg:SetBackdropBorderColor(0, 0, 0, 1)
     Minimap.Holder = holder
 
+    RegisterStateDriver(holder, 'visibility', '[petbattle] hide; show')
+
     local pos = { 'BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -C.UI_GAP, C.UI_GAP }
     local mover = F.Mover(holder, MINIMAP_LABEL, 'Minimap', pos)
 
