@@ -391,9 +391,6 @@ tinsert(C.BlizzThemes, function()
     local amountSelector = CurrencyTransferMenu.AmountSelector
     if amountSelector then
         F.CreateBDFrame(amountSelector, .25)
-        if C.IS_NEW_PATCH then
-            F.Reskin(amountSelector.MaxQuantityButton)
-        end
         F.ReskinEditbox(amountSelector.InputBox)
         amountSelector.InputBox.__bg:SetInside(nil, 3, 3)
     end
