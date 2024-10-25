@@ -25,7 +25,7 @@ function ass.PlayerStartdMoving(event) -- debug
     ass.takeScreenshot(event)
 end
 
-function ass.AchievementEarned(event, alreadyEarned)
+function ass.AchievementEarned(event, achievementID, alreadyEarned)
     if alreadyEarned then
         return
     end
