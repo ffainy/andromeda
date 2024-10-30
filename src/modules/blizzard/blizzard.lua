@@ -315,7 +315,7 @@ do
         end
 
         -- disable alert of new talent
-        -- if not InCombatLockdown() then
+        -- if not InCombatLockdown() then -- cause taint
         --     function MainMenuMicroButton_AreAlertsEnabled()
         --         return false
         --     end
