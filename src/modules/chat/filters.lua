@@ -179,10 +179,9 @@ local addonBlockList = {
     '汐寒',
     'wow.+兑换码',
     'wow.+验证码',
-    '【有爱插件】',
+    '<有爱提示>',
     '：.+>',
     '|Hspell.+=>',
-    '<EH>',
 }
 
 local cvar
