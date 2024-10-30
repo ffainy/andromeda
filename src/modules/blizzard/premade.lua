@@ -1,5 +1,5 @@
 local F, C = unpack(select(2, ...))
-local BLIZZARD = F:GetModule('Blizzard')
+local ep = F:RegisterModule('EnhancedPremade')
 local TOOLTIP = F:GetModule('Tooltip')
 
 --[[
@@ -11,47 +11,41 @@ local TOOLTIP = F:GetModule('Tooltip')
     Abbreviated keystone
 --]]
 
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME or 1
+local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME or 1
 local scoreFormat = C.GREY_COLOR .. '(%s) |r%s'
 
-function BLIZZARD:HookApplicationClick()
-    if _G.LFGListFrame.SearchPanel.SignUpButton:IsEnabled() then
-        _G.LFGListFrame.SearchPanel.SignUpButton:Click()
+function ep:HookApplicationClick()
+    if LFGListFrame.SearchPanel.SignUpButton:IsEnabled() then
+        LFGListFrame.SearchPanel.SignUpButton:Click()
     end
 
     if
         (not IsAltKeyDown())
-        and _G.LFGListApplicationDialog:IsShown()
-        and _G.LFGListApplicationDialog.SignUpButton:IsEnabled()
+        and LFGListApplicationDialog:IsShown()
+        and LFGListApplicationDialog.SignUpButton:IsEnabled()
     then
-        _G.LFGListApplicationDialog.SignUpButton:Click()
+        LFGListApplicationDialog.SignUpButton:Click()
     end
 end
 
 local pendingFrame
-function BLIZZARD:DialogHideInSecond()
+function ep:DialogHideInSecond()
     if not pendingFrame then
         return
     end
 
     if pendingFrame.informational then
-        _G.StaticPopupSpecial_Hide(pendingFrame)
+        StaticPopupSpecial_Hide(pendingFrame)
     elseif pendingFrame == 'LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS' then
-        _G.StaticPopup_Hide(pendingFrame)
+        StaticPopup_Hide(pendingFrame)
     end
 
     pendingFrame = nil
 end
 
-function BLIZZARD:HookDialogOnShow()
+function ep:HookDialogOnShow()
     pendingFrame = self
-    F:Delay(1, BLIZZARD.DialogHideInSecond)
-end
-
-local function hidePvEFrame()
-    if _G.PVEFrame:IsShown() then
-        _G.HideUIPanel(_G.PVEFrame)
-    end
+    F:Delay(1, ep.DialogHideInSecond)
 end
 
 local factionStr = {
@@ -59,7 +53,7 @@ local factionStr = {
     [1] = 'Alliance',
 }
 
-function BLIZZARD:ShowLeaderOverallScore()
+function ep:ShowLeaderOverallScore()
     local resultID = self.resultID
     local searchResultInfo = resultID and C_LFGList.GetSearchResultInfo(resultID)
     if searchResultInfo then
@@ -68,11 +62,11 @@ function BLIZZARD:ShowLeaderOverallScore()
         if activityInfo then
             local showScore = activityInfo.isMythicPlusActivity and searchResultInfo.leaderOverallDungeonScore
                 or activityInfo.isRatedPvpActivity
-                    and searchResultInfo.leaderPvpRatingInfo
-                    and searchResultInfo.leaderPvpRatingInfo.rating
+                and searchResultInfo.leaderPvpRatingInfo
+                and searchResultInfo.leaderPvpRatingInfo.rating
             if showScore then
                 local oldName = self.ActivityName:GetText()
-                oldName = gsub(oldName, '.-' .. _G.HEADER_COLON, '') -- Tazavesh
+                oldName = gsub(oldName, '.-' .. HEADER_COLON, '') -- Tazavesh
                 self.ActivityName:SetFormattedText(scoreFormat, TOOLTIP.GetDungeonScore(showScore), oldName)
 
                 if not self.crossFactionLogo then
@@ -97,30 +91,32 @@ function BLIZZARD:ShowLeaderOverallScore()
     end
 end
 
-function BLIZZARD:AddAutoAcceptButton()
-    local bu = F.CreateCheckbox(_G.LFGListFrame.SearchPanel, true)
-    bu:SetSize(20, 20)
+function ep:AddAutoAcceptButton()
+    local bu = F.CreateCheckbox(LFGListFrame.ApplicationViewer, true)
+    bu:SetSize(14, 14)
     bu:SetHitRectInsets(0, -130, 0, 0)
-    bu:SetPoint('RIGHT', _G.LFGListFrame.SearchPanel.RefreshButton, 'LEFT', -130, 0)
+    bu:SetPoint('BOTTOMLEFT', LFGListFrame.ApplicationViewer.InfoBackground, 'LEFT', 12, -30)
 
-    local outline = _G.ANDROMEDA_ADB.FontOutline
+    local outline = ANDROMEDA_ADB.FontOutline
     F.CreateFS(
         bu,
-        C.Assets.Fonts.Regular,
-        12,
-        outline or nil,
-        _G.LFG_LIST_AUTO_ACCEPT,
-        'YELLOW',
-        outline and 'NONE' or 'THICK',
-        'LEFT',
-        24,
-        0
+        C.Assets.Fonts.Regular, 12, outline or nil,
+        LFG_LIST_AUTO_ACCEPT,
+        'YELLOW', outline and 'NONE' or 'THICK',
+        'LEFT', 24, 0
     )
 
+    local isCN = GetCVar('portal') == 'CN'
     local lastTime = 0
     local function clickInviteButton(button)
         if button.applicantID and button.InviteButton:IsEnabled() then
-            button.InviteButton:Click()
+            if C.DB.Chat.DisableProfanityFilter and isCN then
+                ConsoleExec('portal CN')
+            end
+            C_LFGList.InviteApplicant(button.applicantID)
+            if C.DB.Chat.DisableProfanityFilter and isCN then
+                ConsoleExec('portal TW')
+            end
         end
     end
 
@@ -132,13 +128,13 @@ function BLIZZARD:AddAutoAcceptButton()
             return
         end
 
-        _G.ApplicationViewerFrame.ScrollBox:ForEachFrame(clickInviteButton)
+        LFGListFrame.ApplicationViewer.ScrollBox:ForEachFrame(clickInviteButton)
 
-        if _G.LFGListFrame.ApplicationViewer:IsShown() then
+        if LFGListFrame.ApplicationViewer:IsShown() then
             local now = GetTime()
             if now - lastTime > 1 then
                 lastTime = now
-                _G.LFGListFrame.ApplicationViewer.RefreshButton:Click()
+                LFGListFrame.ApplicationViewer.RefreshButton:Click()
             end
         end
     end)
@@ -148,42 +144,42 @@ function BLIZZARD:AddAutoAcceptButton()
     end)
 end
 
-function BLIZZARD:ReplaceFindGroupButton()
+function ep:ReplaceFindGroupButton()
     if not C_AddOns.IsAddOnLoaded('PremadeGroupsFilter') then
         return
     end
 
-    _G.LFGListFrame.CategorySelection.FindGroupButton:Hide()
+    LFGListFrame.CategorySelection.FindGroupButton:Hide()
 
-    local bu = CreateFrame('Button', nil, _G.LFGListFrame.CategorySelection, 'LFGListMagicButtonTemplate')
-    bu:SetText(_G.LFG_LIST_FIND_A_GROUP)
+    local bu = CreateFrame('Button', nil, LFGListFrame.CategorySelection, 'LFGListMagicButtonTemplate')
+    bu:SetText(LFG_LIST_FIND_A_GROUP)
     bu:SetSize(135, 22)
     bu:SetPoint('BOTTOMRIGHT', -3, 4)
 
     local lastCategory = 0
     bu:SetScript('OnClick', function()
-        local selectedCategory = _G.LFGListFrame.CategorySelection.selectedCategory
+        local selectedCategory = LFGListFrame.CategorySelection.selectedCategory
         if not selectedCategory then
             return
         end
 
         if lastCategory ~= selectedCategory then
-            _G.LFGListFrame.CategorySelection.FindGroupButton:Click()
+            LFGListFrame.CategorySelection.FindGroupButton:Click()
         else
             PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-            _G.LFGListSearchPanel_SetCategory(
-                _G.LFGListFrame.SearchPanel,
+            LFGListSearchPanel_SetCategory(
+                LFGListFrame.SearchPanel,
                 selectedCategory,
-                _G.LFGListFrame.CategorySelection.selectedFilters,
-                _G.LFGListFrame.baseFilters
+                LFGListFrame.CategorySelection.selectedFilters,
+                LFGListFrame.baseFilters
             )
-            _G.LFGListSearchPanel_DoSearch(_G.LFGListFrame.SearchPanel)
-            _G.LFGListFrame_SetActivePanel(_G.LFGListFrame, _G.LFGListFrame.SearchPanel)
+            LFGListSearchPanel_DoSearch(LFGListFrame.SearchPanel)
+            LFGListFrame_SetActivePanel(LFGListFrame, LFGListFrame.SearchPanel)
         end
         lastCategory = selectedCategory
     end)
 
-    if _G.ANDROMEDA_ADB.ReskinBlizz then
+    if ANDROMEDA_ADB.ReskinBlizz then
         F.ReskinButton(bu)
     end
 end
@@ -199,18 +195,18 @@ local function createSortButton(parent, texture, sortStr, panel)
     bu.__parent = parent
     bu.__owner = panel
     bu:SetScript('OnClick', clickSortButton)
-    F.AddTooltip(bu, 'ANCHOR_RIGHT', _G.CLUB_FINDER_SORT_BY)
+    F.AddTooltip(bu, 'ANCHOR_RIGHT', CLUB_FINDER_SORT_BY)
 
     tinsert(parent.__sortBu, bu)
 end
 
-function BLIZZARD:AddPGFSortingExpression()
+function ep:AddPGFSortingExpression()
     if not C_AddOns.IsAddOnLoaded('PremadeGroupsFilter') then
         return
     end
 
-    local PGFDialog = _G.PremadeGroupsFilterDialog
-    local ExpressionPanel = _G.PremadeGroupsFilterMiniPanel
+    local PGFDialog = _G['PremadeGroupsFilterDialog']
+    local ExpressionPanel = _G['PremadeGroupsFilterMiniPanel']
     PGFDialog.__sortBu = {}
 
     createSortButton(PGFDialog, 525134, 'mprating desc', ExpressionPanel)
@@ -226,19 +222,19 @@ function BLIZZARD:AddPGFSortingExpression()
         end
     end
 
-    if _G.PremadeGroupsFilterSettings then
-        _G.PremadeGroupsFilterSettings.classBar = false
-        _G.PremadeGroupsFilterSettings.classCircle = false
-        _G.PremadeGroupsFilterSettings.leaderCrown = false
-        _G.PremadeGroupsFilterSettings.ratingInfo = false
-        _G.PremadeGroupsFilterSettings.oneClickSignUp = false
+    if _G['PremadeGroupsFilterSettings'] then
+        _G['PremadeGroupsFilterSettings'].classBar = false
+        _G['PremadeGroupsFilterSettings'].classCircle = false
+        _G['PremadeGroupsFilterSettings'].leaderCrown = false
+        _G['PremadeGroupsFilterSettings'].ratingInfo = false
+        _G['PremadeGroupsFilterSettings'].oneClickSignUp = false
     end
 end
 
 -- Fix LFG taint
 -- Credit: PremadeGroupsFilter
 
-function BLIZZARD:FixListingTaint()
+function ep:FixListingTaint()
     if C_AddOns.IsAddOnLoaded('PremadeGroupsFilter') then
         return
     end
@@ -273,53 +269,37 @@ function BLIZZARD:FixListingTaint()
     end
 
     -- Disable automatic group titles to prevent tainting errors
-    _G.LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
+    LFGListEntryCreation_SetTitleFromActivityInfo = function(_) end
 end
 
--- Show groups created by Chinese players
-
-function BLIZZARD:AddCNFilter()
-    local filters = C_LFGList.GetAvailableLanguageSearchFilter() or {}
-
-    for i = 1, #filters do
-        if filters[i] == 'zhCN' then
-            return
-        end
-    end
-
-    tinsert(filters, 'zhCN')
-
-    C_LFGList.GetAvailableLanguageSearchFilter = function()
-        return filters
-    end
-end
-
-function BLIZZARD:EnhancedPremade()
+function ep:OnLogin()
     if not C.DB.General.EnhancedPremade then
         return
     end
 
-    hooksecurefunc(_G.LFGListFrame.SearchPanel.ScrollBox, 'Update', function(self)
+    hooksecurefunc(LFGListFrame.SearchPanel.ScrollBox, 'Update', function(self)
         for i = 1, self.ScrollTarget:GetNumChildren() do
             local child = select(i, self.ScrollTarget:GetChildren())
             if child.Name and not child.hooked then
-                child.Name:SetFontObject(_G.Game14Font)
-                child.ActivityName:SetFontObject(_G.Game12Font)
-                child:HookScript('OnDoubleClick', BLIZZARD.HookApplicationClick)
+                child.Name:SetFontObject(Game13Font)
+                child.ActivityName:SetFontObject(Game12Font)
+                child:HookScript('OnDoubleClick', ep.HookApplicationClick)
 
                 child.hooked = true
             end
         end
     end)
 
-    hooksecurefunc('LFGListInviteDialog_Accept', hidePvEFrame)
-    hooksecurefunc('StaticPopup_Show', BLIZZARD.HookDialogOnShow)
-    hooksecurefunc('LFGListInviteDialog_Show', BLIZZARD.HookDialogOnShow)
-    hooksecurefunc('LFGListSearchEntry_Update', BLIZZARD.ShowLeaderOverallScore)
+    hooksecurefunc('LFGListInviteDialog_Accept', function()
+        if PVEFrame:IsShown() then HideUIPanel(PVEFrame) end
+    end)
 
-    BLIZZARD:AddAutoAcceptButton()
-    BLIZZARD:ReplaceFindGroupButton()
-    BLIZZARD:AddPGFSortingExpression()
-    BLIZZARD:FixListingTaint()
-    BLIZZARD:AddCNFilter()
+    hooksecurefunc('StaticPopup_Show', ep.HookDialogOnShow)
+    hooksecurefunc('LFGListInviteDialog_Show', ep.HookDialogOnShow)
+    hooksecurefunc('LFGListSearchEntry_Update', ep.ShowLeaderOverallScore)
+
+    ep:AddAutoAcceptButton()
+    ep:ReplaceFindGroupButton()
+    ep:AddPGFSortingExpression()
+    ep:FixListingTaint()
 end
