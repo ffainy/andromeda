@@ -189,7 +189,7 @@ tinsert(C.BlizzThemes, function()
     hooksecurefunc(ScenarioObjectiveTracker.StageBlock, 'UpdateStageBlock', function(block)
         block.NormalBG:SetTexture('')
         if not block.bg then
-            block.bg = F.SetBD(block.GlowTexture, nil, 4, -2, -4, 2)
+            block.bg = F.SetBD(block.GlowTexture, nil, 0, -2, 4, 2)
         end
     end)
 
