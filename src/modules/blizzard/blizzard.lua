@@ -315,11 +315,11 @@ do
         end
 
         -- disable alert of new talent
-        if not InCombatLockdown() then
-            function MainMenuMicroButton_AreAlertsEnabled()
-                return false
-            end
-        end
+        -- if not InCombatLockdown() then
+        --     function MainMenuMicroButton_AreAlertsEnabled()
+        --         return false
+        --     end
+        -- end
 
         F:UnregisterEvent('VARIABLES_LOADED', variablesLoaded)
     end
