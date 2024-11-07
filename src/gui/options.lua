@@ -2261,6 +2261,23 @@ GUI.OptionsList = {
             nil,
             SetupRaidFrame,
         },
+        {},
+        {
+            4,
+            'Unitframe',
+            'RaidHealthColorStyle',
+            L['Health Color'],
+            nil,
+            {
+                L['Opaque: Grey'],
+                L['Opaque: Class Color'],
+                L['Opaque: Gradient'],
+                L['Clear: Class Color'],
+                L['Clear: Gradient'],
+            },
+            UpdateHealthBarColor,
+        },
+        {},
         {
             1,
             'Unitframe',
