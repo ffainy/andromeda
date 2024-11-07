@@ -388,20 +388,19 @@ end
 
 -- Combat
 local function updateBlizzardFloatingCombatText()
-    local enable = ANDROMEDA_ADB.FloatingCombatText
     local scale = ANDROMEDA_ADB.WorldTextScale
     local damage = ANDROMEDA_ADB.FloatingCombatTextDamage
     local healing = ANDROMEDA_ADB.FloatingCombatTextHealing
     local mode = ANDROMEDA_ADB.FloatingCombatTextMode
 
-    SetCVar('WorldTextScale', scale)
+    C_CVar.SetCVar('WorldTextScale', scale)
 
-    SetCVar('floatingCombatTextCombatDamage', enable and damage and 1 or 0) -- 黄色伤害数字
-    SetCVar('floatingCombatTextCombatHealing', enable and healing and 1 or 0) -- 绿色治疗数字
+    C_CVar.SetCVar('floatingCombatTextCombatDamage',  (damage and 1) or 0) -- 黄色伤害数字
+    C_CVar.SetCVar('floatingCombatTextCombatHealing', (healing and 1) or 0) -- 绿色治疗数字
 
-    SetCVar('floatingCombatTextCombatDamageDirectionalScale', mode) -- 0 旧式向上垂直 1-5 新式四散
-    SetCVar('floatingCombatTextFloatMode', mode == 0 and 1 or 3) -- 1 向上 2 向下 3 四散
-    SetCVar('floatingCombatTextCombatDamageDirectionalOffset', 4)
+    C_CVar.SetCVar('floatingCombatTextCombatDamageDirectionalScale', mode) -- 0 旧式向上垂直 1-5 新式四散
+    C_CVar.SetCVar('floatingCombatTextFloatMode', (mode == 0 and 1) or 3) -- 1 向上 2 向下 3 四散
+    C_CVar.SetCVar('floatingCombatTextCombatDamageDirectionalOffset', 4)
 end
 
 local function SetupSimpleFloatingCombatText()
