@@ -19,6 +19,7 @@ local currPvE = {
     '3028', -- 宝匣钥匙
     '2803', -- 晦幽铸币
     '3056', -- 刻基
+    '3093', -- 尼鲁巴尔华服
 }
 
 local currOld = {
@@ -173,7 +174,7 @@ local function onEnter(self)
     if IsShiftKeyDown() then
         title = false
         for _, id in pairs(currOld) do
-            addTitle(L['Previous Expansion'])
+            addTitle(L['Misc'])
 
             local oldInfo = C_CurrencyInfo.GetCurrencyInfo(id)
             if oldInfo.maxQuantity > 0 then
