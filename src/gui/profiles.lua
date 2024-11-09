@@ -253,7 +253,7 @@ function GUI:CreateProfileFrame(parent)
         GUI.ProfileDataFrame.text:SetText(L['Import'])
         GUI.ProfileDataFrame.editBox:SetText('')
     end)
-    F.AddTooltip(import, 'ANCHOR_TOP', L['Import settings.'])
+    F.AddTooltip(import, 'ANCHOR_TOP', L['Import settings'])
 
     local export = F.CreateButton(parent, 100, 24, L['Export'])
     export:SetPoint('LEFT', import, 'RIGHT', 5, 0)
