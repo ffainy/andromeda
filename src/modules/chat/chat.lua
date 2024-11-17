@@ -243,6 +243,13 @@ local function setupChatFrame(frame)
 
     frame:HookScript('OnMouseWheel', CHAT.OnMouseScroll)
 
+    if frame == GeneralDockManager.primary then
+        local messageFrame = CommunitiesFrame and CommunitiesFrame.Chat and CommunitiesFrame.Chat.MessageFrame
+        if messageFrame then
+            messageFrame:SetFont(font, fontSize, outline and 'OUTLINE' or '')
+        end
+    end
+
     frame.styled = true
 end
 
