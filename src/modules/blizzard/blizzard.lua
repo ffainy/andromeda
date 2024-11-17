@@ -401,26 +401,3 @@ do
         _AddonTooltip_Update(owner)
     end
 end
-
--- Fix achievement date missing in zhTW
-do
-    if GetLocale() == 'zhTW' then
-        local function fixAchievementData(event, addon)
-            if addon ~= 'Blizzard_AchievementUI' then
-                return
-            end
-
-            hooksecurefunc('AchievementButton_Localize', function(button)
-                button.DateCompleted:SetPoint('TOP', button.Shield, 'BOTTOM', -2, 6)
-            end)
-
-            F:UnregisterEvent(event, fixAchievementData)
-        end
-        F:RegisterEvent('ADDON_LOADED', fixAchievementData)
-    end
-end
-
--- Fix missing localization file
-if not GuildControlUIRankSettingsFrameRosterLabel then
-    GuildControlUIRankSettingsFrameRosterLabel = CreateFrame('Frame')
-end
