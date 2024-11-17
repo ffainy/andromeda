@@ -401,3 +401,22 @@ do
         _AddonTooltip_Update(owner)
     end
 end
+
+-- Fix guild news jam
+do
+    local lastTime, timeGap = 0, 1.5
+    local function updateGuildNews(self, event)
+        if event == 'PLAYER_ENTERING_WORLD' then
+            QueryGuildNews()
+        else
+            if self:IsVisible() then
+                local nowTime = GetTime()
+                if nowTime - lastTime > timeGap then
+                    CommunitiesGuildNews_Update(self)
+                    lastTime = nowTime
+                end
+            end
+        end
+    end
+    CommunitiesFrameGuildDetailsFrameNews:SetScript('OnEvent', updateGuildNews)
+end
