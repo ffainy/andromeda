@@ -717,6 +717,7 @@ C.AccountSettings = {
     ReskinREHack = true,
     ReskinlsToasts = true,
     ReskinSimpleAddonManager = true,
+    ReskinOmniCD = true,
     NumberFormat = 1,
     FontOutline = false,
     WorldTextScale = 1,

@@ -3169,6 +3169,13 @@ GUI.OptionsList = {
             'ReskinSimpleAddonManager',
             L['Reskin SimpleAddonManager'],
         },
+        {
+            1,
+            'ACCOUNT',
+            'ReskinOmniCD',
+            L['Reskin OmniCD'],
+            true,
+        },
     },
     [15] = {},
     [16] = {},
