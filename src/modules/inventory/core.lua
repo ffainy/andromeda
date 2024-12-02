@@ -3,6 +3,7 @@ local INVENTORY = F:GetModule('Inventory')
 local cargBags = F.Libs.cargBags
 local iconsList = C.Assets.Textures.inventory
 
+local CHAR_BANK_TYPE = Enum.BankType.Character or 1
 local ACCOUNT_BANK_TYPE = Enum.BankType.Account or 2
 local iconColor = { 0.5, 0.5, 0.5 }
 local bagTypeColor = {
@@ -248,16 +249,14 @@ function INVENTORY:CreateReagentButton(f)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
+        if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
+            return
+        end
         if not IsReagentBankUnlocked() then
             StaticPopup_Show('CONFIRM_BUY_REAGENTBANK_TAB')
         else
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
             BankFrame_ShowPanel('ReagentBankFrame') -- trigger context matching
-            BankFrame.selectedTab = 2
-            BankFrame.activeTabIndex = 2
-            f.reagent:Show()
-            f.bank:Hide()
-            f.accountbank:Hide()
 
             if btn == 'RightButton' then
                 DepositReagentBank()
@@ -272,19 +271,17 @@ function INVENTORY:CreateReagentButton(f)
 end
 
 function INVENTORY:CreateAccountBankButton(f)
-    local bu = F.CreateButton(self, 16, 16, true, iconsList.warband)  -- #TODO need better icon
+    local bu = F.CreateButton(self, 16, 16, true, iconsList.warband)
     bu:RegisterForClicks('AnyUp')
     bu:SetScript('OnClick', function(_, btn)
+        if not C_Bank.CanViewBank(ACCOUNT_BANK_TYPE) then
+            return
+        end
         if AccountBankPanel:ShouldShowLockPrompt() then
             UIErrorsFrame:AddMessage(C.INFO_COLOR .. ACCOUNT_BANK_LOCKED_PROMPT)
         else
             PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
             BankFrame_ShowPanel('AccountBankPanel') -- trigger context matching
-            BankFrame.selectedTab = 3
-            BankFrame.activeTabIndex = 3
-            f.reagent:Hide()
-            f.bank:Hide()
-            f.accountbank:Show()
         end
     end)
     bu.tipHeader = ACCOUNT_BANK_PANEL_TITLE
@@ -334,13 +331,11 @@ function INVENTORY:CreateBankButton(f)
     local bu = F.CreateButton(self, 16, 16, true, iconsList.bank)
     bu.Icon:SetVertexColor(unpack(iconColor))
     bu:SetScript('OnClick', function()
+        if not C_Bank.CanViewBank(CHAR_BANK_TYPE) then
+            return
+        end
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
         BankFrame_ShowPanel('BankSlotsFrame') -- trigger context matching
-        BankFrame.selectedTab = 1
-        BankFrame.activeTabIndex = 1
-        f.reagent:Hide()
-        f.accountbank:Hide()
-        f.bank:Show()
     end)
 
     bu.tipHeader = BANK
@@ -947,6 +942,7 @@ function INVENTORY:OnLogin()
     Backpack:HookScript('OnHide', function()
         PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
     end)
+    tinsert(UISpecialFrames, C.ADDON_TITLE .. 'Backpack')
 
     INVENTORY.Bags = Backpack
     INVENTORY.BagsType = {}
@@ -1606,6 +1602,23 @@ function INVENTORY:OnLogin()
     SetCVar('professionToolSlotsExampleShown', 1)
     SetCVar('professionAccessorySlotsExampleShown', 1)
 
+    -- Bank frame paging
+    local bankNameIndex = {
+        ['BankSlotsFrame'] = 1,
+        ['ReagentBankFrame'] = 2,
+        ['AccountBankPanel'] = 3,
+    }
+    hooksecurefunc('BankFrame_ShowPanel', function(sidePanelName)
+        local panelIndex = bankNameIndex[sidePanelName]
+        if panelIndex then
+            BankFrame.selectedTab = panelIndex
+            BankFrame.activeTabIndex = panelIndex
+            f.bank:SetShown(panelIndex == 1)
+            f.reagent:SetShown(panelIndex == 2)
+            f.accountbank:SetShown(panelIndex == 3)
+        end
+    end)
+
     -- Delay updates for data jam
     local updater = CreateFrame('Frame', nil, f.main)
     updater:Hide()
@@ -1618,7 +1631,7 @@ function INVENTORY:OnLogin()
     end)
 
     F:RegisterEvent('GET_ITEM_INFO_RECEIVED', function()
-        updater.delay = 1.5
+        updater.delay = 1
         updater:Show()
     end)
 end
