@@ -60,6 +60,9 @@ C.CharacterSettings = {
         BlockStrangerInvite = false,
         BlockStrangerRequest = false,
 
+        PartyIlvl = true,
+        PartyIlvlToSelf = true,
+
 
     },
     Combat = {

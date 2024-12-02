@@ -52,13 +52,13 @@ do
 
     C.ClassColors = {}
     function F.UpdateCustomClassColors()
-        local colors = _G.ANDROMEDA_ADB.UseCustomClassColor and _G.ANDROMEDA_ADB.CustomClassColors
-            or _G.RAID_CLASS_COLORS
+        local colors = _G.ANDROMEDA_ADB.CustomClassColors
         for class, value in pairs(colors) do
             C.ClassColors[class] = {}
             C.ClassColors[class].r = value.r
             C.ClassColors[class].g = value.g
             C.ClassColors[class].b = value.b
+            C.ClassColors[class].colorStr = format('|cff%02x%02x%02x', value.r * 255, value.g * 255, value.b * 255)
         end
 
         local classColor = _G.ANDROMEDA_ADB.WidgetHighlightClassColor

@@ -11,6 +11,9 @@
     <Script file='LibBase64-1.0\LibBase64-1.0.lua'/>
     <Script file='LibRangeCheck-3.0\LibRangeCheck-3.0.lua'/>
     <Script file='LibSharedMedia-3.0\LibSharedMedia-3.0.lua'/>
+    <Script file='LibInspect\LibEvent.lua'/>
+    <Script file='LibInspect\LibSchedule.lua'/>
+    <Script file='LibInspect\LibItemInfo.lua'/>
     <Include file='cargBags\cargBags.xml'/>
     <Include file='HereBeDragons\HereBeDragons.xml'/>
     <Include file='oUF\oUF.xml'/>

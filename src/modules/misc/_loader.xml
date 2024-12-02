@@ -8,6 +8,8 @@
     <Script file="itemlevel.lua"/>
     <Script file="logo.lua"/>
     <Script file="micromenu.lua"/>
+    <Script file="inspect.lua"/>
+    <Script file="party-ilvl.lua"/>
     <Script file="proposaltimer.lua"/>
     <Script file="raidtool.lua"/>
     <Script file="screenshot.lua"/>
