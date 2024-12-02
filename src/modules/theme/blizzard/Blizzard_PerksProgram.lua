@@ -33,6 +33,12 @@ local function setupSetButton(button)
     button.HighlightTexture:SetInside()
 end
 
+local function setupFramBG(frame)
+    local bg = F.SetBD(frame)
+    bg:SetFrameLevel(0)
+    bg.__shadow:SetFrameLevel(0)
+end
+
 C.Themes['Blizzard_PerksProgram'] = function()
     local frame = PerksProgramFrame
 
@@ -53,14 +59,21 @@ C.Themes['Blizzard_PerksProgram'] = function()
 
         reskinCustomizeButton(footerFrame.RotateButtonContainer.RotateLeftButton)
         reskinCustomizeButton(footerFrame.RotateButtonContainer.RotateRightButton)
+
+        hooksecurefunc(GlowEmitterFactory, 'Show', function(frame, target, show)
+            local button = footerFrame.PurchaseButton
+            if button and target == button and show then
+                frame:Hide(target)
+            end
+        end)
     end
 
     local productsFrame = frame.ProductsFrame
     if productsFrame then
-        F.ReskinButton(productsFrame.PerksProgramFilter)
+        F.ReskinFilterButton(productsFrame.PerksProgramFilter)
         F.ReskinIcon(productsFrame.PerksProgramCurrencyFrame.Icon)
         F.StripTextures(productsFrame.PerksProgramProductDetailsContainerFrame)
-        F.SetBD(productsFrame.PerksProgramProductDetailsContainerFrame)
+        setupFramBG(productsFrame.PerksProgramProductDetailsContainerFrame)
         F.ReskinTrimScroll(
             productsFrame.PerksProgramProductDetailsContainerFrame.SetDetailsScrollBoxContainer.ScrollBar
         )
@@ -75,7 +88,7 @@ C.Themes['Blizzard_PerksProgram'] = function()
 
         local productsContainer = productsFrame.ProductsScrollBoxContainer
         F.StripTextures(productsContainer)
-        F.SetBD(productsContainer)
+        setupFramBG(productsContainer)
         F.ReskinTrimScroll(productsContainer.ScrollBar)
         F.StripTextures(productsContainer.PerksProgramHoldFrame)
         F.CreateBDFrame(productsContainer.PerksProgramHoldFrame, 0.25):SetInside(nil, 3, 3)

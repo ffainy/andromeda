@@ -36,6 +36,7 @@ function THEME:ReskinPGF()
         'MatchingId',
         'PvPRating',
         'NotDeclined',
+        'NeedsBL',
     }
 
     local function handleDropdown(drop)
