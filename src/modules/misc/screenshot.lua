@@ -1,7 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 local ass = F:RegisterModule('AutoScreenshot')
 
-function ass.takeScreenshot(event)
+function ass.takeScreenshot(event, delay)
     if C.DB.autoScreenshot.printMsg then
         F.Print(format(L['taking screenshot (%s) (%s)'], event, date()))
     end
@@ -15,7 +15,7 @@ function ass.takeScreenshot(event)
             UIParent:Show()
         end)
     else
-        F:Delay(0.5, function()
+        F:Delay(delay, function()
             Screenshot()
         end)
     end
@@ -35,7 +35,7 @@ end
 
 function ass.ChallengeModeCompleted(event)
     ChallengeModeCompleteBanner:HookScript('OnShow', function()
-        ass.takeScreenshot(event)
+        ass.takeScreenshot(event, 3)
     end)
 end
 
