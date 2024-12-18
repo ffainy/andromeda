@@ -8,7 +8,6 @@
     <Script file="gcd.lua"/>
     <Script file="health.lua"/>
     <Script file="indicator.lua"/>
-    <Script file="partywatcher.lua"/>
     <Script file="portrait.lua"/>
     <Script file="power.lua"/>
     <Script file="prediction.lua"/>

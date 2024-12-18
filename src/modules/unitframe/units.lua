@@ -7,9 +7,6 @@ local oUF = F.Libs.oUF
 function UNITFRAME:UpdatePartyElements()
     for _, frame in pairs(oUF.objects) do
         if frame.unitStyle == 'party' then
-            if frame.PartyWatcher then
-                frame.PartyWatcher:UpdateAnchor()
-            end
             if frame.Auras then
                 frame.Auras:UpdateAnchor()
                 frame.Auras:ForceUpdate()
@@ -109,7 +106,6 @@ local function CreatePartyStyle(self)
     UNITFRAME:CreateRaidTargetIndicator(self)
     UNITFRAME:CreateTargetBorder(self)
     UNITFRAME:CreateRangeCheck(self)
-    UNITFRAME:CreatePartyWatcher(self)
     UNITFRAME:CreateRaidAuras(self)
 end
 
@@ -648,9 +644,6 @@ function UNITFRAME:SpawnUnits()
         end
 
         if C.DB.Unitframe.PartyFrame then
-            UNITFRAME:SyncWithZenTracker()
-            UNITFRAME:UpdatePartyWatcherSpellsList()
-
             UNITFRAME:SpawnParty()
         end
 

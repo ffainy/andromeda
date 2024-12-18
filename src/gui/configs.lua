@@ -282,10 +282,7 @@ C.CharacterSettings = {
         PartyHealthHeight = 30,
         PartyPowerHeight = 2,
         PartyNameLength = 4,
-        PartyWatcher = true,
-        PartyWatcherSync = true,
-        PartyWatcherOnRight = false,
-        PartyWatcherSize = 26,
+
 
 
         RaidFrame = true,

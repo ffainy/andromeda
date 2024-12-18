@@ -276,10 +276,6 @@ local function UpdatePartyElements()
     UNITFRAME:UpdatePartyElements()
 end
 
-local function SetupPartyWatcher()
-    GUI:SetupPartyWatcher(GUI.Page[12])
-end
-
 local function SetupDebuffWatcher()
     GUI:SetupDebuffWatcher(GUI.Page[12])
 end
@@ -2326,36 +2322,6 @@ GUI.OptionsList = {
             nil,
             UpdatePartyHeader,
             L["If checked, sort your party order by 'Damager Healer Tank' within growth direction.|nIf unchecked, sort your party order by 'Tank Healer Damager' within growth direction."],
-        },
-        {
-            1,
-            'Unitframe',
-            'PartyWatcher',
-            L['Enable Party Watcher'],
-            nil,
-            SetupPartyWatcher,
-            nil,
-            L['Display the spell cooldowns of party members, displayed by default on the left side of the PartyFrame.'],
-        },
-        {
-            1,
-            'Unitframe',
-            'PartyWatcherOnRight',
-            L['Swap Icons Side'],
-            nil,
-            nil,
-            UpdatePartyElements,
-            L['Icons are displayed on the other side of the PartyFrame.'],
-        },
-        {
-            1,
-            'Unitframe',
-            'PartyWatcherSync',
-            L['Sync Party Watcher'],
-            true,
-            nil,
-            nil,
-            L["Sync the cooldown status with players who using 'AndromedaUI' or 'WeakAuras ZenTracker'."],
         },
         {},
         {
