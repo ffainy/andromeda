@@ -719,7 +719,6 @@ C.AccountSettings = {
     ReskinPremadeGroupsFilter = true,
     ReskinREHack = true,
     ReskinlsToasts = true,
-    ReskinSimpleAddonManager = true,
     ReskinOmniCD = true,
     NumberFormat = 1,
     FontOutline = false,
