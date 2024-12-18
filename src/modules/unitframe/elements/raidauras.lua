@@ -2,20 +2,20 @@ local F, C = unpack(select(2, ...))
 local uf = F:GetModule('UnitFrame')
 local oUF = F.Libs.oUF
 
+function uf:AuraButton_OnEnter()
+    if not self.index then
+        return
+    end
+
+    GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+    GameTooltip:ClearLines()
+    GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
+    GameTooltip:Show()
+end
+
 -- Debuffs on party/raid frames
 
 do
-    function uf:AuraButton_OnEnter()
-        if not self.index then
-            return
-        end
-
-        GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
-        GameTooltip:ClearLines()
-        GameTooltip:SetUnitAura(self.unit, self.index, self.filter)
-        GameTooltip:Show()
-    end
-
     uf.RaidDebuffsBlackList = {}
     function uf:UpdateRaidDebuffsBlackList()
         wipe(uf.RaidDebuffsBlackList)
@@ -39,7 +39,8 @@ do
     function uf:CreateDebuffsIndicator(self)
         local debuffFrame = CreateFrame('Frame', nil, self)
         debuffFrame:SetSize(1, 1)
-        debuffFrame:SetPoint('BOTTOMRIGHT', -2, 2)
+        debuffFrame:SetPoint('BOTTOMLEFT', C.MULT, C.MULT)
+        debuffFrame:SetFrameLevel(self:GetFrameLevel() + 3)
 
         debuffFrame.buttons = {}
         local prevDebuff
@@ -60,10 +61,13 @@ do
             parentFrame:SetFrameLevel(button:GetFrameLevel() + 6)
 
             local outline = _G.ANDROMEDA_ADB.FontOutline
-            button.count = F.CreateFS(parentFrame, C.Assets.Fonts.Small, 11, outline or nil, nil, nil,
+            button.count = F.CreateFS(
+                parentFrame,
+                C.Assets.Fonts.Small, 11, outline or nil,
+                nil, nil,
                 outline and 'NONE' or 'THICK')
             button.count:ClearAllPoints()
-            button.count:SetPoint('RIGHT', parentFrame, 'TOPRIGHT')
+            button.count:SetPoint('CENTER', parentFrame, 'TOP')
 
             button.cd = CreateFrame('Cooldown', nil, button, 'CooldownFrameTemplate')
             button.cd:SetAllPoints()
@@ -71,10 +75,11 @@ do
             button.cd:SetHideCountdownNumbers(true)
 
             if not prevDebuff then
-                button:SetPoint('BOTTOMLEFT', self.Health)
+                button:SetPoint('BOTTOMLEFT', self.Health, 2, 2)
             else
-                button:SetPoint('LEFT', prevDebuff, 'RIGHT')
+                button:SetPoint('LEFT', prevDebuff, 'RIGHT', 2, 0)
             end
+
             prevDebuff = button
             debuffFrame.buttons[i] = button
         end
@@ -194,8 +199,8 @@ do
     function uf:CreateBuffsIndicator(self)
         local buffFrame = CreateFrame('Frame', nil, self)
         buffFrame:SetSize(1, 1)
-        buffFrame:SetPoint('LEFT', self, 'RIGHT', 5, 0)
-        buffFrame:SetFrameLevel(5)
+        buffFrame:SetPoint('TOPRIGHT', C.MULT, C.MULT)
+        buffFrame:SetFrameLevel(self:GetFrameLevel() + 3)
 
         buffFrame.buttons = {}
         local prevBuff
@@ -211,10 +216,13 @@ do
             parentFrame:SetFrameLevel(button:GetFrameLevel() + 3)
 
             local outline = _G.ANDROMEDA_ADB.FontOutline
-            button.count = F.CreateFS(parentFrame, C.Assets.Fonts.Small, 11, outline or nil, nil, nil,
+            button.count = F.CreateFS(
+                parentFrame,
+                C.Assets.Fonts.Small, 11, outline or nil,
+                nil, nil,
                 outline and 'NONE' or 'THICK')
             button.count:ClearAllPoints()
-            button.count:SetPoint('RIGHT', parentFrame, 'TOPRIGHT')
+            button.count:SetPoint('CENTER', parentFrame, 'TOP')
 
             button.cd = CreateFrame('Cooldown', nil, button, 'CooldownFrameTemplate')
             button.cd:SetAllPoints()
@@ -222,10 +230,11 @@ do
             button.cd:SetHideCountdownNumbers(true)
 
             if not prevBuff then
-                button:SetPoint('LEFT', self, 'RIGHT', 5, 0)
+                button:SetPoint('TOPRIGHT', self.Health, -2, -2)
             else
-                button:SetPoint('LEFT', prevBuff, 'RIGHT', 3, 0)
+                button:SetPoint('RIGHT', prevBuff, 'LEFT', -2, 0)
             end
+
             prevBuff = button
             buffFrame.buttons[i] = button
         end
@@ -295,9 +304,9 @@ do
         end
 
         buffs.enable = C.DB.Unitframe.ShowRaidBuff
-        local size = (C.DB.Unitframe.PartyHealthHeight + C.DB.Unitframe.PartyPowerHeight) * 0.75
+        local size = C.DB.Unitframe.RaidbuffSize
         local scale = C.DB.Unitframe.RaidBuffScale
-        local disableMouse = C.DB.Unitframe.BuffClickThru
+        local disableMouse = C.DB.Unitframe.RaidBuffClickThru
 
         for i = 1, 3 do
             local button = buffs.buttons[i]
@@ -310,11 +319,10 @@ do
     end
 end
 
-local invalidPrio = -1
+--
 
 function uf:CreateRaidAuras(self)
     -- Indicators
-    uf:CreateAurasIndicator(self)
     uf:CreateSpellsIndicator(self)
 
     local style = self.unitStyle
@@ -345,37 +353,6 @@ function uf.RaidAurasPostUpdate(element, unit)
     local numDebuffs = element.debuffList.num
 
     element.isInCombat = UnitAffectingCombat('player')
-
-    if C.DB.Unitframe.DebuffWatcherDispellType ~= 3 or C.DB.Unitframe.InstanceDebuff then
-        uf.AurasIndicator_UpdatePriority(self, numDebuffs, unit)
-        uf.AurasIndicator_HideButtons(self)
-
-        for i = 1, numDebuffs do
-            local button = auras.buttons[i]
-            if not button then
-                break
-            end
-
-            local aura = element.debuffList[i]
-            if aura.priority > invalidPrio then
-                auraIndex = auraIndex + 1
-                uf:AurasIndicator_UpdateButton(button, aura)
-            end
-            if aura.visibleNum == 1 then
-                auras:SetSize(auras.ButtonSize, auras.ButtonSize)
-                auras:ClearAllPoints()
-                auras:SetPoint('CENTER')
-            elseif aura.visibleNum == 2 then
-                auras:SetSize(auras.ButtonSize * 2 + 5, auras.ButtonSize)
-                auras:ClearAllPoints()
-                auras:SetPoint('CENTER')
-            else
-                auras:SetSize(1, 1)
-                auras:ClearAllPoints()
-                auras:SetPoint('CENTER')
-            end
-        end
-    end
 
     uf.SpellsIndicator_HideButtons(self)
 
@@ -415,7 +392,6 @@ end
 function uf:RaidAuras_UpdateOptions()
     for _, frame in pairs(oUF.objects) do
         if frame.unitStyle == 'party' or frame.unitStyle == 'raid' then
-            uf.AurasIndicator_UpdateOptions(frame)
             uf.SpellsIndicator_UpdateOptions(frame)
             uf.DebuffsIndicator_UpdateOptions(frame)
             uf.BuffsIndicator_UpdateOptions(frame)

@@ -4,7 +4,6 @@
     <Script file="castbar.lua"/>
     <Script file="classpower.lua"/>
     <Script file="cornerspell.lua"/>
-    <Script file="debuffwatcher.lua"/>
     <Script file="gcd.lua"/>
     <Script file="health.lua"/>
     <Script file="indicator.lua"/>

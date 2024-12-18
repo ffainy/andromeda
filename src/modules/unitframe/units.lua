@@ -614,8 +614,6 @@ function UNITFRAME:SpawnUnits()
     UNITFRAME:UpdateClassColor()
     UNITFRAME:CreateTargetSound()
 
-    UNITFRAME:UpdateRaidInfo()
-
     UNITFRAME:SpawnPlayer()
     UNITFRAME:SpawnPet()
     UNITFRAME:SpawnTarget()

@@ -249,7 +249,9 @@ C.CharacterSettings = {
         RaidDebuffSize = 14,
         RaidDebuffScale = 1,
         RaidDebuffClickThru = true,
+
         ShowRaidBuff = true,
+        RaidbuffSize = 14,
         RaidBuffClickThru = true,
         RaidBuffScale = 1,
         RaidBuffAuto = false,
@@ -258,14 +260,6 @@ C.CharacterSettings = {
         CornerSpell = true,
         CornerSpellType = 1,
         CornerSpellScale = 1,
-
-        InstanceDebuff = true,
-        DebuffWatcherDispellType = 1,
-        DebuffWatcherScale = 1,
-        DebuffWatcherClickThru = true,
-
-
-
 
         SimpleMode = false,
         SMRScale = 10,
@@ -734,18 +728,11 @@ C.AccountSettings = {
 
     NameplateAuraWhiteList = {},
     NameplateAuraBlackList = {},
-
     RaidDebuffsBlackList = {},
     RaidBuffsWhiteList = {},
-    RaidDebuffsList = {},
     CornerSpellsList = {},
-
-    DebuffWatcherList = {},
-    RaidAuraWatch = {},
     MajorSpellsList = {},
-    PartySpellsList = {},
     AnnounceableSpellsList = {},
-
     CooldownPulseIgnoredSpellsList = {},
 
     KeystoneInfo = {},
