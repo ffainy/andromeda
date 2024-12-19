@@ -163,68 +163,17 @@ local settings = {
         tooltip = L['Hold this key to temporarily hide all world quests'],
         default = 'ALT',
         options = {
-            NEVER = NEVER,
-            ALT = ALT_KEY,
-            CTRL = CTRL_KEY,
-            SHIFT = SHIFT_KEY,
+            {value='NEVER', label=NEVER},
+            {value='ALT', label=ALT_KEY},
+            {value='CTRL', label=CTRL_KEY},
+            {value='SHIFT', label=SHIFT_KEY},
         },
     },
 } ]]
 
 -- bwq:RegisterSettings('BetterWorldQuestsDB', settings)
 -- bwq:RegisterSettingsSlash('/betterworldquests', '/bwq')
-
--- custom menu element for a slider
--- since the slider needs to be quite wide in order to be functional it's added to a sub-menu
---[[ local function createSlider(root, name, getter, setter, minValue, maxValue, steps, formatter)
-    local element = root:CreateButton(name):CreateFrame()
-    element:AddInitializer(function(frame)
-        local slider = frame:AttachTemplate('MinimalSliderWithSteppersTemplate')
-        slider:SetPoint('TOPLEFT', 0, -1)
-        slider:SetSize(150, 25)
-        slider:RegisterCallback('OnValueChanged', setter, frame)
-        slider:Init(getter(), minValue, maxValue, (maxValue - minValue) / steps, {
-            [MinimalSliderWithSteppersMixin.Label.Right] = formatter,
-        })
-
-        -- there's no way to properly reset an element from the menu, so we'll need to use
-        -- a dummy element we can hook OnHide onto, and also to increase the total width
-        -- of the element so the right label doesn't go out of the bounds of the menu.
-        -- see https://github.com/Stanzilla/WoWUIBugs/issues/652
-        local dummy = frame:AttachFrame('Frame')
-        dummy:SetPoint('TOPLEFT', slider)
-        dummy:SetPoint('BOTTOMLEFT', slider)
-        dummy:SetWidth(180)
-        dummy:SetScript('OnHide', function()
-            slider:UnregisterCallback('OnValueChanged', frame)
-            slider:Release()
-        end)
-    end)
-
-    return element
-end ]]
-
--- inject some of the settings into the tracking menu
---[[ Menu.ModifyMenu('MENU_WORLD_MAP_TRACKING', function(_, root)
-    root:CreateDivider()
-    root:CreateTitle((C.ADDON_NAME:gsub('(%l)(%u)', '%1 %2')) .. HEADER_COLON)
-
-    for _, setting in next, settings do
-        if setting.type == 'toggle' then
-            root:CreateCheckbox(setting.title, function()
-                return bwq:GetOption(setting.key)
-            end, function()
-                bwq:SetOption(setting.key, not bwq:GetOption(setting.key))
-            end)
-        elseif setting.type == 'slider' then
-            createSlider(root, setting.title, function()
-                return bwq:GetOption(setting.key)
-            end, function(_, value)
-                bwq:SetOption(setting.key, value)
-            end, setting.minValue, setting.maxValue, setting.valueStep, setting.valueFormat)
-        end
-    end
-end) ]]
+-- bwq:RegisterMapSettings('BetterWorldQuestsDB', settings)
 
 ----------------------------------
 -- provider.lua
@@ -270,6 +219,17 @@ function provider:ShouldShowQuest(questInfo)
     return bwq:IsChildMap(mapID, questInfo.mapID)
 end
 
+-- remove the default provider
+for dp in next, WorldMapFrame.dataProviders do
+    if not dp.GetPinTemplates and type(dp.GetPinTemplate) == 'function' then
+        if dp:GetPinTemplate() == 'WorldMap_WorldQuestPinTemplate' then
+            WorldMapFrame:RemoveDataProvider(dp)
+            break
+        end
+    end
+end
+
+-- add our own
 WorldMapFrame:AddDataProvider(provider)
 
 -- hook into changes
@@ -290,13 +250,6 @@ end
 -- bwq:RegisterOptionCallback('zoomFactor', updateVisuals)
 -- bwq:RegisterOptionCallback('showAzeroth', updateVisuals)
 -- bwq:RegisterOptionCallback('showEvents', updateVisuals)
-
--- remove the default provider
-for dp in next, WorldMapFrame.dataProviders do
-    if dp.GetPinTemplate and dp.GetPinTemplate() == 'WorldMap_WorldQuestPinTemplate' then
-        WorldMapFrame:RemoveDataProvider(dp)
-    end
-end
 
 -- change visibility
 -- local modifier
@@ -353,7 +306,8 @@ F:RegisterEvent('MODIFIER_STATE_CHANGED', toggleVisibility)
 --     zoomFactor = value
 -- end)
 
-local FACTION_ASSAULT_ATLAS = UnitFactionGroup('player') == 'Horde' and 'worldquest-icon-horde' or 'worldquest-icon-alliance'
+local FACTION_ASSAULT_ATLAS = UnitFactionGroup('player') == 'Horde' and 'worldquest-icon-horde' or
+    'worldquest-icon-alliance'
 
 BetterWorldQuestPinMixin = CreateFromMixins(WorldMap_WorldQuestPinMixin)
 function BetterWorldQuestPinMixin:OnLoad()
@@ -525,10 +479,6 @@ local DRAGON_ISLES_MAPS = {
     [2025] = true, -- Thaldraszus
 }
 
-local function startsWith(str, start)
-    return string.sub(str, 1, string.len(start)) == start
-end
-
 local function updatePOIs(self)
     local map = self:GetMap()
     local mapID = map:GetMapID()
@@ -536,7 +486,7 @@ local function updatePOIs(self)
         for childMapID in next, DRAGON_ISLES_MAPS do
             for _, poiID in next, C_AreaPoiInfo.GetAreaPOIForMap(childMapID) do
                 local info = C_AreaPoiInfo.GetAreaPOIInfo(childMapID, poiID)
-                if info and startsWith(info.atlasName, 'ElementalStorm') then
+                if info and bwq:startswith(info.atlasName, 'ElementalStorm') then
                     local x, y = info.position:GetXY()
                     info.dataProvider = self
                     info.position:SetXY(hbd:TranslateZoneCoordinates(x, y, childMapID, mapID))
@@ -547,9 +497,12 @@ local function updatePOIs(self)
     end
 end
 
-for provider in next, WorldMapFrame.dataProviders do
-    if provider.GetPinTemplate and provider:GetPinTemplate() == 'AreaPOIPinTemplate' then
-        hooksecurefunc(provider, 'RefreshAllData', updatePOIs)
+for dp in next, WorldMapFrame.dataProviders do
+    if not dp.GetPinTemplates and type(dp.GetPinTemplate) == 'function' then
+        if dp:GetPinTemplate() == 'AreaPOIPinTemplate' then
+            hooksecurefunc(dp, 'RefreshAllData', updatePOIs)
+            break
+        end
     end
 end
 
