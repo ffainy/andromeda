@@ -23,16 +23,12 @@ local function reskinPvPFrame(frame)
 end
 
 local function buttonOnEnter(self)
-    _G.ConquestTooltip:ClearAllPoints()
-    _G.ConquestTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 1, 0)
+    ConquestTooltip:ClearAllPoints()
+    ConquestTooltip:SetPoint('TOPLEFT', self, 'TOPRIGHT', 1, 0)
 end
 
 C.Themes['Blizzard_PVPUI'] = function()
     local r, g, b = C.r, C.g, C.b
-
-    local PVPQueueFrame = _G.PVPQueueFrame
-    local HonorFrame = _G.HonorFrame
-    local ConquestFrame = _G.ConquestFrame
 
     -- Category buttons
 
@@ -79,6 +75,7 @@ C.Themes['Blizzard_PVPUI'] = function()
 
     PVPQueueFrame.CategoryButton1.Background:SetAlpha(1)
     F.StripTextures(PVPQueueFrame.HonorInset)
+    PVPQueueFrame.HonorInset.Background:Hide()
 
     local popup = PVPQueueFrame.NewSeasonPopup
     F.ReskinButton(popup.Leave)
@@ -108,7 +105,7 @@ C.Themes['Blizzard_PVPUI'] = function()
     HonorFrame.Inset:Hide()
     reskinPvPFrame(HonorFrame)
     F.ReskinButton(HonorFrame.QueueButton)
-    F.ReskinDropdown(_G.HonorFrameTypeDropdown)
+    F.ReskinDropdown(HonorFrameTypeDropdown)
     F.ReskinTrimScroll(HonorFrame.SpecificScrollBar)
 
     hooksecurefunc(HonorFrame.SpecificScrollBox, 'Update', function(self)
@@ -201,7 +198,7 @@ C.Themes['Blizzard_PVPUI'] = function()
                 local info = C_CurrencyInfo.GetCurrencyInfo(reward.id)
                 local name, texture, quality = info.name, info.iconFileID, info.quality
                 if quality == Enum.ItemQuality.Artifact then
-                    _, rewardTexture, _, rewardQuaility = _G.CurrencyContainerUtil_GetCurrencyContainerInfo(
+                    _, rewardTexture, _, rewardQuaility = CurrencyContainerUtil_GetCurrencyContainerInfo(
                         reward.id,
                         reward.quantity,
                         name,

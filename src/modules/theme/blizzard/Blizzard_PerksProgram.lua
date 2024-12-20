@@ -13,8 +13,7 @@ local function reskinRewardButton(button)
     local container = button.ContentsContainer
     if container then
         F.ReskinIcon(container.Icon)
-        F.ReplaceIconString(container.Price)
-        hooksecurefunc(container.Price, 'SetText', F.ReplaceIconString)
+        F.ReskinIcon(container.PriceIcon)
     end
 
     button.styled = true

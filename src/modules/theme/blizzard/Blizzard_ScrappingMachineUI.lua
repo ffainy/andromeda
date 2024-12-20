@@ -1,13 +1,13 @@
 local F, C = unpack(select(2, ...))
 
 C.Themes['Blizzard_ScrappingMachineUI'] = function()
-    F.ReskinPortraitFrame(_G.ScrappingMachineFrame)
-    F.ReskinButton(_G.ScrappingMachineFrame.ScrapButton)
+    F.ReskinPortraitFrame(ScrappingMachineFrame)
+    F.ReskinButton(ScrappingMachineFrame.ScrapButton)
 
-    local ItemSlots = _G.ScrappingMachineFrame.ItemSlots
+    local ItemSlots = ScrappingMachineFrame.ItemSlots
     F.StripTextures(ItemSlots)
 
-    hooksecurefunc(_G.ScrappingMachineFrame, 'SetupScrapButtonPool', function(self)
+    hooksecurefunc(ScrappingMachineFrame, 'UpdateScrapButtonState', function(self)
         for button in self.ItemSlots.scrapButtons:EnumerateActive() do
             if not button.bg then
                 F.StripTextures(button)

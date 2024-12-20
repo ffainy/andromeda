@@ -5,7 +5,6 @@ tinsert(C.BlizzThemes, function()
         return
     end
 
-    local WorldMapFrame = _G.WorldMapFrame
     local BorderFrame = WorldMapFrame.BorderFrame
 
     F.ReskinPortraitFrame(WorldMapFrame)
@@ -27,8 +26,6 @@ tinsert(C.BlizzThemes, function()
     F.ReskinArrow(sideToggle.OpenButton, 'right')
     sideToggle.CloseButton:GetRegions():Hide()
     F.ReskinArrow(sideToggle.CloseButton, 'left')
-
-    F.ReskinNavBar(WorldMapFrame.NavBar)
 
     for i = 1, #overlayFrames do
         local frame = overlayFrames[i]

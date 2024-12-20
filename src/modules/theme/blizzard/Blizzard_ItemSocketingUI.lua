@@ -16,9 +16,13 @@ C.Themes['Blizzard_ItemSocketingUI'] = function()
         Cypher = { r = 1, g = 0.8, b = 0 },
         Tinker = { r = 1, g = 0.47, b = 0.47 },
         Primordial = { r = 1, g = 0, b = 1 },
+        Fragrance = { r = 1, g = 1, b = 1 },
+        SingingThunder = { r = 0.97, g = 0.82, b = 0.29 },
+        SingingSea = { r = 0.47, g = 0.67, b = 1 },
+        SingingWind = { r = 1, g = 0.47, b = 0.47 },
     }
 
-    for i = 1, _G.MAX_NUM_SOCKETS do
+    for i = 1, MAX_NUM_SOCKETS do
         local socket = _G['ItemSocketingSocket' .. i]
         local shine = _G['ItemSocketingSocket' .. i .. 'Shine']
 
@@ -35,21 +39,21 @@ C.Themes['Blizzard_ItemSocketingUI'] = function()
     end
 
     hooksecurefunc('ItemSocketingFrame_Update', function()
-        for i, socket in ipairs(_G.ItemSocketingFrame.Sockets) do
+        for i, socket in ipairs(ItemSocketingFrame.Sockets) do
             if not socket:IsShown() then
                 break
             end
 
-            local color = GemTypeInfo[_G.GetSocketTypes(i)] or GemTypeInfo.Cogwheel
+            local color = GemTypeInfo[GetSocketTypes(i)] or GemTypeInfo.Cogwheel
             socket.bg:SetBackdropBorderColor(color.r, color.g, color.b)
         end
 
-        _G.ItemSocketingDescription:HideBackdrop()
+        ItemSocketingDescription:HideBackdrop()
     end)
 
-    F.ReskinPortraitFrame(_G.ItemSocketingFrame)
-    _G.ItemSocketingFrame.BackgroundColor:SetAlpha(0)
-    F.CreateBDFrame(_G.ItemSocketingScrollFrame, 0.25)
-    F.ReskinButton(_G.ItemSocketingSocketButton)
-    F.ReskinTrimScroll(_G.ItemSocketingScrollFrame.ScrollBar)
+    F.ReskinPortraitFrame(ItemSocketingFrame)
+    ItemSocketingFrame.BackgroundColor:SetAlpha(0)
+    F.CreateBDFrame(ItemSocketingScrollFrame, 0.25)
+    F.ReskinButton(ItemSocketingSocketButton)
+    F.ReskinTrimScroll(ItemSocketingScrollFrame.ScrollBar)
 end
