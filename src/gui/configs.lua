@@ -754,7 +754,7 @@ C.AccountSettings = {
         EVOKER = { r = 0.3, g = 0.64, b = 0.67 },
     },
     ContactList = {},
-    RenownLevels = {},
+    CovenantLevels = {},
     SmoothAmount = 0.25,
     MinimapAddOnCollector = true,
     IgnoredAddOns = '',
