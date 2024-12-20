@@ -262,7 +262,6 @@ function TOOLTIP:OnTooltipSetUnit()
     if isPlayer then
         TOOLTIP.InspectUnitItemLevel(self, unit)
         TOOLTIP.AddMythicPlusScore(self, unit)
-        TOOLTIP.AddCovenantInfo()
     end
     TOOLTIP.ScanTargets(self, unit)
 
@@ -546,7 +545,6 @@ function TOOLTIP:OnLogin()
     TOOLTIP:ItemInfo()
     TOOLTIP:AddMountInfo()
     TOOLTIP:HyperLink()
-    TOOLTIP:CovenantInfo()
     TOOLTIP:Achievement()
     TOOLTIP:AzeriteArmor()
     TOOLTIP:ParagonRewards()

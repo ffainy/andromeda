@@ -1966,13 +1966,11 @@ GUI.OptionsList = {
             L['Show Mythic Plus Score'],
             true,
         },
-        { 1, 'Tooltip', 'Covenant', L['Show Covenant'] },
         {
             1,
             'Tooltip',
             'PlayerInfoByAlt',
-            L['Show Spec&iLvl&Coven by ALT'],
-            true,
+            L['Show Spec&iLvl and Mythic Score by ALT'],
         },
         { 1, 'Tooltip', 'HideRealm', L['Hide Realm'] },
         {

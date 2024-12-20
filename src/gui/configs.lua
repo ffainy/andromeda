@@ -405,7 +405,6 @@ C.CharacterSettings = {
         HideGuildRank = true,
         HideInCombat = 1,
         SpecIlvl = true,
-        Covenant = true,
         MythicPlusScore = true,
         PlayerInfoByAlt = true,
         TargetedBy = true,
