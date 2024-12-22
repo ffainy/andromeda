@@ -232,49 +232,64 @@ do
     end
 end
 
--- expand the size of MacroFrame
+-- 扩展宏界面
+
 do
-    local tempScrollPer
-    local selectorHeight = 100
-    local scrollHeight = 150
+    local addSelectHeight = 54
+    local addTextHeight = 150
+    local tempScrollPer = nil
 
-    local function selectMacro()
-        if tempScrollPer then
-            MacroFrame.MacroSelector.ScrollBox:SetScrollPercentage(tempScrollPer)
-            tempScrollPer = nil
-        end
+    local addSelectButton = 3
+    local addFrameHeight = (addSelectHeight + addTextHeight)
+    local addFrameWidth = 138
+    local widthFix = 6
+
+    local function expandMacroFrame()
+        hooksecurefunc(MacroFrame, 'SelectMacro', function(self, index)
+            if tempScrollPer then
+                MacroFrame.MacroSelector.ScrollBox:SetScrollPercentage(tempScrollPer)
+                tempScrollPer = nil
+            end
+        end)
+
+        local w = MacroFrame:GetWidth()
+        local h = MacroFrame:GetHeight()
+        MacroFrame:SetSize(w + addFrameWidth, h + addFrameHeight)
+
+        MacroFrame.MacroSelector:SetCustomStride(6 + addSelectButton)
+        MacroFrame.MacroSelector:SetSize(319 + addFrameWidth + widthFix, 146 + addSelectHeight)
+
+        MacroHorizontalBarLeft:SetPoint('TOPLEFT', 2, -210 - addSelectHeight)
+        MacroHorizontalBarLeft:SetSize(256 + addFrameWidth, 16)
+        MacroFrameSelectedMacroBackground:SetPoint('TOPLEFT', 5, -218 - addSelectHeight)
+
+        MacroFrameTextButton:SetHeight(85 + addTextHeight)
+
+        MacroFrameText:SetSize(286 + addFrameWidth, 85 + addTextHeight)
+        MacroFrameScrollFrame:SetSize(286 + addFrameWidth, 85 + addTextHeight)
+        MacroFrameTextBackground:SetPoint('TOPLEFT', 6, -289 - addSelectHeight)
+        MacroFrameTextBackground:SetSize(322 + addFrameWidth, 95 + addTextHeight)
     end
 
-    local function updateMacro()
-        if MacroFrame then
-            tempScrollPer = MacroFrame.MacroSelector.ScrollBox.scrollPercentage
-        end
+    if MacroFrame then
+        expandMacroFrame()
+    else
+        local f = CreateFrame('Frame');
+        f:SetScript('OnEvent', function(self, evnet, addon)
+            if evnet == 'ADDON_LOADED' then
+                if addon == 'Blizzard_MacroUI' then
+                    expandMacroFrame()
+                    f:UnregisterEvent('ADDON_LOADED');
+                end
+            elseif MacroFrame then
+                tempScrollPer = MacroFrame.MacroSelector.ScrollBox.scrollPercentage
+            end
+        end)
+
+        f:RegisterEvent('ADDON_LOADED')
+        f:RegisterEvent('UPDATE_MACROS')
     end
-
-    local function hook(event, addon)
-        if addon == 'Blizzard_MacroUI' then
-            hooksecurefunc(MacroFrame, 'SelectMacro', selectMacro)
-
-            MacroFrame.MacroSelector:SetHeight(146 + selectorHeight)
-            MacroHorizontalBarLeft:SetPoint('TOPLEFT', 2, -210 - selectorHeight)
-            MacroFrameSelectedMacroBackground:SetPoint('TOPLEFT', 2, -218 - selectorHeight)
-            MacroFrameTextBackground:SetPoint('TOPLEFT', 6, -289 - selectorHeight)
-
-            local h = MacroFrame:GetHeight()
-            MacroFrame:SetHeight(h + scrollHeight + selectorHeight)
-            MacroFrameScrollFrame:SetHeight(85 + scrollHeight)
-            MacroFrameText:SetHeight(85 + scrollHeight)
-            MacroFrameTextButton:SetHeight(85 + scrollHeight)
-            MacroFrameTextBackground:SetHeight(95 + scrollHeight)
-
-            F:UnregisterEvent(event, hook)
-        end
-    end
-
-    F:RegisterEvent('ADDON_LOADED', hook)
-    F:RegisterEvent('UPDATE_MACROS', updateMacro)
 end
-
 
 -- Kill blizz tutorial, real man dont need these crap
 -- Credit: ketho
