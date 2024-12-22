@@ -83,7 +83,7 @@ function IL:CreateItemString(frame, strType)
             slotFrame.enchantText:ClearAllPoints()
             slotFrame.enchantText:SetPoint(relF, slotFrame, x, y)
             slotFrame.enchantText:SetTextColor(0, 1, 0)
-
+            slotFrame.enchantText:SetWordWrap(false)
             slotFrame.enchantText:SetJustifyH(strsub(relF, 7))
             slotFrame.enchantText:SetWidth(100)
             slotFrame.enchantText:EnableMouse(true)
