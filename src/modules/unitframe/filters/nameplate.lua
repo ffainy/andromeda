@@ -57,7 +57,9 @@ C.NameplateAuraBlackList = {
 
 C.NameplateShowTargetNPCsList = {
     [165251] = true, -- 仙林狐狸
+    [40357]  = true, -- 格瑞姆巴托火元素
     [174773] = true, -- 怨毒怪
+    [164702] = true, -- 食腐蛆虫
 }
 
 C.TrashUnitsList = {
