@@ -6,7 +6,6 @@ local oUF = F.Libs.oUF
 local MIN_ALPHA, MAX_ALPHA = 0.35, 1
 local onRangeObjects, onRangeFrame = {}
 local PowerTypesFull = { MANA = true, FOCUS = true, ENERGY = true }
-local VIGOR_BAR_ID = 631 -- this is the oval & diamond variant
 
 local GetMouseFocus = function()
     local frames = GetMouseFoci()
@@ -40,30 +39,29 @@ local function updateInstanceDifficulty(element)
     element.InstancedCached = element.InstanceDifficulty and element.InstanceDifficulty[difficultyID] or nil
 end
 
-local function onInstanceDifficulty(self)
-    local element = self.Fader
-    updateInstanceDifficulty(element)
-    element:ForceUpdate()
-end
+-- local function CanGlide()
+--     return UnitPowerBarID('player') == VIGOR_BAR_ID
+-- end
 
-local function CanGlide()
-    return UnitPowerBarID('player') == VIGOR_BAR_ID
-end
-
+local isGliding = false
 local function Update(self, event, unit)
     local element = self.Fader
     if self.isForced or (not element or not element.count or element.count <= 0) then
         self:SetAlpha(1)
         return
+    elseif element.Range and event ~= 'OnRangeUpdate' then
+        return
     end
 
-    -- Instance Difficulty is enabled and we haven't checked yet
-    if element.InstanceDifficulty and not element.InstancedCached then
-        updateInstanceDifficulty(element)
+    -- stuff for Skyriding
+    if event == 'ForceUpdate' then
+        isGliding = C_PlayerInfo.GetGlidingInfo()
+    elseif event == 'PLAYER_IS_GLIDING_CHANGED' then
+        isGliding = unit -- unit is true/false with the event being PLAYER_IS_GLIDING_CHANGED
     end
 
     -- try to get the unit from the parent
-    if event == 'PLAYER_IS_GLIDING_CHANGED' or not unit then
+    if not unit or type(unit) ~= 'string' then
         unit = self.unit
     end
 
@@ -72,10 +70,17 @@ local function Update(self, event, unit)
         if element.UpdateRange then
             element.UpdateRange(self, unit)
         end
+
         if element.RangeAlpha then
             ToggleAlpha(self, element, element.RangeAlpha)
         end
+
         return
+    end
+
+    -- Instance Difficulty is enabled and we haven't checked yet
+    if element.InstanceDifficulty and not element.InstancedCached then
+        updateInstanceDifficulty(element)
     end
 
     -- normal fader
@@ -86,15 +91,15 @@ local function Update(self, event, unit)
 
     if
         (element.InstanceDifficulty and element.InstancedCached)
-        or (element.Combat and UnitAffectingCombat(unit))
         or (element.Casting and (UnitCastingInfo(unit) or UnitChannelInfo(unit)))
+        or (element.Combat and UnitAffectingCombat(unit))
         or (element.PlayerTarget and UnitExists('target'))
         or (element.UnitTarget and UnitExists(unit .. 'target'))
         or (element.Focus and UnitExists('focus'))
         or (element.Health and UnitHealth(unit) < UnitHealthMax(unit))
         or (element.Power and (PowerTypesFull[powerType] and UnitPower(unit) < UnitPowerMax(unit)))
         or (element.Vehicle and UnitHasVehicleUI(unit))
-        or (element.DynamicFlight and not CanGlide())
+        or (element.DynamicFlight and not isGliding)
         or (element.Hover and GetMouseFocus() == (self.__faderobject or self))
     then
         ToggleAlpha(self, element, element.MaxAlpha)
@@ -130,17 +135,23 @@ local function onRangeUpdate(frame, elapsed)
     end
 end
 
+local function onInstanceDifficulty(self)
+    local element = self.Fader
+    updateInstanceDifficulty(element)
+    element:ForceUpdate('OnInstanceDifficulty')
+end
+
 local function HoverScript(self)
     local Fader = self.__faderelement or self.Fader
     if Fader and Fader.HoverHooked == 1 then
-        Fader:ForceUpdate()
+        Fader:ForceUpdate('HoverScript')
     end
 end
 
 local function TargetScript(self)
     if self.Fader and self.Fader.TargetHooked == 1 then
         if self:IsShown() then
-            self.Fader:ForceUpdate()
+            self.Fader:ForceUpdate('TargetScript')
         else
             self:SetAlpha(0)
         end
@@ -190,6 +201,14 @@ local options = {
             end
         end,
     },
+    Combat = {
+        enable = function(self)
+            self:RegisterEvent('PLAYER_REGEN_ENABLED', Update, true)
+            self:RegisterEvent('PLAYER_REGEN_DISABLED', Update, true)
+            self:RegisterEvent('UNIT_FLAGS', Update)
+        end,
+        events = { 'PLAYER_REGEN_ENABLED', 'PLAYER_REGEN_DISABLED', 'UNIT_FLAGS' },
+    },
     InstanceDifficulty = {
         enable = function(self)
             self:RegisterEvent('ZONE_CHANGED', onInstanceDifficulty, true)
@@ -198,14 +217,6 @@ local options = {
             self:RegisterEvent('PLAYER_DIFFICULTY_CHANGED', onInstanceDifficulty, true)
         end,
         events = { 'ZONE_CHANGED', 'ZONE_CHANGED_INDOORS', 'ZONE_CHANGED_NEW_AREA', 'PLAYER_DIFFICULTY_CHANGED' },
-    },
-    Combat = {
-        enable = function(self)
-            self:RegisterEvent('PLAYER_REGEN_ENABLED', Update, true)
-            self:RegisterEvent('PLAYER_REGEN_DISABLED', Update, true)
-            self:RegisterEvent('UNIT_FLAGS', Update)
-        end,
-        events = { 'PLAYER_REGEN_ENABLED', 'PLAYER_REGEN_DISABLED', 'UNIT_FLAGS' },
     },
     Target = { --[[ UnitTarget, PlayerTarget ]]
         enable = function(self)

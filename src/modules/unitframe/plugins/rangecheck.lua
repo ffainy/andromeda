@@ -1,11 +1,10 @@
-local _, ns = ...
-local oUF = ns.oUF
-local libRangeCheck = LibStub('LibRangeCheck-3.0')
-local updateFrequency = 0.25 -- TODO Add Option somewhere
+local F, C = unpack(select(2, ...))
+local oUF = F.Libs.oUF
+local libRangeCheck = F.Libs.LibRangeCheck
+
+local updateFrequency = 0.25
 local _FRAMES = {}
 local OnRangeFrame
-local _, uClass = UnitClass('player')
-
 local FriendSpells = {}
 local HarmSpells = {}
 
@@ -120,22 +119,31 @@ local InCombatLockdownRestriction = function(unit)
 end
 
 local function IsUnitInRange(unit)
-    if not unit then return end
-    if UnitInRange(unit) then return true end -- If the unit is in the same group we don't need to check anything else.
+    if not unit then
+        return
+    end
+
+    if UnitInRange(unit) then
+        return true
+    end     -- If the unit is in the same group we don't need to check anything else.
+
     local canAttack = UnitCanAttack('player', unit)
     local canHelp = UnitCanAssist('player', unit)
     local isFriend = UnitIsFriend('player', unit)
     local isVisible = UnitIsVisible(unit)
     local rangeSpells, minRange, maxRange
     local connected = UnitIsConnected(unit)
-    if not connected then return true end
+    if not connected then
+        return true
+    end
 
     if isVisible then
         if canAttack then
-            rangeSpells = HarmSpells[uClass]
+            rangeSpells = HarmSpells[C.MY_CLASS]
         elseif canHelp then
-            rangeSpells = FriendSpells[uClass]
+            rangeSpells = FriendSpells[C.MY_CLASS]
         end
+
         if canHelp or canAttack then
             for i = 1, #rangeSpells do
                 if IsSpellKnown(rangeSpells[i]) then
@@ -146,21 +154,27 @@ local function IsUnitInRange(unit)
                 end
             end
         end
+
         if canAttack then
             minRange, maxRange = libRangeCheck:GetRange(unit, true)
-            if not maxRange then maxRange = minRange end
+            if not maxRange then
+                maxRange = minRange
+            end
             if maxRange < 30 then
                 return true
             end
         end
+
         if canHelp then
             minRange, maxRange = libRangeCheck:GetRange(unit, true)
-            if not minRange then minRange = 0 end
-            if not maxRange then maxRange = minRange end
+            if not maxRange then
+                maxRange = minRange
+            end
             if maxRange < 40 then
                 return true
             end
         end
+
         if not InCombatLockdownRestriction(unit) then
             if CheckInteractDistance(unit, 1) then return true end
         end
@@ -169,24 +183,26 @@ local function IsUnitInRange(unit)
     return false
 end
 
-local function Update(self, isInRange, event)
+local function Update(self, isInRange)
     local element = self.RangeCheck
     local unit = self.unit
 
     local insideAlpha = element.insideAlpha or 1
-    local outsideAlpha = element.outsideAlpha or 0.55
+    local outsideAlpha = element.outsideAlpha or 0.25
 
-    if (element.PreUpdate) then
+    if element.PreUpdate then
         element:PreUpdate()
     end
 
     if element.enabled == true then
         if isInRange then
-            self:SetAlpha(insideAlpha)
+            -- self:SetAlpha(insideAlpha)
+            F:UIFrameFadeIn(self, 0.3, self:GetAlpha(), insideAlpha)
         else
-            self:SetAlpha(outsideAlpha)
+            -- self:SetAlpha(outsideAlpha)
+            F:UIFrameFadeIn(self, 0.3, self:GetAlpha(), outsideAlpha)
         end
-        if (element.PostUpdate) then
+        if element.PostUpdate then
             return element:PostUpdate(self, unit)
         end
     else
