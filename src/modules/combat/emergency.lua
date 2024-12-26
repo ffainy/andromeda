@@ -34,7 +34,7 @@ local function healthAlert(_, unit)
         return
     end
 
-    local threshold = C.DB.emergency.LowHealthThreshold
+    local threshold = C.DB.emergency.healthThreshold
     local sound = C.Assets.Sounds.SekiroLowHealth
 
     if (UnitHealth('player') / UnitHealthMax('player')) <= threshold then
@@ -52,7 +52,7 @@ local function manaAlert(_, unit, powerType)
         return
     end
 
-    local threshold = C.DB.emergency.LowManaThreshold
+    local threshold = C.DB.emergency.manaThreshold
     local sound = C.Assets.Sounds.LowMana
     local cur = UnitPower('player', powerTypes[powerType])
     local max = UnitPowerMax('player', powerTypes[powerType])
@@ -68,13 +68,13 @@ local function manaAlert(_, unit, powerType)
 end
 
 function emg:UpdateConfig()
-    if C.DB.emergency.enable and C.DB.emergency.LowHealth then
+    if C.DB.emergency.enable and C.DB.emergency.health then
         F:RegisterEvent('UNIT_HEALTH', healthAlert)
     else
         F:UnregisterEvent('UNIT_HEALTH', healthAlert)
     end
 
-    if C.DB.emergency.enable and C.DB.emergency.LowMana then
+    if C.DB.emergency.enable and C.DB.emergency.mana then
         F:RegisterEvent('UNIT_POWER_UPDATE', manaAlert)
     else
         F:UnregisterEvent('UNIT_POWER_UPDATE', manaAlert)
