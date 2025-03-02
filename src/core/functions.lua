@@ -1491,7 +1491,7 @@ do
             if self.GetNumRegions then
                 for i = 1, self:GetNumRegions() do
                     local region = select(i, self:GetRegions())
-                    if region and region.IsObjectType and region:IsObjectType('Texture') then
+                    if region and region.IsObjectType and region:IsObjectType('Texture') and not region.isIgnored then
                         if kill and type(kill) == 'boolean' then
                             F.HideObject(region)
                         elseif tonumber(kill) then
