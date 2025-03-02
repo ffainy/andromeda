@@ -123,7 +123,7 @@ local function replaceIconString(self, text)
 end
 
 function logo:HandleAddOnTitle()
-    hooksecurefunc('AddonList_InitButton', function(entry)
+    hooksecurefunc('AddonList_InitAddon', function(entry)
         if not entry.logoHooked then
             replaceIconString(entry.Title)
             hooksecurefunc(entry.Title, 'SetText', replaceIconString)
