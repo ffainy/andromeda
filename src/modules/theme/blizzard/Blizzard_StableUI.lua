@@ -35,5 +35,9 @@ C.Themes['Blizzard_StableUI'] = function()
         end
 
         F.ReskinModelControl(modelScene)
+
+        if petInfo.Specialization then
+            F.ReskinDropdown(petInfo.Specialization)
+        end
     end
 end

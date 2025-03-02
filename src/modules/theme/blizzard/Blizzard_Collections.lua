@@ -43,12 +43,14 @@ C.Themes['Blizzard_Collections'] = function()
     -- [[ General ]]
 
     CollectionsJournal.bg = F.ReskinPortraitFrame(CollectionsJournal) -- need this for Rematch skin
-    for i = 1, 5 do
+    for i = 1, 6 do
         local tab = _G['CollectionsJournalTab' .. i]
-        F.ReskinTab(tab)
-        if i ~= 1 then
-            tab:ClearAllPoints()
-            tab:SetPoint('TOPLEFT', _G['CollectionsJournalTab' .. (i - 1)], 'TOPRIGHT', -10, 0)
+        if tab then
+            F.ReskinTab(tab)
+            if i ~= 1 then
+                tab:ClearAllPoints()
+                tab:SetPoint('TOPLEFT', _G['CollectionsJournalTab' .. (i - 1)], 'TOPRIGHT', -10, 0)
+            end
         end
     end
 
@@ -193,12 +195,14 @@ C.Themes['Blizzard_Collections'] = function()
         F.ReskinIcon(select(index, button:GetRegions()), nil)
         button:SetNormalTexture(0)
     end
-    reskinDynamicButton(MountJournal.ToggleDynamicFlightFlyoutButton, 1)
+    reskinDynamicButton(MountJournal.ToggleDynamicFlightFlyoutButton, 3)
 
-    local flyout = MountJournal.DynamicFlightFlyout
-    flyout.Background:Hide()
-    reskinDynamicButton(flyout.OpenDynamicFlightSkillTreeButton, 4)
-    reskinDynamicButton(flyout.DynamicFlightModeButton, 4)
+    local flyout = MountJournal.ToggleDynamicFlightFlyoutButton.popup or MountJournal.DynamicFlightFlyout
+    if flyout then
+        flyout.Background:Hide()
+        reskinDynamicButton(flyout.OpenDynamicFlightSkillTreeButton, 4)
+        reskinDynamicButton(flyout.DynamicFlightModeButton, 4)
+    end
 
     -- Pet card
 
@@ -640,4 +644,25 @@ C.Themes['Blizzard_Collections'] = function()
     -- Outfit Frame
     F.ReskinDropdown(WardrobeTransmogFrame.OutfitDropdown)
     F.ReskinButton(WardrobeTransmogFrame.OutfitDropdown.SaveButton)
+
+    -- WarbandSceneJournal
+    if WarbandSceneJournal then
+        local iconsFrame = WarbandSceneJournal.IconsFrame
+        if iconsFrame then
+            F.StripTextures(iconsFrame)
+
+            local controls = iconsFrame.Icons and iconsFrame.Icons.Controls
+            if controls then
+                local showCheck = controls and controls.ShowOwned and controls.ShowOwned.Checkbox
+                if showCheck then
+                    F.ReskinCheckbox(showCheck)
+                    showCheck:SetSize(28, 28)
+                end
+                if controls.PagingControls then
+                    F.ReskinArrow(controls.PagingControls.PrevPageButton, 'left')
+                    F.ReskinArrow(controls.PagingControls.NextPageButton, 'right')
+                end
+            end
+        end
+    end
 end

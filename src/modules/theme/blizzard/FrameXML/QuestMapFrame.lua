@@ -60,12 +60,14 @@ tinsert(C.BlizzThemes, function()
     F.StripTextures(QuestMapFrame.DetailsFrame.BackFrame)
 
     local campaignOverview = QuestMapFrame.CampaignOverview
-    campaignOverview.BG:SetAlpha(0)
-    reskinQuestHeader(campaignOverview.Header)
+    if campaignOverview then -- isNewPath, removed?
+        campaignOverview.BG:SetAlpha(0)
+        reskinQuestHeader(campaignOverview.Header)
+        F.ReskinTrimScroll(campaignOverview.ScrollFrame.ScrollBar)
+    end
 
     QuestScrollFrame.Edge:Hide()
     F.ReskinTrimScroll(QuestScrollFrame.ScrollBar)
-    F.ReskinTrimScroll(campaignOverview.ScrollFrame.ScrollBar)
 
     -- Quest details
 
@@ -146,10 +148,19 @@ tinsert(C.BlizzThemes, function()
     local mapLegend = QuestMapFrame.MapLegend
     if mapLegend then
         F.StripTextures(mapLegend.BorderFrame)
-        F.ReskinButton(mapLegend.BackButton)
+        if mapLegend.BackButton then -- isNewPatch
+            F.ReskinButton(mapLegend.BackButton)
+        end
         F.ReskinTrimScroll(mapLegend.ScrollFrame.ScrollBar)
         F.StripTextures(mapLegend.ScrollFrame)
         F.CreateBDFrame(mapLegend.ScrollFrame, 0.25)
+    end
+
+    -- Events
+    local event = QuestMapFrame.EventsFrame
+    if event then
+        F.StripTextures(event.BorderFrame)
+        F.ReskinTrimScroll(event.ScrollBar)
     end
 
     -- [[ Quest log popup detail frame ]]

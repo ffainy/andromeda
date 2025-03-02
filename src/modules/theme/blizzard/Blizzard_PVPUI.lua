@@ -33,28 +33,31 @@ C.Themes['Blizzard_PVPUI'] = function()
     -- Category buttons
 
     local iconSize = 60 - 2 * C.MULT
-    for i = 1, 3 do
+    for i = 1, 4 do
         local bu = PVPQueueFrame['CategoryButton' .. i]
-        local icon = bu.Icon
-        local cu = bu.CurrencyDisplay
 
-        bu.Ring:Hide()
-        F.ReskinButton(bu, true)
-        bu.Background:SetInside(bu.__bg)
-        bu.Background:SetColorTexture(r, g, b, 0.25)
-        bu.Background:SetAlpha(1)
+        if bu then
+            local icon = bu.Icon
+            local cu = bu.CurrencyDisplay
 
-        icon:SetPoint('LEFT', bu, 'LEFT')
-        icon:SetSize(iconSize, iconSize)
-        F.ReskinIcon(icon)
+            bu.Ring:Hide()
+            F.ReskinButton(bu, true)
+            bu.Background:SetInside(bu.__bg)
+            bu.Background:SetColorTexture(r, g, b, 0.25)
+            bu.Background:SetAlpha(1)
 
-        if cu then
-            local ic = cu.Icon
+            icon:SetPoint('LEFT', bu, 'LEFT')
+            icon:SetSize(iconSize, iconSize)
+            F.ReskinIcon(icon)
 
-            ic:SetSize(16, 16)
-            ic:SetPoint('TOPLEFT', bu.Name, 'BOTTOMLEFT', 0, -8)
-            cu.Amount:SetPoint('LEFT', ic, 'RIGHT', 4, 0)
-            F.ReskinIcon(ic)
+            if cu then
+                local ic = cu.Icon
+
+                ic:SetSize(16, 16)
+                ic:SetPoint('TOPLEFT', bu.Name, 'BOTTOMLEFT', 0, -8)
+                cu.Amount:SetPoint('LEFT', ic, 'RIGHT', 4, 0)
+                F.ReskinIcon(ic)
+            end
         end
     end
 
@@ -225,4 +228,25 @@ C.Themes['Blizzard_PVPUI'] = function()
             end
         end
     end)
+
+    -- PlunderstormFrame
+    if PlunderstormFrame then
+        PlunderstormFrame.Inset:Hide()
+        F.ReskinButton(PlunderstormFrame.StartQueue)
+
+        local panel = PVPQueueFrame.HonorInset.PlunderstormPanel
+        if panel then
+            F.ReskinButton(panel.PlunderstoreButton)
+            F.ReplaceIconString(panel.PlunderDisplay)
+            hooksecurefunc(panel.PlunderDisplay, 'SetText', F.ReplaceIconString)
+        end
+
+        local popup = PlunderstormFramePopup
+        if popup then
+            F.StripTextures(popup)
+            F.SetBD(popup)
+            F.ReskinButton(popup.AcceptButton)
+            F.ReskinButton(popup.DeclineButton)
+        end
+    end
 end
