@@ -14,7 +14,7 @@ local function selectSpec(_, specIndex)
     if currentSpecIndex == specIndex then
         return
     end
-    SetSpecialization(specIndex)
+    C_SpecializationInfo.SetSpecialization(specIndex)
     DropDownList1:Hide()
 end
 
