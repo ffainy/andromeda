@@ -24,7 +24,6 @@ C.AnnounceableSpellsList = {
     [51052] = true,  -- Anti-Magic Zone
     [15286] = true,  -- Vampiric Embrace
     -- Priest
-    [246287] = true, -- Evangelism
     [265202] = true, -- Holy Word: Salvation
     [200183] = true, -- Apotheosis
     [62618] = true,  -- Power Word: Barrier
