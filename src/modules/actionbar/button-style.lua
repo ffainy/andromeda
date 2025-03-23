@@ -182,11 +182,11 @@ function ACTIONBAR:RestyleButtons()
     SpellFlyout.Background:SetAlpha(0)
     local numFlyouts = 1
     local function checkForFlyoutButtons()
-        local button = _G['SpellFlyoutButton' .. numFlyouts]
+        local button = _G['SpellFlyoutPopupButton' .. numFlyouts]
         while button do
             ACTIONBAR:HandleButton(button)
             numFlyouts = numFlyouts + 1
-            button = _G['SpellFlyoutButton' .. numFlyouts]
+            button = _G['SpellFlyoutPopupButton' .. numFlyouts]
         end
     end
 
