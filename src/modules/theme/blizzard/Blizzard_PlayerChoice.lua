@@ -99,9 +99,9 @@ C.Themes['Blizzard_PlayerChoice'] = function()
             end
 
             local optionButtonsContainer = optionFrame.OptionButtonsContainer
-            if optionButtonsContainer and optionButtonsContainer.buttonPool then
-                for button in optionButtonsContainer.buttonPool:EnumerateActive() do
-                    reskinOptionButton(button)
+            if optionButtonsContainer and optionButtonsContainer.buttonFramePool then
+                for frame in optionButtonsContainer.buttonFramePool:EnumerateActive() do
+                    reskinOptionButton(frame.Button)
                 end
             end
 

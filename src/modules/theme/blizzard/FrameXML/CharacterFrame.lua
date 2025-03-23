@@ -412,6 +412,7 @@ tinsert(C.BlizzThemes, function()
                     F.ReskinIcon(icon)
                 end
                 if child.ToggleCollapseButton then
+                    child.ToggleCollapseButton:GetPushedTexture():SetAlpha(0)
                     F.ReskinCollapse(child.ToggleCollapseButton, true)
                     updateToggleCollapse(child.ToggleCollapseButton)
                     hooksecurefunc(child.ToggleCollapseButton, 'RefreshIcon', updateToggleCollapse)

@@ -159,8 +159,33 @@ tinsert(C.BlizzThemes, function()
     -- Events
     local event = QuestMapFrame.EventsFrame
     if event then
-        F.StripTextures(event.BorderFrame)
+        F.StripTextures(event)
         F.ReskinTrimScroll(event.ScrollBar)
+        event.ScrollBox.Background:Hide()
+
+        local function updateCategory(_, button)
+            if button.styled then return end
+            if button.Highlight then
+                button.Highlight:SetColorTexture(1, 1, 1, .25)
+                button.Highlight:SetInside()
+            end
+            if button.Label then
+                F.StripTextures(button)
+                button.Label:SetTextColor(1, 1, 1)
+                local bg = F.CreateBDFrame(button, .25)
+                bg:SetPoint('TOPLEFT', 1, -2)
+                bg:SetPoint('BOTTOMRIGHT', -1, 2)
+            end
+            if button.Location then
+                button.Location:SetFontObject(Game13Font)
+            end
+            if button.Icon and not button.Timeline then
+                button.Background:Hide()
+                F.SetGradient(button, 'H', 0, 1, 0, .35, 0, 260, 37):SetPoint('LEFT')
+            end
+            button.styled = true
+        end
+        ScrollUtil.AddAcquiredFrameCallback(event.ScrollBox, updateCategory, event, true)
     end
 
     -- [[ Quest log popup detail frame ]]

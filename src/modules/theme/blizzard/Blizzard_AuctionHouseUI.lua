@@ -150,19 +150,19 @@ local function reskinItemList(frame, hasHeader)
 end
 
 C.Themes['Blizzard_AuctionHouseUI'] = function()
-    local AuctionHouseFrame = _G.AuctionHouseFrame
+    local AuctionHouseFrame = AuctionHouseFrame
     F.ReskinPortraitFrame(AuctionHouseFrame)
     F.StripTextures(AuctionHouseFrame.MoneyFrameBorder)
     F.CreateBDFrame(AuctionHouseFrame.MoneyFrameBorder, 0.25)
     F.StripTextures(AuctionHouseFrame.MoneyFrameInset)
-    F.ReskinTab(_G.AuctionHouseFrameBuyTab)
-    _G.AuctionHouseFrameBuyTab:SetPoint('BOTTOMLEFT', 20, -32)
-    F.ReskinTab(_G.AuctionHouseFrameSellTab)
-    _G.AuctionHouseFrameSellTab:ClearAllPoints()
-    _G.AuctionHouseFrameSellTab:SetPoint('LEFT', _G.AuctionHouseFrameBuyTab, 'RIGHT')
-    F.ReskinTab(_G.AuctionHouseFrameAuctionsTab)
-    _G.AuctionHouseFrameAuctionsTab:ClearAllPoints()
-    _G.AuctionHouseFrameAuctionsTab:SetPoint('LEFT', _G.AuctionHouseFrameSellTab, 'RIGHT')
+    F.ReskinTab(AuctionHouseFrameBuyTab)
+    AuctionHouseFrameBuyTab:SetPoint('BOTTOMLEFT', 20, -32)
+    F.ReskinTab(AuctionHouseFrameSellTab)
+    AuctionHouseFrameSellTab:ClearAllPoints()
+    AuctionHouseFrameSellTab:SetPoint('LEFT', AuctionHouseFrameBuyTab, 'RIGHT')
+    F.ReskinTab(AuctionHouseFrameAuctionsTab)
+    AuctionHouseFrameAuctionsTab:ClearAllPoints()
+    AuctionHouseFrameAuctionsTab:SetPoint('LEFT', AuctionHouseFrameSellTab, 'RIGHT')
 
     local searchBar = AuctionHouseFrame.SearchBar
     reskinAuctionButton(searchBar.FavoritesSearchButton)
@@ -190,6 +190,10 @@ C.Themes['Blizzard_AuctionHouseUI'] = function()
     F.ReskinButton(itemBuyFrame.BuyoutFrame.BuyoutButton)
     reskinItemDisplay(itemBuyFrame.ItemDisplay)
     reskinItemList(itemBuyFrame.ItemList, true)
+    if BidAmountGold then
+        F.ReskinEditbox(BidAmountGold)
+        F.ReskinEditbox(BidAmountSilver)
+    end
 
     local commBuyFrame = AuctionHouseFrame.CommoditiesBuyFrame
     F.ReskinButton(commBuyFrame.BackButton)
@@ -228,18 +232,18 @@ C.Themes['Blizzard_AuctionHouseUI'] = function()
     reskinSellPanel(AuctionHouseFrame.CommoditiesSellFrame)
     reskinSellList(AuctionHouseFrame.CommoditiesSellList, true)
     reskinSellList(AuctionHouseFrame.ItemSellList, true)
-    reskinSellList(_G.AuctionHouseFrameAuctionsFrame.SummaryList)
-    reskinSellList(_G.AuctionHouseFrameAuctionsFrame.AllAuctionsList, true)
-    reskinSellList(_G.AuctionHouseFrameAuctionsFrame.BidsList, true)
-    reskinSellList(_G.AuctionHouseFrameAuctionsFrame.CommoditiesList, true)
-    reskinSellList(_G.AuctionHouseFrameAuctionsFrame.ItemList, true)
-    reskinItemDisplay(_G.AuctionHouseFrameAuctionsFrame.ItemDisplay)
+    reskinSellList(AuctionHouseFrameAuctionsFrame.SummaryList)
+    reskinSellList(AuctionHouseFrameAuctionsFrame.AllAuctionsList, true)
+    reskinSellList(AuctionHouseFrameAuctionsFrame.BidsList, true)
+    reskinSellList(AuctionHouseFrameAuctionsFrame.CommoditiesList, true)
+    reskinSellList(AuctionHouseFrameAuctionsFrame.ItemList, true)
+    reskinItemDisplay(AuctionHouseFrameAuctionsFrame.ItemDisplay)
 
-    F.ReskinTab(_G.AuctionHouseFrameAuctionsFrameAuctionsTab)
-    F.ReskinTab(_G.AuctionHouseFrameAuctionsFrameBidsTab)
-    F.ReskinButton(_G.AuctionHouseFrameAuctionsFrame.CancelAuctionButton)
-    F.ReskinButton(_G.AuctionHouseFrameAuctionsFrame.BidFrame.BidButton)
-    F.ReskinButton(_G.AuctionHouseFrameAuctionsFrame.BuyoutFrame.BuyoutButton)
+    F.ReskinTab(AuctionHouseFrameAuctionsFrameAuctionsTab)
+    F.ReskinTab(AuctionHouseFrameAuctionsFrameBidsTab)
+    F.ReskinButton(AuctionHouseFrameAuctionsFrame.CancelAuctionButton)
+    F.ReskinButton(AuctionHouseFrameAuctionsFrame.BidFrame.BidButton)
+    F.ReskinButton(AuctionHouseFrameAuctionsFrame.BuyoutFrame.BuyoutButton)
 
     local buyDialog = AuctionHouseFrame.BuyDialog
     F.StripTextures(buyDialog)
@@ -248,7 +252,7 @@ C.Themes['Blizzard_AuctionHouseUI'] = function()
     F.ReskinButton(buyDialog.BuyNowButton)
     F.ReskinButton(buyDialog.CancelButton)
 
-    local multisellFrame = _G.AuctionHouseMultisellProgressFrame
+    local multisellFrame = AuctionHouseMultisellProgressFrame
     F.StripTextures(multisellFrame)
     F.SetBD(multisellFrame)
     local progressBar = multisellFrame.ProgressBar
