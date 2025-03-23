@@ -15,6 +15,7 @@ local isIgnoredZone = {
 local isIgnoredIDs = {
     [5485] = true, -- 海象人工具盒
     [6149] = true, -- 奥妮克希亚龙蛋
+    [6699] = true, -- 错放的奇珍，地下堡
 }
 
 local function isUsefulAtlas(info)
