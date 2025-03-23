@@ -167,6 +167,9 @@ local function IsUnitInRange(unit)
 
         if canHelp then
             minRange, maxRange = libRangeCheck:GetRange(unit, true)
+            if not minRange then
+                minRange = 0
+            end
             if not maxRange then
                 maxRange = minRange
             end
