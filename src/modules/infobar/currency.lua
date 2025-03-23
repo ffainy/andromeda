@@ -76,7 +76,7 @@ local function onEnter(self)
     GameTooltip:AddLine(CURRENCY, 0.9, 0.8, 0.6)
 
     title = false
-    local catalystInfo = C_CurrencyInfo.GetCurrencyInfo(2813) -- 协和绸缎 / Harmonized Silk
+    local catalystInfo = C_CurrencyInfo.GetCurrencyInfo(3116) -- 卡亚矿石精华 / Essence of Kaja'mite
     if catalystInfo then
         addTitle(L['Catalyst Charge'])
 
