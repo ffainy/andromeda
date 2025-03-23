@@ -307,6 +307,32 @@ do
     end
 end
 
+-- toggle addon profiler
+do
+    local function updateCheck(bu)
+        local checked = bu:GetChecked()
+        C_CVar.SetCVar('addonProfilerEnabled', checked and 1 or 0)
+        ANDROMEDA_ADB['AddOnProfiler'] = checked
+    end
+
+    function M:ToggleAddOnProfiler()
+        local bu = CreateFrame('CheckButton', nil, AddonList, 'OptionsBaseCheckButtonTemplate')
+        bu:SetHitRectInsets(-5, -5, -5, -5)
+        bu:SetPoint('BOTTOM', 0, 2)
+        F.ReskinCheckbox(bu)
+        F.CreateFS(
+            bu,
+            C.Assets.Fonts.Condensed, 12, nil,
+            L['CPU Usage'], 'INFO', 'NONE',
+            'LEFT', 30, 0)
+        bu:SetChecked(not (not ANDROMEDA_ADB['AddOnProfiler']))
+
+        C_CVar.RegisterCVar('addonProfilerEnabled', 1)
+        updateCheck(bu)
+        bu:SetScript('OnClick', updateCheck)
+    end
+end
+
 function M:OnLogin()
     M:ForceWarning()
     M:MuteAnnoyingSounds()
@@ -316,4 +342,5 @@ function M:OnLogin()
     M:MicroMenu()
     M:ProposalTimerBar()
     M:Camera()
+    M:ToggleAddOnProfiler()
 end

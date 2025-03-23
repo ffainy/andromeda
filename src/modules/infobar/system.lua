@@ -291,6 +291,19 @@ local function onMouseUp(self, btn)
     end
 end
 
+StaticPopupDialogs['ANDROMEDA_CPUUSAGE_WARNING'] = {
+    text = C.RED_COLOR .. L['You are using CPU Profiling. This causes decreased performance. Do you want to disable it or continue?'],
+    button1 = DISABLE,
+    button2 = CONTINUE,
+    OnAccept = function()
+        SetCVar('scriptProfile', 0)
+        ReloadUI()
+    end,
+    showAlert = 1,
+    whileDead = 1,
+    hideOnEscape = false,
+}
+
 function INFOBAR:CreateSystemBlock()
     if not C.DB.Infobar.System then
         return
@@ -302,4 +315,8 @@ function INFOBAR:CreateSystemBlock()
     sys.onEnter = onEnter
     sys.onLeave = onLeave
     sys.onMouseUp = onMouseUp
+
+    if GetCVarBool('scriptProfile') then
+        StaticPopup_Show('ANDROMEDA_CPUUSAGE_WARNING')
+    end
 end

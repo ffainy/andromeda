@@ -764,4 +764,5 @@ C.AccountSettings = {
     NameplateCustomTexture = '',
     IgnoreNotesList = {},
     LibCustomGlowType = 3,
+    AddOnProfiler = false,
 }
