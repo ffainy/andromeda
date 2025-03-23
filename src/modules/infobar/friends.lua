@@ -394,7 +394,7 @@ local function buttonOnEnter(self)
             local level = gameAccountInfo.characterLevel
             local gameText = gameAccountInfo.richPresence or ''
             local wowProjectID = gameAccountInfo.wowProjectID
-            local clientString = BNet_GetClientEmbeddedAtlas(client, 16)
+            local clientString = ''
             local timerunningSeasonID = gameAccountInfo.timerunningSeasonID
 
             if client == BNET_CLIENT_WOW then
@@ -428,6 +428,14 @@ local function buttonOnEnter(self)
                     GameTooltip:AddLine(format('%s%s', inactiveZone, zoneName))
                 end
             else
+                if C_Texture.IsTitleIconTextureReady(client, Enum.TitleIconVersion.Small) then
+                    C_Texture.GetTitleIconTexture(client, Enum.TitleIconVersion.Small, function(success, texture)
+                        if success then
+                            clientString = BNet_GetClientEmbeddedTexture(texture, 32, 32, 0)
+                        end
+                    end)
+                end
+
                 GameTooltip:AddLine(format('|cffffffff%s%s', clientString, accountName))
                 if gameText ~= '' then
                     GameTooltip:AddLine(format('%s%s', inactiveZone, gameText))
