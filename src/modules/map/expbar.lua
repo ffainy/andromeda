@@ -400,7 +400,7 @@ local function onEnter(self)
                 name = majorFactionData.name
                 value = majorFactionData.renownReputationEarned or 0
                 barMin, barMax = 0, majorFactionData.renownLevelThreshold
-                standingtext = RENOWN_LEVEL_LABEL .. majorFactionData.renownLevel
+                standingtext = format(RENOWN_LEVEL_LABEL, majorFactionData.renownLevel)
             end
         else
             local repInfo = C_GossipInfo.GetFriendshipReputation(factionID)
