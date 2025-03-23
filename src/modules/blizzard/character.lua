@@ -94,9 +94,8 @@ function M:MissingStats()
 
         if offhandSpeed then
             offhandSpeed = format('%.2f', offhandSpeed)
+            displaySpeed = displaySpeed .. ' / ' .. offhandSpeed
         end
-
-        displaySpeed = displaySpeed.." / "..offhandSpeed
 
         PaperDollFrame_SetLabelAndText(statFrame, WEAPON_SPEED, displaySpeed, false, speed)
         statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE ..
