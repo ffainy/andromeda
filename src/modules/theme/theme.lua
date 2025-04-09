@@ -17,7 +17,7 @@ function THEME:LoadSkins(list)
     for addonName, func in pairs(list) do
         local isLoaded, isFinished = C_AddOns.IsAddOnLoaded(addonName)
         if isLoaded and isFinished then
-            func()
+            xpcall(func, geterrorhandler())
             list[addonName] = nil
         end
     end
@@ -25,7 +25,7 @@ end
 
 function THEME:LoadAddOnSkins()
     for _, func in pairs(C.BlizzThemes) do
-        func()
+        xpcall(func, geterrorhandler())
     end
     wipe(C.BlizzThemes)
 
@@ -39,13 +39,13 @@ function THEME:LoadAddOnSkins()
     F:RegisterEvent('ADDON_LOADED', function(_, addonName)
         local blizzFunc = C.Themes[addonName]
         if blizzFunc then
-            blizzFunc()
+            xpcall(blizzFunc, geterrorhandler())
             C.Themes[addonName] = nil
         end
 
         local addonFunc = C.AddonThemes[addonName]
         if addonFunc then
-            addonFunc()
+            xpcall(addonFunc, geterrorhandler())
             C.AddonThemes[addonName] = nil
         end
     end)

@@ -193,7 +193,7 @@ F:RegisterEvent('PLAYER_LOGIN', function()
     local L = engine[3]
     for _, module in next, initQueue do
         if module.OnLogin then
-            module:OnLogin()
+            xpcall(module.OnLogin, geterrorhandler(), module)
         else
             F.Debug(format(L["module '%s' does not loaded."], module.name))
         end

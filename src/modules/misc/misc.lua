@@ -334,6 +334,12 @@ do
 end
 
 function M:OnLogin()
+    -- for name, func in next, MISC_LIST do
+    --     if name and type(func) == 'function' then
+    --         xpcall(func, geterrorhandler())
+    --     end
+    -- end
+
     M:ForceWarning()
     M:MuteAnnoyingSounds()
     M:FasterMovieSkip()
