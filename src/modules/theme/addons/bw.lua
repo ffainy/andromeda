@@ -117,7 +117,7 @@ function THEME:RestyleBigWigsQueueTimer()
 
     if BigWigsLoader and BigWigsLoader.RegisterMessage then
         BigWigsLoader.RegisterMessage(C.ADDON_TITLE, 'BigWigs_FrameCreated', function(_, frame, name)
-            if name == 'QueueTimer' and not frame.styled then
+            if frame and (name == 'QueueTimer') and not frame.styled then
                 F.StripTextures(frame)
                 F.SetBD(frame)
 
