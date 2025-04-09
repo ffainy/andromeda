@@ -22,12 +22,15 @@ tinsert(C.BlizzThemes, function()
     _G.TradeFrame.RecipientOverlay:Hide()
     F.ReskinButton(_G.TradeFrameTradeButton)
     F.ReskinButton(_G.TradeFrameCancelButton)
-    F.ReskinEditbox(_G.TradePlayerInputMoneyFrameGold)
-    F.ReskinEditbox(_G.TradePlayerInputMoneyFrameSilver)
-    F.ReskinEditbox(_G.TradePlayerInputMoneyFrameCopper)
 
-    _G.TradePlayerInputMoneyFrameSilver:SetPoint('LEFT', _G.TradePlayerInputMoneyFrameGold, 'RIGHT', 1, 0)
-    _G.TradePlayerInputMoneyFrameCopper:SetPoint('LEFT', _G.TradePlayerInputMoneyFrameSilver, 'RIGHT', 1, 0)
+    if not TradePlayerInputMoneyFrame:IsForbidden() then
+        F.ReskinEditbox(TradePlayerInputMoneyFrameGold)
+        F.ReskinEditbox(TradePlayerInputMoneyFrameSilver)
+        F.ReskinEditbox(TradePlayerInputMoneyFrameCopper)
+
+        TradePlayerInputMoneyFrameSilver:SetPoint('LEFT', TradePlayerInputMoneyFrameGold, 'RIGHT', 1, 0)
+        TradePlayerInputMoneyFrameCopper:SetPoint('LEFT', TradePlayerInputMoneyFrameSilver, 'RIGHT', 1, 0)
+    end
 
     local function reskinButton(bu)
         bu:SetNormalTexture(0)
