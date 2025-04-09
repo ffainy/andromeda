@@ -140,6 +140,14 @@ function MAP:SetupWorldMap()
     MAP:WorldMapReveal()
 end
 
+function MAP:BlizzFunc()
+    WorldMapFrame:SetAttribute('UIPanelLayout-area', nil)
+    WorldMapFrame:SetAttribute('UIPanelLayout-enabled', false)
+    WorldMapFrame:SetAttribute('UIPanelLayout-allowOtherPanels', true)
+    tinsert(UISpecialFrames, 'WorldMapFrame')
+    F:UnregisterEvent('PLAYER_ENTERING_WORLD', self.BlizzFunc)
+end
+
 function MAP:OnLogin()
     if not C.DB.Map.Enable then
         return
@@ -147,4 +155,6 @@ function MAP:OnLogin()
 
     MAP:SetupWorldMap()
     MAP:SetupMinimap()
+
+    F:RegisterEvent('PLAYER_ENTERING_WORLD', self.BlizzFunc)
 end
