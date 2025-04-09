@@ -87,8 +87,10 @@ function cargBags:ReplaceBlizzard(name)
 
 	OpenAllBags = toggleBag	-- Name is misleading, Blizz-function actually toggles bags
 	OpenBackpack = toggleBag -- Blizz does not provide toggling here
-	CloseAllBags = closeBag
-	CloseBackpack = closeBag
+	if not ANDROMEDA[2].IS_NEW_PATCH then -- causing taint in 11.1.5
+		CloseAllBags = closeBag
+		CloseBackpack = closeBag
+	end
 	OpenBag = toggleBag		-- fixed the loot won alert frame
 
 	BankFrame:UnregisterAllEvents()
