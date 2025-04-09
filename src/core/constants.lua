@@ -1,8 +1,7 @@
 local F, C, L = unpack(select(2, ...))
 
 do
-    C.IS_NEW_PATCH = select(4, GetBuildInfo()) >= 110100 -- 11.1.0
-    C.IS_WW = select(4, GetBuildInfo()) >= 110000 -- 11.0.0
+    C.IS_NEW_PATCH = select(4, GetBuildInfo()) >= 110105 -- 11.1.5
     C.MY_REALM = GetRealmName()
     C.MY_CLASS = select(2, UnitClass('player'))
     C.MY_NAME = UnitName('player')
@@ -21,7 +20,7 @@ do
 end
 
 -- Deprecated
-if C.IS_WW then
+do
     local function EasyMenu_Initialize(frame, level, menuList)
         for index = 1, #menuList do
             local value = menuList[index]
