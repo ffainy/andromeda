@@ -2,7 +2,7 @@ local F, C, L = unpack(select(2, ...))
 local INFOBAR = F:GetModule('InfoBar')
 
 local pvpTalents
-local pvpIconTexture = C_CurrencyInfo.GetCurrencyInfo(104).iconFileID
+local pvpIconTexture = C_CurrencyInfo.GetCurrencyInfo(C.IS_NEW_PATCH and 1792 or 104).iconFileID
 local currentSpecIndex, currentLootIndex, newMenu, numSpecs, numLocal
 
 local function addIcon(texture)
