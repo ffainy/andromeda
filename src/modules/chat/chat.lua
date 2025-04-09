@@ -656,12 +656,12 @@ local function GetColoredName_hook(event, arg1, arg2, ...)
 end
 
 function CHAT:AddRoleIcons() --#TODO cause url catch fail
-    if C.IS_WW then return end
+    --[[ if C.IS_WW then return end
     if not C.DB.Chat.GroupRoleIcon then
         return
     end
 
-    GetColoredName = GetColoredName_hook
+    GetColoredName = GetColoredName_hook ]]
 end
 
 -- Disable pet battle tab

@@ -191,8 +191,8 @@ local function CreateClassColorButton()
     colorBar:SetWidth(count * 26 - 4)
 end
 
-function BLIZZARD:EnhancedColorPicker()
-    if C.IS_WW then return end --#FIXME
+function BLIZZARD:EnhancedColorPicker() --#FIXME
+    --[[ if C.IS_WW then return end
     if C_AddOns.IsAddOnLoaded('ColorPickerPlus') then
         return
     end
@@ -445,5 +445,5 @@ function BLIZZARD:EnhancedColorPicker()
 
     Picker:SetClampedToScreen(true)
     Picker:SetUserPlaced(true)
-    Picker:EnableKeyboard(false)
+    Picker:EnableKeyboard(false) ]]
 end
