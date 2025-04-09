@@ -167,6 +167,11 @@ function COOLDOWN:StartTimer(start, duration, modRate)
             self:Hide()
         end
     end
+
+    -- disable blizzard cooldown numbers
+    if C.IS_NEW_PATCH and self.SetHideCountdownNumbers then
+        self:SetHideCountdownNumbers(true)
+    end
 end
 
 function COOLDOWN:HideCooldownNumbers()
